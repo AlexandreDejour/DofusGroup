@@ -2,7 +2,7 @@
 
 ## Presentation
 
-DofusGroup app is a tool to create team players in the game Dofus. This app is a support of my training during my studies in O'Clock School.
+Hi! My name is Alexandre, i'm french and i'm a new web developer. I will present you my personal project made during my studies in O'Clock School. DofusGroup is an app to help [Dofus](https://www.dofus.com/fr) players find team mates in the game.
 
 ## Description
 
@@ -10,7 +10,7 @@ DofusGroup app is a tool to create team players in the game Dofus. This app is a
 
 The game [Dofus](https://www.dofus.com/fr) propose many different activities to their players. Many of these activities need to made teams to progress in te game content.
 
-Team building in Dofus is long, hard and boring for multiple facts:
+Team building in Dofus is somtimes long, hard and boring for multiple facts:
 
     - No group finder tool integrated
     - Many messages in tchat at the same time
@@ -18,7 +18,7 @@ Team building in Dofus is long, hard and boring for multiple facts:
     - No preparation
     - Low interest for some of them
   
- All of these, slows down players's progression and deteriorate their experience if they don't find any mate. This situation is accentuated if players don't have many playing time. But now DofusGroup is here to change the game.
+ All of these, slows down players's progression and deteriorate their experience if they don't find any mate. This situation is accentuated if players don't have many playing time. But now DofusGroup is now here to change the game!
 
 ### Goal
 
@@ -45,4 +45,4 @@ All registered users can create events with dedicated formular. As character's p
 
 ### Friends list
 
-Each user have his own friends list to easily share his events with mates. He can invite them automotically during event creation or with the unique link. In fact for each user, friends's events appear first in the list.
+Each user have his own friends list to easily share his events with mates. He can invite them automotically during event creation or with the unique link. More of these, for each user, friends's events appear first in the list.

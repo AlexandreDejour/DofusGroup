@@ -36,15 +36,19 @@ Event:
 
 Tag:
 
+    - Tag's code
     - Title
     - Color
 
 Server:
 
+    - Server's Code
     - Name
     - Type
+    - Miniature
 
 Class:
 
+    - Class's Code
     - Name
     - Miniature

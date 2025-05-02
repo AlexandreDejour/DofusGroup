@@ -1,10 +1,8 @@
 # DofusGroup database conception
 
-## MCD
+## Entities and properties
 
-### Entities and attributes
-
-User's account:
+User account:
 
     -  User's code
     -  Username
@@ -12,12 +10,12 @@ User's account:
     -  Mail adress
     -  Avatar
 
-User's character:
+User character:
 
     - Character's code
     - Pseudo
     - Level
-    - Class
+    - Breed
     - Alignment
     - Stuff
     - Stats
@@ -28,6 +26,7 @@ Event:
     - Event's code
     - Title
     - Tag
+    - Server
     - Date
     - Duration
     - Description
@@ -47,8 +46,10 @@ Server:
     - Type
     - Miniature
 
-Class:
+Breed:
 
-    - Class's Code
+    - Breed's Code
+    - Sexe
     - Name
     - Miniature
+    - Image

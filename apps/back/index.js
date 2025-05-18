@@ -1,13 +1,13 @@
 import express from "express";
 import "dotenv/config";
 
+import { router } from "./src/router/index.js";
+
 const app = express();
 
-const port = process.env.PORT;
+app.use(router);
 
-app.get("/", (req, res, next) => {
-    res.send("Hello DofusGroup");
-});
+const port = process.env.PORT;
 
 app.listen(port, () => {
     console.log(`server listening on: http://localhost:${port}`);

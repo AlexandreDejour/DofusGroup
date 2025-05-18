@@ -1,0 +1,28 @@
+{
+  "name": "dofusgroup",
+  "version": "0.1.0",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AlexandreDejour/DofusGroup.git"
+  },
+  "keywords": [
+    "dofusgroup",
+    "dofus",
+    "team",
+    "building",
+    "event",
+    "manager"
+  ],
+  "author": "Alexandre Dejour",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/AlexandreDejour/DofusGroup/issues"
+  },
+  "homepage": "https://github.com/AlexandreDejour/DofusGroup#readme"
+}

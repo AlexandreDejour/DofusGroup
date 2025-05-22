@@ -1,0 +1,10 @@
+node_modules/
+apps/back/node_modules/
+apps/front/app/node_modules/
+
+dist/
+build/
+
+*.env.development
+*.env
+*.vscode

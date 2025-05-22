@@ -5,7 +5,7 @@
     "doc": "docs"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start" : "concurrently \"npm run start --prefix apps/front/app\" \"npm run start --prefix apps/back\""
   },
   "repository": {
     "type": "git",
@@ -24,5 +24,8 @@
   "bugs": {
     "url": "https://github.com/AlexandreDejour/DofusGroup/issues"
   },
-  "homepage": "https://github.com/AlexandreDejour/DofusGroup#readme"
+  "homepage": "https://github.com/AlexandreDejour/DofusGroup#readme",
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  }
 }

@@ -5,6 +5,5 @@ apps/front/app/node_modules/
 dist/
 build/
 
-*.env.development
-*.env
+**/.env*
 *.vscode

@@ -2,9 +2,9 @@ import { Model, DataTypes } from "sequelize";
 
 import { client } from "../client/client.js";
 
-class Character extends Model {};
+class Server extends Model {};
 
-Character.init(
+Server.init(
     {
         id: {
             type: DataTypes.INTEGER,
@@ -14,17 +14,12 @@ Character.init(
         },
         name: {
             type: DataTypes.STRING,
-            allowNull: false
+            allowNull: false,
+            unique: true
         },
-        level: {
-            type: DataTypes.INTEGER,
-            allowNull: false
-        },
-        alignment: {
-            type: DataTypes.STRING,
-        },
-        stuff: {
-            type: DataTypes.STRING,
+        mono_account: {
+            type: DataTypes.BOOLEAN,
+            allowNull: false,
         }
     },
     {

@@ -26,3 +26,5 @@ Tag.init(
         sequelize: client
     }
 );
+
+export { Tag };

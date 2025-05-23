@@ -34,3 +34,5 @@ User.init(
         sequelize: client
     }
 );
+
+export { User };

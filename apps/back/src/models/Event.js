@@ -36,3 +36,5 @@ Event.init(
         sequelize: client 
     }
 );
+
+export { Event };

@@ -33,3 +33,5 @@ Breed.init(
         sequelize: client
     }
 );
+
+export { Breed };

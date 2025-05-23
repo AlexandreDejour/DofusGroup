@@ -31,3 +31,5 @@ Character.init(
         sequelize: client
     }
 );
+
+export { Character };

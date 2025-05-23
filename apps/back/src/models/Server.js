@@ -26,3 +26,5 @@ Server.init(
         sequelize: client
     }
 );
+
+export { Server };

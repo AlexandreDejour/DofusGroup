@@ -17,6 +17,15 @@ Tag.init(
             allowNull: false,
             unique: true
         },
+        area: {
+            type: DataTypes.STRING,
+        },
+        subarea: {
+            type: DataTypes.STRING,
+        },
+        donjon_name: {
+            type: DataTypes.STRING
+        },
         color: {
             type: DataTypes.STRING,
             allowNull: false

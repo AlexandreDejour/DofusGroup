@@ -1,4 +1,4 @@
-import { client } from "./client.js";
+import { client } from "../client/client.js";
 
 async function sync() {
     await client.sync();

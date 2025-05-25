@@ -20,6 +20,18 @@ Event.init(
             type: DataTypes.DATE,
             allowNull: false,
         },
+        duration: {
+            type: DataTypes.INTEGER,
+        },
+        area: {
+            type: DataTypes.STRING,
+        },
+        subarea: {
+            type: DataTypes.STRING,
+        },
+        donjon_name: {
+            type: DataTypes.STRING
+        },
         description: {
             type: DataTypes.STRING,           
         },

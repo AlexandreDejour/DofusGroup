@@ -16,6 +16,10 @@ Character.init(
             type: DataTypes.STRING,
             allowNull: false
         },
+        sex: {
+            type: DataTypes.STRING,
+            allowNull: false
+        },
         level: {
             type: DataTypes.INTEGER,
             allowNull: false

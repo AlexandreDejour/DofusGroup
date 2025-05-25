@@ -10,24 +10,14 @@ Breed.init(
             type: DataTypes.INTEGER,
             primaryKey: true,
             autoIncrement: true, 
-            autoIncrementIdentity: true
-        },
-        name: {
-            type: DataTypes.INTEGER,
-            allowNull: false
-        },
-        sex: {
-            type: DataTypes.STRING,
-            allowNull: false
-        },
-        miniature: {
-            type: DataTypes.BLOB("long"),
+            autoIncrementIdentity: true,
             allowNull: false,
         },
-        image: {
-            type: DataTypes.BLOB("long"),
-            allowNull: false
-        }
+        name: {
+            type: DataTypes.STRING,
+            allowNull: false,
+            unique: true
+        },
     },
     {
         sequelize: client

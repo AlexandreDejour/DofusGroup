@@ -23,7 +23,6 @@ async function seeding() {
         { name: "Steamer"},
         { name: "Xélor"},
         { name: "Zobal"}
-
     ], 
     { 
         ignoreDuplicates: true 
@@ -56,7 +55,10 @@ async function seeding() {
         { name: "AVA", color: "#f39c12"},
         { name: "Percepteur", color: "#2c3e50"},
         { name: "Kolizéum", color: "#f1c40f"},
-    ])
+    ],
+    { 
+        ignoreDuplicates: true 
+    })
 };
 
 export { seeding };

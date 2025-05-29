@@ -13,7 +13,7 @@ const breedController = {
 
         if(!breeds) {
             return next();
-        }
+        };
 
         res.json(breeds);
     },
@@ -32,7 +32,7 @@ const breedController = {
 
         if(!breed) {
             return next();
-        }
+        };
 
         res.json(breed);
     }

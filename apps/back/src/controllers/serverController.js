@@ -13,7 +13,7 @@ const serverController = {
 
         if(!servers) {
             return next();
-        }
+        };
 
         res.json(servers);
     },
@@ -32,7 +32,7 @@ const serverController = {
 
         if(!server) {
             return next();
-        }
+        };
 
         res.json(server);
     }

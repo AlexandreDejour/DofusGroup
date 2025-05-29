@@ -13,7 +13,7 @@ const tagController = {
 
         if(!tags) {
             return next();
-        }
+        };
 
         res.json(tags);
     },
@@ -32,7 +32,7 @@ const tagController = {
 
         if(!tag) {
             return next();
-        }
+        };
 
         res.json(tag);
     }

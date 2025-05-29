@@ -1,8 +1,9 @@
 import { Router } from "express";
 const router =  Router();
 
-import { serverRouter } from "./serverRouter.js";
 import { tagRouter } from "./tagRouter.js";
+import { breedRouter } from "./breedRouter.js";
+import { serverRouter } from "./serverRouter.js";
 
 router.get("/", (_req, res) => {
     res.sendFile("index.html", {
@@ -10,7 +11,8 @@ router.get("/", (_req, res) => {
     });
 });
 
-router.use(serverRouter);
 router.use(tagRouter);
+router.use(breedRouter);
+router.use(serverRouter);
 
 export { router };

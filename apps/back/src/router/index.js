@@ -1,9 +1,14 @@
 import { Router } from "express";
-
 const router =  Router();
 
-router.get("/", (req, res, next) => {
-    res.send("Hello DofusGroup");
+import { serverRouter } from "./serverRouter.js";
+
+router.get("/", (_req, res) => {
+    res.sendFile("index.html", {
+        root: "../../../front"
+    });
 });
+
+router.use(serverRouter);
 
 export { router };

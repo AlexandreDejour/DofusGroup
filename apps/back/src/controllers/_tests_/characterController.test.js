@@ -1,9 +1,9 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from "vitest";
 
-import { Character } from '../../models/Character.js';
-import { characterController } from '../../controllers/characterController.js';
+import { Character } from "../../models/Character.js";
+import { characterController } from "../../controllers/characterController.js";
 
-vi.mock('../../models/Character.js', () => ({
+vi.mock("../../models/Character.js", () => ({
   Character: {
     findByPk: vi.fn(),
     create: vi.fn(),
@@ -12,7 +12,7 @@ vi.mock('../../models/Character.js', () => ({
   }
 }));
 
-describe('characterController', () => {
+describe("characterController", () => {
   let res;
   let next;
   let req;
@@ -32,9 +32,9 @@ describe('characterController', () => {
     vi.clearAllMocks();
   });
 
-  describe('getOne', () => {
-    it('should respond with one user if found', async () => {
-      const mockCharacter = { id: 2, name: 'grumpy', sex: "female", level: 190, alignment: "bontarien" };
+  describe("getOne", () => {
+    it("should respond with one user if found", async () => {
+      const mockCharacter = { id: 2, name: "grumpy", sex: "female", level: 190, alignment: "bontarien" };
       res.params.id = 2;
       Character.findByPk.mockResolvedValue(mockCharacter);
 
@@ -44,7 +44,7 @@ describe('characterController', () => {
       expect(res.json).toHaveBeenCalledWith(mockCharacter);
     });
 
-    it('should call next() if user not found', async () => {
+    it("should call next() if user not found", async () => {
       res.params.id = 404;
       Character.findByPk.mockResolvedValue(null);
 
@@ -54,13 +54,13 @@ describe('characterController', () => {
     });
   });
 
-  describe('post', () => {
-    it('should create and return a new user', async () => {
+  describe("post", () => {
+    it("should create and return a new user", async () => {
         const inputData = {
-            name: 'chronos',
-            sex: 'male',
+            name: "chronos",
+            sex: "male",
             level: 180,
-            alignment: 'bontarien'
+            alignment: "bontarien"
         };
 
         const mockCreatedCharacter = {
@@ -79,12 +79,12 @@ describe('characterController', () => {
         });
     });
 
-  describe('update', () => {
-    it('should update and return the updated user', async () => {
+  describe("update", () => {
+    it("should update and return the updated user", async () => {
       req.params.id = 5;
       req.body = {
-        name: 'chronos-trigger',
-        sex: 'male',
+        name: "chronos-trigger",
+        sex: "male",
         level: 190,
       };
       const mockCharacter = { id: 5, ...req.body };
@@ -97,7 +97,7 @@ describe('characterController', () => {
       expect(res.json).toHaveBeenCalledWith(mockCharacter);
     });
 
-    it('should call next() if user not found', async () => {
+    it("should call next() if user not found", async () => {
       req.params.id = 12;
       Character.findByPk.mockResolvedValue(null);
 
@@ -107,8 +107,8 @@ describe('characterController', () => {
     });
   });
 
-  describe('delete', () => {
-    it('should delete user if found', async () => {
+  describe("delete", () => {
+    it("should delete user if found", async () => {
       req.params.id = 7;
       const mockCharacter = { id: 7 };
       Character.findByPk.mockResolvedValue(mockCharacter);
@@ -120,7 +120,7 @@ describe('characterController', () => {
       expect(res.end).toHaveBeenCalled();
     });
 
-    it('should call next() if user not found', async () => {
+    it("should call next() if user not found", async () => {
       req.params.id = 88;
       Character.findByPk.mockResolvedValue(null);
 

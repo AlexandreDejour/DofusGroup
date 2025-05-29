@@ -1,9 +1,9 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from "vitest";
 
-import { User } from '../../models/User.js';
-import { userController } from '../../controllers/userController.js';
+import { User } from "../../models/User.js";
+import { userController } from "../../controllers/userController.js";
 
-vi.mock('../../models/User.js', () => ({
+vi.mock("../../models/User.js", () => ({
   User: {
     findByPk: vi.fn(),
     create: vi.fn(),
@@ -12,7 +12,7 @@ vi.mock('../../models/User.js', () => ({
   }
 }));
 
-describe('userController', () => {
+describe("userController", () => {
   let res;
   let next;
   let req;
@@ -32,13 +32,13 @@ describe('userController', () => {
     vi.clearAllMocks();
   });
 
-  describe('getUserWithCharactersAndEvents', () => {
-    it('should respond with user and relations if found', async () => {
-      const mockUser = { id: 2, username: 'Lisa', characters: [], events: [] };
+  describe("getOne", () => {
+    it("should respond with user and relations if found", async () => {
+      const mockUser = { id: 2, username: "Lisa", characters: [], events: [] };
       res.params.id = 2;
       User.findByPk.mockResolvedValue(mockUser);
 
-      await userController.getUserWithCharactersAndEvents({}, res, next);
+      await userController.getOne({}, res, next);
 
       expect(User.findByPk).toHaveBeenCalledWith(2, {
         include: [
@@ -50,23 +50,23 @@ describe('userController', () => {
       expect(next).not.toHaveBeenCalled();
     });
 
-    it('should call next() if user not found', async () => {
+    it("should call next() if user not found", async () => {
       res.params.id = 404;
       User.findByPk.mockResolvedValue(null);
 
-      await userController.getUserWithCharactersAndEvents({}, res, next);
+      await userController.getOne({}, res, next);
 
       expect(next).toHaveBeenCalled();
     });
   });
 
-  describe('post', () => {
-    it('should create and return a new user', async () => {
+  describe("post", () => {
+    it("should create and return a new user", async () => {
         const inputData = {
-            username: 'Newbie',
-            password: 'secure',
-            mail: 'test@mail.com',
-            avatar: 'url'
+            username: "Newbie",
+            password: "secure",
+            mail: "test@mail.com",
+            avatar: "url"
         };
 
         const mockCreatedUser = {
@@ -85,14 +85,14 @@ describe('userController', () => {
         });
     });
 
-  describe('update', () => {
-    it('should update and return the updated user', async () => {
+  describe("update", () => {
+    it("should update and return the updated user", async () => {
       req.params.id = 5;
       req.body = {
-        username: 'UpdatedUser',
-        password: 'newpass',
-        mail: 'new@mail.com',
-        avatar: 'newavatar'
+        username: "UpdatedUser",
+        password: "newpass",
+        mail: "new@mail.com",
+        avatar: "newavatar"
       };
       const mockUser = { id: 5, ...req.body };
       User.findByPk.mockResolvedValue(mockUser);
@@ -104,7 +104,7 @@ describe('userController', () => {
       expect(res.json).toHaveBeenCalledWith(mockUser);
     });
 
-    it('should call next() if user not found', async () => {
+    it("should call next() if user not found", async () => {
       req.params.id = 12;
       User.findByPk.mockResolvedValue(null);
 
@@ -114,8 +114,8 @@ describe('userController', () => {
     });
   });
 
-  describe('delete', () => {
-    it('should delete user if found', async () => {
+  describe("delete", () => {
+    it("should delete user if found", async () => {
       req.params.id = 7;
       const mockUser = { id: 7 };
       User.findByPk.mockResolvedValue(mockUser);
@@ -127,7 +127,7 @@ describe('userController', () => {
       expect(res.end).toHaveBeenCalled();
     });
 
-    it('should call next() if user not found', async () => {
+    it("should call next() if user not found", async () => {
       req.params.id = 88;
       User.findByPk.mockResolvedValue(null);
 

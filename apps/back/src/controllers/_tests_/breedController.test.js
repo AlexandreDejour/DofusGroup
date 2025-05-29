@@ -1,16 +1,16 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from "vitest";
 
-import { Breed } from '../../models/Breed.js';
-import { breedController } from '../breedController.js';
+import { Breed } from "../../models/Breed.js";
+import { breedController } from "../breedController.js";
 
-vi.mock('../../models/Breed.js', () => ({
+vi.mock("../../models/Breed.js", () => ({
   Breed: {
     findAll: vi.fn(),
     findByPk: vi.fn(),
   }
 }));
 
-describe('breedController', () => {
+describe("breedController", () => {
 
   let res; 
   let next;
@@ -24,9 +24,9 @@ describe('breedController', () => {
     vi.clearAllMocks();
   });
 
-  describe('getAll', () => {
-    it('should respond with all breeds', async () => {
-      const mockServers = [{ id: 1, name: 'Ecaflip' }, { id: 2, name: 'Eliotrope' }];
+  describe("getAll", () => {
+    it("should respond with all breeds", async () => {
+      const mockServers = [{ id: 1, name: "Ecaflip" }, { id: 2, name: "Eliotrope" }];
       Breed.findAll.mockResolvedValue(mockServers);
 
       await breedController.getAll({}, res, next);
@@ -36,7 +36,7 @@ describe('breedController', () => {
       expect(next).not.toHaveBeenCalled();
     });
 
-    it('should call next() if no breeds are found', async () => {
+    it("should call next() if no breeds are found", async () => {
       Breed.findAll.mockResolvedValue(null);
 
       await breedController.getAll({}, res, next);
@@ -47,9 +47,9 @@ describe('breedController', () => {
     });
   });
 
-  describe('getOne', () => {
-    it('should respond with one breed if found', async () => {
-      const mockServer = { id: 1, name: 'Ecaflip' };
+  describe("getOne", () => {
+    it("should respond with one breed if found", async () => {
+      const mockServer = { id: 1, name: "Ecaflip" };
       res.params.id = 1;
       Breed.findByPk.mockResolvedValue(mockServer);
 
@@ -60,7 +60,7 @@ describe('breedController', () => {
       expect(next).not.toHaveBeenCalled();
     });
 
-    it('should call next() if breed is not found', async () => {
+    it("should call next() if breed is not found", async () => {
       res.params.id = 42;
       Breed.findByPk.mockResolvedValue(null);
 

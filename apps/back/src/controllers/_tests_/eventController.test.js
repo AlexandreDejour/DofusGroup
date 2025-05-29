@@ -1,9 +1,9 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from "vitest";
 
-import { Event } from '../../models/Event.js';
-import { eventController } from '../../controllers/eventController.js';
+import { Event } from "../../models/Event.js";
+import { eventController } from "../../controllers/eventController.js";
 
-vi.mock('../../models/Event.js', () => ({
+vi.mock("../../models/Event.js", () => ({
   Event: {
     findAll: vi.fn(),
     findByPk: vi.fn(),
@@ -13,7 +13,7 @@ vi.mock('../../models/Event.js', () => ({
   }
 }));
 
-describe('eventController', () => {
+describe("eventController", () => {
   let res;
   let next;
   let req;
@@ -33,36 +33,15 @@ describe('eventController', () => {
     vi.clearAllMocks();
   });
 
-  describe('getAllWithTagAndServer', () => {
-    it('should respond with all events with their tag and server', async () => {
+  describe("getAll", () => {
+    it("should respond with all events with their tag, server and characters", async () => {
       const mockEvents = [
-        { id: 1, title: 'farm grobe', tag: [], server: [] },
-        { id: 2, title: 'pl nidas', tag: [], server: [] }
+        { id: 1, title: "farm grobe", tag: [], server: [], characters: [] },
+        { id: 2, title: "pl nidas", tag: [], server: [], characters: [] }
       ];
       Event.findAll.mockResolvedValue(mockEvents);
 
-      await eventController.getAllWithTagAndServer({}, res, next);
-
-      expect(Event.findAll).toHaveBeenCalled({
-        include: [
-          { association: "tag"},
-          { association: "server"}
-        ]
-      });
-      expect(res.json).toHaveBeenCalledWith(mockEvents);
-      expect(next).not.toHaveBeenCalled();
-    });
-  });
-
-  describe('getAllWithTagServerAndCharacters', () => {
-    it('should respond with all events with their tag, server and characters', async () => {
-      const mockEvents = [
-        { id: 1, title: 'farm grobe', tag: [], server: [], characters: [] },
-        { id: 2, title: 'pl nidas', tag: [], server: [], characters: [] }
-      ];
-      Event.findAll.mockResolvedValue(mockEvents);
-
-      await eventController.getAllWithTagServerAndCharacters({}, res, next);
+      await eventController.getAll({}, res, next);
 
       expect(Event.findAll).toHaveBeenCalled(2, {
         include: [
@@ -75,10 +54,10 @@ describe('eventController', () => {
       expect(next).not.toHaveBeenCalled();
     });
 
-    it('should call next() if no events are found', async () => {
+    it("should call next() if no events are found", async () => {
       Event.findAll.mockResolvedValue(null);
 
-      await eventController.getAllWithTagServerAndCharacters({}, res, next);
+      await eventController.getAll({}, res, next);
 
       expect(Event.findAll).toHaveBeenCalled();
       expect(res.json).not.toHaveBeenCalled();
@@ -86,9 +65,9 @@ describe('eventController', () => {
     });
   });
 
-  describe('getOne', () => {
-    it('should respond with one event if found', async () => {
-      const mockEvent = { id: 2, title: 'pl nidas' };
+  describe("getOne", () => {
+    it("should respond with one event if found", async () => {
+      const mockEvent = { id: 2, title: "pl nidas" };
       res.params.id = 2;
       Event.findByPk.mockResolvedValue(mockEvent);
 
@@ -98,7 +77,7 @@ describe('eventController', () => {
       expect(res.json).toHaveBeenCalledWith(mockEvent);
     });
 
-    it('should call next() if event not found', async () => {
+    it("should call next() if event not found", async () => {
       res.params.id = 404;
       Event.findByPk.mockResolvedValue(null);
 
@@ -108,11 +87,11 @@ describe('eventController', () => {
     });
   });
 
-  describe('post', () => {
-    it('should create and return a new event', async () => {
+  describe("post", () => {
+    it("should create and return a new event", async () => {
         const inputData = {
-            title: 'donjon bwork',
-            date: new Date('2025-10-12'),
+            title: "donjon bwork",
+            date: new Date("2025-10-12"),
             max_players: 8,
         };
 
@@ -132,12 +111,12 @@ describe('eventController', () => {
         });
     });
 
-  describe('update', () => {
-    it('should update and return the updated event', async () => {
+  describe("update", () => {
+    it("should update and return the updated event", async () => {
       req.params.id = 5;
       req.body = {
         title: "donjon kimbo",
-        date: new Date('2025-12-10'),
+        date: new Date("2025-12-10"),
         max_players: 6
       };
 
@@ -151,7 +130,7 @@ describe('eventController', () => {
       expect(res.json).toHaveBeenCalledWith(mockEvent);
     });
 
-    it('should call next() if event not found', async () => {
+    it("should call next() if event not found", async () => {
       req.params.id = 12;
       Event.findByPk.mockResolvedValue(null);
 
@@ -161,8 +140,8 @@ describe('eventController', () => {
     });
   });
 
-  describe('delete', () => {
-    it('should delete event if found', async () => {
+  describe("delete", () => {
+    it("should delete event if found", async () => {
       req.params.id = 7;
       const mockEvent = { id: 7 };
       Event.findByPk.mockResolvedValue(mockEvent);
@@ -174,7 +153,7 @@ describe('eventController', () => {
       expect(res.end).toHaveBeenCalled();
     });
 
-    it('should call next() if event not found', async () => {
+    it("should call next() if event not found", async () => {
       req.params.id = 88;
       Event.findByPk.mockResolvedValue(null);
 

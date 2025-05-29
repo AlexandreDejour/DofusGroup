@@ -1,16 +1,16 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from "vitest";
 
-import { Server } from '../../models/Server.js';
-import { serverController } from '../serverController.js';
+import { Server } from "../../models/Server.js";
+import { serverController } from "../serverController.js";
 
-vi.mock('../../models/Server.js', () => ({
+vi.mock("../../models/Server.js", () => ({
   Server: {
     findAll: vi.fn(),
     findByPk: vi.fn(),
   }
 }));
 
-describe('serverController', () => {
+describe("serverController", () => {
 
   let res; 
   let next;
@@ -24,9 +24,9 @@ describe('serverController', () => {
     vi.clearAllMocks();
   });
 
-  describe('getAll', () => {
-    it('should respond with all servers', async () => {
-      const mockServers = [{ id: 1, name: 'Oshimo' }, { id: 2, name: 'Ilyzaelle' }];
+  describe("getAll", () => {
+    it("should respond with all servers", async () => {
+      const mockServers = [{ id: 1, name: "Oshimo" }, { id: 2, name: "Ilyzaelle" }];
       Server.findAll.mockResolvedValue(mockServers);
 
       await serverController.getAll({}, res, next);
@@ -36,7 +36,7 @@ describe('serverController', () => {
       expect(next).not.toHaveBeenCalled();
     });
 
-    it('should call next() if no servers are found', async () => {
+    it("should call next() if no servers are found", async () => {
       Server.findAll.mockResolvedValue(null);
 
       await serverController.getAll({}, res, next);
@@ -47,9 +47,9 @@ describe('serverController', () => {
     });
   });
 
-  describe('getOne', () => {
-    it('should respond with one server if found', async () => {
-      const mockServer = { id: 1, name: 'Oshimo' };
+  describe("getOne", () => {
+    it("should respond with one server if found", async () => {
+      const mockServer = { id: 1, name: "Oshimo" };
       res.params.id = 1;
       Server.findByPk.mockResolvedValue(mockServer);
 
@@ -60,7 +60,7 @@ describe('serverController', () => {
       expect(next).not.toHaveBeenCalled();
     });
 
-    it('should call next() if server is not found', async () => {
+    it("should call next() if server is not found", async () => {
       res.params.id = 42;
       Server.findByPk.mockResolvedValue(null);
 

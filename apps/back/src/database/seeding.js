@@ -3,6 +3,19 @@ import { Breed } from "../models/Breed.js";
 import { Server } from "../models/Server.js";
 
 async function seeding() {
+    Tag.bulkCreate([
+        { name: "XP", color: "#3498db"},
+        { name: "Donjon", color: "#c0392b"},
+        { name: "Drop", color: "#16a085"},
+        { name: "Quête", color: "#9b59b6"},
+        { name: "AVA", color: "#f39c12"},
+        { name: "Percepteur", color: "#2c3e50"},
+        { name: "Kolizéum", color: "#f1c40f"},
+    ],
+    { 
+        ignoreDuplicates: true 
+    });
+
     Breed.bulkCreate([
         { name: "Cra" },
         { name: "Ecaflip" },
@@ -26,7 +39,7 @@ async function seeding() {
     ], 
     { 
         ignoreDuplicates: true 
-    })
+    });
 
     Server.bulkCreate([
         { name: "Dakal", mono_account: true },
@@ -45,20 +58,7 @@ async function seeding() {
     ],
     { 
         ignoreDuplicates: true 
-    })
-
-    Tag.bulkCreate([
-        { name: "XP", color: "#3498db"},
-        { name: "Donjon", color: "#c0392b"},
-        { name: "Drop", color: "#16a085"},
-        { name: "Quête", color: "#9b59b6"},
-        { name: "AVA", color: "#f39c12"},
-        { name: "Percepteur", color: "#2c3e50"},
-        { name: "Kolizéum", color: "#f1c40f"},
-    ],
-    { 
-        ignoreDuplicates: true 
-    })
+    });
 };
 
 export { seeding };

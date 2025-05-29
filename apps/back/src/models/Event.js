@@ -32,12 +32,12 @@ Event.init(
         donjon_name: {
             type: DataTypes.STRING
         },
-        description: {
-            type: DataTypes.STRING,           
-        },
         max_players: {
             type: DataTypes.INTEGER,
             allowNull: false
+        },
+        description: {
+            type: DataTypes.STRING,           
         },
         status: {
             type: DataTypes.STRING,

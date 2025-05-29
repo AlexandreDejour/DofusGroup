@@ -1,29 +1,6 @@
-import { where } from "sequelize";
 import { Event } from "../models/Event.js";
 
 const eventController = {
-    /**
-     * This method return all events with their tag and server.
-     * @param {Request} _req 
-     * @param {Response} res 
-     * @param {Function} next 
-     * @returns {Promise<void>}
-     */
-    async getAllWithTagAndServer(_req, res, next) {
-        const events =  await Event.findAll({
-            include: [
-                { association: "tag" },
-                { association: "server" }
-            ]
-        });
-
-        if(!events) {
-            return next();
-        };
-
-        res.json(events);
-    },
-
     /**
      * This method return all events with their tag, server and characters.
      * @param {Request} _req 
@@ -31,7 +8,7 @@ const eventController = {
      * @param {Function} next 
      * @returns {Promise<void>}
      */
-    async getAllWithTagServerAndCharacters(_req, res, next) {
+    async getAll(_req, res, next) {
         const events =  await Event.findAll({
             include: [
                 { association: "tag" },

@@ -29,6 +29,10 @@ Character.init(
         },
         stuff: {
             type: DataTypes.STRING,
+        },
+        default: {
+            type: DataTypes.BOOLEAN,
+            defaultValue: false
         }
     },
     {

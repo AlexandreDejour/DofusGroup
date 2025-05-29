@@ -50,21 +50,21 @@ const characterController = {
         const { id } = req.params;
         const { name, sex, level, alignment, stuff } = req.body;
 
-        const userToUpdate = await Character.findByPk(id);
+        const characterToUpdate = await Character.findByPk(id);
 
-        if(!userToUpdate) {
+        if(!characterToUpdate) {
             return next();
         };
 
-        const updatedUser = await Character.update({
-            name: name || userToUpdate.name,
-            sex: sex || userToUpdate.sex,
-            level: level || userToUpdate.level,
-            alignment: alignment || userToUpdate.alignment,
-            stuff: stuff || userToUpdate.stuff
+        const updatedCharacter = await Character.update({
+            name: name || characterToUpdate.name,
+            sex: sex || characterToUpdate.sex,
+            level: level || characterToUpdate.level,
+            alignment: alignment || characterToUpdate.alignment,
+            stuff: stuff || characterToUpdate.stuff
         });
 
-        res.json(userToUpdate);
+        res.json(updatedCharacter);
     },
 
     /**

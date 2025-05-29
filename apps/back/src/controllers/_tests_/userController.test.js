@@ -42,11 +42,12 @@ describe('userController', () => {
 
       expect(User.findByPk).toHaveBeenCalledWith(2, {
         include: [
-          { association: 'characters' },
-          { association: 'events' },
+          { association: "characters" },
+          { association: "events" }
         ]
       });
       expect(res.json).toHaveBeenCalledWith(mockUser);
+      expect(next).not.toHaveBeenCalled();
     });
 
     it('should call next() if user not found', async () => {

@@ -9,4 +9,6 @@ app.set("pg_url", process.env.PG_URL);
 
 app.use(express.json());
 
+app.use(express.urlencoded({ extended: false }));
+
 export { app };

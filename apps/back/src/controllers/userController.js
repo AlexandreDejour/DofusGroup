@@ -2,32 +2,13 @@ import { User } from "../models/User.js";
 
 const userController = {
     /**
-     * This method return server corresponding to id.
-     * @param {Request} _req 
-     * @param {Response} res 
-     * @param {Function} next 
-     * @returns {Promise<void>}
-     */
-    async getOne(_req, res, next) {
-        const { id } = res.params;
-
-        const user = await User.findByPk(id);
-
-        if(!user) {
-            return next();
-        };
-
-        res.json(user);
-    },
-
-    /**
      * This method return user with their characters and events.
      * @param {Request} _req 
      * @param {Response} res 
      * @param {Function} next 
      * @returns {Promise<void>}
      */
-    async getUserWithCharactersAndEvents(_req, res, next) {
+    async getOne(_req, res, next) {
         const { id } = res.params;
 
         const user = await User.findByPk(id, {

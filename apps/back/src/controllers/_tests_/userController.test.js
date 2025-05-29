@@ -32,30 +32,6 @@ describe('userController', () => {
     vi.clearAllMocks();
   });
 
-  describe('getOne', () => {
-    it('should respond with user if found', async () => {
-      const mockUser = { id: 1, username: 'Alex' };
-      res.params.id = 1;
-      User.findByPk.mockResolvedValue(mockUser);
-
-      await userController.getOne({}, res, next);
-
-      expect(User.findByPk).toHaveBeenCalledWith(1);
-      expect(res.json).toHaveBeenCalledWith(mockUser);
-      expect(next).not.toHaveBeenCalled();
-    });
-
-    it('should call next() if user is not found', async () => {
-      res.params.id = 99;
-      User.findByPk.mockResolvedValue(null);
-
-      await userController.getOne({}, res, next);
-
-      expect(User.findByPk).toHaveBeenCalledWith(99);
-      expect(next).toHaveBeenCalled();
-    });
-  });
-
   describe('getUserWithCharactersAndEvents', () => {
     it('should respond with user and relations if found', async () => {
       const mockUser = { id: 2, username: 'Lisa', characters: [], events: [] };

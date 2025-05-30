@@ -12,8 +12,24 @@ Event.init(
             autoIncrement: true,
             autoIncrementIdentity: true,
         },
+        user_id: {
+            type: DataTypes.INTEGER,
+            references: {
+                model: "User",
+                key: "id"
+            },
+            allowNull: false
+        },
         title: {
             type: DataTypes.STRING,
+            allowNull: false
+        },
+        tag_id: {
+            type: DataTypes.INTEGER,
+            references: {
+                model: "Tag",
+                key: "id"
+            },
             allowNull: false
         },
         date: {
@@ -42,6 +58,14 @@ Event.init(
         status: {
             type: DataTypes.STRING,
             defaultValue: "public"
+        },
+        server_id: {
+            type: DataTypes.INTEGER,
+            references: {
+                model: "Server",
+                key: "id"
+            },
+            allowNull: false
         }
     },
     {

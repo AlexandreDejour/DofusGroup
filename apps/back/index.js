@@ -20,6 +20,6 @@ try {
         console.info(`Listening on ${app.get("base_url")}:${app.get("port")} 🚀.`);
     });
 } catch (error) {
-    console.error("An error occured during initialization");
+    console.error(`An error occured during initialization. ${error.message}`);
 }
 

@@ -12,6 +12,14 @@ Character.init(
             autoIncrement: true,
             autoIncrementIdentity: true
         },
+        user_id: {
+            type: DataTypes.INTEGER,
+            references: {
+                model: "User",
+                key: "id"
+            },
+            allowNull: false
+        },
         name: {
             type: DataTypes.STRING,
             allowNull: false
@@ -24,8 +32,24 @@ Character.init(
             type: DataTypes.INTEGER,
             allowNull: false
         },
+        server_id: {
+            type: DataTypes.INTEGER,
+            references: {
+                model: "Server",
+                key: "id"
+            },
+            allowNull: false
+        },
         alignment: {
             type: DataTypes.STRING,
+        },
+        breed_id: {
+            type: DataTypes.INTEGER,
+            references: {
+                model: "Breed",
+                key: "id"
+            },
+            allowNull: false
         },
         stuff: {
             type: DataTypes.STRING,

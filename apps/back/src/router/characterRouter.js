@@ -1,14 +1,17 @@
 import { Router } from "express";
 const characterRouter = Router();
 
-import { characterController } from "../controllers/characterController.js";
-import { validateInt } from "../middlewares/validateInt.js";
+import { validateSchema } from "../joi/validateSchema.js";
+import { createSchema, updateSchema } from "../joi/user.js";
 
-characterRouter.post("/character", characterController.post);
+import { validateInt } from "../middlewares/validateInt.js";
+import { characterController } from "../controllers/characterController.js";
+
+characterRouter.post("/character", validateSchema(createSchema), characterController.post);
 
 characterRouter.route("/character/:id")
   .get(validateInt, characterController.getOne)
-  .patch(validateInt, characterController.update)
+  .patch(validateInt, validateSchema(updateSchema), characterController.update)
   .delete(validateInt, characterController.delete);
 
 export { characterRouter };

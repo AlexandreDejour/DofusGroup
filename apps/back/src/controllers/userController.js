@@ -12,6 +12,7 @@ const userController = {
         const { id } = res.params;
 
         const user = await User.findByPk(id, {
+            attributes: { exclude: ['password', 'mail'] },
             include: [
                 { association: "characters" },
                 { association: "events"}
@@ -32,8 +33,6 @@ const userController = {
      */
     async post(req, res) {
         const { username, password, mail, avatar } = req.body;
-
-        // todo: securise password and mail
 
         const newUser = await User.create({ 
             username: username,
@@ -62,14 +61,18 @@ const userController = {
             return next();
         };
 
-        const updatedUser = await User.update({
-            username: username || userToUpdate.username,
-            password: password || userToUpdate.password,
-            mail: mail || userToUpdate.mail,
-            avatar: avatar || userToUpdate.avatar
-        });
+        if (username !== undefined) userToUpdate.username = username;
+        if (password !== undefined) userToUpdate.password = password;
+        if (mail !== undefined) userToUpdate.mail = mail;
+        if (avatar !== undefined) userToUpdate.avatar = avatar;
 
-        res.json(updatedUser);
+        await userToUpdate.save();
+
+        const userData = userToUpdate.get({ plain: true });
+        delete userData.password;
+        delete userData.mail;
+
+        res.json(userData);
     },
 
     /**
@@ -87,7 +90,7 @@ const userController = {
             return next();
         };
 
-        await User.destroy();
+        await user.destroy();
 
         res.status(204).end();
     }

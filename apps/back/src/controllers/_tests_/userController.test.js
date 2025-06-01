@@ -1,14 +1,14 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-
 import { User } from "../../models/User.js";
 import { userController } from "../../controllers/userController.js";
+
+const mockSave = vi.fn();
+const mockDestroy = vi.fn();
 
 vi.mock("../../models/User.js", () => ({
   User: {
     findByPk: vi.fn(),
     create: vi.fn(),
-    update: vi.fn(),
-    destroy: vi.fn(),
   }
 }));
 
@@ -29,6 +29,8 @@ describe("userController", () => {
       body: {},
     };
     next = vi.fn();
+    mockSave.mockReset();
+    mockDestroy.mockReset();
     vi.clearAllMocks();
   });
 
@@ -41,6 +43,7 @@ describe("userController", () => {
       await userController.getOne({}, res, next);
 
       expect(User.findByPk).toHaveBeenCalledWith(2, {
+        attributes: { exclude: ["password", "mail"] },
         include: [
           { association: "characters" },
           { association: "events" }
@@ -62,28 +65,28 @@ describe("userController", () => {
 
   describe("post", () => {
     it("should create and return a new user", async () => {
-        const inputData = {
-            username: "Newbie",
-            password: "secure",
-            mail: "test@mail.com",
-            avatar: "url"
-        };
+      const inputData = {
+        username: "Newbie",
+        password: "secure",
+        mail: "test@mail.com",
+        avatar: "url"
+      };
 
-        const mockCreatedUser = {
-            id: 3,
-            ...inputData
-        };
+      const mockCreatedUser = {
+        id: 3,
+        ...inputData
+      };
 
-        req.body = inputData;
-        User.create.mockResolvedValue(mockCreatedUser);
+      req.body = inputData;
+      User.create.mockResolvedValue(mockCreatedUser);
 
-        await userController.post(req, res);
+      await userController.post(req, res);
 
-        expect(User.create).toHaveBeenCalledWith(inputData); // ✅ appel avec body
-        expect(res.status).toHaveBeenCalledWith(201);
-        expect(res.json).toHaveBeenCalledWith(mockCreatedUser); // ✅ retour complet avec id
-        });
+      expect(User.create).toHaveBeenCalledWith(inputData);
+      expect(res.status).toHaveBeenCalledWith(201);
+      expect(res.json).toHaveBeenCalledWith(mockCreatedUser);
     });
+  });
 
   describe("update", () => {
     it("should update and return the updated user", async () => {
@@ -94,14 +97,38 @@ describe("userController", () => {
         mail: "new@mail.com",
         avatar: "newavatar"
       };
-      const mockUser = { id: 5, ...req.body };
+      // mock user instance returned by findByPk
+      const mockUser = {
+        id: 5,
+        username: "OldUser",
+        password: "oldpass",
+        mail: "old@mail.com",
+        avatar: "oldavatar",
+        save: mockSave.mockResolvedValue(),
+        get: vi.fn().mockReturnValue({
+          id: 5,
+          username: "UpdatedUser",
+          mail: "new@mail.com",
+          avatar: "newavatar"
+          // password and mail will be deleted later in controller
+        })
+      };
+
       User.findByPk.mockResolvedValue(mockUser);
-      User.update.mockResolvedValue(mockUser);
 
       await userController.update(req, res, next);
 
-      expect(User.update).toHaveBeenCalled();
-      expect(res.json).toHaveBeenCalledWith(mockUser);
+      expect(User.findByPk).toHaveBeenCalledWith(5);
+      expect(mockSave).toHaveBeenCalled();
+
+      // The response json should not contain password or mail
+      expect(res.json).toHaveBeenCalledWith(expect.objectContaining({
+        id: 5,
+        username: "UpdatedUser",
+        avatar: "newavatar"
+      }));
+
+      expect(next).not.toHaveBeenCalled();
     });
 
     it("should call next() if user not found", async () => {
@@ -117,12 +144,16 @@ describe("userController", () => {
   describe("delete", () => {
     it("should delete user if found", async () => {
       req.params.id = 7;
-      const mockUser = { id: 7 };
+      const mockUser = {
+        id: 7,
+        destroy: mockDestroy.mockResolvedValue()
+      };
       User.findByPk.mockResolvedValue(mockUser);
 
       await userController.delete(req, res, next);
 
-      expect(User.destroy).toHaveBeenCalled();
+      expect(User.findByPk).toHaveBeenCalledWith(7);
+      expect(mockDestroy).toHaveBeenCalled();
       expect(res.status).toHaveBeenCalledWith(204);
       expect(res.end).toHaveBeenCalled();
     });

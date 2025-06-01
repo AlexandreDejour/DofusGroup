@@ -97,7 +97,6 @@ describe("userController", () => {
         mail: "new@mail.com",
         avatar: "newavatar"
       };
-      // mock user instance returned by findByPk
       const mockUser = {
         id: 5,
         username: "OldUser",
@@ -110,7 +109,6 @@ describe("userController", () => {
           username: "UpdatedUser",
           mail: "new@mail.com",
           avatar: "newavatar"
-          // password and mail will be deleted later in controller
         })
       };
 
@@ -121,7 +119,6 @@ describe("userController", () => {
       expect(User.findByPk).toHaveBeenCalledWith(5);
       expect(mockSave).toHaveBeenCalled();
 
-      // The response json should not contain password or mail
       expect(res.json).toHaveBeenCalledWith(expect.objectContaining({
         id: 5,
         username: "UpdatedUser",

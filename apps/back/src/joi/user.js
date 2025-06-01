@@ -11,17 +11,17 @@ const createSchema = Joi.object({
         .pattern(passwordRegex)
         .required()
         .messages({
-            "password.string": "Password must be a string.",
-            "password.pattern": "Invalid password. Doesn't respect minimum rules.",
-            "password.required": "Password can't be empty."
+            "string.base": "Password must be a string.",
+            "string.pattern.base": "Invalid password. Doesn't respect minimum rules.",
+            "any.required": "Password can't be empty."
          }),
     confirm_password: Joi.string()
         .valid(Joi.ref('password'))
         .required()
         .messages({
-            "password.string": "Password must be a string.",
-            "password.valid": "Passwords don't match",
-            "password.required": "Confirm password can't be empty."
+            "string.base": "Password must be a string.",
+            "any.only": "Passwords don't match",
+            "any.required": "Confirm password can't be empty."
          }),
     mail: Joi.string()
         .email()
@@ -48,13 +48,19 @@ const updateSchema = Joi.object({
         .valid(Joi.ref('password'))
         .messages({
             "string.base": "Password must be a string.",
-            "any.only": "Passwords don't match.",
-            "any.required": "Confirm password can't be empty."
+            "any.only": "Passwords don't match."
          }),
     mail: Joi.string()
         .email(),
     avatar: Joi.string()
         .uri()
-}).with("password", "confirm_password");
+}).custom((value, helpers) => {
+    if (value.password && !value.confirm_password) {
+        return helpers.error("any.custom", { message: "Confirm password is required when password is provided." });
+    }
+    return value;
+    }).messages({
+    "any.custom": "{{#message}}"
+    });
 
 export { createSchema, updateSchema };

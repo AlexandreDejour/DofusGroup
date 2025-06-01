@@ -3,7 +3,7 @@ function validateSchema(schema) {
         const data = req.body;
 
         try {
-            await schema.validateAsync(data);
+            await schema.validateAsync(data, { abortEarly: false });
 
             next();
 

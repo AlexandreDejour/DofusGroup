@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
 import argon2 from "argon2";
+
 import { hashPassword } from "../hashPassword.js";
 
 vi.mock("argon2");
@@ -34,7 +35,7 @@ describe("hashPassword middleware", () => {
 
     expect(argon2.hash).not.toHaveBeenCalled();
     expect(next).toHaveBeenCalledTimes(1);
-    expect(next).toHaveBeenCalledWith(); // no error
+    expect(next).toHaveBeenCalledWith();
   });
 
   it("should call next with error if hashing fails", async () => {

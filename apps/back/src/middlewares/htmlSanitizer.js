@@ -1,5 +1,11 @@
 import sanitizeHtml from 'sanitize-html';
 
+/**
+ * This function clear html chars in req.body to increase security.
+ * @param {Request} req 
+ * @param {Response} _res 
+ * @param {Function} next 
+ */
 function htmlSanitizer(req, _res, next) {
     try {
         Object.keys(req.body).forEach(key => {

@@ -1,3 +1,9 @@
+/**
+ * This function controls if req.body coresponding to define schema.
+ * Increase security and datas's quality insert in database.
+ * @param {Object} schema 
+ * @returns 
+ */
 function validateSchema(schema) {
     return async (req, res, next) => {
         const data = req.body;

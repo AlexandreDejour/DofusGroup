@@ -6,7 +6,11 @@ const algorithm = process.env.CRYPTO_ALGORITHM;
 const key = Buffer.from(process.env.CRYPTO_KEY, 'hex'); // 32 bytes secret key (256 bits)
 const ivLength = 12; // Standard length IV pour GCM
 
-// Function to encrypt a clear text
+/**
+ * This function encrypt text, apply on user's datas where needed to inscrease security.
+ * @param {String} text 
+ * @returns 
+ */
 function encrypt(text) {
   const iv = crypto.randomBytes(ivLength); // Unique init vector
   const cipher = crypto.createCipheriv(algorithm, key, iv);
@@ -19,7 +23,11 @@ function encrypt(text) {
   return iv.toString("hex") + ":" + authTag + ":" + encrypted;
 }
 
-// Function to decrypt encryptedText
+/**
+ * This function decrypt encrypted datas, applied on user's datas when needed.
+ * @param {String} text 
+ * @returns 
+ */
 function decrypt(encryptedText) {
   const parts = encryptedText.split(":");
   const iv = Buffer.from(parts[0], "hex");

@@ -1,12 +1,9 @@
 import "dotenv/config";
 
 import { app } from "./src/app/app.js";
-import { router } from "./src/router/index.js";
 import { notFound, errorHandler } from "./src/middlewares/errorHandler.js";
 
 try {
-    app.use(router);
-
     app.use(notFound);
     app.use(errorHandler);
     

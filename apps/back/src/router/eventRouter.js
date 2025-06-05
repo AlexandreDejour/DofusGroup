@@ -2,7 +2,7 @@ import { Router } from "express";
 const eventRouter = Router();
 
 import { validateSchema } from "../joi/validateSchema.js";
-import { createSchema, updateSchema } from "../joi/character.js";
+import { createSchema, updateSchema } from "../joi/event.js";
 
 import { validateInt } from "../middlewares/validateInt.js";
 import { htmlSanitizer } from "../middlewares/htmlSanitizer.js";

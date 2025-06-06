@@ -7,9 +7,10 @@ function notFound(_req, _res, next) {
 };
 
 function errorHandler(error, _req, res, _next) {
-    const statusCode = error.statusCode || 500;
+    console.log("errorHandler called:", error.message)
+    const statusCode = error.status || 500;
 
-    res.status(statusCode).json({ message: error.message });
+    res.status(statusCode).json({ error: true, message: error.message });
 };
 
 export { notFound, errorHandler };

@@ -2,6 +2,7 @@ import "dotenv/config"
 import express from "express";
 
 import { router } from "../router/index.js";
+import { errorHandler, notFound } from "../middlewares/errorHandler.js";
 
 const app = express();
 
@@ -14,5 +15,8 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
 app.use(router);
+
+app.use(notFound);
+app.use(errorHandler);
 
 export { app };

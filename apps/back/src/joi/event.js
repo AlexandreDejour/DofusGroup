@@ -11,6 +11,7 @@ const createSchema = Joi.object({
     tag_id: Joi.number()
         .integer()
         .min(0)
+        .max(6)
         .required()
         .messages({ "server.any": "Tag is required."}),
     date: Joi.date()
@@ -55,6 +56,7 @@ const createSchema = Joi.object({
     server_id: Joi.number()
         .integer()
         .min(0)
+        .max(12)
         .required()
         .messages({ "server.number": "Server is required."})
 });

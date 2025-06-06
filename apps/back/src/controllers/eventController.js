@@ -100,7 +100,9 @@ const eventController = {
         const eventToUpdate = await Event.findByPk(id);
 
         if(!eventToUpdate) {
-            return next();
+            const error = new Error("Event not found");
+            error.status = 404;
+            return next(error);
         };
 
         const updatedEvent = await Event.update({
@@ -115,7 +117,7 @@ const eventController = {
             status: status || eventToUpdate.status
         });
 
-        res.json(updatedEvent);
+        res.status(200).json(updatedEvent);
     },
 
     /**

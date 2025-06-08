@@ -46,7 +46,7 @@ describe("GET /server/:id", () => {
             name: "Rafal"
         };
     
-    it("Should return breed corresponding to id and 200", async () => {
+    it("Should return server corresponding to id and 200", async () => {
         // Prepare the fake model response
         Server.findByPk.mockResolvedValue(validServer);
 

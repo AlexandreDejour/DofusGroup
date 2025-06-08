@@ -8,8 +8,8 @@ const characterController = {
      * @param {Function} next 
      * @returns {Promise<void>}
      */
-    async getOne(_req, res, next) {
-        const { id } = res.params;
+    async getOne(req, res, next) {
+        const { id } = req.params;
 
         const character = await Character.findByPk(id);
 
@@ -26,14 +26,28 @@ const characterController = {
      * @param {Response} res 
      */
     async post(req, res) {
-        const { name, sex, level, alignment, stuff } = req.body;
+        const { 
+            user_id,
+            name,
+            sex,
+            level,
+            server_id,
+            alignment,
+            breed_id,
+            stuff,
+            default_character 
+        } = req.body;
 
         const newCharacter = await Character.create({ 
+            user_id: user_id,
             name: name,
             sex: sex,
             level: level,
+            server_id: server_id,
             alignment: alignment,
-            stuff: stuff
+            breed_id: breed_id,
+            stuff: stuff,
+            default_character: default_character
         });
 
         res.status(201).json(newCharacter);
@@ -48,7 +62,17 @@ const characterController = {
      */
     async update(req, res, next) {
         const { id } = req.params;
-        const { name, sex, level, alignment, stuff } = req.body;
+        const { 
+            user_id,
+            name,
+            sex,
+            level,
+            server_id,
+            alignment,
+            breed_id,
+            stuff,
+            default_character 
+        } = req.body;
 
         const characterToUpdate = await Character.findByPk(id);
 
@@ -57,11 +81,15 @@ const characterController = {
         };
 
         const updatedCharacter = await Character.update({
+            user_id: user_id || characterToUpdate.user_id,
             name: name || characterToUpdate.name,
             sex: sex || characterToUpdate.sex,
             level: level || characterToUpdate.level,
+            server_id: server_id || characterToUpdate.server_id,
             alignment: alignment || characterToUpdate.alignment,
-            stuff: stuff || characterToUpdate.stuff
+            breed_id: breed_id || characterToUpdate.breed_id,
+            stuff: stuff || characterToUpdate.stuff,
+            default_character: default_character || characterToUpdate.default_character
         });
 
         res.json(updatedCharacter);
@@ -82,7 +110,7 @@ const characterController = {
             return next();
         };
 
-        await Character.destroy();
+        await Character.destroy({ where: { id : id }});
 
         res.status(204).end();
     }

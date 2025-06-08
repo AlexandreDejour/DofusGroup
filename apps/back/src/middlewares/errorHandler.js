@@ -9,6 +9,8 @@ function notFound(_req, _res, next) {
 function errorHandler(error, _req, res, _next) {
     const statusCode = error.statusCode || error.status || 500;
 
+    console.error(error);
+    
     res.status(statusCode).json({ error: true, message: error.message });
 };
 

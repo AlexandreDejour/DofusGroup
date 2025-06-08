@@ -14,6 +14,7 @@ function validateSchema(schema) {
             next();
 
         } catch (error) {
+            console.error(error);
             res.status(400).json({
                 error: true,
                 message: error.message,

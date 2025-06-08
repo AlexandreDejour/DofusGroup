@@ -1,4 +1,4 @@
-import Joi from "joi";
+import Joi, { allow } from "joi";
 
 const createSchema = Joi.object({
     user_id: Joi.number()
@@ -6,7 +6,6 @@ const createSchema = Joi.object({
         .min(0)
         .required(),
     name: Joi.string()
-        .alphanum()
         .required()
         .messages({ "name.required": "Name can't be empty."}),
     sex: Joi.string()
@@ -35,7 +34,7 @@ const createSchema = Joi.object({
     alignment: Joi.string()
         .valid("Brakmar", "Bonta")
         .messages({
-            "alignment.string": "Stuff must be a string.",
+            "alignment.string": "alignment must be a string.",
             "alignment.valid": "Only accept Brakmar or Bonta."
         }),
     breed_id: Joi.number()
@@ -45,11 +44,12 @@ const createSchema = Joi.object({
         .messages({ "breed.any": "Breed is required."}),
     stuff: Joi.string()
         .uri()
+        .allow(null, "")
         .messages({
             "stuff.string": "Stuff must be a string.",
             "stuff.uri": "Only accept DofusBook URL."
         }),
-    default: Joi.boolean(),
+    default_character: Joi.boolean(),
 });
 
 const updateSchema = Joi.object({
@@ -91,7 +91,7 @@ const updateSchema = Joi.object({
             "stuff.string": "Stuff must be a string.",
             "stuff.uri": "Only accept DofusBook URL."
         }),
-    default: Joi.boolean(),
+    default_character: Joi.boolean(),
 });
 
 export { createSchema, updateSchema };

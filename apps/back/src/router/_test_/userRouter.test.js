@@ -5,7 +5,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { app } from "../../app/app.js";
 import { User } from "../../models/User.js";
 
-// Mock Event
+// Mock User
 vi.mock("../../models/User.js", () => ({
   User: {
     findAll: vi.fn(),

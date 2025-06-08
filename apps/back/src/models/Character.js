@@ -54,7 +54,7 @@ Character.init(
         stuff: {
             type: DataTypes.STRING,
         },
-        default: {
+        default_character: {
             type: DataTypes.BOOLEAN,
             defaultValue: false
         }

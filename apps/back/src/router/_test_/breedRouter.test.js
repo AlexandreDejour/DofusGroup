@@ -57,7 +57,7 @@ describe("GET /breed/:id", () => {
         expect(response.body).toEqual(validBreed);
     });
 
-    it("Should call next() id breed not found", async () => {
+    it("Should call next() if breed not found", async () => {
         Breed.findByPk.mockResolvedValue(null);
 
         const response = await request(app)

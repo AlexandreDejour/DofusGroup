@@ -20,13 +20,13 @@ const serverController = {
 
     /**
      * This method return server corresponding to id.
-     * @param {Request} _req 
+     * @param {Request} req 
      * @param {Response} res 
      * @param {Function} next 
      * @returns {Promise<void>}
      */
-    async getOne(_res, res, next) {
-        const { id } = res.params;
+    async getOne(req, res, next) {
+        const { id } = req.params;
 
         const server = await Server.findByPk(id);
 

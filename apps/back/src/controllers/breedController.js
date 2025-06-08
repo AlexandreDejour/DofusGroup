@@ -20,7 +20,7 @@ const breedController = {
 
     /**
      * This method return breed corresponding to id.
-     * @param {Request} _req 
+     * @param {Request} req 
      * @param {Response} res 
      * @param {Function} next 
      * @returns {Promise<void>}

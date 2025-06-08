@@ -87,6 +87,7 @@ const eventController = {
         const { id } = req.params;
         const {
             title,
+            tag_id,
             date,
             duration,
             area,
@@ -94,7 +95,8 @@ const eventController = {
             donjon_name,
             max_players,
             description,
-            status
+            status,
+            server_id
         } = req.body;
 
         const eventToUpdate = await Event.findByPk(id);
@@ -103,8 +105,9 @@ const eventController = {
             return next();
         };
 
-        const updatedEvent = await Event.update({
+        const updatedEvent = await eventToUpdate.update({
             title: title || eventToUpdate.title,
+            tag_id: tag_id || eventToUpdate.tag_id,
             date: date || eventToUpdate.date,
             duration: duration || eventToUpdate.duration,
             area: area || eventToUpdate.area,
@@ -112,7 +115,8 @@ const eventController = {
             donjon_name: donjon_name || eventToUpdate.donjon_name,
             max_players: max_players || eventToUpdate.max_players,
             description: description || eventToUpdate.description,
-            status: status || eventToUpdate.status
+            status: status || eventToUpdate.status,
+            server_id: server_id || eventToUpdate.server_id
         });
 
         res.json(updatedEvent);

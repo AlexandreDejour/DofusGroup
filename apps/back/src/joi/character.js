@@ -1,4 +1,4 @@
-import Joi, { allow } from "joi";
+import Joi from "joi";
 
 const createSchema = Joi.object({
     user_id: Joi.number()
@@ -44,7 +44,6 @@ const createSchema = Joi.object({
         .messages({ "breed.any": "Breed is required."}),
     stuff: Joi.string()
         .uri()
-        .allow(null, "")
         .messages({
             "stuff.string": "Stuff must be a string.",
             "stuff.uri": "Only accept DofusBook URL."

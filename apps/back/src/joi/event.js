@@ -32,9 +32,9 @@ const createSchema = Joi.object({
     area: Joi.string()
         .messages({ "area.string": "Stuff must be a string." }),
     subarea: Joi.string()
-        .messages({ "area.string": "Sub_area must be a string." }),
+        .messages({ "subarea.string": "Sub_area must be a string." }),
     donjon_name: Joi.string()
-        .messages({ "area.string": "Donjon must be a string." }),
+        .messages({ "donjon_name.string": "Donjon must be a string." }),
     max_players: Joi.number()
         .integer()
         .min(2)
@@ -89,7 +89,7 @@ const updateSchema = Joi.object({
         .messages({ "area.string": "Stuff must be a string." }),
     sub_area: Joi.string()
         .messages({ "area.string": "Sub_area must be a string." }),
-    donjon: Joi.string()
+    donjon_name: Joi.string()
         .messages({ "area.string": "Donjon must be a string." }),
     max_players: Joi.number()
         .integer()

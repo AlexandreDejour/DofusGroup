@@ -9,6 +9,7 @@ vi.mock("../../models/User.js", () => ({
   User: {
     findByPk: vi.fn(),
     create: vi.fn(),
+    update: vi.fn()
   }
 }));
 
@@ -37,10 +38,10 @@ describe("userController", () => {
   describe("getOne", () => {
     it("should respond with user and relations if found", async () => {
       const mockUser = { id: 2, username: "Lisa", characters: [], events: [] };
-      res.params.id = 2;
+      const req = { params: { id: 2 } };
       User.findByPk.mockResolvedValue(mockUser);
 
-      await userController.getOne({}, res, next);
+      await userController.getOne(req, res, next);
 
       expect(User.findByPk).toHaveBeenCalledWith(2, {
         attributes: { exclude: ["password", "mail"] },
@@ -54,10 +55,10 @@ describe("userController", () => {
     });
 
     it("should call next() if user not found", async () => {
-      res.params.id = 404;
+      const req = { params: { id: 404 } };
       User.findByPk.mockResolvedValue(null);
 
-      await userController.getOne({}, res, next);
+      await userController.getOne(req, res, next);
 
       expect(next).toHaveBeenCalled();
     });
@@ -97,18 +98,20 @@ describe("userController", () => {
         mail: "new@mail.com",
         avatar: "newavatar"
       };
+
       const mockUser = {
         id: 5,
         username: "OldUser",
         password: "oldpass",
         mail: "old@mail.com",
         avatar: "oldavatar",
-        save: mockSave.mockResolvedValue(),
-        get: vi.fn().mockReturnValue({
-          id: 5,
-          username: "UpdatedUser",
-          mail: "new@mail.com",
-          avatar: "newavatar"
+        update: vi.fn().mockResolvedValue({
+          toJSON: () => ({
+            id: 5,
+            username: "UpdatedUser",
+            avatar: "newavatar"
+            // password et mail sont intentionnellement absents pour la sécurité
+          })
         })
       };
 
@@ -117,8 +120,12 @@ describe("userController", () => {
       await userController.update(req, res, next);
 
       expect(User.findByPk).toHaveBeenCalledWith(5);
-      expect(mockSave).toHaveBeenCalled();
-
+      expect(mockUser.update).toHaveBeenCalledWith({
+        username: "UpdatedUser",
+        password: "newpass",
+        mail: "new@mail.com",
+        avatar: "newavatar"
+      });
       expect(res.json).toHaveBeenCalledWith(expect.objectContaining({
         id: 5,
         username: "UpdatedUser",

@@ -120,14 +120,36 @@ describe("eventController", () => {
         max_players: 6
       };
 
-      const mockEvent = { id: 5, ...req.body };
+      const mockEvent = {
+        id: 5,
+        title: "donjon kimbo",
+        date: new Date("2025-12-10"),
+        max_players: 6,
+        update: vi.fn().mockResolvedValue({
+          id: 5,
+          title: "donjon kimbo",
+          date: new Date("2025-12-10"),
+          max_players: 6
+        })
+      };
+
       Event.findByPk.mockResolvedValue(mockEvent);
-      Event.update.mockResolvedValue(mockEvent);
 
       await eventController.update(req, res, next);
 
-      expect(Event.update).toHaveBeenCalled();
-      expect(res.json).toHaveBeenCalledWith(mockEvent);
+      expect(Event.findByPk).toHaveBeenCalledWith(5);
+      expect(mockEvent.update).toHaveBeenCalledWith({
+        title: "donjon kimbo",
+        date: new Date("2025-12-10"),
+        max_players: 6
+      });
+      expect(res.json).toHaveBeenCalledWith({
+        id: 5,
+        title: "donjon kimbo",
+        date: new Date("2025-12-10"),
+        max_players: 6
+      });
+      expect(next).not.toHaveBeenCalled();
     });
 
     it("should call next() if event not found", async () => {

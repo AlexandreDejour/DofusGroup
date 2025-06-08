@@ -164,9 +164,25 @@ describe("POST /event", () => {
 describe("PATCH /event/:id", () => {
 
   it("Should update an event and return 200", async () => {
-      Event.findByPk = vi.fn().mockResolvedValue({
+    const mockUpdate = vi.fn().mockResolvedValue({
+        id: 1,
+        title: "Donjon blop multicolor",
+        tag_id: 2,
+        date: "2025-06-30",
+        duration: 3,
+        area: "Cania",
+        subarea: "Lac de Cania",
+        donjon_name: "Clos des blop",
+        max_players: 5,
+        description: "EpicBattle123",
+        status: "public",
+        server_id: 3
+    })
+
+    Event.findByPk = vi.fn().mockResolvedValue({
         id: 1,
         title: "Donjon blop",
+        tag_id: 2,
         date: "2025-06-30",
         duration: 2,
         area: "Cania",
@@ -174,17 +190,23 @@ describe("PATCH /event/:id", () => {
         donjon_name: "Donjon blop",
         max_players: 5,
         description: "EpicBattle123",
-        status: "public"
-      });
+        status: "public",
+        server_id: 3,
+        update: mockUpdate
+    });
 
-    Event.update = vi.fn().mockResolvedValue([1]);
-
-    const updatedData = { title: "Donjon blop multicolor", duration: 3 };
+    const updatedData = { title: "Donjon blop multicolor", duration: 3, donjon_name: "Clos des blop" };
 
     const response = await request(app)
       .patch("/event/1")
       .send(updatedData)
       .expect(200);
+    
+    expect(mockUpdate).toHaveBeenCalledWith(expect.objectContaining({
+      title: "Donjon blop multicolor",
+      duration: 3,
+      donjon_name: "Clos des blop",
+    }));
   });
 
   it("Should return 400 when update data is invalid", async () => {
@@ -215,7 +237,7 @@ describe("PATCH /event/:id", () => {
 
     expect(response.body).toEqual({
       error: true,
-      message: "Event not found"
+      message: "Not found"
     });
   });
 });

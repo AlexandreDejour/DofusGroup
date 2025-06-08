@@ -12,9 +12,7 @@ vi.mock("../../models/Character.js", () => ({
     findByPk: vi.fn(),
     create: vi.fn(),
     update: vi.fn(),
-    destroy: vi.fn(),
-    update: vi.fn(),
-    get: vi.fn(),
+    destroy: vi.fn()
   }
 }));
 
@@ -102,19 +100,32 @@ describe("GET /character/:id", () => {
 
 describe("PATCH /character/:id", () => {
   it("Should update character and return 200", async () => {
-    Character.findByPk = vi.fn().mockResolvedValue({
-        id: 1,
-        name: "seiya",
-        sex: "male",
-        level: 199,
-        server_id: 2,
-        alignment: "Brakmar",
-        breed_id: 1,
-        stuff: "http://string.com",
-        default_character: false
-    })
+    const mockUpdate = vi.fn().mockResolvedValue({
+      id: 1,
+      user_id: 50,
+      name: "Ken",
+      sex: "male",
+      level: 199,
+      server_id: 2,
+      alignment: "Brakmar",
+      breed_id: 1,
+      stuff: "http://string.com",
+      default_character: false
+    });
 
-    Character.update = vi.fn().mockResolvedValue([1]);
+    Character.findByPk = vi.fn().mockResolvedValue({
+      id: 1,
+      user_id: 50,
+      name: "seiya",
+      sex: "male",
+      level: 199,
+      server_id: 2,
+      alignment: "Brakmar",
+      breed_id: 1,
+      stuff: "http://string.com",
+      default_character: false,
+      update: mockUpdate
+    });
 
     const updatedData = { name: "Ken" };
 
@@ -122,7 +133,13 @@ describe("PATCH /character/:id", () => {
       .patch("/character/1")
       .send(updatedData)
       .expect(200);
-  });
+
+    expect(mockUpdate).toHaveBeenCalledWith(expect.objectContaining({
+      name: "Ken",
+    }));
+
+    expect(response.body.name).toBe("Ken");
+    });
 
   it("Should return 400 when update data is invalid", async () => {
     const invalidData = {

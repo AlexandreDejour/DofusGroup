@@ -1,4 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
+
 import { validateSchema } from "../validateSchema.js";
 import { createSchema, updateSchema } from "../character.js";
 
@@ -23,14 +24,14 @@ describe('validateSchema - character schema unit tests', () => {
   it('should call next() with valid createSchema data', async () => {
     req.body = {
       user_id: 1,
-      name: 'Warrior123',
+      name: 'Warrior',
       sex: 'male',
       level: 100,
       server_id: 2,
       alignment: 'Brakmar',
       breed_id: 5,
       stuff: 'https://dofusbook.net/stuff/123',
-      default: true,
+      default_character: true,
     };
 
     const middleware = validateSchema(createSchema);

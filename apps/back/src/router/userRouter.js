@@ -20,7 +20,13 @@ userRouter.post("/user",
 
 userRouter.route("/user/:id")
   .get(validateInt, userController.getOne)
-  .patch(validateInt, htmlSanitizer, validateSchema(updateSchema), hashPassword, encryptMail, userController.update)
+  .patch(validateInt,
+      htmlSanitizer,
+      validateSchema(updateSchema),
+      hashPassword,
+      encryptMail,
+      userController.update
+  )
   .delete(validateInt, userController.delete);
 
 export { userRouter };

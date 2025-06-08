@@ -35,20 +35,20 @@ describe("characterController", () => {
   describe("getOne", () => {
     it("should respond with one user if found", async () => {
       const mockCharacter = { id: 2, name: "grumpy", sex: "female", level: 190, alignment: "bontarien" };
-      res.params.id = 2;
+      const req = { params: { id: 2 } };
       Character.findByPk.mockResolvedValue(mockCharacter);
 
-      await characterController.getOne({}, res, next);
+      await characterController.getOne(req, res, next);
 
       expect(Character.findByPk).toHaveBeenCalledWith(2);
       expect(res.json).toHaveBeenCalledWith(mockCharacter);
     });
 
     it("should call next() if user not found", async () => {
-      res.params.id = 404;
+      const req = { params: { id: 404 } };
       Character.findByPk.mockResolvedValue(null);
 
-      await characterController.getOne({}, res, next);
+      await characterController.getOne(req, res, next);
 
       expect(next).toHaveBeenCalled();
     });
@@ -80,24 +80,47 @@ describe("characterController", () => {
     });
 
   describe("update", () => {
-    it("should update and return the updated user", async () => {
+    it("should update and return the updated character", async () => {
       req.params.id = 5;
       req.body = {
         name: "chronos-trigger",
         sex: "male",
         level: 190,
       };
-      const mockCharacter = { id: 5, ...req.body };
+
+      const mockCharacter = {
+        id: 5,
+        name: "old-name",
+        sex: "female",
+        level: 180,
+        update: vi.fn().mockResolvedValue({
+          id: 5,
+          name: "chronos-trigger",
+          sex: "male",
+          level: 190
+        }),
+      };
+
       Character.findByPk.mockResolvedValue(mockCharacter);
-      Character.update.mockResolvedValue(mockCharacter);
 
       await characterController.update(req, res, next);
 
-      expect(Character.update).toHaveBeenCalled();
-      expect(res.json).toHaveBeenCalledWith(mockCharacter);
+      expect(Character.findByPk).toHaveBeenCalledWith(5);
+      expect(mockCharacter.update).toHaveBeenCalledWith({
+        name: "chronos-trigger",
+        sex: "male",
+        level: 190
+      });
+      expect(res.json).toHaveBeenCalledWith({
+        id: 5,
+        name: "chronos-trigger",
+        sex: "male",
+        level: 190
+      });
+      expect(next).not.toHaveBeenCalled();
     });
 
-    it("should call next() if user not found", async () => {
+    it("should call next() if character not found", async () => {
       req.params.id = 12;
       Character.findByPk.mockResolvedValue(null);
 
@@ -105,6 +128,7 @@ describe("characterController", () => {
 
       expect(next).toHaveBeenCalled();
     });
+
   });
 
   describe("delete", () => {

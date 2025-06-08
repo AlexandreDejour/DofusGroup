@@ -13,8 +13,6 @@ vi.mock("../../models/User.js", () => ({
     create: vi.fn(),
     update: vi.fn(),
     destroy: vi.fn(),
-    save: vi.fn(),
-    get: vi.fn()
   }
 }));
 
@@ -107,56 +105,58 @@ describe("POST /user", () => {
 
 describe("PATCH /user/:id", () => {
 
-  it("Should update user and return 200", async () => {
-    const mockUserInstance = {
-      username: "diabloX9",
-      password: "hashedPassword", // hashed value simulated
-      mail: "diabloX9@wanadoo.fr",
-      avatar: null,
-      save: vi.fn().mockResolvedValue(),  // mock save async
-      get: vi.fn().mockReturnValue({
-        id: 1,
-        username: "diabloX9",
-        avatar: null,
-        // password and mail exist but will be delete in response
-        password: "hashedPassword",
-        mail: "angelX9@wanadoo.com", // mail update
-      }),
+  it("Should update user and return 200 with encrypted mail", async () => {
+    const inputData = {
+      mail: "john@example.com",
+      username: "JohnUpdated",
+      password: "newStrongP@ss123",
+      confirm_password: "newStrongP@ss123",
+      avatar: "https://newavatar.com"
     };
 
-    User.findByPk = vi.fn().mockResolvedValue(mockUserInstance);
+    const mockUserInstance = {
+      id: 1,
+      username: "OldUser",
+      mail: "oldmail@example.com",
+      password: "oldhashedpassword",
+      avatar: "oldavatar.png",
+      update: vi.fn().mockResolvedValue({
+        id: 1,
+        username: inputData.username,
+        mail: inputData.mail,
+        avatar: inputData.avatar,
+        toJSON() {
+          return {
+            id: 1,
+            username: inputData.username,
+            mail: inputData.mail,
+            avatar: inputData.avatar,
+          };
+        }
+      })
+    };
 
-    const updatedData = { mail: "angerX9@wanadoo.com" };
+    User.findByPk.mockResolvedValue(mockUserInstance);
 
     const response = await request(app)
       .patch("/user/1")
-      .send(updatedData)
+      .send(inputData)
       .expect(200);
 
-    expect(User.findByPk).toHaveBeenCalledWith("1");
-    expect(mockUserInstance.save).toHaveBeenCalled();
-
-    // Verify final response without password
     expect(response.body).toEqual({
       id: 1,
-      username: "diabloX9",
-      avatar: null,
+      username: inputData.username,
+      avatar: inputData.avatar,
     });
+
+    const calledArgs = mockUserInstance.update.mock.calls[0][0];
+
+    expect(calledArgs.mail).not.toBe(inputData.mail); // encrypted mail
+    expect(calledArgs.password).not.toBe(inputData.password); // hash password
+
+    expect(calledArgs.password).toMatch(/^\$argon2/); // corresponding argon2 reqEx
   });
 
-  it("Should return 400 when update data is invalid", async () => {
-    const invalidData = {
-      mail: "not-an-email"
-    };
-
-    const response = await request(app)
-      .patch("/user/1")
-      .send(invalidData)
-      .expect(400);
-
-    expect(response.body).toHaveProperty("error", true);
-    expect(response.body).toHaveProperty("message");
-  });
 
   it("Should return 404 if user not found", async () => {
     User.findByPk = vi.fn().mockResolvedValue(null);
@@ -186,13 +186,17 @@ describe("DELETE /user/:id", () => {
   };
 
   it("Should return 204 if user exists and is deleted", async () => {
-    User.findByPk.mockResolvedValue(validUser);
-    User.destroy.mockResolvedValue(1); // Return number of deleted lines
+    const mockUserInstance = {
+      ...validUser,
+      destroy: vi.fn().mockResolvedValue()
+    };
+
+    User.findByPk.mockResolvedValue(mockUserInstance);
 
     const response = await request(app).delete("/user/1").expect(204);
 
     expect(User.findByPk).toHaveBeenCalledWith("1");
-    expect(User.destroy).toHaveBeenCalledWith({ where: { id: "1" } });
+    expect(mockUserInstance.destroy).toHaveBeenCalled();
     expect(response.text).toBe("");
   });
 

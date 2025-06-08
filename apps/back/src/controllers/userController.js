@@ -61,18 +61,19 @@ const userController = {
             return next();
         };
 
-        if (username !== undefined) userToUpdate.username = username;
-        if (password !== undefined) userToUpdate.password = password;
-        if (mail !== undefined) userToUpdate.mail = mail;
-        if (avatar !== undefined) userToUpdate.avatar = avatar;
+        const updatedUser = await userToUpdate.update({
+            username: username || userToUpdate.username,
+            password: password || userToUpdate.password,
+            mail: mail || userToUpdate.mail,
+            avatar: avatar || userToUpdate.avatar
+        })
 
-        await userToUpdate.save();
+        const updatedData = updatedUser.toJSON();
 
-        const userData = userToUpdate.get({ plain: true });
-        delete userData.password;
-        delete userData.mail;
+        delete updatedData.password;
+        delete updatedData.mail;
 
-        res.json(userData);
+        res.json(updatedData);
     },
 
     /**
@@ -90,7 +91,7 @@ const userController = {
             return next();
         };
 
-        await User.destroy({ where: { id : id }});
+        await user.destroy({ where: { id : id }});
 
         res.status(204).end();
     }

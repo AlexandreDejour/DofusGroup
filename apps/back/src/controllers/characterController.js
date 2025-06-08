@@ -80,7 +80,7 @@ const characterController = {
             return next();
         };
 
-        const updatedCharacter = await Character.update({
+        const updatedCharacter = await characterToUpdate.update({
             user_id: user_id || characterToUpdate.user_id,
             name: name || characterToUpdate.name,
             sex: sex || characterToUpdate.sex,

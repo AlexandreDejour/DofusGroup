@@ -21,7 +21,7 @@ const eventController = {
             return next();
         };
 
-        res.status(200).json(events);
+        res.json(events);
     },
 
     /**
@@ -40,7 +40,7 @@ const eventController = {
             return next();
         };
 
-        res.status(200).json(event);
+        res.json(event);
     },
 
     /**

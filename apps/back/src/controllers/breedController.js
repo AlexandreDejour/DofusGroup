@@ -25,8 +25,8 @@ const breedController = {
      * @param {Function} next 
      * @returns {Promise<void>}
      */
-    async getOne(_res, res, next) {
-        const { id } = res.params;
+    async getOne(req, res, next) {
+        const { id } = req.params;
 
         const breed = await Breed.findByPk(id);
 

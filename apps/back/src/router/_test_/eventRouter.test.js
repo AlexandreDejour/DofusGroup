@@ -52,7 +52,7 @@ describe("GET /events", () => {
     }
   ];
   
-  it("Should return events list and return 200", async () => {
+  it("Should return events list and 200", async () => {
     //Prepare the fake model response
     Event.findAll.mockResolvedValue([...validEventList]);
 
@@ -80,7 +80,7 @@ describe("GET /event/:id", () => {
     server_id: 10
   };
 
-  it("Should return event corresponding to id and return 200", async () => {
+  it("Should return event corresponding to id and 200", async () => {
     //Prepare the fake model response
     Event.findByPk.mockResolvedValue(validEvent);
 
@@ -96,7 +96,7 @@ describe("GET /event/:id", () => {
 
     const response = await request(app).get("/event/999");
 
-    expect(response.status).toBe(404); // si tu as un middleware 404
+    expect(response.status).toBe(404);
     expect(Event.findByPk).toHaveBeenCalledWith("999");
   });
 })

@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 
 import * as cryptoModule from '../crypto.js';
-import encryptMail from '../encryptMail.js';
+import { encryptMail } from '../encryptMail.js';
 
 describe('encryptMail middleware', () => {
   let req;

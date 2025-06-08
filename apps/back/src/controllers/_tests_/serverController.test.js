@@ -50,10 +50,10 @@ describe("serverController", () => {
   describe("getOne", () => {
     it("should respond with one server if found", async () => {
       const mockServer = { id: 1, name: "Oshimo" };
-      res.params.id = 1;
+      const req = { params : { id : 1 }};
       Server.findByPk.mockResolvedValue(mockServer);
 
-      await serverController.getOne({}, res, next);
+      await serverController.getOne(req, res, next);
 
       expect(Server.findByPk).toHaveBeenCalledWith(1);
       expect(res.json).toHaveBeenCalledWith(mockServer);
@@ -61,10 +61,10 @@ describe("serverController", () => {
     });
 
     it("should call next() if server is not found", async () => {
-      res.params.id = 42;
+      const req = { params : { id : 42 }};
       Server.findByPk.mockResolvedValue(null);
 
-      await serverController.getOne({}, res, next);
+      await serverController.getOne(req, res, next);
 
       expect(Server.findByPk).toHaveBeenCalledWith(42);
       expect(res.json).not.toHaveBeenCalled();

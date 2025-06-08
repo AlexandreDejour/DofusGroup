@@ -50,10 +50,10 @@ describe("tagController", () => {
   describe("getOne", () => {
     it("should respond with one tag if found", async () => {
       const mockServer = { id: 1, name: "Donjon" };
-      res.params.id = 1;
+      const req = { params : { id : 1 }};
       Tag.findByPk.mockResolvedValue(mockServer);
 
-      await tagController.getOne({}, res, next);
+      await tagController.getOne(req, res, next);
 
       expect(Tag.findByPk).toHaveBeenCalledWith(1);
       expect(res.json).toHaveBeenCalledWith(mockServer);
@@ -61,10 +61,10 @@ describe("tagController", () => {
     });
 
     it("should call next() if tag is not found", async () => {
-      res.params.id = 42;
+      const req = { params : { id : 42 }};
       Tag.findByPk.mockResolvedValue(null);
 
-      await tagController.getOne({}, res, next);
+      await tagController.getOne(req, res, next);
 
       expect(Tag.findByPk).toHaveBeenCalledWith(42);
       expect(res.json).not.toHaveBeenCalled();

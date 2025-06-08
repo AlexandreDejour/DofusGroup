@@ -31,7 +31,7 @@ describe('Error handling middleware', () => {
     errorHandler(error, req, res, next);
 
     expect(res.status).toHaveBeenCalledWith(400);
-    expect(res.json).toHaveBeenCalledWith({ message: 'Test error' });
+    expect(res.json).toHaveBeenCalledWith({ error: true, message: 'Test error' });
   });
 
   it('errorHandler should default to status 500 if no statusCode on error', () => {
@@ -48,7 +48,7 @@ describe('Error handling middleware', () => {
     errorHandler(error, req, res, next);
 
     expect(res.status).toHaveBeenCalledWith(500);
-    expect(res.json).toHaveBeenCalledWith({ message: 'Unknown error' });
+    expect(res.json).toHaveBeenCalledWith({ error: true, message: 'Unknown error' });
   });
 
 });

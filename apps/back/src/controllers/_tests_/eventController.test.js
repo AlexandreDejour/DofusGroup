@@ -68,20 +68,20 @@ describe("eventController", () => {
   describe("getOne", () => {
     it("should respond with one event if found", async () => {
       const mockEvent = { id: 2, title: "pl nidas" };
-      res.params.id = 2;
+      const req = { params: { id: 2 } };
       Event.findByPk.mockResolvedValue(mockEvent);
 
-      await eventController.getOne({}, res, next);
+      await eventController.getOne(req, res, next);
 
       expect(Event.findByPk).toHaveBeenCalledWith(2);
       expect(res.json).toHaveBeenCalledWith(mockEvent);
     });
 
     it("should call next() if event not found", async () => {
-      res.params.id = 404;
+      const req = { params: { id: 404 } };
       Event.findByPk.mockResolvedValue(null);
 
-      await eventController.getOne({}, res, next);
+      await eventController.getOne(req, res, next);
 
       expect(next).toHaveBeenCalled();
     });

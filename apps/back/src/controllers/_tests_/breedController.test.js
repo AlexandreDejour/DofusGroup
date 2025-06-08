@@ -50,10 +50,10 @@ describe("breedController", () => {
   describe("getOne", () => {
     it("should respond with one breed if found", async () => {
       const mockServer = { id: 1, name: "Ecaflip" };
-      res.params.id = 1;
+      const req = { params : { id : 1 }};
       Breed.findByPk.mockResolvedValue(mockServer);
 
-      await breedController.getOne({}, res, next);
+      await breedController.getOne(req, res, next);
 
       expect(Breed.findByPk).toHaveBeenCalledWith(1);
       expect(res.json).toHaveBeenCalledWith(mockServer);
@@ -61,10 +61,10 @@ describe("breedController", () => {
     });
 
     it("should call next() if breed is not found", async () => {
-      res.params.id = 42;
+      const req = { params : { id : 42 }};
       Breed.findByPk.mockResolvedValue(null);
 
-      await breedController.getOne({}, res, next);
+      await breedController.getOne(req, res, next);
 
       expect(Breed.findByPk).toHaveBeenCalledWith(42);
       expect(res.json).not.toHaveBeenCalled();

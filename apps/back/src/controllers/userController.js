@@ -3,13 +3,13 @@ import { User } from "../models/User.js";
 const userController = {
     /**
      * This method return user with their characters and events.
-     * @param {Request} _req 
+     * @param {Request} req 
      * @param {Response} res 
      * @param {Function} next 
      * @returns {Promise<void>}
      */
-    async getOne(_req, res, next) {
-        const { id } = res.params;
+    async getOne(req, res, next) {
+        const { id } = req.params;
 
         const user = await User.findByPk(id, {
             attributes: { exclude: ['password', 'mail'] },
@@ -90,7 +90,7 @@ const userController = {
             return next();
         };
 
-        await user.destroy();
+        await User.destroy({ where: { id : id }});
 
         res.status(204).end();
     }

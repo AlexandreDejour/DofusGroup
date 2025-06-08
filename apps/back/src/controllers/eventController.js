@@ -117,7 +117,7 @@ const eventController = {
             status: status || eventToUpdate.status
         });
 
-        res.status(200).json(updatedEvent);
+        res.json(updatedEvent);
     },
 
     /**
@@ -132,11 +132,9 @@ const eventController = {
         const event = await Event.findByPk(id);
 
         if(!event) {
-            console.log("event not found -> next called");
             return next();
         };
-        console.log("event found, proceeding to destroy");
-        await Event.destroy({ where: { id : id}});
+        await Event.destroy({ where: { id : id }});
 
         res.status(204).end();
     }

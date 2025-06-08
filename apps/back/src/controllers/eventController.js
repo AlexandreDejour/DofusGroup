@@ -21,18 +21,18 @@ const eventController = {
             return next();
         };
 
-        res.json(events);
+        res.status(200).json(events);
     },
 
     /**
      * This method return event corresponding to id.
-     * @param {Request} _req 
+     * @param {Request} req 
      * @param {Response} res 
      * @param {Function} next 
      * @returns {Promise<void>}
      */
-    async getOne(_req, res, next) {
-        const { id } = res.params;
+    async getOne(req, res, next) {
+        const { id } = req.params;
 
         const event = await Event.findByPk(id);
 
@@ -40,7 +40,7 @@ const eventController = {
             return next();
         };
 
-        res.json(event);
+        res.status(200).json(event);
     },
 
     /**
@@ -132,9 +132,10 @@ const eventController = {
         const event = await Event.findByPk(id);
 
         if(!event) {
+            console.log("event not found -> next called");
             return next();
         };
-
+        console.log("event found, proceeding to destroy");
         await Event.destroy({ where: { id : id}});
 
         res.status(204).end();

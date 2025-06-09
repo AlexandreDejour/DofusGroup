@@ -5,7 +5,7 @@
     "doc": "docs"
   },
   "scripts": {
-    "start" : "concurrently \"npm run start --prefix apps/front/app\" \"npm run start --prefix apps/back\""
+    "start": "concurrently \"npm run start --prefix apps/front/app\" \"npm run start --prefix apps/back\""
   },
   "repository": {
     "type": "git",

@@ -29,6 +29,20 @@ User.init(
         avatar: {
             type: DataTypes.STRING,
         },
+        character_id: {
+            type: DataTypes.INTEGER,
+            references: {
+                model: "Character",
+                key: "id"
+            }
+        },
+        event_id: {
+            type: DataTypes.INTEGER,
+            references: {
+                model: "Event",
+                key: "id"
+            }
+        }
     },
     {
         sequelize: client

@@ -24,7 +24,7 @@ services:
     ports:
       - "5000:3000"
     environment:
-      - DB_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
+      - PG_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
       - JWT_SECRET=s3cret
     depends_on:
       - db
@@ -41,5 +41,14 @@ services:
     volumes:
       - pgdata:/var/lib/postgresql/data
   
+  seed:
+    build: ./apps/back
+    depends_on:
+      - db
+    environment:
+      - PG_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
+    restart: "no"
+    entrypoint: ["sh", "-c", "sleep 3 && node ./src/database/seeder.js"]
+
 volumes:
   pgdata:

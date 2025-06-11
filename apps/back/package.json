@@ -2,10 +2,11 @@
   "name": "back",
   "version": "0.1.0",
   "description": "dofusgroup api",
-  "main": "index.js",
+  "main": "index.ts",
   "type": "module",
   "scripts": {
-    "start": "nodemon index.js"
+    "start": "tsx ./index.ts",
+    "dev": "node --loader ts-node/esm ./index.ts"
   },
   "keywords": [
     "api",
@@ -15,8 +16,19 @@
   "author": "Alexandre Dejour",
   "license": "ISC",
   "devDependencies": {
-    "eslint": "^9.27.0",
-    "nodemon": "^3.1.10"
+    "@eslint/js": "^9.28.0",
+    "@types/express": "^5.0.3",
+    "@types/node": "^24.0.0",
+    "@types/pg": "^8.15.4",
+    "@typescript-eslint/eslint-plugin": "^8.34.0",
+    "@typescript-eslint/parser": "^8.34.0",
+    "eslint": "^9.28.0",
+    "nodemon": "^3.1.10",
+    "ts-node": "^10.9.2",
+    "ts-node-dev": "^2.0.0",
+    "tsx": "^4.20.1",
+    "typescript": "^5.8.3",
+    "typescript-eslint": "^8.34.0"
   },
   "dependencies": {
     "dotenv": "^16.5.0",

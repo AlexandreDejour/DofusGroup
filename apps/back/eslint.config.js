@@ -1,18 +1,48 @@
-// eslint.config.js
-import tseslint from 'typescript-eslint';
+// eslint.config.mjs
+import tseslint from "@typescript-eslint/eslint-plugin";
+import tseslintConfig from "typescript-eslint";
+import tsparser from "@typescript-eslint/parser";
+import prettierPlugin from "eslint-plugin-prettier";
+import prettierConfig from "eslint-config-prettier";
 
-export default tseslint.config({
-  files: ['**/*.ts'],
-  languageOptions: {
-    parserOptions: {
-      project: './tsconfig.json',
-      sourceType: 'module'
-    }
+export default [
+  ...tseslintConfig.configs.recommended,
+  ...tseslintConfig.configs.strictTypeChecked,
+  ...tseslintConfig.configs.stylistic,
+  {
+    files: ["**/*.ts"],
+
+    languageOptions: {
+      parser: tsparser,
+      parserOptions: {
+        project: "./tsconfig.json",
+        sourceType: "module",
+      },
+    },
+    plugins: {
+      "@typescript-eslint": tseslint,
+      prettier: prettierPlugin,
+    },
+
+    rules: {
+      ...prettierConfig.rules,
+      "@typescript-eslint/no-unused-vars": "warn",
+      '@typescript-eslint/explicit-member-accessibility': 'warn',
+      "@typescript-eslint/no-inferrable-types": 0,
+      "@typescript-eslint/typedef": [
+          "warn",
+          {
+            variableDeclaration: true,
+            memberVariableDeclaration: true,
+            propertyDeclaration: true,
+            parameter: true
+          }
+      ],
+      "no-console": "warn",
+      "semi": ["error", "always"],
+      "quotes": ["error", "double"],
+      "prettier/prettier": "error",
+    },
   },
-  rules: {
-    '@typescript-eslint/no-unused-vars': 'warn',
-    '@typescript-eslint/explicit-function-return-type': 'warn',
-    '@typescript-eslint/explicit-module-boundary-types': 'warn',
-    '@typescript-eslint/no-explicit-any': 'warn'
-  }
-});
+  prettierConfig
+];

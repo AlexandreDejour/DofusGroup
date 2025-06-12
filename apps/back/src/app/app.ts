@@ -1,7 +1,9 @@
-import "dotenv/config"
+import "dotenv/config";
 import express from "express";
 
-const app = express();
+import type { Express } from "express";
+
+const app: Express = express();
 
 app.set("port", process.env.PORT);
 app.set("base_url", process.env.BASE_URL);

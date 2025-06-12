@@ -1,9 +1,11 @@
 import { Router } from "express";
 
-const router =  Router();
+import { Request, Response } from "express";
 
-router.get("/", (req, res, next) => {
-    res.send("Hello DofusGroup");
+const router: Router = Router();
+
+router.get("/", (_req: Request, res: Response) => {
+  res.send("Hello DofusGroup");
 });
 
 export { router };

@@ -8,16 +8,25 @@ import {
 
 import { client } from "../client/client.js";
 
-class Event extends Model<
+export interface IEvent {
+  id: number;
+  title: string;
+  date: Date;
+  description: string;
+  max_players: number;
+  status: string;
+}
+
+export default class Event extends Model<
   InferAttributes<Event>,
   InferCreationAttributes<Event>
 > {
-  declare id: CreationOptional<number>;
-  declare title: string;
-  declare date: Date;
-  declare description?: string;
-  declare max_players: number;
-  declare status: string;
+  declare public id: CreationOptional<number>;
+  declare public title: string;
+  declare public date: Date;
+  declare public description?: string;
+  declare public max_players: number;
+  declare public status: string;
 }
 
 Event.init(
@@ -50,7 +59,5 @@ Event.init(
   },
   {
     sequelize: client,
-  }
+  },
 );
-
-export { Event };

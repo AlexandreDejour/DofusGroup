@@ -8,26 +8,28 @@ import {
 
 import { client } from "../client/client.js";
 
-export interface ICharacter {
+export interface ITag {
   id: number;
   name: string;
-  level: number;
-  alignment: string;
-  stuff: string;
+  area: string;
+  sub_area: string;
+  donjon_name: string;
+  color: string;
 }
 
-export default class Character extends Model<
-  InferAttributes<Character>,
-  InferCreationAttributes<Character>
+export default class Tag extends Model<
+  InferAttributes<Tag>,
+  InferCreationAttributes<Tag>
 > {
   declare public id: CreationOptional<number>;
   declare public name: string;
-  declare public level: number;
-  declare public alignment: string;
-  declare public stuff: string;
+  declare public area: string;
+  declare public sub_area: string;
+  declare public donjon_name: string;
+  declare public color: string;
 }
 
-Character.init(
+Tag.init(
   {
     id: {
       type: DataTypes.INTEGER,
@@ -38,16 +40,20 @@ Character.init(
     name: {
       type: DataTypes.STRING,
       allowNull: false,
+      unique: true,
     },
-    level: {
-      type: DataTypes.INTEGER,
+    area: {
+      type: DataTypes.STRING,
+    },
+    sub_area: {
+      type: DataTypes.STRING,
+    },
+    donjon_name: {
+      type: DataTypes.STRING,
+    },
+    color: {
+      type: DataTypes.STRING,
       allowNull: false,
-    },
-    alignment: {
-      type: DataTypes.STRING,
-    },
-    stuff: {
-      type: DataTypes.STRING,
     },
   },
   {

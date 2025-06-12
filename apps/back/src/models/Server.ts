@@ -8,20 +8,22 @@ import {
 
 import { client } from "../client/client.js";
 
-export interface IBreed {
+export interface IServer {
   id: number;
   name: string;
+  mono_account: boolean;
 }
 
-export default class Breed extends Model<
-  InferAttributes<Breed>,
-  InferCreationAttributes<Breed>
+export default class Server extends Model<
+  InferAttributes<Server>,
+  InferCreationAttributes<Server>
 > {
   declare public id: CreationOptional<number>;
   declare public name: string;
+  declare public mono_account: boolean;
 }
 
-Breed.init(
+Server.init(
   {
     id: {
       type: DataTypes.INTEGER,
@@ -30,7 +32,12 @@ Breed.init(
       autoIncrementIdentity: true,
     },
     name: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.STRING,
+      allowNull: false,
+      unique: true,
+    },
+    mono_account: {
+      type: DataTypes.BOOLEAN,
       allowNull: false,
     },
   },

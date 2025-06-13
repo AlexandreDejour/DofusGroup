@@ -6,7 +6,11 @@ import {
   CreationOptional,
 } from "sequelize";
 
+import Event from "./Event.js";
+import Character from "./Character.js";
+
 import { client } from "../client/client.js";
+import { SequelizeModels } from "../types/sequelizeModels.js";
 
 export interface IServer {
   id: number;
@@ -21,6 +25,21 @@ export default class Server extends Model<
   declare public id: CreationOptional<number>;
   declare public name: string;
   declare public mono_account: boolean;
+
+  declare public events?: Event[];
+  declare public characters?: Character[];
+
+  public static associate(models: SequelizeModels) {
+    Server.hasMany(models.Event, {
+      foreignKey: "character_id",
+      as: "characters",
+    });
+
+    Server.hasMany(models.Character, {
+      foreignKey: "character_id",
+      as: "characters",
+    });
+  }
 }
 
 Server.init(

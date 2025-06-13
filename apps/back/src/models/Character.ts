@@ -6,7 +6,13 @@ import {
   CreationOptional,
 } from "sequelize";
 
+import User from "./User.js";
+import Event from "./Event.js";
+import Breed from "./Breeds.js";
+import Server from "./Server.js";
+
 import { client } from "../client/client.js";
+import { SequelizeModels } from "../types/sequelizeModels.js";
 
 export interface ICharacter {
   id: number;
@@ -25,6 +31,35 @@ export default class Character extends Model<
   declare public level: number;
   declare public alignment: string;
   declare public stuff: string;
+
+  declare public user?: User;
+  declare public breed?: Breed;
+  declare public server?: Server;
+  declare public events?: Event[];
+
+  public static associate(models: SequelizeModels) {
+    Character.belongsTo(models.User, {
+      foreignKey: "user_id",
+      as: "user",
+    });
+
+    Character.belongsTo(models.Breed, {
+      foreignKey: "breed_id",
+      as: "breed",
+    });
+
+    Character.belongsTo(models.Server, {
+      foreignKey: "server_id",
+      as: "server",
+    });
+
+    Character.belongsToMany(models.Event, {
+      foreignKey: "character_id",
+      otherKey: "event_id",
+      as: "events",
+      through: "event_team",
+    });
+  }
 }
 
 Character.init(

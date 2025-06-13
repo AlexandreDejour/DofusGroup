@@ -10,11 +10,11 @@ import Event from "./Event.js";
 import Character from "./Character.js";
 
 import { client } from "../client/client.js";
+import { SequelizeModels } from "../types/sequelizeModels.js";
 
 export interface IUser {
   id: number;
   username: string;
-  password: string;
   mail: string;
 }
 
@@ -30,11 +30,12 @@ export default class User extends Model<
   declare public events?: Event[];
   declare public characters?: Character[];
 
-  static associate() {
+  public static associate(models: SequelizeModels) {
     User.hasMany(models.Event, {
       foreignKey: "user_id",
       as: "events",
     });
+
     User.hasMany(models.Character, {
       foreignKey: "user_id",
       as: "characters",

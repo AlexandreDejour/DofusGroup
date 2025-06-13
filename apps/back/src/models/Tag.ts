@@ -6,7 +6,10 @@ import {
   CreationOptional,
 } from "sequelize";
 
+import Event from "./Event.js";
+
 import { client } from "../client/client.js";
+import { SequelizeModels } from "../types/sequelizeModels.js";
 
 export interface ITag {
   id: number;
@@ -27,6 +30,15 @@ export default class Tag extends Model<
   declare public sub_area: string;
   declare public donjon_name: string;
   declare public color: string;
+
+  declare public events?: Event[];
+
+  public static associate(models: SequelizeModels) {
+    Tag.hasMany(models.Event, {
+      foreignKey: "event_id",
+      as: "events",
+    });
+  }
 }
 
 Tag.init(

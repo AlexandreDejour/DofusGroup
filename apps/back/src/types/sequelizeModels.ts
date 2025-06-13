@@ -1,10 +1,15 @@
-import { IUser } from "../models/User.js";
-import { IEvent } from "../models/Event.js";
-import { IServer } from "../models/Server.js";
-import { IBreed } from "../models/Breeds.js";
-import { ITag } from "../models/Tag.js";
-import { ICharacter } from "../models/Character.js";
+import Tag from "../models/Tag.js";
+import User from "../models/User.js";
+import Breed from "../models/Breeds.js";
+import Event from "../models/Event.js";
+import Server from "../models/Server.js";
+import Character from "../models/Character.js";
 
 export interface SequelizeModels {
-  User: typeof IUser;
+  Tag: typeof Tag;
+  User: typeof User;
+  Event: typeof Event;
+  Breed: typeof Breed;
+  Server: typeof Server;
+  Character: typeof Character;
 }

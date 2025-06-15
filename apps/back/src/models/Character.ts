@@ -28,9 +28,11 @@ export default class Character extends Model<
 > {
   declare public id: CreationOptional<number>;
   declare public name: string;
+  declare public sex: string;
   declare public level: number;
   declare public alignment: string;
   declare public stuff: string;
+  declare public default_character: boolean;
 
   declare public user?: User;
   declare public breed?: Breed;
@@ -55,7 +57,7 @@ export default class Character extends Model<
 
     Character.belongsToMany(models.Event, {
       foreignKey: "character_id",
-      otherKey: "event_id",
+      otherKey: "server_id",
       as: "events",
       through: "event_team",
     });
@@ -74,6 +76,10 @@ Character.init(
       type: DataTypes.STRING,
       allowNull: false,
     },
+    sex: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
     level: {
       type: DataTypes.INTEGER,
       allowNull: false,
@@ -83,6 +89,9 @@ Character.init(
     },
     stuff: {
       type: DataTypes.STRING,
+    },
+    default_character: {
+      type: DataTypes.BOOLEAN,
     },
   },
   {

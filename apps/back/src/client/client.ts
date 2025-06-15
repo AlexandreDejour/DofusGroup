@@ -1,12 +1,13 @@
 import { Sequelize } from "sequelize";
 
-import { app } from "../app/app.js"
+import { app } from "../app/app.js";
 
-const client = new Sequelize(
-    app.get("pg_url"), {
-        dialect: "postgres",
-        define: { underscored: true }
-    }
-);
+const client: Sequelize = new Sequelize(app.get("pg_url") as string, {
+  dialect: "postgres",
+  define: {
+    timestamps: true,
+    underscored: true,
+  },
+});
 
 export { client };

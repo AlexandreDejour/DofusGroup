@@ -30,6 +30,10 @@ export default class Event extends Model<
   declare public id: CreationOptional<number>;
   declare public title: string;
   declare public date: Date;
+  declare public duration: number;
+  declare public area: string;
+  declare public sub_area: string;
+  declare public donjon_name: string;
   declare public description?: string;
   declare public max_players: number;
   declare public status: string;
@@ -79,6 +83,18 @@ Event.init(
     date: {
       type: DataTypes.DATE,
       allowNull: false,
+    },
+    duration: {
+      type: DataTypes.INTEGER,
+    },
+    area: {
+      type: DataTypes.STRING,
+    },
+    sub_area: {
+      type: DataTypes.STRING,
+    },
+    donjon_name: {
+      type: DataTypes.STRING,
     },
     description: {
       type: DataTypes.STRING,

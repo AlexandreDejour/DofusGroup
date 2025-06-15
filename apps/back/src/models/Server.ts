@@ -31,12 +31,12 @@ export default class Server extends Model<
 
   public static associate(models: SequelizeModels) {
     Server.hasMany(models.Event, {
-      foreignKey: "character_id",
-      as: "characters",
+      foreignKey: "server_id",
+      as: "events",
     });
 
     Server.hasMany(models.Character, {
-      foreignKey: "character_id",
+      foreignKey: "server_id",
       as: "characters",
     });
   }

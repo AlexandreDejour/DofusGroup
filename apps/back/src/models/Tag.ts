@@ -26,16 +26,13 @@ export default class Tag extends Model<
 > {
   declare public id: CreationOptional<number>;
   declare public name: string;
-  declare public area: string;
-  declare public sub_area: string;
-  declare public donjon_name: string;
   declare public color: string;
 
   declare public events?: Event[];
 
   public static associate(models: SequelizeModels) {
     Tag.hasMany(models.Event, {
-      foreignKey: "event_id",
+      foreignKey: "tag_id",
       as: "events",
     });
   }
@@ -53,15 +50,6 @@ Tag.init(
       type: DataTypes.STRING,
       allowNull: false,
       unique: true,
-    },
-    area: {
-      type: DataTypes.STRING,
-    },
-    sub_area: {
-      type: DataTypes.STRING,
-    },
-    donjon_name: {
-      type: DataTypes.STRING,
     },
     color: {
       type: DataTypes.STRING,

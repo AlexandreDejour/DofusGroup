@@ -6,5 +6,7 @@ import { router } from "./src/router/index.js";
 app.use(router);
 
 app.listen(app.get("port"), () => {
-    console.info(`Listening on ${app.get("base_url")}:${app.get("port")}`);
+  console.info(
+    `Listening on ${app.get("base_url") as string}:${app.get("port") as string}`,
+  );
 });

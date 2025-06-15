@@ -1,7 +1,10 @@
-import "dotenv/config"
-import express from "express";
+import * as dotenv from "dotenv";
+dotenv.config({ path: import.meta.dirname + "/../../.env" });
 
-const app = express();
+import express from "express";
+import { Express } from "express";
+
+const app: Express = express();
 
 app.set("port", process.env.PORT);
 app.set("base_url", process.env.BASE_URL);

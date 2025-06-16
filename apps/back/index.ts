@@ -1,4 +1,5 @@
-import "dotenv/config";
+import * as dotenv from "dotenv";
+dotenv.config({ path: import.meta.dirname + "/../../.env" });
 
 import app from "./src/app/app.js";
 import router from "./src/router/index.js";

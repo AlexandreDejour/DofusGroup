@@ -5,6 +5,7 @@ import express from "express";
 import { Express } from "express";
 
 import router from "../router/index.js";
+import { notFound, errorHandler } from "../utils/errorHandler.js";
 
 const app: Express = express();
 
@@ -16,5 +17,8 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
 app.use(router);
+
+app.use(notFound);
+app.use(errorHandler);
 
 export default app;

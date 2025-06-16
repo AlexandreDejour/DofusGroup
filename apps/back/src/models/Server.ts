@@ -9,7 +9,7 @@ import {
 import Event from "./Event.js";
 import Character from "./Character.js";
 
-import { client } from "../client/client.js";
+import client from "../client/client.js";
 import { SequelizeModels } from "../types/sequelizeModels.js";
 
 export interface IServer {

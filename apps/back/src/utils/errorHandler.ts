@@ -6,12 +6,16 @@ export function notFound(_req: Request, _res: Response, next: NextFunction) {
   next(createHttpError(404, "Not Found"));
 }
 
-export function errorHandler(error: HttpError, _req: Request, res: Response) {
-  const statusCode: number = error.statusCode || 500;
-
+export function errorHandler(
+  error: HttpError,
+  _req: Request,
+  res: Response,
+  _next: NextFunction,
+) {
+  const statusCode: number = error.status || error.statusCode || 500;
   console.error(error);
 
   res.status(statusCode).json({
-    error: error.message,
+    message: error.message || "Internal Server Error",
   });
 }

@@ -7,7 +7,7 @@ export interface IServerController {
   getOne(req: Request, res: Response, next: NextFunction): Promise<void>;
 }
 
-const serverController: IServerController = {
+export const serverController: IServerController = {
   async getAll(_req: Request, res: Response, next: NextFunction) {
     try {
       const servers: Server[] = await Server.findAll();
@@ -40,5 +40,3 @@ const serverController: IServerController = {
     }
   },
 };
-
-export default serverController;

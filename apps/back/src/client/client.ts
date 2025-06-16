@@ -1,3 +1,6 @@
+import * as dotenv from "dotenv";
+dotenv.config({ path: import.meta.dirname + "/../../.env" });
+
 import { Sequelize } from "sequelize";
 
 import { Config } from "../config/config.js";
@@ -12,4 +15,4 @@ const client: Sequelize = new Sequelize(config.pgUrl, {
   },
 });
 
-export { client };
+export default client;

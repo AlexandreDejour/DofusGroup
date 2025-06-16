@@ -1,7 +1,7 @@
 import fs from "fs/promises";
 import path from "path";
 
-import { client } from "../client/client.js";
+import client from "../client/client.js";
 
 import { initAssociations, models } from "../models/initModels.js";
 

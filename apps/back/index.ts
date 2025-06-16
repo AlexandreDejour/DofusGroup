@@ -1,7 +1,7 @@
 import "dotenv/config";
 
-import { app } from "./src/app/app.js";
-import { router } from "./src/router/index.js";
+import app from "./src/app/app.js";
+import router from "./src/router/index.js";
 
 app.use(router);
 

@@ -13,7 +13,7 @@ const serverController: IServerController = {
       const servers: Server[] = await Server.findAll();
 
       if (servers.length === 0) {
-        res.status(404).json({ error: "No servers found" });
+        res.status(404).json({ error: "Any server found" });
         return;
       }
 
@@ -26,10 +26,6 @@ const serverController: IServerController = {
   async getOne(req: Request, res: Response, next: NextFunction) {
     try {
       const id: number = parseInt(req.params.id, 10);
-
-      if (isNaN(id)) {
-        throw new Error("Invalid ID format");
-      }
 
       const server: Server | null = await Server.findByPk(id);
 

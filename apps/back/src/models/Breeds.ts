@@ -6,8 +6,6 @@ import {
   CreationOptional,
 } from "sequelize";
 
-import Character from "./Character.js";
-
 import client from "../client/client.js";
 import { SequelizeModels } from "../types/sequelizeModels.js";
 
@@ -22,8 +20,6 @@ export default class Breed extends Model<
 > {
   declare public id: CreationOptional<number>;
   declare public name: string;
-
-  declare public characters?: Character[];
 
   public static associate(models: SequelizeModels) {
     Breed.hasMany(models.Character, {

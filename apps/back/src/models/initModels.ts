@@ -1,4 +1,4 @@
-import { SequelizeModels } from "../types/sequelizeModels.js";
+import { SequelizeModels } from "./types/sequelizeModels.js";
 
 import Tag from "./Tag.js";
 import User from "./User.js";

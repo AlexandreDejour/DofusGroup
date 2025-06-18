@@ -12,7 +12,7 @@ import Server from "./Server.js";
 import Character from "./Character.js";
 
 import client from "../client/client.js";
-import { SequelizeModels } from "../types/sequelizeModels.js";
+import { SequelizeModels } from "./types/sequelizeModels.js";
 
 export interface IEvent {
   id: number;

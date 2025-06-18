@@ -2,10 +2,7 @@ import { NextFunction, Request, Response } from "express";
 
 import Server from "../models/Server.js";
 
-export interface IServerController {
-  getAll(req: Request, res: Response, next: NextFunction): Promise<void>;
-  getOne(req: Request, res: Response, next: NextFunction): Promise<void>;
-}
+import { IServerController } from "./types/serverTypes.js";
 
 export const serverController: IServerController = {
   async getAll(_req: Request, res: Response, next: NextFunction) {

@@ -17,9 +17,15 @@ import { SequelizeModels } from "../types/sequelizeModels.js";
 export interface ICharacter {
   id: number;
   name: string;
+  sex: string;
   level: number;
   alignment: string;
   stuff: string;
+  default_character: boolean;
+  user_id: number;
+  breed_id: number;
+  server_id: number;
+  events?: Event[];
 }
 
 export default class Character extends Model<
@@ -33,7 +39,11 @@ export default class Character extends Model<
   declare public alignment: string;
   declare public stuff: string;
   declare public default_character: boolean;
+  declare public user_id: number;
+  declare public breed_id: number;
+  declare public server_id: number;
 
+  // Associations
   declare public user?: User;
   declare public breed?: Breed;
   declare public server?: Server;
@@ -92,6 +102,30 @@ Character.init(
     },
     default_character: {
       type: DataTypes.BOOLEAN,
+    },
+    user_id: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: User,
+        key: "id",
+      },
+    },
+    breed_id: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: Breed,
+        key: "id",
+      },
+    },
+    server_id: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: Server,
+        key: "id",
+      },
     },
   },
   {

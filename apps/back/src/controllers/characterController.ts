@@ -3,7 +3,7 @@ import { Request, Response, NextFunction } from "express";
 import Character, { ICharacter } from "../models/Character.js";
 
 export interface ICharacterParams {
-  userId: string;
+  userId?: string;
   characterId?: string;
 }
 
@@ -148,6 +148,11 @@ export const characterController: ICharacterController = {
     next: NextFunction,
   ) {
     try {
+      if (!req.params.userId) {
+        res.status(400).json({ error: "User ID is required" });
+        return;
+      }
+
       const userId: number = parseInt(req.params.userId, 10);
 
       if (!req.params.userId) {
@@ -173,6 +178,11 @@ export const characterController: ICharacterController = {
     next: NextFunction,
   ) {
     try {
+      if (!req.params.userId) {
+        res.status(400).json({ error: "User ID is required" });
+        return;
+      }
+
       const userId: number = parseInt(req.params.userId, 10);
 
       if (!req.params.characterId) {
@@ -196,6 +206,44 @@ export const characterController: ICharacterController = {
       await character.update(updateData);
 
       res.json(character);
+    } catch (error) {
+      next(error);
+    }
+  },
+
+  async deleteCharacter(
+    req: Request<ICharacterParams>,
+    res: Response,
+    next: NextFunction,
+  ) {
+    try {
+      if (!req.params.userId) {
+        res.status(400).json({ error: "User ID is required" });
+        return;
+      }
+
+      const userId: number = parseInt(req.params.userId, 10);
+
+      if (!req.params.characterId) {
+        res.status(400).json({ error: "Character ID is required" });
+        return;
+      }
+
+      const characterId: number = parseInt(req.params.characterId, 10);
+
+      // Ensure the character belongs to the user
+      const character: Character | null = await Character.findOne({
+        where: { id: characterId, user_id: userId },
+      });
+
+      if (!character) {
+        res.status(404).json({ error: "Character not found for this user" });
+        return;
+      }
+
+      await character.destroy();
+
+      res.status(204).send();
     } catch (error) {
       next(error);
     }

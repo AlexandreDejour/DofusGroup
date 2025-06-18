@@ -2,6 +2,11 @@ import { Router } from "express";
 const characterRouter: Router = Router();
 
 import validateInt from "../utils/validateInt.js";
+import validateSchema from "../joi/validateSchema.js";
+import {
+  createCharacterSchema,
+  updateCharacterSchema,
+} from "../joi/character.js";
 import { characterController } from "../controllers/characterController.js";
 
 characterRouter.get(
@@ -19,6 +24,7 @@ characterRouter.get(
 characterRouter.post(
   "/user/:userId/character",
   validateInt,
+  validateSchema(createCharacterSchema),
   characterController.postCharacter.bind(characterController),
 );
 
@@ -30,6 +36,7 @@ characterRouter
   )
   .patch(
     validateInt,
+    validateSchema(updateCharacterSchema),
     characterController.patchCharacter.bind(characterController),
   )
   .delete(

@@ -6,7 +6,7 @@ import {
   ICharacterParams,
   IPostCharacterBody,
   ICharacterController,
-} from "./types/characterTypes.js";
+} from "./types/character.js";
 
 export const characterController: ICharacterController = {
   async getAllByUserId(req: Request, res: Response, next: NextFunction) {

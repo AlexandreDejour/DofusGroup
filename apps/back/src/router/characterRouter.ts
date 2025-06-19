@@ -27,7 +27,7 @@ characterRouter.post(
   validateInt,
   htmlSanitizer,
   validateSchema(createCharacterSchema),
-  characterController.postCharacter.bind(characterController),
+  characterController.post.bind(characterController),
 );
 
 characterRouter
@@ -40,12 +40,9 @@ characterRouter
     validateInt,
     htmlSanitizer,
     validateSchema(updateCharacterSchema),
-    characterController.patchCharacter.bind(characterController),
+    characterController.update.bind(characterController),
   )
-  .delete(
-    validateInt,
-    characterController.deleteCharacter.bind(characterController),
-  );
+  .delete(validateInt, characterController.delete.bind(characterController));
 
 characterRouter.get(
   "/user/:userId/character/:characterId/enriched",

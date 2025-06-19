@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 
-import Character, { ICharacter } from "../models/Character.js";
+import Character from "../models/Character.js";
+import { ICharacter, ICharacterEnriched } from "../models/types/Character.js";
 
 import {
   ICharacterParams,
@@ -15,6 +16,30 @@ export const characterController: ICharacterController = {
 
       const characters: ICharacter[] = await Character.findAll({
         where: { user_id: userId },
+      });
+
+      if (characters.length === 0) {
+        res.status(404).json({ error: "No characters found for this user" });
+        return;
+      }
+
+      res.json(characters);
+    } catch (error) {
+      next(error);
+    }
+  },
+
+  async getAllByUserIdEnriched(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) {
+    try {
+      const userId: number = parseInt(req.params.userId, 10);
+
+      const characters: ICharacterEnriched[] = await Character.findAll({
+        where: { user_id: userId },
+        include: ["server", "breed", "events"],
       });
 
       if (characters.length === 0) {
@@ -48,30 +73,6 @@ export const characterController: ICharacterController = {
     }
   },
 
-  async getAllByUserIdEnriched(
-    req: Request,
-    res: Response,
-    next: NextFunction,
-  ) {
-    try {
-      const userId: number = parseInt(req.params.userId, 10);
-
-      const characters: ICharacter[] = await Character.findAll({
-        where: { user_id: userId },
-        include: ["server", "breed", "events"],
-      });
-
-      if (characters.length === 0) {
-        res.status(404).json({ error: "No characters found for this user" });
-        return;
-      }
-
-      res.json(characters);
-    } catch (error) {
-      next(error);
-    }
-  },
-
   async getOneByUserIdEnriched(
     req: Request,
     res: Response,
@@ -81,7 +82,7 @@ export const characterController: ICharacterController = {
       const userId: number = parseInt(req.params.userId, 10);
       const characterId: number = parseInt(req.params.characterId, 10);
 
-      const character: ICharacter | null = await Character.findOne({
+      const character: ICharacterEnriched | null = await Character.findOne({
         where: { id: characterId, user_id: userId },
         include: ["server", "breed", "events"],
       });
@@ -97,7 +98,7 @@ export const characterController: ICharacterController = {
     }
   },
 
-  async postCharacter(
+  async post(
     req: Request<ICharacterParams, unknown, IPostCharacterBody>,
     res: Response,
     next: NextFunction,
@@ -127,7 +128,7 @@ export const characterController: ICharacterController = {
     }
   },
 
-  async patchCharacter(
+  async update(
     req: Request<ICharacterParams, unknown, Partial<IPostCharacterBody>>,
     res: Response,
     next: NextFunction,
@@ -166,7 +167,7 @@ export const characterController: ICharacterController = {
     }
   },
 
-  async deleteCharacter(
+  async delete(
     req: Request<ICharacterParams>,
     res: Response,
     next: NextFunction,

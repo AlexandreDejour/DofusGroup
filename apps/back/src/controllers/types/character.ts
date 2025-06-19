@@ -38,13 +38,13 @@ export interface ICharacterController {
     res: Response,
     next: NextFunction,
   ): Promise<void>;
-  postCharacter(req: Request, res: Response, next: NextFunction): Promise<void>;
-  patchCharacter(
+  post(req: Request, res: Response, next: NextFunction): Promise<void>;
+  update(
     req: Request<ICharacterParams, unknown, Partial<IPostCharacterBody>>,
     res: Response,
     next: NextFunction,
   ): Promise<void>;
-  deleteCharacter(
+  delete(
     req: Request<ICharacterParams>,
     res: Response,
     next: NextFunction,

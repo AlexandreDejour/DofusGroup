@@ -14,20 +14,6 @@ import Server from "./Server.js";
 import client from "../client/client.js";
 import { SequelizeModels } from "./types/sequelizeModels.js";
 
-export interface ICharacter {
-  id: number;
-  name: string;
-  sex: string;
-  level: number;
-  alignment: string;
-  stuff: string;
-  default_character: boolean;
-  user_id: number;
-  breed_id: number;
-  server_id: number;
-  events?: Event[];
-}
-
 export default class Character extends Model<
   InferAttributes<Character>,
   InferCreationAttributes<Character>

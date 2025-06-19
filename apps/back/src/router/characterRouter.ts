@@ -2,6 +2,7 @@ import { Router } from "express";
 const characterRouter: Router = Router();
 
 import validateInt from "../utils/validateInt.js";
+import htmlSanitizer from "../utils/htmlSanitizer.js";
 import validateSchema from "../joi/validateSchema.js";
 import {
   createCharacterSchema,
@@ -24,6 +25,7 @@ characterRouter.get(
 characterRouter.post(
   "/user/:userId/character",
   validateInt,
+  htmlSanitizer,
   validateSchema(createCharacterSchema),
   characterController.postCharacter.bind(characterController),
 );
@@ -36,6 +38,7 @@ characterRouter
   )
   .patch(
     validateInt,
+    htmlSanitizer,
     validateSchema(updateCharacterSchema),
     characterController.patchCharacter.bind(characterController),
   )

@@ -199,7 +199,7 @@ export const characterController: ICharacterController = {
 
       await character.destroy();
 
-      res.status(204).send();
+      res.status(204).end();
     } catch (error) {
       next(error);
     }

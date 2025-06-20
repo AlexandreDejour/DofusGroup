@@ -9,7 +9,7 @@ export default function validateInt(
   for (const [key, value] of Object.entries(req.params)) {
     if (!/^\d+$/.test(value)) {
       next(
-        createHttpError(400, `Paramètre ${key} invalide : doit être un entier`),
+        createHttpError(400, `Invalid ${key} parameter : must be an integer`),
       );
       return;
     }

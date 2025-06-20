@@ -1,11 +1,10 @@
-import request from "supertest";
-import { Response } from "supertest";
+import request, { Response } from "supertest";
 import { vi, describe, it, expect, beforeEach } from "vitest";
 
 import express, { Express } from "express";
 
-import serverRouter from "../serverRouter.js";
 import Server from "../../models/Server.js";
+import serverRouter from "../serverRouter.js";
 import { serverController } from "../../controllers/serverController.js";
 import { errorHandler, notFound } from "../../utils/errorHandler.js";
 
@@ -77,7 +76,9 @@ describe("GET /server/:id", () => {
     const res: Response = await request(app).get("/server/abc");
 
     expect(res.status).toBe(400);
-    expect((res.body as { message: string }).message).toBe("Invalid ID");
+    expect((res.body as { message: string }).message).toBe(
+      "Invalid id parameter : must be an integer",
+    );
   });
 
   it("renvoie 404 si aucun serveur trouvé", async () => {

@@ -35,6 +35,7 @@ describe("serverController", () => {
       const mockServers: IServer[] = [
         { id: 1, name: "Dakal", mono_account: true },
       ];
+
       (Server.findAll as unknown as ReturnType<typeof vi.fn>).mockResolvedValue(
         mockServers,
       );
@@ -73,6 +74,7 @@ describe("serverController", () => {
   describe("getOne", () => {
     it("Return server if exists", async () => {
       req.params = { id: "1" };
+
       const mockServer: IServer = { id: 1, name: "Dakal", mono_account: true };
       (
         Server.findByPk as unknown as ReturnType<typeof vi.fn>
@@ -85,6 +87,7 @@ describe("serverController", () => {
 
     it("Call next() if server doesn't exists.", async () => {
       req.params = { id: "99" };
+
       (
         Server.findByPk as unknown as ReturnType<typeof vi.fn>
       ).mockResolvedValue(null);

@@ -56,6 +56,7 @@ describe("characterController", () => {
           server_id: 1,
         },
       ];
+
       (
         Character.findAll as unknown as ReturnType<typeof vi.fn>
       ).mockResolvedValue(mockCharacters);
@@ -91,9 +92,11 @@ describe("characterController", () => {
 
     it("should call next() in case of error", async () => {
       const error: HttpError = createHttpError(500, "Internal error");
+
       (
         Character.findAll as unknown as ReturnType<typeof vi.fn>
       ).mockRejectedValue(error);
+
       req.params = { userId: "1" };
 
       await characterController.getAllByUserId(
@@ -135,9 +138,11 @@ describe("characterController", () => {
           events: [],
         },
       ];
+
       (
         Character.findAll as unknown as ReturnType<typeof vi.fn>
       ).mockResolvedValue(mockCharacters);
+
       req.params = { userId: "1" };
 
       await characterController.getAllByUserIdEnriched(
@@ -203,7 +208,9 @@ describe("characterController", () => {
       (
         Character.findOne as unknown as ReturnType<typeof vi.fn>
       ).mockResolvedValue(mockCharacter);
+
       req.params = { userId: "1", characterId: "1" };
+
       await characterController.getOneByUserId(
         req as Request,
         res as Response,
@@ -234,9 +241,11 @@ describe("characterController", () => {
 
     it("should call next() in case of error", async () => {
       const error: HttpError = createHttpError(500, "Internal error");
+
       (
         Character.findOne as unknown as ReturnType<typeof vi.fn>
       ).mockRejectedValue(error);
+
       req.params = { userId: "1", characterId: "1" };
 
       await characterController.getOneByUserId(
@@ -276,10 +285,13 @@ describe("characterController", () => {
         },
         events: [],
       };
+
       (
         Character.findOne as unknown as ReturnType<typeof vi.fn>
       ).mockResolvedValue(mockCharacter);
+
       req.params = { userId: "1", characterId: "1" };
+
       await characterController.getOneByUserIdEnriched(
         req as Request,
         res as Response,
@@ -289,6 +301,7 @@ describe("characterController", () => {
       expect(res.json).toHaveBeenCalledWith(mockCharacter);
       expect(res.status).not.toHaveBeenCalledWith(404);
     });
+
     it("should return 404 if character not found for the user", async () => {
       (
         Character.findOne as unknown as ReturnType<typeof vi.fn>
@@ -306,11 +319,14 @@ describe("characterController", () => {
         error: "Character not found for this user",
       });
     });
+
     it("should call next() in case of error", async () => {
       const error: HttpError = createHttpError(500, "Internal error");
+
       (
         Character.findOne as unknown as ReturnType<typeof vi.fn>
       ).mockRejectedValue(error);
+
       req.params = { userId: "1", characterId: "1" };
 
       await characterController.getOneByUserIdEnriched(
@@ -337,11 +353,14 @@ describe("characterController", () => {
         breed_id: 15,
         server_id: 1,
       };
+
       (
         Character.create as unknown as ReturnType<typeof vi.fn>
       ).mockResolvedValue(mockCharacter);
+
       req.body = mockCharacter;
       req.params = { userId: "1" };
+
       await characterController.post(req as Request, res as Response, next);
 
       expect(res.json).toHaveBeenCalledWith(mockCharacter);
@@ -350,9 +369,11 @@ describe("characterController", () => {
 
     it("should call next() in case of error", async () => {
       const error: HttpError = createHttpError(500, "Internal error");
+
       (
         Character.create as unknown as ReturnType<typeof vi.fn>
       ).mockRejectedValue(error);
+
       req.body = {
         name: "Night-hunter",
         sex: "M",
@@ -365,6 +386,7 @@ describe("characterController", () => {
         server_id: 1,
       };
       req.params = { userId: "1" };
+
       await characterController.post(req as Request, res as Response, next);
 
       expect(next).toHaveBeenCalledWith(error);
@@ -456,9 +478,11 @@ describe("characterController", () => {
 
     it("should call next() in case of error", async () => {
       const error: HttpError = createHttpError(500, "Internal error");
+
       (
-        Character.update as unknown as ReturnType<typeof vi.fn>
+        Character.findOne as unknown as ReturnType<typeof vi.fn>
       ).mockRejectedValue(error);
+      req.params = { userId: "1", characterId: "1" };
 
       await characterController.getOneByUserId(
         req as Request,
@@ -473,6 +497,90 @@ describe("characterController", () => {
       );
 
       expect(vi.spyOn(characterController, "update")).not.toHaveBeenCalled();
+      expect(next).toHaveBeenCalledWith(error);
+    });
+  });
+
+  // --- DELETE CHARACTER ---
+  describe("deleteCharacter", () => {
+    it("should delete a character and return success message", async () => {
+      function deleteMock(this: ICharacter): Promise<number> {
+        return Promise.resolve(1);
+      }
+
+      type ICharacterMock = ICharacter & {
+        destroy: typeof deleteMock;
+      };
+
+      const mockCharacter: ICharacterMock = {
+        id: 1,
+        name: "Night-hunter",
+        sex: "M",
+        level: 190,
+        alignment: "Bonta",
+        stuff: "",
+        default_character: true,
+        user_id: 1,
+        breed_id: 15,
+        server_id: 1,
+        destroy: deleteMock,
+      };
+
+      (
+        Character.findOne as unknown as ReturnType<typeof vi.fn>
+      ).mockResolvedValue(mockCharacter);
+
+      (
+        Character.destroy as unknown as ReturnType<typeof vi.fn>
+      ).mockResolvedValue(1);
+
+      req.params = { userId: "1", characterId: "1" };
+
+      await characterController.delete(
+        req as Request<ICharacterParams>,
+        res as Response,
+        next,
+      );
+
+      expect(res.json).toHaveBeenCalledWith({
+        message: "Character deleted successfully",
+      });
+      expect(res.status).not.toHaveBeenCalledWith(404);
+    });
+
+    it("should return 404 if character not found for the user", async () => {
+      (
+        Character.findOne as unknown as ReturnType<typeof vi.fn>
+      ).mockResolvedValue(null);
+      req.params = { userId: "1", characterId: "1" };
+
+      await characterController.delete(
+        req as Request<ICharacterParams>,
+        res as Response,
+        next,
+      );
+
+      expect(res.status).toHaveBeenCalledWith(404);
+      expect(res.json).toHaveBeenCalledWith({
+        error: "Character not found for this user",
+      });
+    });
+
+    it("should call next() in case of error", async () => {
+      const error: HttpError = createHttpError(500, "Internal error");
+
+      (
+        Character.findOne as unknown as ReturnType<typeof vi.fn>
+      ).mockRejectedValue(error);
+      req.params = { userId: "1", characterId: "1" };
+
+      await characterController.delete(
+        req as Request<ICharacterParams>,
+        res as Response,
+        next,
+      );
+
+      expect(vi.spyOn(characterController, "delete")).not.toHaveBeenCalled();
       expect(next).toHaveBeenCalledWith(error);
     });
   });

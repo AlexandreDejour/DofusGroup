@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "target": "esnext" /* Set the JavaScript language version for emitted JavaScript and include compatible library declarations. */,
+    /* Modules */
+    "module": "nodenext" /* Specify what module code is generated. */,
+    /* Type Checking */
+    "strict": true /* Enable all strict type-checking options. */,
+    "skipLibCheck": true,
+    "experimentalDecorators": true /* Skip type checking all .d.ts files. */,
+    "emitDecoratorMetadata": true
+  },
+  "include": [
+    "src/**/*.ts",
+    "./index.ts"
+  ] /* Include all TypeScript files in the src directory. */
+}

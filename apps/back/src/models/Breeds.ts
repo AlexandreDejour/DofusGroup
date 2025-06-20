@@ -27,7 +27,7 @@ export default class Breed extends Model<
 
   public static associate(models: SequelizeModels) {
     Breed.hasMany(models.Character, {
-      foreignKey: "character_id",
+      foreignKey: "breed_id",
       as: "characters",
     });
   }
@@ -36,13 +36,13 @@ export default class Breed extends Model<
 Breed.init(
   {
     id: {
-      type: DataTypes.STRING,
+      type: DataTypes.INTEGER,
       primaryKey: true,
       autoIncrement: true,
       autoIncrementIdentity: true,
     },
     name: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.STRING,
       allowNull: false,
     },
   },

@@ -1,6 +1,3 @@
-import * as dotenv from "dotenv";
-dotenv.config({ path: import.meta.dirname + "/../../.env" });
-
 import { Sequelize } from "sequelize";
 
 import { Config } from "../config/config.js";

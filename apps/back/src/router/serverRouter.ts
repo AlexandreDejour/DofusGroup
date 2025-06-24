@@ -1,15 +1,13 @@
 import { Router } from "express";
-const serverRouter: Router = Router();
 
-import validateInt from "../utils/validateInt.js";
+import validateInt from "../middlewares/utils/validateInt.js";
 import { serverController } from "../controllers/serverController.js";
 
-serverRouter.get("/servers", serverController.getAll.bind(serverController));
+const serverRouter: Router = Router();
+const ServerController = serverController;
 
-serverRouter.get(
-  "/server/:id",
-  validateInt,
-  serverController.getOne.bind(serverController),
-);
+serverRouter.get("/servers", ServerController.getAll);
+
+serverRouter.get("/server/:id", validateInt, ServerController.getOne);
 
 export default serverRouter;

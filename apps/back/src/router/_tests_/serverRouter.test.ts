@@ -5,9 +5,12 @@ import { vi, describe, it, expect, beforeEach } from "vitest";
 import express, { Express } from "express";
 
 import serverRouter from "../serverRouter.js";
-import Server from "../../models/Server.js";
+import Server from "../../database/models/Server.js";
 import { serverController } from "../../controllers/serverController.js";
-import { errorHandler, notFound } from "../../utils/errorHandler.js";
+import {
+  errorHandler,
+  notFound,
+} from "../../middlewares/utils/errorHandler.js";
 
 let app: Express;
 

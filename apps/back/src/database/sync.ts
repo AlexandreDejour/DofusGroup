@@ -1,9 +1,9 @@
 import fs from "fs/promises";
 import path from "path";
 
-import client from "../client/client.js";
+import client from "./client.js";
 
-import { initAssociations, models } from "../models/initModels.js";
+import { initAssociations, models } from "./models/initModels.js";
 
 export default async function sync() {
   try {

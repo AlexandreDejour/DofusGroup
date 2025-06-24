@@ -9,40 +9,41 @@ import {
 import Event from "./Event.js";
 import Character from "./Character.js";
 
-import client from "../client/client.js";
+import client from "../client.js";
 import { SequelizeModels } from "../types/sequelizeModels.js";
 
-export interface IServer {
+export interface IUser {
   id: number;
-  name: string;
-  mono_account: boolean;
+  username: string;
+  mail: string;
 }
 
-export default class Server extends Model<
-  InferAttributes<Server>,
-  InferCreationAttributes<Server>
+export default class User extends Model<
+  InferAttributes<User>,
+  InferCreationAttributes<User>
 > {
   declare public id: CreationOptional<number>;
-  declare public name: string;
-  declare public mono_account: boolean;
+  declare public username: string;
+  declare public password: string;
+  declare public mail: string;
 
   declare public events?: Event[];
   declare public characters?: Character[];
 
   public static associate(models: SequelizeModels) {
-    Server.hasMany(models.Event, {
-      foreignKey: "server_id",
+    User.hasMany(models.Event, {
+      foreignKey: "user_id",
       as: "events",
     });
 
-    Server.hasMany(models.Character, {
-      foreignKey: "server_id",
+    User.hasMany(models.Character, {
+      foreignKey: "user_id",
       as: "characters",
     });
   }
 }
 
-Server.init(
+User.init(
   {
     id: {
       type: DataTypes.INTEGER,
@@ -50,17 +51,24 @@ Server.init(
       autoIncrement: true,
       autoIncrementIdentity: true,
     },
-    name: {
+    username: {
       type: DataTypes.STRING,
       allowNull: false,
       unique: true,
     },
-    mono_account: {
-      type: DataTypes.BOOLEAN,
+    password: {
+      type: DataTypes.STRING,
       allowNull: false,
+    },
+    mail: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      unique: true,
     },
   },
   {
     sequelize: client,
   },
 );
+
+export { User };

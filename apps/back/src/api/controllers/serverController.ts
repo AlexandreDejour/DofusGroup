@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 
 import { IServerController, Server } from "./types/server.js";
-import { serverRepository } from "../middlewares/repository/serverRepository.js";
+import { serverRepository } from "../../middlewares/repository/serverRepository.js";
 
 const ServerRepository = serverRepository;
 

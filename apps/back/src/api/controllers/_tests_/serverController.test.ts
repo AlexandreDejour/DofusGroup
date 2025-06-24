@@ -5,7 +5,7 @@ import type { Request, Response, NextFunction } from "express";
 import createHttpError, { HttpError } from "http-errors";
 
 import { serverController } from "../serverController.js";
-import Server, { IServer } from "../../database/models/Server.js";
+import Server, { IServer } from "../../../database/models/Server.js";
 
 // Sequelize Server model mock
 vi.mock("../../models/Server", () => ({

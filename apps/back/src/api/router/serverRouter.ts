@@ -1,6 +1,6 @@
 import { Router } from "express";
 
-import validateInt from "../middlewares/utils/validateInt.js";
+import validateInt from "../../middlewares/utils/validateInt.js";
 import { serverController } from "../controllers/serverController.js";
 
 const serverRouter: Router = Router();

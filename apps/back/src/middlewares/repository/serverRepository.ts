@@ -2,7 +2,7 @@ import ServerEntity from "../../database/models/Server.js";
 import { Server } from "../../api/controllers/types/server.js";
 
 export class ServerRepository {
-  async getAll(): Promise<Server[]> {
+  public async getAll(): Promise<Server[]> {
     try {
       const result: ServerEntity[] = await ServerEntity.findAll();
 
@@ -20,7 +20,7 @@ export class ServerRepository {
     }
   }
 
-  async getOne(id: number): Promise<Server | null> {
+  public async getOne(id: number): Promise<Server | null> {
     try {
       const result: ServerEntity | null = await ServerEntity.findByPk(id);
 
@@ -36,5 +36,3 @@ export class ServerRepository {
     }
   }
 }
-
-export const serverRepository = new ServerRepository();

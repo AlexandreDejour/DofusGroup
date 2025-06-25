@@ -1,14 +1,18 @@
 import { NextFunction, Request, Response } from "express";
 
 import { IServerController, Server } from "./types/server.js";
-import { serverRepository } from "../../middlewares/repository/serverRepository.js";
-
-const ServerRepository = serverRepository;
+import { ServerRepository } from "../../middlewares/repository/serverRepository.js";
 
 export class ServerController implements IServerController {
-  async getAll(_req: Request, res: Response, next: NextFunction) {
+  private repository: ServerRepository;
+
+  public constructor() {
+    this.repository = new ServerRepository();
+  }
+
+  public async getAll(_req: Request, res: Response, next: NextFunction) {
     try {
-      const servers: Server[] = await ServerRepository.getAll();
+      const servers: Server[] = await this.repository.getAll();
 
       if (!servers.length) {
         res.status(404).json({ error: "Any server found" });
@@ -21,11 +25,11 @@ export class ServerController implements IServerController {
     }
   }
 
-  async getOne(req: Request, res: Response, next: NextFunction) {
+  public async getOne(req: Request, res: Response, next: NextFunction) {
     try {
       const id: number = parseInt(req.params.id, 10);
 
-      const server: Server | null = await serverRepository.getOne(id);
+      const server: Server | null = await this.repository.getOne(id);
 
       if (!server) {
         res.status(404).json({ error: "Server not found" });
@@ -38,5 +42,3 @@ export class ServerController implements IServerController {
     }
   }
 }
-
-export const serverController = new ServerController();

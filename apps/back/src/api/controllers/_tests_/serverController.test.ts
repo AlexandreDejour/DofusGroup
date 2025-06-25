@@ -1,8 +1,6 @@
 import { describe, it, expect, vi, beforeEach, Mocked } from "vitest";
 
-import type { Request, Response, NextFunction } from "express";
-
-import createHttpError, { HttpError } from "http-errors";
+import type { Request, Response } from "express";
 
 import { Server } from "../types/server.js";
 import { serverController } from "../serverController.js";
@@ -11,19 +9,20 @@ import { serverRepository } from "../../../middlewares/repository/serverReposito
 describe("serverController", () => {
   let req: Partial<Request>;
   let res: Partial<Response>;
-  let next: NextFunction;
+  let next = vi.fn();
 
   const mockedRepository = serverRepository as Mocked<typeof serverRepository>;
 
+  req = {};
+  res = {
+    json: vi.fn(),
+    status: vi.fn().mockReturnThis(),
+  };
+  serverRepository.getAll = vi.fn();
+  serverRepository.getOne = vi.fn();
+
   beforeEach(() => {
-    req = {};
-    res = {
-      json: vi.fn(),
-      status: vi.fn().mockReturnThis(),
-    };
-    next = vi.fn();
-    serverRepository.getAll = vi.fn();
-    serverRepository.getOne = vi.fn();
+    vi.clearAllMocks();
   });
 
   // --- GET ALL ---
@@ -52,7 +51,7 @@ describe("serverController", () => {
     });
 
     it("Call next() in case of error.", async () => {
-      const error: HttpError = createHttpError(500, "Internal error");
+      const error = new Error();
 
       mockedRepository.getAll.mockRejectedValue(error);
       await serverController.getAll(req as Request, res as Response, next);
@@ -86,7 +85,7 @@ describe("serverController", () => {
     it("Call next() in case of error.", async () => {
       req.params = { id: "2" };
 
-      const error: HttpError = createHttpError(500, "Internal Error");
+      const error = new Error();
 
       mockedRepository.getOne.mockRejectedValue(error);
       await serverController.getOne(req as Request, res as Response, next);

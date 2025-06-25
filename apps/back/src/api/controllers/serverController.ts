@@ -1,9 +1,9 @@
 import { NextFunction, Request, Response } from "express";
 
-import { IServerController, Server } from "./types/server.js";
+import { Server } from "../../types/server.js";
 import { ServerRepository } from "../../middlewares/repository/serverRepository.js";
 
-export class ServerController implements IServerController {
+export class ServerController {
   private repository: ServerRepository;
 
   public constructor() {

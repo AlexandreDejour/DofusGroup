@@ -1,5 +1,5 @@
 import ServerEntity from "../../database/models/Server.js";
-import { Server } from "../../api/controllers/types/server.js";
+import { Server } from "../../types/server.js";
 
 export class ServerRepository {
   public async getAll(): Promise<Server[]> {

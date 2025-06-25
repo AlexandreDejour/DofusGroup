@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 
 import type { Request, Response } from "express";
 
-import { Server } from "../types/server.js";
+import { Server } from "../../../types/server.js";
 import { ServerController } from "../serverController.js";
 import { ServerRepository } from "../../../middlewares/repository/serverRepository.js";
 

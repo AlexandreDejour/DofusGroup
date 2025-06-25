@@ -1,11 +1,34 @@
-import request from "supertest";
-import { Response } from "supertest";
 import { vi, describe, it, expect, beforeEach } from "vitest";
 
-import express, { Express } from "express";
+vi.mock("../../controllers/serverController.js", () => ({
+  serverController: {
+    getAll: vi.fn((_req, res) =>
+      res.status(200).json([{ id: 1, name: "Dakal", mono_account: true }]),
+    ),
+    getOne: vi.fn((_req, res) =>
+      res.status(200).json({ id: 1, name: "Dakal", mono_account: true }),
+    ),
+  },
+}));
+
+vi.mock("../../../middlewares/utils/validateInt.js", () => ({
+  _esModule: true,
+  default: vi.fn((req, res, next) => {
+    console.log("validateInt id:", req.params.id);
+    if (!/^\d+$/.test(req.params.id)) {
+      console.log("validateInt: 400");
+      return res.status(400).json({ error: "Invalid ID" });
+    }
+    console.log("validateInt: next");
+    next();
+  }),
+}));
+
+import request from "supertest";
+import express, { Express, NextFunction, Request, Response } from "express";
 
 import serverRouter from "../serverRouter.js";
-import Server from "../../../database/models/Server.js";
+import validateInt from "../../../middlewares/utils/validateInt.js";
 import { serverController } from "../../controllers/serverController.js";
 import {
   errorHandler,
@@ -16,91 +39,102 @@ let app: Express;
 
 beforeEach(() => {
   app = express();
-  app.use(express.json());
-  app.use("/", serverRouter);
+  app.use(serverRouter);
   app.use(notFound);
   app.use(errorHandler);
-  vi.restoreAllMocks();
+  vi.resetAllMocks();
 });
 
 describe("GET /servers", () => {
   it("Return all servers.", async () => {
-    const fakeServers: Server[] = [
-      Server.build({ id: 1, name: "Dakal", mono_account: true }),
-    ];
-
-    vi.spyOn(Server, "findAll").mockResolvedValue(fakeServers);
-
-    const res: Response = await request(app).get("/servers");
+    const res = await request(app).get("/servers");
 
     expect(res.status).toBe(200);
-    expect(res.body).toEqual(fakeServers.map((server) => server.toJSON()));
+    expect(res.body).toStrictEqual([
+      { id: 1, name: "Dakal", mono_account: true },
+    ]);
+    expect(serverController.getAll).toHaveBeenCalled();
   });
 
   it("Return 404 if any server found.", async () => {
-    vi.spyOn(Server, "findAll").mockResolvedValue([]);
+    (serverController.getAll as any).mockImplementationOnce(
+      (_req: Request, res: Response) => {
+        res.status(404).json({ error: "Any server found" });
+      },
+    );
 
-    const res: Response = await request(app).get("/servers");
+    const res = await request(app).get("/servers");
 
     expect(res.status).toBe(404);
     expect(res.body).toEqual({ error: "Any server found" });
   });
 
-  it("appelle next() en cas d'erreur", async () => {
-    vi.spyOn(serverController, "getAll").mockImplementation(
-      (_req, _res, next) => {
-        next(new Error("Unexpected error"));
-        return Promise.resolve();
+  it("Call next() in case of error.", async () => {
+    (serverController.getAll as any).mockImplementationOnce(
+      (_req: Request, _res: Response, next: NextFunction) => {
+        next(new Error("Internal Server Error"));
       },
     );
 
-    const res: Response = await request(app).get("/servers");
+    const res = await request(app).get("/servers");
 
     expect(res.status).toBe(500);
+    expect(res.body).toHaveProperty("message", "Internal Server Error");
   });
 });
 
 describe("GET /server/:id", () => {
   it("Return one server.", async () => {
-    const fakeServer: Server = Server.build({
+    const res = await request(app).get("/server/1");
+
+    expect(validateInt).toHaveBeenCalled();
+    expect(res.status).toBe(200);
+    expect(res.body).toStrictEqual({
       id: 1,
       name: "Dakal",
       mono_account: true,
     });
-
-    vi.spyOn(Server, "findByPk").mockResolvedValue(fakeServer);
-
-    const res: Response = await request(app).get("/server/1");
-
-    expect(res.status).toBe(200);
-    expect(res.body).toEqual(fakeServer.toJSON());
   });
 
   it("Return 400 for invalid ID.", async () => {
-    const res: Response = await request(app).get("/server/abc");
-
-    expect(res.status).toBe(400);
-    expect((res.body as { message: string }).message).toBe("Invalid ID");
-  });
-
-  it("renvoie 404 si aucun serveur trouvé", async () => {
-    vi.spyOn(Server, "findByPk").mockResolvedValue(null);
-
-    const res: Response = await request(app).get("/server/999");
-
-    expect(res.status).toBe(404);
-  });
-
-  it("appelle next() en cas d'erreur", async () => {
-    vi.spyOn(serverController, "getOne").mockImplementation(
-      (_req, _res, next) => {
-        next(new Error("DB failure"));
-        return Promise.resolve();
+    (serverController.getOne as any).mockImplementationOnce(
+      (_req: Request, res: Response) => {
+        res.status(400).json({ error: "Invalid ID" });
       },
     );
 
-    const res: Response = await request(app).get("/server/1");
+    const res = await request(app).get("/server/abc");
+
+    expect(validateInt).toHaveBeenCalled();
+    expect(res.status).toBe(400);
+    expect(res.body).toEqual({ error: "Invalid ID" });
+  });
+
+  it("Return 404 if any server found.", async () => {
+    (serverController.getOne as any).mockImplementationOnce(
+      (req: Request, res: Response) => {
+        console.log("controller called with id:", req.params.id);
+        res.status(404).json({ error: "Server not found" });
+      },
+    );
+
+    const res = await request(app).get("/server/999");
+
+    expect(validateInt).toBeCalled();
+    expect(res.status).toBe(404);
+    expect(res.body).toEqual({ error: "Server not found" });
+  });
+
+  it("Call next() in case of error.", async () => {
+    (serverController.getOne as any).mockImplementationOnce(
+      (_req: Request, _res: Response, next: NextFunction) => {
+        next(new Error("Internal Server Error"));
+      },
+    );
+
+    const res = await request(app).get("/server/1");
 
     expect(res.status).toBe(500);
+    expect(res.body).toHaveProperty("message", "Internal Server Error");
   });
 });

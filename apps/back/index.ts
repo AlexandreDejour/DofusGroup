@@ -8,6 +8,7 @@ const app: Express = express();
 const config = Config.getInstance();
 
 app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
 
 app.use(router);
 

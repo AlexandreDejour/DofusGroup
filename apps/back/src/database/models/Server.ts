@@ -9,18 +9,12 @@ import {
 import Event from "./Event.js";
 import Character from "./Character.js";
 
-import { client } from "../client/client.js";
+import client from "../client.js";
 import { SequelizeModels } from "../types/sequelizeModels.js";
 
-export interface IServer {
-  id: number;
-  name: string;
-  mono_account: boolean;
-}
-
-export default class Server extends Model<
-  InferAttributes<Server>,
-  InferCreationAttributes<Server>
+export default class ServerEntity extends Model<
+  InferAttributes<ServerEntity>,
+  InferCreationAttributes<ServerEntity>
 > {
   declare public id: CreationOptional<number>;
   declare public name: string;
@@ -30,19 +24,19 @@ export default class Server extends Model<
   declare public characters?: Character[];
 
   public static associate(models: SequelizeModels) {
-    Server.hasMany(models.Event, {
+    ServerEntity.hasMany(models.Event, {
       foreignKey: "server_id",
       as: "events",
     });
 
-    Server.hasMany(models.Character, {
+    ServerEntity.hasMany(models.Character, {
       foreignKey: "server_id",
       as: "characters",
     });
   }
 }
 
-Server.init(
+ServerEntity.init(
   {
     id: {
       type: DataTypes.INTEGER,
@@ -62,5 +56,6 @@ Server.init(
   },
   {
     sequelize: client,
+    tableName: "servers",
   },
 );

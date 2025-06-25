@@ -12,4 +12,4 @@ const client: Sequelize = new Sequelize(config.pgUrl, {
   },
 });
 
-export { client };
+export default client;

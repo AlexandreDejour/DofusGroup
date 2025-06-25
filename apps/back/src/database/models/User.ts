@@ -7,38 +7,43 @@ import {
 } from "sequelize";
 
 import Event from "./Event.js";
+import Character from "./Character.js";
 
-import { client } from "../client/client.js";
+import client from "../client.js";
 import { SequelizeModels } from "../types/sequelizeModels.js";
 
-export interface ITag {
+export interface IUser {
   id: number;
-  name: string;
-  area: string;
-  sub_area: string;
-  donjon_name: string;
-  color: string;
+  username: string;
+  mail: string;
 }
 
-export default class Tag extends Model<
-  InferAttributes<Tag>,
-  InferCreationAttributes<Tag>
+export default class User extends Model<
+  InferAttributes<User>,
+  InferCreationAttributes<User>
 > {
   declare public id: CreationOptional<number>;
-  declare public name: string;
-  declare public color: string;
+  declare public username: string;
+  declare public password: string;
+  declare public mail: string;
 
   declare public events?: Event[];
+  declare public characters?: Character[];
 
   public static associate(models: SequelizeModels) {
-    Tag.hasMany(models.Event, {
-      foreignKey: "tag_id",
+    User.hasMany(models.Event, {
+      foreignKey: "user_id",
       as: "events",
+    });
+
+    User.hasMany(models.Character, {
+      foreignKey: "user_id",
+      as: "characters",
     });
   }
 }
 
-Tag.init(
+User.init(
   {
     id: {
       type: DataTypes.INTEGER,
@@ -46,17 +51,24 @@ Tag.init(
       autoIncrement: true,
       autoIncrementIdentity: true,
     },
-    name: {
+    username: {
       type: DataTypes.STRING,
       allowNull: false,
       unique: true,
     },
-    color: {
+    password: {
       type: DataTypes.STRING,
       allowNull: false,
+    },
+    mail: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      unique: true,
     },
   },
   {
     sequelize: client,
   },
 );
+
+export { User };

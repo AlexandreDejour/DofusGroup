@@ -1,11 +1,14 @@
 import { Router } from "express";
+const router: Router = Router();
 
 import { Request, Response } from "express";
 
-const router: Router = Router();
+import serverRouter from "./serverRouter.js";
 
 router.get("/", (_req: Request, res: Response) => {
   res.send("Hello DofusGroup");
 });
 
-export { router };
+router.use(serverRouter);
+
+export default router;

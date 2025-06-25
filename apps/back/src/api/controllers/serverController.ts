@@ -28,7 +28,7 @@ export class ServerController implements IServerController {
       const server: Server | null = await serverRepository.getOne(id);
 
       if (!server) {
-        next();
+        res.status(404).json({ error: "Server not found" });
         return;
       }
 

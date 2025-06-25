@@ -1,24 +1,19 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect, vi, beforeEach, Mocked } from "vitest";
 
 import type { Request, Response, NextFunction } from "express";
 
 import createHttpError, { HttpError } from "http-errors";
 
+import { Server } from "../types/server.js";
 import { serverController } from "../serverController.js";
-import Server, { IServer } from "../../../database/models/Server.js";
-
-// Sequelize Server model mock
-vi.mock("../../models/Server", () => ({
-  default: {
-    findAll: vi.fn(),
-    findByPk: vi.fn(),
-  },
-}));
+import { serverRepository } from "../../../middlewares/repository/serverRepository.js";
 
 describe("serverController", () => {
   let req: Partial<Request>;
   let res: Partial<Response>;
   let next: NextFunction;
+
+  const mockedRepository = serverRepository as Mocked<typeof serverRepository>;
 
   beforeEach(() => {
     req = {};
@@ -27,29 +22,29 @@ describe("serverController", () => {
       status: vi.fn().mockReturnThis(),
     };
     next = vi.fn();
+    serverRepository.getAll = vi.fn();
+    serverRepository.getOne = vi.fn();
   });
 
   // --- GET ALL ---
   describe("getAll", () => {
     it("Return servers if exist.", async () => {
-      const mockServers: IServer[] = [
+      const mockServers: Server[] = [
         { id: 1, name: "Dakal", mono_account: true },
       ];
-      (Server.findAll as unknown as ReturnType<typeof vi.fn>).mockResolvedValue(
-        mockServers,
-      );
 
+      mockedRepository.getAll.mockResolvedValue(mockServers);
       await serverController.getAll(req as Request, res as Response, next);
 
+      expect(mockedRepository.getAll).toHaveBeenCalled();
       expect(res.json).toHaveBeenCalledWith(mockServers);
       expect(res.status).not.toHaveBeenCalledWith(404);
     });
 
     it("Return 404 if any server found.", async () => {
-      (Server.findAll as unknown as ReturnType<typeof vi.fn>).mockResolvedValue(
-        [],
-      );
+      const mockServers: Server[] = [];
 
+      mockedRepository.getAll.mockResolvedValue(mockServers);
       await serverController.getAll(req as Request, res as Response, next);
 
       expect(res.status).toHaveBeenCalledWith(404);
@@ -59,10 +54,7 @@ describe("serverController", () => {
     it("Call next() in case of error.", async () => {
       const error: HttpError = createHttpError(500, "Internal error");
 
-      (Server.findAll as unknown as ReturnType<typeof vi.fn>).mockRejectedValue(
-        error,
-      );
-
+      mockedRepository.getAll.mockRejectedValue(error);
       await serverController.getAll(req as Request, res as Response, next);
 
       expect(next).toHaveBeenCalledWith(error);
@@ -73,11 +65,9 @@ describe("serverController", () => {
   describe("getOne", () => {
     it("Return server if exists", async () => {
       req.params = { id: "1" };
-      const mockServer: IServer = { id: 1, name: "Dakal", mono_account: true };
-      (
-        Server.findByPk as unknown as ReturnType<typeof vi.fn>
-      ).mockResolvedValue(mockServer);
+      const mockServer: Server = { id: 1, name: "Dakal", mono_account: true };
 
+      mockedRepository.getOne.mockResolvedValue(mockServer);
       await serverController.getOne(req as Request, res as Response, next);
 
       expect(res.json).toHaveBeenCalledWith(mockServer);
@@ -85,13 +75,12 @@ describe("serverController", () => {
 
     it("Call next() if server doesn't exists.", async () => {
       req.params = { id: "99" };
-      (
-        Server.findByPk as unknown as ReturnType<typeof vi.fn>
-      ).mockResolvedValue(null);
 
+      mockedRepository.getOne.mockResolvedValue(null);
       await serverController.getOne(req as Request, res as Response, next);
 
-      expect(next).toHaveBeenCalled();
+      expect(res.status).toHaveBeenCalledWith(404);
+      expect(res.json).toHaveBeenCalledWith({ error: "Server not found" });
     });
 
     it("Call next() in case of error.", async () => {
@@ -99,10 +88,7 @@ describe("serverController", () => {
 
       const error: HttpError = createHttpError(500, "Internal Error");
 
-      (
-        Server.findByPk as unknown as ReturnType<typeof vi.fn>
-      ).mockRejectedValue(error);
-
+      mockedRepository.getOne.mockRejectedValue(error);
       await serverController.getOne(req as Request, res as Response, next);
 
       expect(next).toHaveBeenCalledWith(error);

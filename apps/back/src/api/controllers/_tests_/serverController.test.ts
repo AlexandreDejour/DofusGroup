@@ -1,41 +1,45 @@
-import { describe, it, expect, vi, beforeEach, Mocked } from "vitest";
+import { describe, it, expect, vi, beforeEach } from "vitest";
 
 import type { Request, Response } from "express";
 
 import { Server } from "../types/server.js";
-import { serverController } from "../serverController.js";
-import { serverRepository } from "../../../middlewares/repository/serverRepository.js";
+import { ServerController } from "../serverController.js";
+import { ServerRepository } from "../../../middlewares/repository/serverRepository.js";
 
-describe("serverController", () => {
+describe("ServerController", () => {
   let req: Partial<Request>;
   let res: Partial<Response>;
   let next = vi.fn();
 
-  const mockedRepository = serverRepository as Mocked<typeof serverRepository>;
+  vi.mock("../../../middlewares/repository/serverRepository.js");
+  const mockGetAll = vi.spyOn(ServerRepository.prototype, "getAll");
+  const mockGetOne = vi.spyOn(ServerRepository.prototype, "getOne");
 
   req = {};
   res = {
     json: vi.fn(),
     status: vi.fn().mockReturnThis(),
   };
-  serverRepository.getAll = vi.fn();
-  serverRepository.getOne = vi.fn();
 
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
+  const underTest: ServerController = new ServerController();
+
   // --- GET ALL ---
   describe("getAll", () => {
     it("Return servers if exist.", async () => {
+      // GIVEN
       const mockServers: Server[] = [
         { id: 1, name: "Dakal", mono_account: true },
       ];
 
-      mockedRepository.getAll.mockResolvedValue(mockServers);
-      await serverController.getAll(req as Request, res as Response, next);
-
-      expect(mockedRepository.getAll).toHaveBeenCalled();
+      mockGetAll.mockResolvedValue(mockServers);
+      // WHEN
+      await underTest.getAll(req as Request, res as Response, next);
+      //THEN
+      expect(mockGetAll).toHaveBeenCalled();
       expect(res.json).toHaveBeenCalledWith(mockServers);
       expect(res.status).not.toHaveBeenCalledWith(404);
     });
@@ -43,8 +47,8 @@ describe("serverController", () => {
     it("Return 404 if any server found.", async () => {
       const mockServers: Server[] = [];
 
-      mockedRepository.getAll.mockResolvedValue(mockServers);
-      await serverController.getAll(req as Request, res as Response, next);
+      mockGetAll.mockResolvedValue(mockServers);
+      await underTest.getAll(req as Request, res as Response, next);
 
       expect(res.status).toHaveBeenCalledWith(404);
       expect(res.json).toHaveBeenCalledWith({ error: "Any server found" });
@@ -53,8 +57,8 @@ describe("serverController", () => {
     it("Call next() in case of error.", async () => {
       const error = new Error();
 
-      mockedRepository.getAll.mockRejectedValue(error);
-      await serverController.getAll(req as Request, res as Response, next);
+      mockGetAll.mockRejectedValue(error);
+      await underTest.getAll(req as Request, res as Response, next);
 
       expect(next).toHaveBeenCalledWith(error);
     });
@@ -66,8 +70,8 @@ describe("serverController", () => {
       req.params = { id: "1" };
       const mockServer: Server = { id: 1, name: "Dakal", mono_account: true };
 
-      mockedRepository.getOne.mockResolvedValue(mockServer);
-      await serverController.getOne(req as Request, res as Response, next);
+      mockGetOne.mockResolvedValue(mockServer);
+      await underTest.getOne(req as Request, res as Response, next);
 
       expect(res.json).toHaveBeenCalledWith(mockServer);
     });
@@ -75,8 +79,8 @@ describe("serverController", () => {
     it("Call next() if server doesn't exists.", async () => {
       req.params = { id: "99" };
 
-      mockedRepository.getOne.mockResolvedValue(null);
-      await serverController.getOne(req as Request, res as Response, next);
+      mockGetOne.mockResolvedValue(null);
+      await underTest.getOne(req as Request, res as Response, next);
 
       expect(res.status).toHaveBeenCalledWith(404);
       expect(res.json).toHaveBeenCalledWith({ error: "Server not found" });
@@ -87,8 +91,8 @@ describe("serverController", () => {
 
       const error = new Error();
 
-      mockedRepository.getOne.mockRejectedValue(error);
-      await serverController.getOne(req as Request, res as Response, next);
+      mockGetOne.mockRejectedValue(error);
+      await underTest.getOne(req as Request, res as Response, next);
 
       expect(next).toHaveBeenCalledWith(error);
     });

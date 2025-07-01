@@ -10,7 +10,7 @@ serverRouter.get("/servers", (req, res, next) => {
   controller.getAll(req, res, next);
 });
 
-serverRouter.get("/server/:id", validateInt, (req, res, next) => {
+serverRouter.get("/server/:id", (req, res, next) => {
   controller.getOne(req, res, next);
 });
 

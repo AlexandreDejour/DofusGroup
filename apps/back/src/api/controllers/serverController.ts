@@ -27,7 +27,7 @@ export class ServerController {
 
   public async getOne(req: Request, res: Response, next: NextFunction) {
     try {
-      const id: number = parseInt(req.params.id, 10);
+      const id: string = req.params.id;
 
       const server: Server | null = await this.repository.getOne(id);
 

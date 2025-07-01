@@ -32,7 +32,11 @@ describe("ServerController", () => {
     it("Return servers if exist.", async () => {
       // GIVEN
       const mockServers: Server[] = [
-        { id: 1, name: "Dakal", mono_account: true },
+        {
+          id: "0f309e32-2281-4b46-bb2e-bc2a7248e39b",
+          name: "Dakal",
+          mono_account: true,
+        },
       ];
 
       mockGetAll.mockResolvedValue(mockServers);
@@ -68,7 +72,11 @@ describe("ServerController", () => {
   describe("getOne", () => {
     it("Return server if exists", async () => {
       req.params = { id: "1" };
-      const mockServer: Server = { id: 1, name: "Dakal", mono_account: true };
+      const mockServer: Server = {
+        id: "0f309e32-2281-4b46-bb2e-bc2a7248e39b",
+        name: "Dakal",
+        mono_account: true,
+      };
 
       mockGetOne.mockResolvedValue(mockServer);
       await underTest.getOne(req as Request, res as Response, next);

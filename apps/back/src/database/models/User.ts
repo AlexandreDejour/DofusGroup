@@ -13,7 +13,7 @@ import client from "../client.js";
 import { SequelizeModels } from "../types/sequelizeModels.js";
 
 export interface IUser {
-  id: number;
+  id: string;
   username: string;
   mail: string;
 }
@@ -22,7 +22,7 @@ export default class User extends Model<
   InferAttributes<User>,
   InferCreationAttributes<User>
 > {
-  declare public id: CreationOptional<number>;
+  declare public id: CreationOptional<string>;
   declare public username: string;
   declare public password: string;
   declare public mail: string;
@@ -46,10 +46,12 @@ export default class User extends Model<
 User.init(
   {
     id: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.UUID,
+      defaultValue: DataTypes.UUIDV4,
+      unique: true,
+      allowNull: false,
       primaryKey: true,
-      autoIncrement: true,
-      autoIncrementIdentity: true,
+      autoIncrement: false,
     },
     username: {
       type: DataTypes.STRING,

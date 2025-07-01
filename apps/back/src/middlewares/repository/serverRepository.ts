@@ -20,7 +20,7 @@ export class ServerRepository {
     }
   }
 
-  public async getOne(id: number): Promise<Server | null> {
+  public async getOne(id: string): Promise<Server | null> {
     try {
       const result: ServerEntity | null = await ServerEntity.findByPk(id);
 

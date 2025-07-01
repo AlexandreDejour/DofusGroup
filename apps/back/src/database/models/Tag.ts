@@ -12,7 +12,7 @@ import client from "../client.js";
 import { SequelizeModels } from "../types/sequelizeModels.js";
 
 export interface ITag {
-  id: number;
+  id: string;
   name: string;
   area: string;
   sub_area: string;
@@ -24,7 +24,7 @@ export default class Tag extends Model<
   InferAttributes<Tag>,
   InferCreationAttributes<Tag>
 > {
-  declare public id: CreationOptional<number>;
+  declare public id: CreationOptional<string>;
   declare public name: string;
   declare public color: string;
 
@@ -41,10 +41,12 @@ export default class Tag extends Model<
 Tag.init(
   {
     id: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.UUID,
+      defaultValue: DataTypes.UUIDV4,
+      unique: true,
+      allowNull: false,
       primaryKey: true,
-      autoIncrement: true,
-      autoIncrementIdentity: true,
+      autoIncrement: false,
     },
     name: {
       type: DataTypes.STRING,

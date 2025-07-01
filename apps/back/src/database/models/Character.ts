@@ -15,7 +15,7 @@ import client from "../client.js";
 import { SequelizeModels } from "../types/sequelizeModels.js";
 
 export interface ICharacter {
-  id: number;
+  id: string;
   name: string;
   level: number;
   alignment: string;
@@ -26,7 +26,7 @@ export default class Character extends Model<
   InferAttributes<Character>,
   InferCreationAttributes<Character>
 > {
-  declare public id: CreationOptional<number>;
+  declare public id: CreationOptional<string>;
   declare public name: string;
   declare public sex: string;
   declare public level: number;
@@ -67,10 +67,12 @@ export default class Character extends Model<
 Character.init(
   {
     id: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.UUID,
+      defaultValue: DataTypes.UUIDV4,
+      unique: true,
+      allowNull: false,
       primaryKey: true,
-      autoIncrement: true,
-      autoIncrementIdentity: true,
+      autoIncrement: false,
     },
     name: {
       type: DataTypes.STRING,

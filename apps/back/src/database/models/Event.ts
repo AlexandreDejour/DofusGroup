@@ -27,7 +27,7 @@ export default class Event extends Model<
   InferAttributes<Event>,
   InferCreationAttributes<Event>
 > {
-  declare public id: CreationOptional<number>;
+  declare public id: CreationOptional<string>;
   declare public title: string;
   declare public date: Date;
   declare public duration: number;
@@ -71,10 +71,12 @@ export default class Event extends Model<
 Event.init(
   {
     id: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.UUID,
+      defaultValue: DataTypes.UUIDV4,
+      unique: true,
+      allowNull: false,
       primaryKey: true,
-      autoIncrement: true,
-      autoIncrementIdentity: true,
+      autoIncrement: false,
     },
     title: {
       type: DataTypes.STRING,

@@ -4,13 +4,14 @@ import {
   InferAttributes,
   InferCreationAttributes,
   CreationOptional,
+  Sequelize,
 } from "sequelize";
 
 import client from "../client.js";
 import { SequelizeModels } from "../types/sequelizeModels.js";
 
 export interface IBreed {
-  id: number;
+  id: string;
   name: string;
 }
 
@@ -18,7 +19,7 @@ export default class Breed extends Model<
   InferAttributes<Breed>,
   InferCreationAttributes<Breed>
 > {
-  declare public id: CreationOptional<number>;
+  declare public id: CreationOptional<string>;
   declare public name: string;
 
   public static associate(models: SequelizeModels) {
@@ -32,10 +33,12 @@ export default class Breed extends Model<
 Breed.init(
   {
     id: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.UUID,
+      defaultValue: DataTypes.UUIDV4,
+      unique: true,
+      allowNull: false,
       primaryKey: true,
-      autoIncrement: true,
-      autoIncrementIdentity: true,
+      autoIncrement: false,
     },
     name: {
       type: DataTypes.STRING,

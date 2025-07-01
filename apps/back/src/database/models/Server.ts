@@ -16,7 +16,7 @@ export default class ServerEntity extends Model<
   InferAttributes<ServerEntity>,
   InferCreationAttributes<ServerEntity>
 > {
-  declare public id: CreationOptional<number>;
+  declare public id: CreationOptional<string>;
   declare public name: string;
   declare public mono_account: boolean;
 
@@ -39,10 +39,12 @@ export default class ServerEntity extends Model<
 ServerEntity.init(
   {
     id: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.UUID,
+      defaultValue: DataTypes.UUIDV4,
+      unique: true,
+      allowNull: false,
       primaryKey: true,
-      autoIncrement: true,
-      autoIncrementIdentity: true,
+      autoIncrement: false,
     },
     name: {
       type: DataTypes.STRING,

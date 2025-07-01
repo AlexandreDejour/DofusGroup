@@ -1,5 +1,5 @@
 export type Server = {
-  id: number;
+  id: string;
   name: string;
   mono_account: boolean;
 };

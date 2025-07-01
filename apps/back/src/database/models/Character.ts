@@ -14,17 +14,9 @@ import Server from "./Server.js";
 import client from "../client.js";
 import { SequelizeModels } from "../types/sequelizeModels.js";
 
-export interface ICharacter {
-  id: string;
-  name: string;
-  level: number;
-  alignment: string;
-  stuff: string;
-}
-
-export default class Character extends Model<
-  InferAttributes<Character>,
-  InferCreationAttributes<Character>
+export default class CharacterEntity extends Model<
+  InferAttributes<CharacterEntity>,
+  InferCreationAttributes<CharacterEntity>
 > {
   declare public id: CreationOptional<string>;
   declare public name: string;
@@ -40,22 +32,22 @@ export default class Character extends Model<
   declare public events?: Event[];
 
   public static associate(models: SequelizeModels) {
-    Character.belongsTo(models.User, {
+    CharacterEntity.belongsTo(models.User, {
       foreignKey: "user_id",
       as: "user",
     });
 
-    Character.belongsTo(models.Breed, {
+    CharacterEntity.belongsTo(models.Breed, {
       foreignKey: "breed_id",
       as: "breed",
     });
 
-    Character.belongsTo(models.Server, {
+    CharacterEntity.belongsTo(models.Server, {
       foreignKey: "server_id",
       as: "server",
     });
 
-    Character.belongsToMany(models.Event, {
+    CharacterEntity.belongsToMany(models.Event, {
       foreignKey: "character_id",
       otherKey: "server_id",
       as: "events",
@@ -64,7 +56,7 @@ export default class Character extends Model<
   }
 }
 
-Character.init(
+CharacterEntity.init(
   {
     id: {
       type: DataTypes.UUID,
@@ -98,5 +90,6 @@ Character.init(
   },
   {
     sequelize: client,
+    tableName: "characters",
   },
 );

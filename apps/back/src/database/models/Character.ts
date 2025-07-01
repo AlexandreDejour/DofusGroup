@@ -11,7 +11,7 @@ import Event from "./Event.js";
 import Breed from "./Breeds.js";
 import Server from "./Server.js";
 
-import { client } from "../client/client.js";
+import client from "../client.js";
 import { SequelizeModels } from "../types/sequelizeModels.js";
 
 export interface ICharacter {

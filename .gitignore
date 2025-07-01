@@ -4,6 +4,7 @@ apps/front/app/node_modules/
 
 dist/
 build/
+apps/back/coverage/
 
 **/.env*
 *.vscode

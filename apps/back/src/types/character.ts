@@ -14,8 +14,14 @@ export type Character = {
 };
 
 export type CharacterEnriched = Character & {
-  user: User;
-  breed: Breed;
-  server: Server;
-  events: Event[];
+  user?: User;
+  breed?: Breed;
+  server?: Server;
+  events?: Event[];
+};
+
+export type CharacterBodyData = Character & {
+  user_id: string;
+  breed_id: string;
+  server_id: string;
 };

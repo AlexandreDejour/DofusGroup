@@ -26,6 +26,10 @@ export default class CharacterEntity extends Model<
   declare public stuff: string;
   declare public default_character: boolean;
 
+  declare public user_id: string;
+  declare public server_id: string;
+  declare public breed_id: string;
+
   declare public user?: User;
   declare public breed?: Breed;
   declare public server?: Server;
@@ -86,6 +90,18 @@ CharacterEntity.init(
     },
     default_character: {
       type: DataTypes.BOOLEAN,
+    },
+    user_id: {
+      type: DataTypes.UUID,
+      allowNull: false,
+    },
+    server_id: {
+      type: DataTypes.UUID,
+      allowNull: false,
+    },
+    breed_id: {
+      type: DataTypes.UUID,
+      allowNull: false,
     },
   },
   {

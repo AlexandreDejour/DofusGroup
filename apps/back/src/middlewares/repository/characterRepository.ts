@@ -129,10 +129,10 @@ export class CharacterRepository {
     }
   }
 
-  public async delete(characterId: string): Promise<boolean> {
+  public async delete(userId: string, characterId: string): Promise<boolean> {
     try {
       const result: CharacterEntity | null = await CharacterEntity.findOne({
-        where: { id: characterId },
+        where: { id: characterId, user_id: userId },
       });
 
       if (!result) {

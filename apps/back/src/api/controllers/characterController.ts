@@ -151,7 +151,7 @@ export class CharacterController {
 
       const { userId, characterId } = req.params;
 
-      const result = await this.repository.delete(userId, characterId);
+      const result: boolean = await this.repository.delete(userId, characterId);
 
       if (!result) {
         res.status(404).json({ error: "Character not found" });

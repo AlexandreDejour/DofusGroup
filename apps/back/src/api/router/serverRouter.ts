@@ -10,7 +10,8 @@ serverRouter.get("/servers", (req, res, next) => {
   controller.getAll(req, res, next);
 });
 
-serverRouter.get("/server/:id", validateUUID, (req, res, next) => {
+serverRouter.get("/server/:id", (req, res, next) => {
+  validateUUID;
   controller.getOne(req, res, next);
 });
 

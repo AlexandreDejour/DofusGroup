@@ -20,7 +20,7 @@ export type CharacterEnriched = Character & {
   events?: Event[];
 };
 
-export type CharacterBodyData = Character & {
+export type CharacterBodyData = Omit<Character, "id"> & {
   user_id: string;
   breed_id: string;
   server_id: string;

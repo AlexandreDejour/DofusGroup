@@ -105,7 +105,8 @@ export class CharacterController {
       const userId: string = req.params.userId;
       const characterData: CharacterBodyData = { ...req.body, user_id: userId };
 
-      const newCharacter: Character = await this.repository.post(characterData);
+      const newCharacter: CharacterEnriched =
+        await this.repository.post(characterData);
 
       if (!newCharacter) {
         res.status(500).json({ error: "Internal server error" });
@@ -125,8 +126,7 @@ export class CharacterController {
         return;
       }
 
-      const userId: string = req.params.userId;
-      const characterData: CharacterBodyData = { ...req.body, user_id: userId };
+      const characterData: Partial<CharacterBodyData> = req.body;
 
       const characterUpdated: Character | null =
         await this.repository.update(characterData);

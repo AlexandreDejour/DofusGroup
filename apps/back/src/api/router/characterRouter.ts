@@ -1,6 +1,7 @@
 import { Router } from "express";
 
 import validateUUID from "../../middlewares/utils/validateUUID.js";
+import htmlSanitizer from "../../middlewares/utils/htmlSanitizer.js";
 import { CharacterController } from "../controllers/characterController.js";
 
 const characterRouter: Router = Router();
@@ -25,6 +26,7 @@ characterRouter.get(
 characterRouter.post(
   "/user/:userId/character",
   validateUUID,
+  htmlSanitizer,
   (req, res, next) => {
     controller.post(req, res, next);
   },
@@ -35,7 +37,7 @@ characterRouter
   .get(validateUUID, (req, res, next) => {
     controller.getOneByUserId(req, res, next);
   })
-  .patch(validateUUID, (req, res, next) => {
+  .patch(validateUUID, htmlSanitizer, (req, res, next) => {
     controller.update(req, res, next);
   })
   .delete(validateUUID, (req, res, next) => {

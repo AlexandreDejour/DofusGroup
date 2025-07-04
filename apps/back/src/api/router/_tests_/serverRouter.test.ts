@@ -61,7 +61,9 @@ describe("serverRouter", () => {
         },
       );
       //WHEN
-      const res = await request(app).get("/server/1");
+      const res = await request(app).get(
+        "/server/e5b25782-deea-4f73-b8f0-47b7e0c99e67",
+      );
       //THEN
       expect(res.status).toBe(200);
       expect(res.body).toBe("Success!");
@@ -74,13 +76,15 @@ describe("serverRouter", () => {
         },
       );
 
-      const res = await request(app).get("/server/1");
+      const res = await request(app).get(
+        "/server/e5b25782-deea-4f73-b8f0-47b7e0c99e67",
+      );
 
       expect(res.status).toBe(404);
       expect(res.body).toEqual({ called: "next" });
     });
 
-    it("Excluded bad request when id isn't a number.", async () => {
+    it("Excluded bad request when id isn't a UUID.", async () => {
       const res = await request(app).get("/server/toto");
 
       expect(res.status).toBe(400);

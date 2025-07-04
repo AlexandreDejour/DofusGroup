@@ -6,39 +6,48 @@ import { CharacterController } from "../controllers/characterController.js";
 const characterRouter: Router = Router();
 const controller: CharacterController = new CharacterController();
 
-characterRouter.get("/user/:userId/characters", (req, res, next) => {
-  validateUUID;
-  controller.getAllByUserId(req, res, next);
-});
+characterRouter.get(
+  "/user/:userId/characters",
+  validateUUID,
+  (req, res, next) => {
+    controller.getAllByUserId(req, res, next);
+  },
+);
 
-characterRouter.get("/user/:userId/characters/enriched", (req, res, next) => {
-  validateUUID;
-  controller.getAllByUserIdEnriched(req, res, next);
-});
+characterRouter.get(
+  "/user/:userId/characters/enriched",
+  validateUUID,
+  (req, res, next) => {
+    controller.getAllByUserIdEnriched(req, res, next);
+  },
+);
 
-characterRouter.post("/user/:userId/character", (req, res, next) => {
-  validateUUID;
-  controller.post(req, res, next);
-});
+characterRouter.post(
+  "/user/:userId/character",
+  validateUUID,
+  (req, res, next) => {
+    controller.post(req, res, next);
+  },
+);
 
 characterRouter
-  .route("/user/userId/character/:characterId")
-  .get((req, res, next) => {
-    validateUUID;
+  .route("/user/:userId/character/:characterId")
+  .get(validateUUID, (req, res, next) => {
     controller.getOneByUserId(req, res, next);
   })
-  .patch((req, res, next) => {
-    validateUUID;
+  .patch(validateUUID, (req, res, next) => {
     controller.update(req, res, next);
   })
-  .delete((req, res, next) => {
-    validateUUID;
+  .delete(validateUUID, (req, res, next) => {
     controller.delete(req, res, next);
   });
 
-characterRouter.get("/user/:userId/character/enriched", (req, res, next) => {
-  validateUUID;
-  controller.getOneByUserIdEnriched(req, res, next);
-});
+characterRouter.get(
+  "/user/:userId/character/enriched/:characterId",
+  validateUUID,
+  (req, res, next) => {
+    controller.getOneByUserIdEnriched(req, res, next);
+  },
+);
 
 export default characterRouter;

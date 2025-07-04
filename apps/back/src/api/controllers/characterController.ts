@@ -113,7 +113,7 @@ export class CharacterController {
         return;
       }
 
-      res.json(newCharacter);
+      res.status(201).json(newCharacter);
     } catch (error) {
       next(error);
     }

@@ -14,17 +14,9 @@ import Server from "./Server.js";
 import client from "../client.js";
 import { SequelizeModels } from "../types/sequelizeModels.js";
 
-export interface ICharacter {
-  id: string;
-  name: string;
-  level: number;
-  alignment: string;
-  stuff: string;
-}
-
-export default class Character extends Model<
-  InferAttributes<Character>,
-  InferCreationAttributes<Character>
+export default class CharacterEntity extends Model<
+  InferAttributes<CharacterEntity>,
+  InferCreationAttributes<CharacterEntity>
 > {
   declare public id: CreationOptional<string>;
   declare public name: string;
@@ -34,28 +26,32 @@ export default class Character extends Model<
   declare public stuff: string;
   declare public default_character: boolean;
 
+  declare public user_id: string;
+  declare public server_id: string;
+  declare public breed_id: string;
+
   declare public user?: User;
   declare public breed?: Breed;
   declare public server?: Server;
   declare public events?: Event[];
 
   public static associate(models: SequelizeModels) {
-    Character.belongsTo(models.User, {
+    CharacterEntity.belongsTo(models.User, {
       foreignKey: "user_id",
       as: "user",
     });
 
-    Character.belongsTo(models.Breed, {
+    CharacterEntity.belongsTo(models.Breed, {
       foreignKey: "breed_id",
       as: "breed",
     });
 
-    Character.belongsTo(models.Server, {
+    CharacterEntity.belongsTo(models.Server, {
       foreignKey: "server_id",
       as: "server",
     });
 
-    Character.belongsToMany(models.Event, {
+    CharacterEntity.belongsToMany(models.Event, {
       foreignKey: "character_id",
       otherKey: "server_id",
       as: "events",
@@ -64,7 +60,7 @@ export default class Character extends Model<
   }
 }
 
-Character.init(
+CharacterEntity.init(
   {
     id: {
       type: DataTypes.UUID,
@@ -95,8 +91,21 @@ Character.init(
     default_character: {
       type: DataTypes.BOOLEAN,
     },
+    user_id: {
+      type: DataTypes.UUID,
+      allowNull: false,
+    },
+    server_id: {
+      type: DataTypes.UUID,
+      allowNull: false,
+    },
+    breed_id: {
+      type: DataTypes.UUID,
+      allowNull: false,
+    },
   },
   {
     sequelize: client,
+    tableName: "characters",
   },
 );

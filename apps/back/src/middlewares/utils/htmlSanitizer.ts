@@ -20,6 +20,6 @@ export default function htmlSanitizer(
     next();
   } catch (error) {
     console.error(error);
-    next(createHttpError(400, "Invalid HTML content"));
+    next(createHttpError(400, "Sanitization failed"));
   }
 }

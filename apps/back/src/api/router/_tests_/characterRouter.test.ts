@@ -1,70 +1,79 @@
 import request from "supertest";
-import { vi, describe, it, expect, beforeEach } from "vitest";
+import { vi, describe, it, expect, beforeEach, Mock } from "vitest";
 
 import status from "http-status";
 import express, { Express, NextFunction, Request, Response } from "express";
 
-import characterRouter from "../characterRouter.js";
-import { CharacterController } from "../../controllers/characterController.js";
+import { createCharacterRouter } from "../characterRouter.js";
 
 let app: Express;
 
-vi.mock("../../controllers/characterController.js");
+const characterControllerInstanceMock = {
+  getAllByUserId: vi.fn(),
+  getOneByUserId: vi.fn(),
+  getAllEnrichedByUserId: vi.fn(),
+  getOneEnrichedByUserId: vi.fn(),
+  post: vi.fn(),
+  update: vi.fn(),
+  delete: vi.fn(),
+};
 
-const mockGetAll = vi.spyOn(CharacterController.prototype, "getAllByUserId");
-const mockGetOne = vi.spyOn(CharacterController.prototype, "getOneByUserId");
-const mockGetAllEnriched = vi.spyOn(
-  CharacterController.prototype,
-  "getAllEnrichedByUserId",
-);
-const mockGetOneEnriched = vi.spyOn(
-  CharacterController.prototype,
-  "getOneEnrichedByUserId",
-);
-const mockPost = vi.spyOn(CharacterController.prototype, "post");
-const mockUpdate = vi.spyOn(CharacterController.prototype, "update");
-const mockDelete = vi.spyOn(CharacterController.prototype, "delete");
+vi.mock("../../controllers/characterController.js", () => {
+  return {
+    CharacterController: vi
+      .fn()
+      .mockImplementation(() => characterControllerInstanceMock),
+  };
+});
+
+function setupApp(): Express {
+  const app = express();
+  app.use(createCharacterRouter());
+  app.use((_req, res) => {
+    res.status(status.NOT_FOUND).json({ called: "next" });
+  });
+  return app;
+}
 
 describe("characterRouter", () => {
   beforeEach(() => {
-    app = express();
-    app.use(characterRouter);
-    app.use((_req, res) => {
-      res.status(status.NOT_FOUND).json({ called: "next" });
-    });
     vi.clearAllMocks();
+    app = setupApp();
   });
 
   describe("GET /user/:userId/characters", () => {
+    const userId = "f0256483-0827-4cd5-923a-6bd10a135c4e";
+
     it("Propagate request to characterController.getAllByUserId", async () => {
       //GIVEN
-      mockGetAll.mockImplementationOnce(
+      characterControllerInstanceMock.getAllByUserId.mockImplementationOnce(
         (_req: Request, res: Response, _next: NextFunction): Promise<void> => {
           res.status(status.OK).json("Success!");
           return Promise.resolve();
         },
       );
       //WHEN
-      const res = await request(app).get(
-        "/user/f0256483-0827-4cd5-923a-6bd10a135c4e/characters",
-      );
+      const res = await request(app).get(`/user/${userId}/characters`);
       //THEN
+      expect(characterControllerInstanceMock.getAllByUserId).toHaveBeenCalled();
+      const [req] =
+        characterControllerInstanceMock.getAllByUserId.mock.calls[0];
+      expect(req.params.userId).toBe(userId);
       expect(res.status).toBe(status.OK);
       expect(res.body).toBe("Success!");
     });
 
     it("Next is called at end route.", async () => {
-      mockGetAll.mockImplementationOnce(
+      characterControllerInstanceMock.getAllByUserId.mockImplementationOnce(
         (_req: Request, _res: Response, next: NextFunction): Promise<void> => {
           next();
           return Promise.resolve();
         },
       );
 
-      const res = await request(app).get(
-        "/user/f0256483-0827-4cd5-923a-6bd10a135c4e/characters",
-      );
+      const res = await request(app).get(`/user/${userId}/characters`);
 
+      expect(characterControllerInstanceMock.getAllByUserId).toHaveBeenCalled();
       expect(res.status).toBe(status.NOT_FOUND);
       expect(res.body).toEqual({ called: "next" });
     });
@@ -72,14 +81,20 @@ describe("characterRouter", () => {
     it("Excluded bad request when id isn't a UUID.", async () => {
       const res = await request(app).get("/user/1234/characters");
 
+      expect(
+        characterControllerInstanceMock.getAllByUserId,
+      ).not.toHaveBeenCalled();
       expect(res.status).toBe(status.BAD_REQUEST);
     });
   });
 
   describe("GET /user/:userId/character/:characterId", () => {
+    const userId = "f0256483-0827-4cd5-923a-6bd10a135c4e";
+    const characterId = "18d99a7c-1d47-4391-bacd-cc4848165768";
+
     it("Propagate request to characterController.getOneByUserId", async () => {
       //GIVEN
-      mockGetOne.mockImplementationOnce(
+      characterControllerInstanceMock.getOneByUserId.mockImplementationOnce(
         (_req: Request, res: Response, _next: NextFunction): Promise<void> => {
           res.status(status.OK).json("Success!");
           return Promise.resolve();
@@ -87,15 +102,21 @@ describe("characterRouter", () => {
       );
       //WHEN
       const res = await request(app).get(
-        "/user/f0256483-0827-4cd5-923a-6bd10a135c4e/character/18d99a7c-1d47-4391-bacd-cc4848165768",
+        `/user/${userId}/character/${characterId}`,
       );
       //THEN
+      expect(characterControllerInstanceMock.getOneByUserId).toHaveBeenCalled();
+      const [req] =
+        characterControllerInstanceMock.getOneByUserId.mock.calls[0];
+      expect(req.params.userId).toBe(userId);
+      expect(req.params.characterId).toBe(characterId);
+      expect(characterControllerInstanceMock.getOneByUserId).toHaveBeenCalled();
       expect(res.status).toBe(status.OK);
       expect(res.body).toBe("Success!");
     });
 
     it("Next is called at end route.", async () => {
-      mockGetOne.mockImplementationOnce(
+      characterControllerInstanceMock.getOneByUserId.mockImplementationOnce(
         (_req: Request, _res: Response, next: NextFunction): Promise<void> => {
           next();
           return Promise.resolve();
@@ -103,9 +124,10 @@ describe("characterRouter", () => {
       );
 
       const res = await request(app).get(
-        "/user/f0256483-0827-4cd5-923a-6bd10a135c4e/character/18d99a7c-1d47-4391-bacd-cc4848165768",
+        `/user/${userId}/character/${characterId}`,
       );
 
+      expect(characterControllerInstanceMock.getOneByUserId).toHaveBeenCalled();
       expect(res.status).toBe(status.NOT_FOUND);
       expect(res.body).toEqual({ called: "next" });
     });
@@ -113,40 +135,50 @@ describe("characterRouter", () => {
     it("Excluded bad request when id isn't a UUID.", async () => {
       const res = await request(app).get("/user/1234/character/toto");
 
+      expect(
+        characterControllerInstanceMock.getOneByUserId,
+      ).not.toHaveBeenCalled();
       expect(res.status).toBe(status.BAD_REQUEST);
     });
   });
 
   describe("GET /user/:userId/characters/enriched", () => {
+    const userId = "f0256483-0827-4cd5-923a-6bd10a135c4e";
+
     it("Propagate request to characterController.getAllByUserIdEnriched", async () => {
       //GIVEN
-      mockGetAllEnriched.mockImplementationOnce(
+      characterControllerInstanceMock.getAllEnrichedByUserId.mockImplementationOnce(
         (_req: Request, res: Response, _next: NextFunction): Promise<void> => {
           res.status(status.OK).json("Success!");
           return Promise.resolve();
         },
       );
       //WHEN
-      const res = await request(app).get(
-        "/user/f0256483-0827-4cd5-923a-6bd10a135c4e/characters/enriched",
-      );
+      const res = await request(app).get(`/user/${userId}/characters/enriched`);
       //THEN
+      expect(
+        characterControllerInstanceMock.getAllEnrichedByUserId,
+      ).toHaveBeenCalled();
+      const [req] =
+        characterControllerInstanceMock.getAllEnrichedByUserId.mock.calls[0];
+      expect(req.params.userId).toBe(userId);
       expect(res.status).toBe(status.OK);
       expect(res.body).toBe("Success!");
     });
 
     it("Next is called at end route.", async () => {
-      mockGetAllEnriched.mockImplementationOnce(
+      characterControllerInstanceMock.getAllEnrichedByUserId.mockImplementationOnce(
         (_req: Request, _res: Response, next: NextFunction): Promise<void> => {
           next();
           return Promise.resolve();
         },
       );
 
-      const res = await request(app).get(
-        "/user/f0256483-0827-4cd5-923a-6bd10a135c4e/characters/enriched",
-      );
+      const res = await request(app).get(`/user/${userId}/characters/enriched`);
 
+      expect(
+        characterControllerInstanceMock.getAllEnrichedByUserId,
+      ).toHaveBeenCalled();
       expect(res.status).toBe(status.NOT_FOUND);
       expect(res.body).toEqual({ called: "next" });
     });
@@ -154,14 +186,20 @@ describe("characterRouter", () => {
     it("Excluded bad request when id isn't a UUID.", async () => {
       const res = await request(app).get("/user/1234/characters/enriched");
 
+      expect(
+        characterControllerInstanceMock.getAllEnrichedByUserId,
+      ).not.toHaveBeenCalled();
       expect(res.status).toBe(status.BAD_REQUEST);
     });
   });
 
   describe("GET /user/:userId/character/enriched/:characterId", () => {
+    const userId = "f0256483-0827-4cd5-923a-6bd10a135c4e";
+    const characterId = "18d99a7c-1d47-4391-bacd-cc4848165768";
+
     it("Propagate request to characterController.getOneByUserIdEnriched", async () => {
       //GIVEN
-      mockGetOneEnriched.mockImplementationOnce(
+      characterControllerInstanceMock.getOneEnrichedByUserId.mockImplementationOnce(
         (_req: Request, res: Response, _next: NextFunction): Promise<void> => {
           res.status(status.OK).json("Success!");
           return Promise.resolve();
@@ -169,15 +207,22 @@ describe("characterRouter", () => {
       );
       //WHEN
       const res = await request(app).get(
-        "/user/f0256483-0827-4cd5-923a-6bd10a135c4e/character/enriched/af1ae2a1-45e3-47bc-8625-1a3bded01f6f",
+        `/user/${userId}/character/enriched/${characterId}`,
       );
       //THEN
+      expect(
+        characterControllerInstanceMock.getOneEnrichedByUserId,
+      ).toHaveBeenCalled();
+      const [req] =
+        characterControllerInstanceMock.getOneEnrichedByUserId.mock.calls[0];
+      expect(req.params.userId).toBe(userId);
+      expect(req.params.characterId).toBe(characterId);
       expect(res.status).toBe(status.OK);
       expect(res.body).toBe("Success!");
     });
 
     it("Next is called at end route.", async () => {
-      mockGetOneEnriched.mockImplementationOnce(
+      characterControllerInstanceMock.getOneEnrichedByUserId.mockImplementationOnce(
         (_req: Request, _res: Response, next: NextFunction): Promise<void> => {
           next();
           return Promise.resolve();
@@ -185,9 +230,12 @@ describe("characterRouter", () => {
       );
 
       const res = await request(app).get(
-        "/user/f0256483-0827-4cd5-923a-6bd10a135c4e/character/enriched/af1ae2a1-45e3-47bc-8625-1a3bded01f6f",
+        `/user/${userId}/character/enriched/${characterId}`,
       );
 
+      expect(
+        characterControllerInstanceMock.getOneEnrichedByUserId,
+      ).toHaveBeenCalled();
       expect(res.status).toBe(status.NOT_FOUND);
       expect(res.body).toEqual({ called: "next" });
     });
@@ -195,40 +243,45 @@ describe("characterRouter", () => {
     it("Excluded bad request when id isn't a UUID.", async () => {
       const res = await request(app).get("/user/1234/character/enriched/toto");
 
+      expect(
+        characterControllerInstanceMock.getOneEnrichedByUserId,
+      ).not.toHaveBeenCalled();
       expect(res.status).toBe(status.BAD_REQUEST);
     });
   });
 
   describe("POST /user/:userId/character", () => {
+    const userId = "f0256483-0827-4cd5-923a-6bd10a135c4e";
+
     it("Propagate request to characterController.post", async () => {
       //GIVEN
-      mockPost.mockImplementationOnce(
+      characterControllerInstanceMock.post.mockImplementationOnce(
         (_req: Request, res: Response, _next: NextFunction): Promise<void> => {
           res.status(status.CREATED).json("Success!");
           return Promise.resolve();
         },
       );
       //WHEN
-      const res = await request(app).post(
-        "/user/f0256483-0827-4cd5-923a-6bd10a135c4e/character",
-      );
+      const res = await request(app).post(`/user/${userId}/character`);
       //THEN
+      expect(characterControllerInstanceMock.post).toHaveBeenCalled();
+      const [req] = characterControllerInstanceMock.post.mock.calls[0];
+      expect(req.params.userId).toBe(userId);
       expect(res.status).toBe(status.CREATED);
       expect(res.body).toBe("Success!");
     });
 
     it("Next is called at end route.", async () => {
-      mockPost.mockImplementationOnce(
+      characterControllerInstanceMock.post.mockImplementationOnce(
         (_req: Request, _res: Response, next: NextFunction): Promise<void> => {
           next();
           return Promise.resolve();
         },
       );
 
-      const res = await request(app).post(
-        "/user/f0256483-0827-4cd5-923a-6bd10a135c4e/character",
-      );
+      const res = await request(app).post(`/user/${userId}/character`);
 
+      expect(characterControllerInstanceMock.post).toHaveBeenCalled();
       expect(res.status).toBe(status.NOT_FOUND);
       expect(res.body).toEqual({ called: "next" });
     });
@@ -236,14 +289,18 @@ describe("characterRouter", () => {
     it("Excluded bad request when id isn't a UUID.", async () => {
       const res = await request(app).post("/user/1234/character");
 
+      expect(characterControllerInstanceMock.post).not.toHaveBeenCalled();
       expect(res.status).toBe(status.BAD_REQUEST);
     });
   });
 
   describe("PATCH /user/:userId/character/:characterId", () => {
+    const userId = "f0256483-0827-4cd5-923a-6bd10a135c4e";
+    const characterId = "18d99a7c-1d47-4391-bacd-cc4848165768";
+
     it("Propagate request to characterController.update", async () => {
       //GIVEN
-      mockUpdate.mockImplementationOnce(
+      characterControllerInstanceMock.update.mockImplementationOnce(
         (_req: Request, res: Response, _next: NextFunction): Promise<void> => {
           res.status(status.OK).json("Success!");
           return Promise.resolve();
@@ -251,15 +308,19 @@ describe("characterRouter", () => {
       );
       //WHEN
       const res = await request(app).patch(
-        "/user/f0256483-0827-4cd5-923a-6bd10a135c4e/character/18d99a7c-1d47-4391-bacd-cc4848165768",
+        `/user/${userId}/character/${characterId}`,
       );
       //THEN
+      expect(characterControllerInstanceMock.update).toHaveBeenCalled();
+      const [req] = characterControllerInstanceMock.update.mock.calls[0];
+      expect(req.params.userId).toBe(userId);
+      expect(req.params.characterId).toBe(characterId);
       expect(res.status).toBe(status.OK);
       expect(res.body).toBe("Success!");
     });
 
     it("Next is called at end route.", async () => {
-      mockUpdate.mockImplementationOnce(
+      characterControllerInstanceMock.update.mockImplementationOnce(
         (_req: Request, _res: Response, next: NextFunction): Promise<void> => {
           next();
           return Promise.resolve();
@@ -267,9 +328,10 @@ describe("characterRouter", () => {
       );
 
       const res = await request(app).patch(
-        "/user/f0256483-0827-4cd5-923a-6bd10a135c4e/character/18d99a7c-1d47-4391-bacd-cc4848165768",
+        `/user/${userId}/character/${characterId}`,
       );
 
+      expect(characterControllerInstanceMock.update).toHaveBeenCalled();
       expect(res.status).toBe(status.NOT_FOUND);
       expect(res.body).toEqual({ called: "next" });
     });
@@ -277,14 +339,18 @@ describe("characterRouter", () => {
     it("Excluded bad request when id isn't a UUID.", async () => {
       const res = await request(app).patch("/user/1234/character/toto");
 
+      expect(characterControllerInstanceMock.update).not.toHaveBeenCalled();
       expect(res.status).toBe(status.BAD_REQUEST);
     });
   });
 
   describe("DELETE /user/:userId/character/:characterId", () => {
+    const userId = "f0256483-0827-4cd5-923a-6bd10a135c4e";
+    const characterId = "18d99a7c-1d47-4391-bacd-cc4848165768";
+
     it("Propagate request to characterController.delete", async () => {
       //GIVEN
-      mockDelete.mockImplementationOnce(
+      characterControllerInstanceMock.delete.mockImplementationOnce(
         (_req: Request, res: Response, _next: NextFunction): Promise<void> => {
           res.status(status.NO_CONTENT).end();
           return Promise.resolve();
@@ -292,15 +358,19 @@ describe("characterRouter", () => {
       );
       //WHEN
       const res = await request(app).delete(
-        "/user/f0256483-0827-4cd5-923a-6bd10a135c4e/character/18d99a7c-1d47-4391-bacd-cc4848165768",
+        `/user/${userId}/character/${characterId}`,
       );
       //THEN
+      expect(characterControllerInstanceMock.delete).toHaveBeenCalled();
+      const [req] = characterControllerInstanceMock.delete.mock.calls[0];
+      expect(req.params.userId).toBe(userId);
+      expect(req.params.characterId).toBe(characterId);
       expect(res.status).toBe(status.NO_CONTENT);
       expect(res.body).toEqual({});
     });
 
     it("Next is called at end route.", async () => {
-      mockDelete.mockImplementationOnce(
+      characterControllerInstanceMock.delete.mockImplementationOnce(
         (_req: Request, _res: Response, next: NextFunction): Promise<void> => {
           next();
           return Promise.resolve();
@@ -308,9 +378,10 @@ describe("characterRouter", () => {
       );
 
       const res = await request(app).delete(
-        "/user/f0256483-0827-4cd5-923a-6bd10a135c4e/character/18d99a7c-1d47-4391-bacd-cc4848165768",
+        `/user/${userId}/character/${characterId}`,
       );
 
+      expect(characterControllerInstanceMock.delete).toHaveBeenCalled();
       expect(res.status).toBe(status.NOT_FOUND);
       expect(res.body).toEqual({ called: "next" });
     });
@@ -318,6 +389,7 @@ describe("characterRouter", () => {
     it("Excluded bad request when id isn't a UUID.", async () => {
       const res = await request(app).delete("/user/1234/character/toto");
 
+      expect(characterControllerInstanceMock.delete).not.toHaveBeenCalled();
       expect(res.status).toBe(status.BAD_REQUEST);
     });
   });

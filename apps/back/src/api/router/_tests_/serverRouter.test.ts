@@ -27,9 +27,10 @@ describe("serverRouter", () => {
   describe("GET /servers", () => {
     it("Propagate request to serverController.getAll", async () => {
       //GIVEN
-      (mockGetAll as any).mockImplementationOnce(
-        (_req: Request, res: Response, _next: NextFunction) => {
+      mockGetAll.mockImplementationOnce(
+        (_req: Request, res: Response, _next: NextFunction): Promise<void> => {
           res.status(status.OK).json("Success!");
+          return Promise.resolve();
         },
       );
       //WHEN
@@ -40,9 +41,10 @@ describe("serverRouter", () => {
     });
 
     it("Next is called at end route.", async () => {
-      (mockGetAll as any).mockImplementationOnce(
-        (_req: Request, _res: Response, next: NextFunction) => {
+      mockGetAll.mockImplementationOnce(
+        (_req: Request, _res: Response, next: NextFunction): Promise<void> => {
           next();
+          return Promise.resolve();
         },
       );
 
@@ -56,9 +58,10 @@ describe("serverRouter", () => {
   describe("GET /server/:id", () => {
     it("Propagate request to serverController.getOne", async () => {
       //GIVEN
-      (mockGetOne as any).mockImplementationOnce(
-        (_req: Request, res: Response, _next: NextFunction) => {
+      mockGetOne.mockImplementationOnce(
+        (_req: Request, res: Response, _next: NextFunction): Promise<void> => {
           res.status(status.OK).json("Success!");
+          return Promise.resolve();
         },
       );
       //WHEN
@@ -71,9 +74,10 @@ describe("serverRouter", () => {
     });
 
     it("Next is called at end route.", async () => {
-      (mockGetOne as any).mockImplementationOnce(
-        (_req: Request, _res: Response, next: NextFunction) => {
+      mockGetOne.mockImplementationOnce(
+        (_req: Request, _res: Response, next: NextFunction): Promise<void> => {
           next();
+          return Promise.resolve();
         },
       );
 

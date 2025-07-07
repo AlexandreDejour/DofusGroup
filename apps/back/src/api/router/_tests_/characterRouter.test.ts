@@ -38,9 +38,10 @@ describe("characterRouter", () => {
   describe("GET /user/:userId/characters", () => {
     it("Propagate request to characterController.getAllByUserId", async () => {
       //GIVEN
-      (mockGetAll as any).mockImplementationOnce(
-        (_req: Request, res: Response, _next: NextFunction) => {
-          res.status(200).json("Success!");
+      mockGetAll.mockImplementationOnce(
+        (_req: Request, res: Response, _next: NextFunction): Promise<void> => {
+          res.status(status.OK).json("Success!");
+          return Promise.resolve();
         },
       );
       //WHEN
@@ -53,9 +54,10 @@ describe("characterRouter", () => {
     });
 
     it("Next is called at end route.", async () => {
-      (mockGetAll as any).mockImplementationOnce(
-        (_req: Request, _res: Response, next: NextFunction) => {
+      mockGetAll.mockImplementationOnce(
+        (_req: Request, _res: Response, next: NextFunction): Promise<void> => {
           next();
+          return Promise.resolve();
         },
       );
 
@@ -77,9 +79,10 @@ describe("characterRouter", () => {
   describe("GET /user/:userId/character/:characterId", () => {
     it("Propagate request to characterController.getOneByUserId", async () => {
       //GIVEN
-      (mockGetOne as any).mockImplementationOnce(
-        (_req: Request, res: Response, _next: NextFunction) => {
+      mockGetOne.mockImplementationOnce(
+        (_req: Request, res: Response, _next: NextFunction): Promise<void> => {
           res.status(status.OK).json("Success!");
+          return Promise.resolve();
         },
       );
       //WHEN
@@ -92,9 +95,10 @@ describe("characterRouter", () => {
     });
 
     it("Next is called at end route.", async () => {
-      (mockGetOne as any).mockImplementationOnce(
-        (_req: Request, _res: Response, next: NextFunction) => {
+      mockGetOne.mockImplementationOnce(
+        (_req: Request, _res: Response, next: NextFunction): Promise<void> => {
           next();
+          return Promise.resolve();
         },
       );
 
@@ -116,9 +120,10 @@ describe("characterRouter", () => {
   describe("GET /user/:userId/characters/enriched", () => {
     it("Propagate request to characterController.getAllByUserIdEnriched", async () => {
       //GIVEN
-      (mockGetAllEnriched as any).mockImplementationOnce(
-        (_req: Request, res: Response, _next: NextFunction) => {
+      mockGetAllEnriched.mockImplementationOnce(
+        (_req: Request, res: Response, _next: NextFunction): Promise<void> => {
           res.status(status.OK).json("Success!");
+          return Promise.resolve();
         },
       );
       //WHEN
@@ -131,9 +136,10 @@ describe("characterRouter", () => {
     });
 
     it("Next is called at end route.", async () => {
-      (mockGetAllEnriched as any).mockImplementationOnce(
-        (_req: Request, _res: Response, next: NextFunction) => {
+      mockGetAllEnriched.mockImplementationOnce(
+        (_req: Request, _res: Response, next: NextFunction): Promise<void> => {
           next();
+          return Promise.resolve();
         },
       );
 
@@ -155,9 +161,10 @@ describe("characterRouter", () => {
   describe("GET /user/:userId/character/enriched/:characterId", () => {
     it("Propagate request to characterController.getOneByUserIdEnriched", async () => {
       //GIVEN
-      (mockGetOneEnriched as any).mockImplementationOnce(
-        (_req: Request, res: Response, _next: NextFunction) => {
+      mockGetOneEnriched.mockImplementationOnce(
+        (_req: Request, res: Response, _next: NextFunction): Promise<void> => {
           res.status(status.OK).json("Success!");
+          return Promise.resolve();
         },
       );
       //WHEN
@@ -170,9 +177,10 @@ describe("characterRouter", () => {
     });
 
     it("Next is called at end route.", async () => {
-      (mockGetOneEnriched as any).mockImplementationOnce(
-        (_req: Request, _res: Response, next: NextFunction) => {
+      mockGetOneEnriched.mockImplementationOnce(
+        (_req: Request, _res: Response, next: NextFunction): Promise<void> => {
           next();
+          return Promise.resolve();
         },
       );
 
@@ -194,9 +202,10 @@ describe("characterRouter", () => {
   describe("POST /user/:userId/character", () => {
     it("Propagate request to characterController.post", async () => {
       //GIVEN
-      (mockPost as any).mockImplementationOnce(
-        (_req: Request, res: Response, _next: NextFunction) => {
+      mockPost.mockImplementationOnce(
+        (_req: Request, res: Response, _next: NextFunction): Promise<void> => {
           res.status(status.CREATED).json("Success!");
+          return Promise.resolve();
         },
       );
       //WHEN
@@ -209,9 +218,10 @@ describe("characterRouter", () => {
     });
 
     it("Next is called at end route.", async () => {
-      (mockPost as any).mockImplementationOnce(
-        (_req: Request, _res: Response, next: NextFunction) => {
+      mockPost.mockImplementationOnce(
+        (_req: Request, _res: Response, next: NextFunction): Promise<void> => {
           next();
+          return Promise.resolve();
         },
       );
 
@@ -233,9 +243,10 @@ describe("characterRouter", () => {
   describe("PATCH /user/:userId/character/:characterId", () => {
     it("Propagate request to characterController.update", async () => {
       //GIVEN
-      (mockUpdate as any).mockImplementationOnce(
-        (_req: Request, res: Response, _next: NextFunction) => {
+      mockUpdate.mockImplementationOnce(
+        (_req: Request, res: Response, _next: NextFunction): Promise<void> => {
           res.status(status.OK).json("Success!");
+          return Promise.resolve();
         },
       );
       //WHEN
@@ -248,9 +259,10 @@ describe("characterRouter", () => {
     });
 
     it("Next is called at end route.", async () => {
-      (mockUpdate as any).mockImplementationOnce(
-        (_req: Request, _res: Response, next: NextFunction) => {
+      mockUpdate.mockImplementationOnce(
+        (_req: Request, _res: Response, next: NextFunction): Promise<void> => {
           next();
+          return Promise.resolve();
         },
       );
 
@@ -272,9 +284,10 @@ describe("characterRouter", () => {
   describe("DELETE /user/:userId/character/:characterId", () => {
     it("Propagate request to characterController.delete", async () => {
       //GIVEN
-      (mockDelete as any).mockImplementationOnce(
-        (_req: Request, res: Response, _next: NextFunction) => {
+      mockDelete.mockImplementationOnce(
+        (_req: Request, res: Response, _next: NextFunction): Promise<void> => {
           res.status(status.NO_CONTENT).end();
+          return Promise.resolve();
         },
       );
       //WHEN
@@ -287,9 +300,10 @@ describe("characterRouter", () => {
     });
 
     it("Next is called at end route.", async () => {
-      (mockDelete as any).mockImplementationOnce(
-        (_req: Request, _res: Response, next: NextFunction) => {
+      mockDelete.mockImplementationOnce(
+        (_req: Request, _res: Response, next: NextFunction): Promise<void> => {
           next();
+          return Promise.resolve();
         },
       );
 

@@ -1,4 +1,5 @@
 import { NextFunction, Request, Response } from "express";
+import status from "http-status";
 import createHttpError from "http-errors";
 
 export default function validateUUIDParams(
@@ -11,7 +12,9 @@ export default function validateUUIDParams(
 
   for (const [key, value] of Object.entries(req.params)) {
     if (!uuidV4Regex.test(value)) {
-      return next(createHttpError(400, `Invalid parameter "${key}"`));
+      return next(
+        createHttpError(status.BAD_REQUEST, `Invalid parameter "${key}"`),
+      );
     }
   }
 

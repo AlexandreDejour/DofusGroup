@@ -1,6 +1,7 @@
+import request from "supertest";
 import { vi, describe, it, expect, beforeEach } from "vitest";
 
-import request from "supertest";
+import status from "http-status";
 import express, { Express, NextFunction, Request, Response } from "express";
 
 import characterRouter from "../characterRouter.js";
@@ -29,7 +30,7 @@ describe("characterRouter", () => {
     app = express();
     app.use(characterRouter);
     app.use((_req, res) => {
-      res.status(404).json({ called: "next" });
+      res.status(status.NOT_FOUND).json({ called: "next" });
     });
     vi.clearAllMocks();
   });
@@ -47,7 +48,7 @@ describe("characterRouter", () => {
         "/user/f0256483-0827-4cd5-923a-6bd10a135c4e/characters",
       );
       //THEN
-      expect(res.status).toBe(200);
+      expect(res.status).toBe(status.OK);
       expect(res.body).toBe("Success!");
     });
 
@@ -62,14 +63,14 @@ describe("characterRouter", () => {
         "/user/f0256483-0827-4cd5-923a-6bd10a135c4e/characters",
       );
 
-      expect(res.status).toBe(404);
+      expect(res.status).toBe(status.NOT_FOUND);
       expect(res.body).toEqual({ called: "next" });
     });
 
     it("Excluded bad request when id isn't a UUID.", async () => {
       const res = await request(app).get("/user/1234/characters");
 
-      expect(res.status).toBe(400);
+      expect(res.status).toBe(status.BAD_REQUEST);
     });
   });
 
@@ -78,7 +79,7 @@ describe("characterRouter", () => {
       //GIVEN
       (mockGetOne as any).mockImplementationOnce(
         (_req: Request, res: Response, _next: NextFunction) => {
-          res.status(200).json("Success!");
+          res.status(status.OK).json("Success!");
         },
       );
       //WHEN
@@ -86,7 +87,7 @@ describe("characterRouter", () => {
         "/user/f0256483-0827-4cd5-923a-6bd10a135c4e/character/18d99a7c-1d47-4391-bacd-cc4848165768",
       );
       //THEN
-      expect(res.status).toBe(200);
+      expect(res.status).toBe(status.OK);
       expect(res.body).toBe("Success!");
     });
 
@@ -101,14 +102,14 @@ describe("characterRouter", () => {
         "/user/f0256483-0827-4cd5-923a-6bd10a135c4e/character/18d99a7c-1d47-4391-bacd-cc4848165768",
       );
 
-      expect(res.status).toBe(404);
+      expect(res.status).toBe(status.NOT_FOUND);
       expect(res.body).toEqual({ called: "next" });
     });
 
     it("Excluded bad request when id isn't a UUID.", async () => {
       const res = await request(app).get("/user/1234/character/toto");
 
-      expect(res.status).toBe(400);
+      expect(res.status).toBe(status.BAD_REQUEST);
     });
   });
 
@@ -117,7 +118,7 @@ describe("characterRouter", () => {
       //GIVEN
       (mockGetAllEnriched as any).mockImplementationOnce(
         (_req: Request, res: Response, _next: NextFunction) => {
-          res.status(200).json("Success!");
+          res.status(status.OK).json("Success!");
         },
       );
       //WHEN
@@ -125,7 +126,7 @@ describe("characterRouter", () => {
         "/user/f0256483-0827-4cd5-923a-6bd10a135c4e/characters/enriched",
       );
       //THEN
-      expect(res.status).toBe(200);
+      expect(res.status).toBe(status.OK);
       expect(res.body).toBe("Success!");
     });
 
@@ -140,14 +141,14 @@ describe("characterRouter", () => {
         "/user/f0256483-0827-4cd5-923a-6bd10a135c4e/characters/enriched",
       );
 
-      expect(res.status).toBe(404);
+      expect(res.status).toBe(status.NOT_FOUND);
       expect(res.body).toEqual({ called: "next" });
     });
 
     it("Excluded bad request when id isn't a UUID.", async () => {
       const res = await request(app).get("/user/1234/characters/enriched");
 
-      expect(res.status).toBe(400);
+      expect(res.status).toBe(status.BAD_REQUEST);
     });
   });
 
@@ -156,7 +157,7 @@ describe("characterRouter", () => {
       //GIVEN
       (mockGetOneEnriched as any).mockImplementationOnce(
         (_req: Request, res: Response, _next: NextFunction) => {
-          res.status(200).json("Success!");
+          res.status(status.OK).json("Success!");
         },
       );
       //WHEN
@@ -164,7 +165,7 @@ describe("characterRouter", () => {
         "/user/f0256483-0827-4cd5-923a-6bd10a135c4e/character/enriched/af1ae2a1-45e3-47bc-8625-1a3bded01f6f",
       );
       //THEN
-      expect(res.status).toBe(200);
+      expect(res.status).toBe(status.OK);
       expect(res.body).toBe("Success!");
     });
 
@@ -179,14 +180,14 @@ describe("characterRouter", () => {
         "/user/f0256483-0827-4cd5-923a-6bd10a135c4e/character/enriched/af1ae2a1-45e3-47bc-8625-1a3bded01f6f",
       );
 
-      expect(res.status).toBe(404);
+      expect(res.status).toBe(status.NOT_FOUND);
       expect(res.body).toEqual({ called: "next" });
     });
 
     it("Excluded bad request when id isn't a UUID.", async () => {
       const res = await request(app).get("/user/1234/character/enriched/toto");
 
-      expect(res.status).toBe(400);
+      expect(res.status).toBe(status.BAD_REQUEST);
     });
   });
 
@@ -195,7 +196,7 @@ describe("characterRouter", () => {
       //GIVEN
       (mockPost as any).mockImplementationOnce(
         (_req: Request, res: Response, _next: NextFunction) => {
-          res.status(201).json("Success!");
+          res.status(status.CREATED).json("Success!");
         },
       );
       //WHEN
@@ -203,7 +204,7 @@ describe("characterRouter", () => {
         "/user/f0256483-0827-4cd5-923a-6bd10a135c4e/character",
       );
       //THEN
-      expect(res.status).toBe(201);
+      expect(res.status).toBe(status.CREATED);
       expect(res.body).toBe("Success!");
     });
 
@@ -218,14 +219,14 @@ describe("characterRouter", () => {
         "/user/f0256483-0827-4cd5-923a-6bd10a135c4e/character",
       );
 
-      expect(res.status).toBe(404);
+      expect(res.status).toBe(status.NOT_FOUND);
       expect(res.body).toEqual({ called: "next" });
     });
 
     it("Excluded bad request when id isn't a UUID.", async () => {
       const res = await request(app).post("/user/1234/character");
 
-      expect(res.status).toBe(400);
+      expect(res.status).toBe(status.BAD_REQUEST);
     });
   });
 
@@ -234,7 +235,7 @@ describe("characterRouter", () => {
       //GIVEN
       (mockUpdate as any).mockImplementationOnce(
         (_req: Request, res: Response, _next: NextFunction) => {
-          res.status(200).json("Success!");
+          res.status(status.OK).json("Success!");
         },
       );
       //WHEN
@@ -242,7 +243,7 @@ describe("characterRouter", () => {
         "/user/f0256483-0827-4cd5-923a-6bd10a135c4e/character/18d99a7c-1d47-4391-bacd-cc4848165768",
       );
       //THEN
-      expect(res.status).toBe(200);
+      expect(res.status).toBe(status.OK);
       expect(res.body).toBe("Success!");
     });
 
@@ -257,14 +258,14 @@ describe("characterRouter", () => {
         "/user/f0256483-0827-4cd5-923a-6bd10a135c4e/character/18d99a7c-1d47-4391-bacd-cc4848165768",
       );
 
-      expect(res.status).toBe(404);
+      expect(res.status).toBe(status.NOT_FOUND);
       expect(res.body).toEqual({ called: "next" });
     });
 
     it("Excluded bad request when id isn't a UUID.", async () => {
       const res = await request(app).patch("/user/1234/character/toto");
 
-      expect(res.status).toBe(400);
+      expect(res.status).toBe(status.BAD_REQUEST);
     });
   });
 
@@ -273,7 +274,7 @@ describe("characterRouter", () => {
       //GIVEN
       (mockDelete as any).mockImplementationOnce(
         (_req: Request, res: Response, _next: NextFunction) => {
-          res.status(204).end();
+          res.status(status.NO_CONTENT).end();
         },
       );
       //WHEN
@@ -281,7 +282,7 @@ describe("characterRouter", () => {
         "/user/f0256483-0827-4cd5-923a-6bd10a135c4e/character/18d99a7c-1d47-4391-bacd-cc4848165768",
       );
       //THEN
-      expect(res.status).toBe(204);
+      expect(res.status).toBe(status.NO_CONTENT);
       expect(res.body).toEqual({});
     });
 
@@ -296,14 +297,14 @@ describe("characterRouter", () => {
         "/user/f0256483-0827-4cd5-923a-6bd10a135c4e/character/18d99a7c-1d47-4391-bacd-cc4848165768",
       );
 
-      expect(res.status).toBe(404);
+      expect(res.status).toBe(status.NOT_FOUND);
       expect(res.body).toEqual({ called: "next" });
     });
 
     it("Excluded bad request when id isn't a UUID.", async () => {
       const res = await request(app).delete("/user/1234/character/toto");
 
-      expect(res.status).toBe(400);
+      expect(res.status).toBe(status.BAD_REQUEST);
     });
   });
 });

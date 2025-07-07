@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from "express";
+import status from "http-status";
 import Joi from "joi";
 
 export default function validateSchema(schema: Joi.ObjectSchema) {
@@ -8,7 +9,7 @@ export default function validateSchema(schema: Joi.ObjectSchema) {
       next();
     } catch (error) {
       if (error instanceof Joi.ValidationError) {
-        res.status(400).json({
+        res.status(status.BAD_REQUEST).json({
           error: true,
           message: error.message,
           details: error.details.map((detail: Joi.ValidationErrorItem) => ({

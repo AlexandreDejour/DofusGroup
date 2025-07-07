@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from "express";
+import status from "http-status";
 
 import sanitizeHtml from "sanitize-html";
 import createHttpError from "http-errors";
@@ -20,6 +21,6 @@ export default function htmlSanitizer(
     next();
   } catch (error) {
     console.error(error);
-    next(createHttpError(400, "Sanitization failed"));
+    next(createHttpError(status.BAD_REQUEST, "Sanitization failed"));
   }
 }

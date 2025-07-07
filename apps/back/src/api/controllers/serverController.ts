@@ -1,3 +1,4 @@
+import status from "http-status";
 import { NextFunction, Request, Response } from "express";
 
 import { Server } from "../../types/server.js";
@@ -15,7 +16,7 @@ export class ServerController {
       const servers: Server[] = await this.repository.getAll();
 
       if (!servers.length) {
-        res.status(404).json({ error: "Any server found" });
+        res.status(status.NOT_FOUND).json({ error: "Any server found" });
         return;
       }
 
@@ -32,7 +33,7 @@ export class ServerController {
       const server: Server | null = await this.repository.getOne(id);
 
       if (!server) {
-        res.status(404).json({ error: "Server not found" });
+        res.status(status.NOT_FOUND).json({ error: "Server not found" });
         return;
       }
 

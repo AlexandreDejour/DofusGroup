@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
+import status from "http-status";
 import type { Request, Response } from "express";
 
 import validateUUID from "../../../middlewares/utils/validateUUID.js";
@@ -48,7 +49,7 @@ describe("ValidateUUID middleware", () => {
     expect(next).toHaveBeenCalledWith(
       expect.objectContaining({
         message: 'Invalid parameter "id"',
-        status: 400,
+        status: status.BAD_REQUEST,
       }),
     );
   });

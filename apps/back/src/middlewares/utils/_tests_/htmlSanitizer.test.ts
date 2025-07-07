@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
+import status from "http-status";
 import type { Request, Response } from "express";
 
 import htmlSanitizer from "../htmlSanitizer.js";
@@ -54,7 +55,10 @@ describe("Error handling middleware", () => {
       name: '<script>alert("xss")</script>',
     };
 
-    const mockError = createHttpError(400, "Sanitization failed");
+    const mockError = createHttpError(
+      status.BAD_REQUEST,
+      "Sanitization failed",
+    );
     vi.mocked(sanitizeHtml).mockImplementation(() => {
       throw mockError;
     });
@@ -64,7 +68,7 @@ describe("Error handling middleware", () => {
     expect(next).toHaveBeenCalledWith(
       expect.objectContaining({
         message: "Sanitization failed",
-        status: 400,
+        status: status.BAD_REQUEST,
       }),
     );
   });

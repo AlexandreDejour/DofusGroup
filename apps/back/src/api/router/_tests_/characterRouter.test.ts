@@ -15,11 +15,11 @@ const mockGetAll = vi.spyOn(CharacterController.prototype, "getAllByUserId");
 const mockGetOne = vi.spyOn(CharacterController.prototype, "getOneByUserId");
 const mockGetAllEnriched = vi.spyOn(
   CharacterController.prototype,
-  "getAllByUserIdEnriched",
+  "getAllEnrichedByUserId",
 );
 const mockGetOneEnriched = vi.spyOn(
   CharacterController.prototype,
-  "getOneByUserIdEnriched",
+  "getOneEnrichedByUserId",
 );
 const mockPost = vi.spyOn(CharacterController.prototype, "post");
 const mockUpdate = vi.spyOn(CharacterController.prototype, "update");

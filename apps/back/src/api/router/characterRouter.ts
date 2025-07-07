@@ -9,58 +9,56 @@ import {
   updateCharacterSchema,
 } from "../../middlewares/joi/schemas/character.js";
 
-const characterRouter: Router = Router();
-const controller: CharacterController = new CharacterController();
+export function createCharacterRouter(): Router {
+  const router: Router = Router();
+  const controller: CharacterController = new CharacterController();
 
-characterRouter.get(
-  "/user/:userId/characters",
-  validateUUID,
-  (req, res, next) => {
+  router.get("/user/:userId/characters", validateUUID, (req, res, next) => {
     controller.getAllByUserId(req, res, next);
-  },
-);
-
-characterRouter.get(
-  "/user/:userId/characters/enriched",
-  validateUUID,
-  (req, res, next) => {
-    controller.getAllEnrichedByUserId(req, res, next);
-  },
-);
-
-characterRouter.post(
-  "/user/:userId/character",
-  validateUUID,
-  htmlSanitizer,
-  validateSchema(createCharacterSchema),
-  (req, res, next) => {
-    controller.post(req, res, next);
-  },
-);
-
-characterRouter
-  .route("/user/:userId/character/:characterId")
-  .get(validateUUID, (req, res, next) => {
-    controller.getOneByUserId(req, res, next);
-  })
-  .patch(
-    validateUUID,
-    htmlSanitizer,
-    validateSchema(updateCharacterSchema),
-    (req, res, next) => {
-      controller.update(req, res, next);
-    },
-  )
-  .delete(validateUUID, (req, res, next) => {
-    controller.delete(req, res, next);
   });
 
-characterRouter.get(
-  "/user/:userId/character/enriched/:characterId",
-  validateUUID,
-  (req, res, next) => {
-    controller.getOneEnrichedByUserId(req, res, next);
-  },
-);
+  router.get(
+    "/user/:userId/characters/enriched",
+    validateUUID,
+    (req, res, next) => {
+      controller.getAllEnrichedByUserId(req, res, next);
+    },
+  );
 
-export default characterRouter;
+  router.post(
+    "/user/:userId/character",
+    validateUUID,
+    htmlSanitizer,
+    validateSchema(createCharacterSchema),
+    (req, res, next) => {
+      controller.post(req, res, next);
+    },
+  );
+
+  router
+    .route("/user/:userId/character/:characterId")
+    .get(validateUUID, (req, res, next) => {
+      controller.getOneByUserId(req, res, next);
+    })
+    .patch(
+      validateUUID,
+      htmlSanitizer,
+      validateSchema(updateCharacterSchema),
+      (req, res, next) => {
+        controller.update(req, res, next);
+      },
+    )
+    .delete(validateUUID, (req, res, next) => {
+      controller.delete(req, res, next);
+    });
+
+  router.get(
+    "/user/:userId/character/enriched/:characterId",
+    validateUUID,
+    (req, res, next) => {
+      controller.getOneEnrichedByUserId(req, res, next);
+    },
+  );
+
+  return router;
+}

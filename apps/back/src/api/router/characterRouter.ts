@@ -24,7 +24,7 @@ characterRouter.get(
   "/user/:userId/characters/enriched",
   validateUUID,
   (req, res, next) => {
-    controller.getAllByUserIdEnriched(req, res, next);
+    controller.getAllEnrichedByUserId(req, res, next);
   },
 );
 
@@ -59,7 +59,7 @@ characterRouter.get(
   "/user/:userId/character/enriched/:characterId",
   validateUUID,
   (req, res, next) => {
-    controller.getOneByUserIdEnriched(req, res, next);
+    controller.getOneEnrichedByUserId(req, res, next);
   },
 );
 

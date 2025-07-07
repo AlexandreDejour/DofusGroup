@@ -26,7 +26,7 @@ export class CharacterRepository {
     }
   }
 
-  public async getAllByUserIdEnriched(
+  public async getAllEnrichedByUserId(
     userId: string,
   ): Promise<CharacterEnriched[]> {
     try {
@@ -70,7 +70,7 @@ export class CharacterRepository {
     }
   }
 
-  public async getOneByUserIdEnriched(
+  public async getOneEnrichedByUserId(
     userId: string,
     characterId: string,
   ): Promise<Character | null> {
@@ -106,12 +106,13 @@ export class CharacterRepository {
   }
 
   public async update(
+    characterId: string,
     characterData: Partial<CharacterBodyData>,
   ): Promise<Character | null> {
     try {
       const characterToUpdate: CharacterEntity | null =
         await CharacterEntity.findOne({
-          where: { id: characterData.id, user_id: characterData.user_id },
+          where: { id: characterId, user_id: characterData.user_id },
         });
 
       if (!characterToUpdate) {

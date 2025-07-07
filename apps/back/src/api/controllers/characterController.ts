@@ -33,7 +33,7 @@ export class CharacterController {
     }
   }
 
-  public async getAllByUserIdEnriched(
+  public async getAllEnrichedByUserId(
     req: Request,
     res: Response,
     next: NextFunction,
@@ -42,7 +42,7 @@ export class CharacterController {
 
     try {
       const characters: CharacterEnriched[] =
-        await this.repository.getAllByUserIdEnriched(userId);
+        await this.repository.getAllEnrichedByUserId(userId);
 
       if (!characters.length) {
         res.status(status.NOT_FOUND).json({ error: "Any character found" });
@@ -74,7 +74,7 @@ export class CharacterController {
     }
   }
 
-  public async getOneByUserIdEnriched(
+  public async getOneEnrichedByUserId(
     req: Request,
     res: Response,
     next: NextFunction,
@@ -83,7 +83,7 @@ export class CharacterController {
 
     try {
       const character: CharacterEnriched | null =
-        await this.repository.getOneByUserIdEnriched(userId, characterId);
+        await this.repository.getOneEnrichedByUserId(userId, characterId);
 
       if (!character) {
         res.status(status.NOT_FOUND).json({ error: "Character not found" });
@@ -129,10 +129,13 @@ export class CharacterController {
         return;
       }
 
+      const characterId: string = req.params.characterId;
       const characterData: Partial<CharacterBodyData> = req.body;
 
-      const characterUpdated: Character | null =
-        await this.repository.update(characterData);
+      const characterUpdated: Character | null = await this.repository.update(
+        characterId,
+        characterData,
+      );
 
       if (!characterUpdated) {
         res.status(status.NOT_FOUND).json({ error: "Character not found" });

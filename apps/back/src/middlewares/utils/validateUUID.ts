@@ -13,7 +13,10 @@ export default function validateUUIDParams(
   for (const [key, value] of Object.entries(req.params)) {
     if (!uuidV4Regex.test(value)) {
       return next(
-        createHttpError(status.BAD_REQUEST, `Invalid parameter "${key}"`),
+        createHttpError(
+          status.BAD_REQUEST,
+          `Invalid parameter "${key}: ${value}"`,
+        ),
       );
     }
   }

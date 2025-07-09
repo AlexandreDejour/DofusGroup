@@ -20,11 +20,11 @@ describe("CharacterController", () => {
   const mockGetOne = vi.spyOn(CharacterRepository.prototype, "getOneByUserId");
   const mockGetAllEnriched = vi.spyOn(
     CharacterRepository.prototype,
-    "getAllByUserIdEnriched",
+    "getAllEnrichedByUserId",
   );
   const mockGetOneEnriched = vi.spyOn(
     CharacterRepository.prototype,
-    "getOneByUserIdEnriched",
+    "getOneEnrichedByUserId",
   );
   const mockPost = vi.spyOn(CharacterRepository.prototype, "post");
   const mockUpdate = vi.spyOn(CharacterRepository.prototype, "update");
@@ -40,7 +40,9 @@ describe("CharacterController", () => {
     vi.clearAllMocks();
   });
 
-  const underTest: CharacterController = new CharacterController();
+  const underTest: CharacterController = new CharacterController(
+    new CharacterRepository(),
+  );
 
   // --- GET ALL ---
   describe("getAllByUserId", () => {
@@ -165,7 +167,7 @@ describe("CharacterController", () => {
 
       mockGetAllEnriched.mockResolvedValue(mockCharactersEnriched);
       // WHEN
-      await underTest.getAllByUserIdEnriched(
+      await underTest.getAllEnrichedByUserId(
         req as Request,
         res as Response,
         next,
@@ -181,7 +183,7 @@ describe("CharacterController", () => {
       const mockCharactersEnriched: CharacterEnriched[] = [];
 
       mockGetAllEnriched.mockResolvedValue(mockCharactersEnriched);
-      await underTest.getAllByUserIdEnriched(
+      await underTest.getAllEnrichedByUserId(
         req as Request,
         res as Response,
         next,
@@ -195,7 +197,7 @@ describe("CharacterController", () => {
       const error = new Error();
 
       mockGetAllEnriched.mockRejectedValue(error);
-      await underTest.getAllByUserIdEnriched(
+      await underTest.getAllEnrichedByUserId(
         req as Request,
         res as Response,
         next,
@@ -234,7 +236,7 @@ describe("CharacterController", () => {
       };
 
       mockGetOneEnriched.mockResolvedValue(mockCharacterEnriched);
-      await underTest.getOneByUserIdEnriched(
+      await underTest.getOneEnrichedByUserId(
         req as Request,
         res as Response,
         next,
@@ -250,7 +252,7 @@ describe("CharacterController", () => {
       };
 
       mockGetOneEnriched.mockResolvedValue(null);
-      await underTest.getOneByUserIdEnriched(
+      await underTest.getOneEnrichedByUserId(
         req as Request,
         res as Response,
         next,
@@ -264,7 +266,7 @@ describe("CharacterController", () => {
       const error = new Error();
 
       mockGetOneEnriched.mockRejectedValue(error);
-      await underTest.getOneByUserIdEnriched(
+      await underTest.getOneEnrichedByUserId(
         req as Request,
         res as Response,
         next,
@@ -397,7 +399,10 @@ describe("CharacterController", () => {
       expect(mockUpdatedCharacter.level).toBe(200);
       expect(mockUpdatedCharacter.alignment).toBe("Brakmar");
       expect(mockUpdatedCharacter.default_character).toBe(false);
-      expect(mockUpdate).toHaveBeenCalledWith(mockDatas);
+      expect(mockUpdate).toHaveBeenCalledWith(
+        req.params.characterId,
+        mockDatas,
+      );
       expect(res.json).toHaveBeenCalledWith(mockUpdatedCharacter);
       expect(res.status).not.toHaveBeenCalledWith(404);
     });

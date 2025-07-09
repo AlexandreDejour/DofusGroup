@@ -11,8 +11,8 @@ import { CharacterRepository } from "../../middlewares/repository/characterRepos
 export class CharacterController {
   private repository: CharacterRepository;
 
-  public constructor() {
-    this.repository = new CharacterRepository();
+  public constructor(repository: CharacterRepository) {
+    this.repository = repository;
   }
 
   public async getAllByUserId(req: Request, res: Response, next: NextFunction) {

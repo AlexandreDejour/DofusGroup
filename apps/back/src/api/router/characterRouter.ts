@@ -9,9 +9,8 @@ import {
   updateCharacterSchema,
 } from "../../middlewares/joi/schemas/character.js";
 
-export function createCharacterRouter(): Router {
+export function createCharacterRouter(controller: CharacterController): Router {
   const router: Router = Router();
-  const controller: CharacterController = new CharacterController();
 
   router.get("/user/:userId/characters", validateUUID, (req, res, next) => {
     controller.getAllByUserId(req, res, next);

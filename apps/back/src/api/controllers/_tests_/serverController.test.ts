@@ -51,13 +51,13 @@ describe("ServerController", () => {
       expect(res.status).not.toHaveBeenCalledWith(status.NOT_FOUND);
     });
 
-    it("Return 404 if any server found.", async () => {
+    it("Return 204 if any server found.", async () => {
       const mockServers: Server[] = [];
 
       mockGetAll.mockResolvedValue(mockServers);
       await underTest.getAll(req as Request, res as Response, next);
 
-      expect(res.status).toHaveBeenCalledWith(status.NOT_FOUND);
+      expect(res.status).toHaveBeenCalledWith(status.NO_CONTENT);
       expect(res.json).toHaveBeenCalledWith({ error: "Any server found" });
     });
 
@@ -74,7 +74,7 @@ describe("ServerController", () => {
   // --- GET ONE ---
   describe("getOne", () => {
     it("Return server if exists", async () => {
-      req.params = { id: "1" };
+      req.params = { serverId: "0f309e32-2281-4b46-bb2e-bc2a7248e39b" };
       const mockServer: Server = {
         id: "0f309e32-2281-4b46-bb2e-bc2a7248e39b",
         name: "Dakal",
@@ -88,7 +88,7 @@ describe("ServerController", () => {
     });
 
     it("Call next() if server doesn't exists.", async () => {
-      req.params = { id: "99" };
+      req.params = { serverId: "0f309e32-2281-4b46-bb2e-bc2a7248e39b" };
 
       mockGetOne.mockResolvedValue(null);
       await underTest.getOne(req as Request, res as Response, next);
@@ -98,7 +98,7 @@ describe("ServerController", () => {
     });
 
     it("Call next() in case of error.", async () => {
-      req.params = { id: "2" };
+      req.params = { serverId: "0f309e32-2281-4b46-bb2e-bc2a7248e39b" };
 
       const error = new Error();
 

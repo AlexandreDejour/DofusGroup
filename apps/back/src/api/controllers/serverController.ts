@@ -16,7 +16,7 @@ export class ServerController {
       const servers: Server[] = await this.repository.getAll();
 
       if (!servers.length) {
-        res.status(status.NOT_FOUND).json({ error: "Any server found" });
+        res.status(status.NO_CONTENT).json({ error: "Any server found" });
         return;
       }
 
@@ -28,7 +28,7 @@ export class ServerController {
 
   public async getOne(req: Request, res: Response, next: NextFunction) {
     try {
-      const id: string = req.params.id;
+      const id: string = req.params.serverId;
 
       const server: Server | null = await this.repository.getOne(id);
 

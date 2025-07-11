@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
+import status from "http-status";
 import type { Request, Response } from "express";
 
 import {
@@ -67,7 +68,7 @@ describe("CharacterController", () => {
       //THEN
       expect(mockGetAll).toHaveBeenCalled();
       expect(res.json).toHaveBeenCalledWith(mockCharacters);
-      expect(res.status).not.toHaveBeenCalledWith(404);
+      expect(res.status).not.toHaveBeenCalledWith(status.NOT_FOUND);
     });
 
     it("Return 404 if any character found.", async () => {
@@ -77,7 +78,7 @@ describe("CharacterController", () => {
       mockGetAll.mockResolvedValue(mockCharacters);
       await underTest.getAllByUserId(req as Request, res as Response, next);
 
-      expect(res.status).toHaveBeenCalledWith(204);
+      expect(res.status).toHaveBeenCalledWith(status.NO_CONTENT);
       expect(res.json).toHaveBeenCalledWith({ error: "Any character found" });
     });
 
@@ -123,7 +124,7 @@ describe("CharacterController", () => {
       mockGetOne.mockResolvedValue(null);
       await underTest.getOneByUserId(req as Request, res as Response, next);
 
-      expect(res.status).toHaveBeenCalledWith(404);
+      expect(res.status).toHaveBeenCalledWith(status.NOT_FOUND);
       expect(res.json).toHaveBeenCalledWith({ error: "Character not found" });
     });
 
@@ -175,7 +176,7 @@ describe("CharacterController", () => {
       //THEN
       expect(mockGetAllEnriched).toHaveBeenCalled();
       expect(res.json).toHaveBeenCalledWith(mockCharactersEnriched);
-      expect(res.status).not.toHaveBeenCalledWith(404);
+      expect(res.status).not.toHaveBeenCalledWith(status.NOT_FOUND);
     });
 
     it("Return 404 if any character found.", async () => {
@@ -189,7 +190,7 @@ describe("CharacterController", () => {
         next,
       );
 
-      expect(res.status).toHaveBeenCalledWith(204);
+      expect(res.status).toHaveBeenCalledWith(status.NO_CONTENT);
       expect(res.json).toHaveBeenCalledWith({ error: "Any character found" });
     });
 
@@ -258,7 +259,7 @@ describe("CharacterController", () => {
         next,
       );
 
-      expect(res.status).toHaveBeenCalledWith(404);
+      expect(res.status).toHaveBeenCalledWith(status.NOT_FOUND);
       expect(res.json).toHaveBeenCalledWith({ error: "Character not found" });
     });
 
@@ -322,7 +323,7 @@ describe("CharacterController", () => {
       //THEN
       expect(mockPost).toHaveBeenCalledWith(mockDatas);
       expect(res.json).toHaveBeenCalledWith(mockNewCharacter);
-      expect(res.status).not.toHaveBeenCalledWith(404);
+      expect(res.status).not.toHaveBeenCalledWith(status.NOT_FOUND);
     });
 
     it("Return 400 if userId isn't define.", async () => {
@@ -330,7 +331,7 @@ describe("CharacterController", () => {
 
       await underTest.post(req as Request, res as Response, next);
 
-      expect(res.status).toHaveBeenCalledWith(400);
+      expect(res.status).toHaveBeenCalledWith(status.BAD_REQUEST);
       expect(res.json).toHaveBeenCalledWith({ error: "User ID is required" });
     });
 
@@ -404,7 +405,7 @@ describe("CharacterController", () => {
         mockDatas,
       );
       expect(res.json).toHaveBeenCalledWith(mockUpdatedCharacter);
-      expect(res.status).not.toHaveBeenCalledWith(404);
+      expect(res.status).not.toHaveBeenCalledWith(status.NOT_FOUND);
     });
 
     it("Return 400 if userId isn't define.", async () => {
@@ -412,7 +413,7 @@ describe("CharacterController", () => {
 
       await underTest.update(req as Request, res as Response, next);
 
-      expect(res.status).toHaveBeenCalledWith(400);
+      expect(res.status).toHaveBeenCalledWith(status.BAD_REQUEST);
       expect(res.json).toHaveBeenCalledWith({ error: "User ID is required" });
     });
 
@@ -430,7 +431,7 @@ describe("CharacterController", () => {
       mockUpdate.mockResolvedValue(null);
       await underTest.update(req as Request, res as Response, next);
 
-      expect(res.status).toHaveBeenCalledWith(404);
+      expect(res.status).toHaveBeenCalledWith(status.NOT_FOUND);
       expect(res.json).toHaveBeenCalledWith({ error: "Character not found" });
     });
 
@@ -464,8 +465,8 @@ describe("CharacterController", () => {
       await underTest.delete(req as Request, res as Response, next);
       //THEN
       expect(mockDelete).toHaveBeenCalled();
-      expect(res.status).toHaveBeenCalledWith(204);
-      expect(res.status).not.toHaveBeenCalledWith(404);
+      expect(res.status).toHaveBeenCalledWith(status.NO_CONTENT);
+      expect(res.status).not.toHaveBeenCalledWith(status.NOT_FOUND);
     });
 
     it("Call next() if character doesn't exists.", async () => {
@@ -476,7 +477,7 @@ describe("CharacterController", () => {
       mockDelete.mockResolvedValue(false);
       await underTest.delete(req as Request, res as Response, next);
 
-      expect(res.status).toHaveBeenCalledWith(404);
+      expect(res.status).toHaveBeenCalledWith(status.NOT_FOUND);
       expect(res.json).toHaveBeenCalledWith({ error: "Character not found" });
     });
 

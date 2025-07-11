@@ -23,7 +23,7 @@ export class CharacterController {
         await this.repository.getAllByUserId(userId);
 
       if (!characters.length) {
-        res.status(status.NOT_FOUND).json({ error: "Any character found" });
+        res.status(status.NO_CONTENT).json({ error: "Any character found" });
         return;
       }
 
@@ -45,7 +45,7 @@ export class CharacterController {
         await this.repository.getAllEnrichedByUserId(userId);
 
       if (!characters.length) {
-        res.status(status.NOT_FOUND).json({ error: "Any character found" });
+        res.status(status.NO_CONTENT).json({ error: "Any character found" });
         return;
       }
       res.json(characters);
@@ -108,13 +108,6 @@ export class CharacterController {
 
       const newCharacter: CharacterEnriched =
         await this.repository.post(characterData);
-
-      if (!newCharacter) {
-        res
-          .status(status.INTERNAL_SERVER_ERROR)
-          .json({ error: "Internal server error" });
-        return;
-      }
 
       res.status(status.CREATED).json(newCharacter);
     } catch (error) {

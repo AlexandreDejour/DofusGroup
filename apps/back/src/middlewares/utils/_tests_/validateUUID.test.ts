@@ -48,7 +48,7 @@ describe("ValidateUUID middleware", () => {
 
     expect(next).toHaveBeenCalledWith(
       expect.objectContaining({
-        message: 'Invalid parameter "id"',
+        message: 'Invalid parameter "id: toto"',
         status: status.BAD_REQUEST,
       }),
     );

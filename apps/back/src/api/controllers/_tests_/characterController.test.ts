@@ -77,7 +77,7 @@ describe("CharacterController", () => {
       mockGetAll.mockResolvedValue(mockCharacters);
       await underTest.getAllByUserId(req as Request, res as Response, next);
 
-      expect(res.status).toHaveBeenCalledWith(404);
+      expect(res.status).toHaveBeenCalledWith(204);
       expect(res.json).toHaveBeenCalledWith({ error: "Any character found" });
     });
 
@@ -189,7 +189,7 @@ describe("CharacterController", () => {
         next,
       );
 
-      expect(res.status).toHaveBeenCalledWith(404);
+      expect(res.status).toHaveBeenCalledWith(204);
       expect(res.json).toHaveBeenCalledWith({ error: "Any character found" });
     });
 

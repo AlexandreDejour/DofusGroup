@@ -2,7 +2,7 @@ import request from "supertest";
 import { vi, describe, it, expect, beforeEach } from "vitest";
 import status from "http-status";
 
-import { setup, controller, receivedReq } from "./setup.js";
+import { setup, controller, receivedReq } from "./mock-tools.js";
 
 describe("characterRouter", () => {
   let app: ReturnType<typeof setup.App>;

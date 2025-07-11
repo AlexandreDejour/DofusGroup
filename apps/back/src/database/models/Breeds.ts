@@ -4,33 +4,31 @@ import {
   InferAttributes,
   InferCreationAttributes,
   CreationOptional,
-  Sequelize,
 } from "sequelize";
+
+import Character from "./Character.js";
 
 import client from "../client.js";
 import { SequelizeModels } from "../types/sequelizeModels.js";
 
-export interface IBreed {
-  id: string;
-  name: string;
-}
-
-export default class Breed extends Model<
-  InferAttributes<Breed>,
-  InferCreationAttributes<Breed>
+export default class BreedEntity extends Model<
+  InferAttributes<BreedEntity>,
+  InferCreationAttributes<BreedEntity>
 > {
   declare public id: CreationOptional<string>;
   declare public name: string;
 
+  declare public character?: Character[];
+
   public static associate(models: SequelizeModels) {
-    Breed.hasMany(models.Character, {
+    BreedEntity.hasMany(models.Character, {
       foreignKey: "breed_id",
       as: "characters",
     });
   }
 }
 
-Breed.init(
+BreedEntity.init(
   {
     id: {
       type: DataTypes.UUID,
@@ -47,5 +45,6 @@ Breed.init(
   },
   {
     sequelize: client,
+    tableName: "breeds",
   },
 );

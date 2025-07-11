@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
+import status from "http-status";
 import type { Request, Response } from "express";
 
 import { Server } from "../../../types/server.js";
@@ -45,7 +46,7 @@ describe("ServerController", () => {
       //THEN
       expect(mockGetAll).toHaveBeenCalled();
       expect(res.json).toHaveBeenCalledWith(mockServers);
-      expect(res.status).not.toHaveBeenCalledWith(404);
+      expect(res.status).not.toHaveBeenCalledWith(status.NOT_FOUND);
     });
 
     it("Return 404 if any server found.", async () => {
@@ -54,7 +55,7 @@ describe("ServerController", () => {
       mockGetAll.mockResolvedValue(mockServers);
       await underTest.getAll(req as Request, res as Response, next);
 
-      expect(res.status).toHaveBeenCalledWith(404);
+      expect(res.status).toHaveBeenCalledWith(status.NOT_FOUND);
       expect(res.json).toHaveBeenCalledWith({ error: "Any server found" });
     });
 
@@ -90,7 +91,7 @@ describe("ServerController", () => {
       mockGetOne.mockResolvedValue(null);
       await underTest.getOne(req as Request, res as Response, next);
 
-      expect(res.status).toHaveBeenCalledWith(404);
+      expect(res.status).toHaveBeenCalledWith(status.NOT_FOUND);
       expect(res.json).toHaveBeenCalledWith({ error: "Server not found" });
     });
 

@@ -1,6 +1,7 @@
+import request from "supertest";
 import { vi, describe, it, expect, beforeEach } from "vitest";
 
-import request from "supertest";
+import status from "http-status";
 import express, { Express, NextFunction, Request, Response } from "express";
 
 import serverRouter from "../serverRouter.js";
@@ -18,7 +19,7 @@ describe("serverRouter", () => {
     app = express();
     app.use(serverRouter);
     app.use((_req, res) => {
-      res.status(404).json({ called: "next" });
+      res.status(status.NOT_FOUND).json({ called: "next" });
     });
     vi.clearAllMocks();
   });
@@ -26,28 +27,30 @@ describe("serverRouter", () => {
   describe("GET /servers", () => {
     it("Propagate request to serverController.getAll", async () => {
       //GIVEN
-      (mockGetAll as any).mockImplementationOnce(
-        (_req: Request, res: Response, _next: NextFunction) => {
-          res.status(200).json("Success!");
+      mockGetAll.mockImplementationOnce(
+        (_req: Request, res: Response, _next: NextFunction): Promise<void> => {
+          res.status(status.OK).json("Success!");
+          return Promise.resolve();
         },
       );
       //WHEN
       const res = await request(app).get("/servers");
       //THEN
-      expect(res.status).toBe(200);
+      expect(res.status).toBe(status.OK);
       expect(res.body).toBe("Success!");
     });
 
     it("Next is called at end route.", async () => {
-      (mockGetAll as any).mockImplementationOnce(
-        (_req: Request, _res: Response, next: NextFunction) => {
+      mockGetAll.mockImplementationOnce(
+        (_req: Request, _res: Response, next: NextFunction): Promise<void> => {
           next();
+          return Promise.resolve();
         },
       );
 
       const res = await request(app).get("/servers");
 
-      expect(res.status).toBe(404);
+      expect(res.status).toBe(status.NOT_FOUND);
       expect(res.body).toEqual({ called: "next" });
     });
   });
@@ -55,35 +58,41 @@ describe("serverRouter", () => {
   describe("GET /server/:id", () => {
     it("Propagate request to serverController.getOne", async () => {
       //GIVEN
-      (mockGetOne as any).mockImplementationOnce(
-        (_req: Request, res: Response, _next: NextFunction) => {
-          res.status(200).json("Success!");
+      mockGetOne.mockImplementationOnce(
+        (_req: Request, res: Response, _next: NextFunction): Promise<void> => {
+          res.status(status.OK).json("Success!");
+          return Promise.resolve();
         },
       );
       //WHEN
-      const res = await request(app).get("/server/1");
+      const res = await request(app).get(
+        "/server/e5b25782-deea-4f73-b8f0-47b7e0c99e67",
+      );
       //THEN
-      expect(res.status).toBe(200);
+      expect(res.status).toBe(status.OK);
       expect(res.body).toBe("Success!");
     });
 
     it("Next is called at end route.", async () => {
-      (mockGetOne as any).mockImplementationOnce(
-        (_req: Request, _res: Response, next: NextFunction) => {
+      mockGetOne.mockImplementationOnce(
+        (_req: Request, _res: Response, next: NextFunction): Promise<void> => {
           next();
+          return Promise.resolve();
         },
       );
 
-      const res = await request(app).get("/server/1");
+      const res = await request(app).get(
+        "/server/e5b25782-deea-4f73-b8f0-47b7e0c99e67",
+      );
 
-      expect(res.status).toBe(404);
+      expect(res.status).toBe(status.NOT_FOUND);
       expect(res.body).toEqual({ called: "next" });
     });
 
-    it("Excluded bad request when id isn't a number.", async () => {
+    it("Excluded bad request when id isn't a UUID.", async () => {
       const res = await request(app).get("/server/toto");
 
-      expect(res.status).toBe(400);
+      expect(res.status).toBe(status.BAD_REQUEST);
     });
   });
 });

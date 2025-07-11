@@ -7,8 +7,8 @@ import { ServerRepository } from "../../middlewares/repository/serverRepository.
 export class ServerController {
   private repository: ServerRepository;
 
-  public constructor() {
-    this.repository = new ServerRepository();
+  public constructor(repository: ServerRepository) {
+    this.repository = repository;
   }
 
   public async getAll(_req: Request, res: Response, next: NextFunction) {

@@ -26,7 +26,9 @@ describe("ServerController", () => {
     vi.clearAllMocks();
   });
 
-  const underTest: ServerController = new ServerController();
+  const underTest: ServerController = new ServerController(
+    new ServerRepository(),
+  );
 
   // --- GET ALL ---
   describe("getAll", () => {

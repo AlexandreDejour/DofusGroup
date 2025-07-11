@@ -2,14 +2,19 @@ import request from "supertest";
 import { vi, describe, it, expect, beforeEach } from "vitest";
 import status from "http-status";
 
-import { setup, controller, receivedReq } from "./mock-tools.js";
+import { setup, receivedReq } from "./mock-tools.js";
+import { createCharacterRouter } from "../characterRouter.js";
+import { CharacterController } from "../../controllers/characterController.js";
+import { CharacterRepository } from "../../../middlewares/repository/characterRepository.js";
 
 describe("characterRouter", () => {
+  const repository = {} as CharacterRepository;
+  const controller = new CharacterController(repository);
   let app: ReturnType<typeof setup.App>;
 
   beforeEach(() => {
     vi.clearAllMocks();
-    app = setup.App();
+    app = setup.App(controller, createCharacterRouter);
   });
 
   const userId = "f0256483-0827-4cd5-923a-6bd10a135c4e";
@@ -58,7 +63,6 @@ describe("characterRouter", () => {
       expect(controller.getOneByUserId).toHaveBeenCalled();
       expect(receivedReq?.params.userId).toBe(userId);
       expect(receivedReq?.params.characterId).toBe(characterId);
-      expect(controller.getOneByUserId).toHaveBeenCalled();
       expect(res.status).toBe(status.OK);
       expect(res.body).toBe("Success!");
     });

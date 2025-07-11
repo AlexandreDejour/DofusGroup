@@ -2,20 +2,16 @@ import { vi } from "vitest";
 import express, { Express, NextFunction, Request, Response } from "express";
 import status from "http-status";
 
-import { createCharacterRouter } from "../characterRouter.js";
-import { CharacterController } from "../../controllers/characterController.js";
-import { CharacterRepository } from "../../../middlewares/repository/characterRepository.js";
-
 export let app: Express;
 export let receivedReq: Request | undefined;
 
-const repository = {} as CharacterRepository;
-export const controller = new CharacterController(repository);
-
 export const setup = {
-  App(): Express {
+  App<TController>(
+    controller: TController,
+    createRouter: (controller: TController) => express.Router,
+  ): Express {
     app = express();
-    app.use(createCharacterRouter(controller));
+    app.use(createRouter(controller));
     app.use((_req, res) => {
       res.status(status.NOT_FOUND).json({ called: "next" });
     });

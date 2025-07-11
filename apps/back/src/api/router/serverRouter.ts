@@ -3,15 +3,16 @@ import { Router } from "express";
 import validateUUID from "../../middlewares/utils/validateUUID.js";
 import { ServerController } from "../controllers/serverController.js";
 
-const serverRouter: Router = Router();
-const controller: ServerController = new ServerController();
+export function createServerRouter(controller: ServerController): Router {
+  const router: Router = Router();
 
-serverRouter.get("/servers", (req, res, next) => {
-  controller.getAll(req, res, next);
-});
+  router.get("/servers", (req, res, next) => {
+    controller.getAll(req, res, next);
+  });
 
-serverRouter.get("/server/:id", validateUUID, (req, res, next) => {
-  controller.getOne(req, res, next);
-});
+  router.get("/server/:serverId", validateUUID, (req, res, next) => {
+    controller.getOne(req, res, next);
+  });
 
-export default serverRouter;
+  return router;
+}

@@ -28,7 +28,7 @@ export class TagController {
 
   public async getOne(req: Request, res: Response, next: NextFunction) {
     try {
-      const id: string = req.params.breedId;
+      const id: string = req.params.tagId;
 
       const tag: Tag | null = await this.repository.getOne(id);
 

@@ -17,14 +17,14 @@ services:
     build: ./apps/back
     volumes:
       - ./apps/back:/app
-
     ports:
       - "3000:3000"
     environment:
       - PG_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
       - JWT_SECRET=s3cret
     depends_on:
-      - db
+      db:
+        condition: service_healthy
 
   db:
     image: postgres:16-alpine
@@ -37,6 +37,11 @@ services:
       - "5433:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
   seed:
     build: ./apps/back
@@ -47,7 +52,18 @@ services:
     environment:
       - PG_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
     restart: "no"
-    entrypoint: ["sh", "-c", "sleep 3 && npx tsx ./src/database/sync.ts"]
+    entrypoint:
+      [
+        "dockerize",
+        "-wait",
+        "tcp://db:5432",
+        "-timeout",
+        "60s",
+        "--",
+        "npx",
+        "tsx",
+        "./src/database/sync.ts",
+      ]
 
 volumes:
   pgdata:

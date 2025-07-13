@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "start": "tsx index.ts",
-    "dev": "node --loader ts-node/esm ./index.ts"
+    "dev": "tsx watch index.ts"
   },
   "keywords": [
     "api",

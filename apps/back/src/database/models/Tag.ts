@@ -11,18 +11,9 @@ import Event from "./Event.js";
 import client from "../client.js";
 import { SequelizeModels } from "../types/sequelizeModels.js";
 
-export interface ITag {
-  id: string;
-  name: string;
-  area: string;
-  sub_area: string;
-  donjon_name: string;
-  color: string;
-}
-
-export default class Tag extends Model<
-  InferAttributes<Tag>,
-  InferCreationAttributes<Tag>
+export default class TagEntity extends Model<
+  InferAttributes<TagEntity>,
+  InferCreationAttributes<TagEntity>
 > {
   declare public id: CreationOptional<string>;
   declare public name: string;
@@ -31,14 +22,14 @@ export default class Tag extends Model<
   declare public events?: Event[];
 
   public static associate(models: SequelizeModels) {
-    Tag.hasMany(models.Event, {
+    TagEntity.hasMany(models.Event, {
       foreignKey: "tag_id",
       as: "events",
     });
   }
 }
 
-Tag.init(
+TagEntity.init(
   {
     id: {
       type: DataTypes.UUID,
@@ -60,5 +51,6 @@ Tag.init(
   },
   {
     sequelize: client,
+    tableName: "tags",
   },
 );

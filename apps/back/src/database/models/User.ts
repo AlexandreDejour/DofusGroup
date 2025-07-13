@@ -12,15 +12,9 @@ import Character from "./Character.js";
 import client from "../client.js";
 import { SequelizeModels } from "../types/sequelizeModels.js";
 
-export interface IUser {
-  id: string;
-  username: string;
-  mail: string;
-}
-
-export default class User extends Model<
-  InferAttributes<User>,
-  InferCreationAttributes<User>
+export default class UserEntity extends Model<
+  InferAttributes<UserEntity>,
+  InferCreationAttributes<UserEntity>
 > {
   declare public id: CreationOptional<string>;
   declare public username: string;
@@ -31,19 +25,19 @@ export default class User extends Model<
   declare public characters?: Character[];
 
   public static associate(models: SequelizeModels) {
-    User.hasMany(models.Event, {
+    UserEntity.hasMany(models.Event, {
       foreignKey: "user_id",
       as: "events",
     });
 
-    User.hasMany(models.Character, {
+    UserEntity.hasMany(models.Character, {
       foreignKey: "user_id",
       as: "characters",
     });
   }
 }
 
-User.init(
+UserEntity.init(
   {
     id: {
       type: DataTypes.UUID,
@@ -70,7 +64,6 @@ User.init(
   },
   {
     sequelize: client,
+    tableName: "users",
   },
 );
-
-export { User };

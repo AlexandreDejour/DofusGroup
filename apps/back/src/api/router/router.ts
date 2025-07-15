@@ -19,18 +19,23 @@ import { createCharacterRouter } from "./characterRouter.js";
 import { CharacterController } from "../controllers/characterController.js";
 import { CharacterRepository } from "../../middlewares/repository/characterRepository.js";
 
+import { CryptoService } from "../../middlewares/utils/cryptoService.js";
+import { DataEncryptionService } from "../../middlewares/utils/dataEncryptionService.js";
+
 const tagController = new TagController(new TagRepository());
 const userController = new UserController(new UserRepository());
 const breedController = new BreedController(new BreedRepository());
 const serverController = new ServerController(new ServerRepository());
 const characterController = new CharacterController(new CharacterRepository());
 
+const dataEncryptionService = new DataEncryptionService(new CryptoService());
+
 router.get("/", (_req: Request, res: Response) => {
   res.send("Hello DofusGroup");
 });
 
 router.use(createTagRouter(tagController));
-router.use(createUserRouter(userController));
+router.use(createUserRouter(userController, dataEncryptionService));
 router.use(createBreedRouter(breedController));
 router.use(createServerRouter(serverController));
 router.use(createCharacterRouter(characterController));

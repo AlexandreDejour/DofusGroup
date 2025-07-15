@@ -5,12 +5,13 @@ import { CryptoService } from "./cryptoService.js";
 export class DataEncryptionService {
   constructor(private cryptoService: CryptoService) {}
 
-  fieldsToEncrypt = ["email"];
+  fieldsToEncrypt = ["mail"];
 
-  encryptData(req: Request, _res: Response, next: NextFunction) {
+  encryptData = (req: Request, _res: Response, next: NextFunction) => {
     if (!req.body) return next();
 
     try {
+      console.log(this.fieldsToEncrypt);
       for (const key of this.fieldsToEncrypt) {
         if (req.body[key]) {
           req.body[key] = this.cryptoService.encrypt(req.body[key]);
@@ -20,7 +21,7 @@ export class DataEncryptionService {
     } catch (error) {
       next(error);
     }
-  }
+  };
 
   decryptData(encryptedFields: { [key: string]: string }): {
     [key: string]: string;

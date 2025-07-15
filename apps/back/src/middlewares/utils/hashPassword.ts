@@ -15,6 +15,8 @@ export default async function hashPassword(
       const hash = await argon2.hash(password);
 
       req.body.password = hash;
+
+      next();
     } catch (error) {
       next(
         createHttpError(

@@ -7,7 +7,7 @@ import htmlSanitizer from "../htmlSanitizer.js";
 import sanitizeHtml from "sanitize-html";
 import createHttpError from "http-errors";
 
-describe("Error handling middleware", () => {
+describe("Html sanitizer middleware", () => {
   let req: Partial<Request>;
   let res: Partial<Response>;
   let next = vi.fn();

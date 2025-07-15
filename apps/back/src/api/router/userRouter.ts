@@ -3,6 +3,7 @@ import { Router } from "express";
 import validateUUID from "../../middlewares/utils/validateUUID.js";
 import htmlSanitizer from "../../middlewares/utils/htmlSanitizer.js";
 import validateSchema from "../../middlewares/joi/validateSchema.js";
+import hashPassword from "../../middlewares/utils/hashPassword.js";
 import { UserController } from "../controllers/userController.js";
 import {
   createUserSchema,
@@ -25,6 +26,7 @@ export function createUserRouter(controller: UserController): Router {
     validateUUID,
     htmlSanitizer,
     validateSchema(createUserSchema),
+    hashPassword,
     (req, res, next) => {
       controller.post(req, res, next);
     },
@@ -39,6 +41,7 @@ export function createUserRouter(controller: UserController): Router {
       validateUUID,
       htmlSanitizer,
       validateSchema(updateUserSchema),
+      hashPassword,
       (req, res, next) => {
         controller.update(req, res, next);
       },

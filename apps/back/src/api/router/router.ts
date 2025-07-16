@@ -3,6 +3,8 @@ const router: Router = Router();
 
 import { Request, Response } from "express";
 
+import { models, initAssociations } from "../../database/models/initModels.js";
+
 import { createTagRouter } from "./tagRouter.js";
 import { TagController } from "../controllers/tagController.js";
 import { TagRepository } from "../../middlewares/repository/tagRepository.js";
@@ -21,6 +23,8 @@ import { CharacterRepository } from "../../middlewares/repository/characterRepos
 
 import { CryptoService } from "../../middlewares/utils/cryptoService.js";
 import { DataEncryptionService } from "../../middlewares/utils/dataEncryptionService.js";
+
+initAssociations(models);
 
 const tagController = new TagController(new TagRepository());
 const userController = new UserController(new UserRepository());

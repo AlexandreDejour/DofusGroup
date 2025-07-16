@@ -80,7 +80,16 @@ export class UserController {
   }
 
   public async post(req: Request, res: Response, next: NextFunction) {
+    const username = req.body.username;
+
     try {
+      const isExist: boolean =
+        await this.repository.findOneByUsername(username);
+
+      if (isExist) {
+        res.status(status.CONFLICT).json({ error: "Username forbidden" });
+      }
+
       const newUser: User = await this.repository.post(req.body);
 
       res.status(status.CREATED).json(newUser);

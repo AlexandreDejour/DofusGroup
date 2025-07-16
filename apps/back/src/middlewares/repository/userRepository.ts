@@ -4,7 +4,9 @@ import { User, UserBodyData, UserEnriched } from "../../types/user.js";
 export class UserRepository {
   public async getAll(): Promise<User[]> {
     try {
-      const result: UserEntity[] = await UserEntity.findAll();
+      const result: UserEntity[] = await UserEntity.findAll({
+        attributes: { exclude: ["password", "mail"] },
+      });
 
       if (!result.length) {
         throw new Error("Any user found");
@@ -24,6 +26,7 @@ export class UserRepository {
     try {
       const result: UserEntity[] = await UserEntity.findAll({
         include: ["characters", "events"],
+        attributes: { exclude: ["password", "mail"] },
       });
 
       if (!result.length) {
@@ -42,7 +45,10 @@ export class UserRepository {
 
   public async getOne(userId: string): Promise<User | null> {
     try {
-      const result: UserEntity | null = await UserEntity.findByPk(userId);
+      const result: UserEntity | null = await UserEntity.findOne({
+        where: { id: userId },
+        attributes: { exclude: ["password", "mail"] },
+      });
 
       if (!result) {
         return null;
@@ -61,6 +67,7 @@ export class UserRepository {
       const result: UserEntity | null = await UserEntity.findOne({
         where: { id: userId },
         include: ["characters", "events"],
+        attributes: { exclude: ["password", "mail"] },
       });
 
       if (!result) {

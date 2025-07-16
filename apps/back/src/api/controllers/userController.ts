@@ -88,6 +88,7 @@ export class UserController {
 
       if (isExist) {
         res.status(status.CONFLICT).json({ error: "Username forbidden" });
+        return;
       }
 
       const newUser: User = await this.repository.post(req.body);

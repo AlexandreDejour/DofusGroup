@@ -23,6 +23,10 @@ describe("UserController", () => {
     UserRepository.prototype,
     "getOneEnriched",
   );
+  const mockFindOneByUsername = vi.spyOn(
+    UserRepository.prototype,
+    "findOneByUsername",
+  );
   const mockPost = vi.spyOn(UserRepository.prototype, "post");
   const mockUpdate = vi.spyOn(UserRepository.prototype, "update");
   const mockDelete = vi.spyOn(UserRepository.prototype, "delete");
@@ -245,6 +249,23 @@ describe("UserController", () => {
       expect(mockPost).toHaveBeenCalledWith(req.body);
       expect(res.json).toHaveBeenCalledWith(mockNewUser);
       expect(res.status).not.toHaveBeenCalledWith(status.NOT_FOUND);
+    });
+
+    it("Return 409 if username ever exists.", async () => {
+      req.body = {
+        username: "toto",
+        mail: "toto@exemple.com",
+        password: "secret",
+      };
+
+      mockFindOneByUsername.mockResolvedValue(true);
+
+      await underTest.post(req as Request, res as Response, next);
+
+      expect(mockFindOneByUsername).toHaveBeenCalledWith("toto");
+      expect(res.json).toHaveBeenCalledWith({ error: "Username forbidden" });
+      expect(res.status).toHaveBeenCalledWith(status.CONFLICT);
+      expect(mockPost).not.toHaveBeenCalled();
     });
 
     // --- PATCH ---

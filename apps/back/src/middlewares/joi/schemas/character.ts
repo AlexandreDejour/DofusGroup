@@ -14,7 +14,7 @@ export const createCharacterSchema: Joi.ObjectSchema = Joi.object({
     .valid(...SEXES)
     .required()
     .messages({
-      "any.only": "Sex must be either 'M' or 'F'",
+      "any.only": `Sex must be either ${SEXES.join(", ")}`,
       "any.required": "Sex is required",
       "string.base": "Sex must be a string",
     }),
@@ -29,7 +29,7 @@ export const createCharacterSchema: Joi.ObjectSchema = Joi.object({
     .valid(...ALIGNMENTS)
     .optional()
     .messages({
-      "any.only": "Alignment must be either 'Brâkmar', 'Neutre', or 'Bonta'",
+      "any.only": `Alignment must be either ${ALIGNMENTS.join(", ")}`,
       "string.base": "Alignment must be a string",
     }),
   stuff: Joi.string().uri().optional().messages({
@@ -75,7 +75,7 @@ export const updateCharacterSchema: Joi.ObjectSchema = Joi.object({
     .valid("Brâkmar", "Neutre", "Bonta")
     .optional()
     .messages({
-      "any.only": "Alignment must be either 'Brâkmar', 'Neutre', or 'Bonta'",
+      "any.only": `Alignment must be either ${ALIGNMENTS.join('", "')}`,
       "string.base": "Alignment must be a string",
     }),
   stuff: Joi.string().uri().optional().messages({

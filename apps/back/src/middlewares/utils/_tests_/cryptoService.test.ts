@@ -3,19 +3,19 @@ import { CryptoService } from "../cryptoService.js";
 
 describe("CryptoService", () => {
   let cryptoService: CryptoService;
-  const mockData = "toto@example.com";
+  const input = "toto@example.com";
 
   beforeAll(() => {
     cryptoService = new CryptoService();
   });
 
   it("should encrypt and decrypt correctly", () => {
-    const encrypted = cryptoService.encrypt(mockData);
+    const encrypted = cryptoService.encrypt(input);
     expect(typeof encrypted).toBe("string");
-    expect(encrypted).not.toBe(mockData);
+    expect(encrypted).not.toBe(input);
 
     const decrypted = cryptoService.decrypt(encrypted);
-    expect(decrypted).toBe(mockData);
+    expect(decrypted).toBe(input);
   });
 
   it("should throw error when decrypting malformed payload", () => {
@@ -25,7 +25,7 @@ describe("CryptoService", () => {
   });
 
   it("should throw error if decrypting with tampered data", () => {
-    const encrypted = cryptoService.encrypt(mockData);
+    const encrypted = cryptoService.encrypt(input);
 
     // Modify one char of string
     const tampered =

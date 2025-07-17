@@ -80,11 +80,23 @@ export class EventRepository {
     }
   }
 
-  public async post(eventData: EventBodyData): Promise<Event> {
+  public async post(eventData: EventBodyData): Promise<EventEnriched> {
     try {
-      const result: EventEntity = await EventEntity.create(eventData);
+      const { character_ids, ...eventFields } = eventData;
 
-      const newEvent = result.get({ plain: true });
+      const result: EventEntity = await EventEntity.create(eventFields);
+
+      await result.addCharacters(character_ids);
+
+      const event: EventEntity | null = await EventEntity.findByPk(result.id, {
+        include: ["tag", "user", "server", "characters"],
+      });
+
+      if (!event) {
+        // highly improbable but Typescript is happy
+        throw new Error("Event has been create but is not found");
+      }
+      const newEvent: EventEnriched = event.get({ plain: true });
 
       return newEvent;
     } catch (error) {

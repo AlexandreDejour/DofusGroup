@@ -38,6 +38,8 @@ export default class EventEntity extends Model<
   declare public server?: Server;
   declare public characters?: Character[];
 
+  declare public addCharacters: (characterIds: string[]) => Promise<void>;
+
   public static associate(models: SequelizeModels) {
     EventEntity.belongsTo(Tag, {
       foreignKey: "tag_id",
@@ -52,7 +54,7 @@ export default class EventEntity extends Model<
     EventEntity.belongsToMany(models.Character, {
       foreignKey: "event_id",
       otherKey: "character_id",
-      as: "team",
+      as: "characters",
       through: "event_team",
     });
 

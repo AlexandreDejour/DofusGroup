@@ -35,6 +35,8 @@ export default class CharacterEntity extends Model<
   declare public server?: Server;
   declare public events?: Event[];
 
+  declare public addEvents: (characterIds: string[]) => Promise<void>;
+
   public static associate(models: SequelizeModels) {
     CharacterEntity.belongsTo(models.User, {
       foreignKey: "user_id",

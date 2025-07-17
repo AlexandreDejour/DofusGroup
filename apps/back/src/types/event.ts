@@ -27,4 +27,5 @@ export type EventBodyData = Omit<Event, "id"> & {
   tag_id: string;
   user_id: string;
   server_id: string;
+  character_ids: string[];
 };

@@ -6,10 +6,6 @@ export class ServerRepository {
     try {
       const result: ServerEntity[] = await ServerEntity.findAll();
 
-      if (!result.length) {
-        throw new Error("Any server found");
-      }
-
       const servers: Server[] = result.map((server: ServerEntity) =>
         server.get({ plain: true }),
       );

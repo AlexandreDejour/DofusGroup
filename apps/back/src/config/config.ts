@@ -9,11 +9,15 @@ export class Config {
   readonly port: number;
   readonly baseUrl: string;
   readonly pgUrl: string;
+  readonly cryptoAlgorithm: string;
+  readonly cryptoKey: string;
 
   private constructor() {
     this.port = Number(process.env.PORT);
     this.baseUrl = process.env.BASE_URL as string;
     this.pgUrl = process.env.PG_URL as string;
+    this.cryptoAlgorithm = process.env.CRYPTO_ALGORITHM as string;
+    this.cryptoKey = process.env.CRYPTO_KEY as string;
   }
 
   public static getInstance(): Config {
@@ -29,5 +33,8 @@ export class Config {
       throw new Error("PORT is required and must be a number");
     if (!config.baseUrl) throw new Error("BASE_URL is required");
     if (!config.pgUrl) throw new Error("PG_URL is required");
+    if (!config.cryptoAlgorithm)
+      throw new Error("CRYPTO_ALGORITHM is required");
+    if (!config.cryptoKey) throw new Error("CRYPTO_KEY is required");
   }
 }

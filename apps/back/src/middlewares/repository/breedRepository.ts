@@ -6,10 +6,6 @@ export class BreedRepository {
     try {
       const result: BreedEntity[] = await BreedEntity.findAll();
 
-      if (!result.length) {
-        throw new Error("Any breed found");
-      }
-
       const breeds: Breed[] = result.map((breed: BreedEntity) =>
         breed.get({ plain: true }),
       );

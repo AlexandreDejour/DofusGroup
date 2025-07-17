@@ -12,10 +12,6 @@ export class CharacterRepository {
         where: { user_id: userId },
       });
 
-      if (!result.length) {
-        throw new Error("Any character found");
-      }
-
       const characters: Character[] = result.map((character: CharacterEntity) =>
         character.get({ plain: true }),
       );
@@ -34,10 +30,6 @@ export class CharacterRepository {
         where: { user_id: userId },
         include: ["server", "breed", "events"],
       });
-
-      if (!result.length) {
-        throw new Error("Any character found");
-      }
 
       const characters: CharacterEnriched[] = result.map(
         (character: CharacterEntity) => character.get({ plain: true }),

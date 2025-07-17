@@ -8,10 +8,6 @@ export class UserRepository {
         attributes: { exclude: ["password", "mail"] },
       });
 
-      if (!result.length) {
-        throw new Error("Any user found");
-      }
-
       const users: User[] = result.map((user: UserEntity) =>
         user.get({ plain: true }),
       );
@@ -28,10 +24,6 @@ export class UserRepository {
         include: ["characters", "events"],
         attributes: { exclude: ["password", "mail"] },
       });
-
-      if (!result.length) {
-        throw new Error("Any user found");
-      }
 
       const users: UserEnriched[] = result.map((user: UserEntity) =>
         user.get({ plain: true }),

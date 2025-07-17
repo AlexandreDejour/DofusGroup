@@ -6,10 +6,6 @@ export class TagRepository {
     try {
       const result: TagEntity[] = await TagEntity.findAll();
 
-      if (!result.length) {
-        throw new Error("Any tag found");
-      }
-
       const tags: Tag[] = result.map((tag: TagEntity) =>
         tag.get({ plain: true }),
       );

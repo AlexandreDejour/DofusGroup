@@ -11,6 +11,39 @@ export class EventController {
     this.repository = repository;
   }
 
+  public async getAll(_req: Request, res: Response, next: NextFunction) {
+    try {
+      const events: Event[] = await this.repository.getAll();
+
+      if (!events.length) {
+        res.status(status.NO_CONTENT).json({ error: "Any event found" });
+        return;
+      }
+
+      res.json(events);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  public async getAllEnriched(
+    _req: Request,
+    res: Response,
+    next: NextFunction,
+  ) {
+    try {
+      const events: EventEnriched[] = await this.repository.getAllEnriched();
+
+      if (!events.length) {
+        res.status(status.NO_CONTENT).json({ error: "Any event found" });
+        return;
+      }
+      res.json(events);
+    } catch (error) {
+      next(error);
+    }
+  }
+
   public async getAllByUserId(req: Request, res: Response, next: NextFunction) {
     const userId: string = req.params.userId;
 

@@ -12,6 +12,14 @@ import {
 export function createEventRouter(controller: EventController): Router {
   const router: Router = Router();
 
+  router.get("/events", (req, res, next) => {
+    controller.getAll(req, res, next);
+  });
+
+  router.get("events/enriched", (req, res, next) => {
+    controller.getAllEnriched(req, res, next);
+  });
+
   router.get("/user/:userId/events", validateUUID, (req, res, next) => {
     controller.getAllByUserId(req, res, next);
   });

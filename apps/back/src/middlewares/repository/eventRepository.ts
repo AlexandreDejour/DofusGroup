@@ -2,6 +2,36 @@ import EventEntity from "../../database/models/Event.js";
 import { Event, EventEnriched, EventBodyData } from "../../types/event.js";
 
 export class EventRepository {
+  public async getAll(): Promise<Event[]> {
+    try {
+      const result: EventEntity[] = await EventEntity.findAll();
+
+      const events: Event[] = result.map((event: EventEntity) =>
+        event.get({ plain: true }),
+      );
+
+      return events;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  public async getAllEnriched(): Promise<EventEnriched[]> {
+    try {
+      const result: EventEntity[] = await EventEntity.findAll({
+        include: ["tag", "user", "server", "characters"],
+      });
+
+      const events: EventEnriched[] = result.map((event: EventEntity) =>
+        event.get({ plain: true }),
+      );
+
+      return events;
+    } catch (error) {
+      throw error;
+    }
+  }
+
   public async getAllByUserId(userId: string): Promise<Event[]> {
     try {
       const result: EventEntity[] = await EventEntity.findAll({

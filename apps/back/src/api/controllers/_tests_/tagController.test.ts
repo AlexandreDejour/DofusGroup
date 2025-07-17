@@ -71,8 +71,9 @@ describe("TagController", () => {
 
   // --- GET ONE ---
   describe("getOne", () => {
+    req.params = { tagId: "f2cbb03b-0295-4424-8bcf-e66eb84e2c00" };
+
     it("Return tag if exists", async () => {
-      req.params = { tagId: "f2cbb03b-0295-4424-8bcf-e66eb84e2c00" };
       const mockTag: Tag = {
         id: "f2cbb03b-0295-4424-8bcf-e66eb84e2c00",
         name: "XP",
@@ -86,8 +87,6 @@ describe("TagController", () => {
     });
 
     it("Call next() if tag doesn't exists.", async () => {
-      req.params = { tagId: "f2cbb03b-0295-4424-8bcf-e66eb84e2c00" };
-
       mockGetOne.mockResolvedValue(null);
       await underTest.getOne(req as Request, res as Response, next);
 
@@ -96,8 +95,6 @@ describe("TagController", () => {
     });
 
     it("Call next() in case of error.", async () => {
-      req.params = { breedId: "f2cbb03b-0295-4424-8bcf-e66eb84e2c00" };
-
       const error = new Error();
 
       mockGetOne.mockRejectedValue(error);

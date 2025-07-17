@@ -85,11 +85,11 @@ describe("UserController", () => {
 
   // --- GET ONE ---
   describe("getOne", () => {
-    it("Return user if exists", async () => {
-      req.params = {
-        userId: "07a3cd78-3a4a-4aae-a681-7634d72197c2",
-      };
+    req.params = {
+      userId: "07a3cd78-3a4a-4aae-a681-7634d72197c2",
+    };
 
+    it("Return user if exists", async () => {
       const mockUser: User = {
         id: "0f309e32-2281-4b46-bb2e-bc2a7248e39b",
         username: "toto",
@@ -102,10 +102,6 @@ describe("UserController", () => {
     });
 
     it("Call next() if user doesn't exists.", async () => {
-      req.params = {
-        userId: "07a3cd78-3a4a-4aae-a681-7634d72197c2",
-      };
-
       mockGetOne.mockResolvedValue(null);
       await underTest.getOne(req as Request, res as Response, next);
 
@@ -178,10 +174,11 @@ describe("UserController", () => {
 
   // --- GET ONE ENRICHED ---
   describe("getOneEnriched", () => {
+    req.params = {
+      userId: "07a3cd78-3a4a-4aae-a681-7634d72197c2",
+    };
+
     it("Return user if exists", async () => {
-      req.params = {
-        userId: "07a3cd78-3a4a-4aae-a681-7634d72197c2",
-      };
       const mockUserEnriched: UserEnriched = {
         id: "07a3cd78-3a4a-4aae-a681-7634d72197c2",
         username: "toto",
@@ -206,10 +203,6 @@ describe("UserController", () => {
     });
 
     it("Call next() if user doesn't exists.", async () => {
-      req.params = {
-        userId: "07a3cd78-3a4a-4aae-a681-7634d72197c2",
-      };
-
       mockGetOneEnriched.mockResolvedValue(null);
       await underTest.getOneEnriched(req as Request, res as Response, next);
 
@@ -355,10 +348,10 @@ describe("UserController", () => {
 
     // --- DELETE ---
     describe("delete", () => {
+      req.params = { userId: "07a3cd78-3a4a-4aae-a681-7634d72197c2" };
+
       it("Return 204 if user is delete.", async () => {
         // GIVEN
-        req.params = { userId: "07a3cd78-3a4a-4aae-a681-7634d72197c2" };
-
         mockDelete.mockResolvedValue(true);
         // WHEN
         await underTest.delete(req as Request, res as Response, next);
@@ -369,10 +362,6 @@ describe("UserController", () => {
       });
 
       it("Call next() if character doesn't exists.", async () => {
-        req.params = {
-          userId: "07a3cd78-3a4a-4aae-a681-7634d72197c2",
-        };
-
         mockDelete.mockResolvedValue(false);
         await underTest.delete(req as Request, res as Response, next);
 

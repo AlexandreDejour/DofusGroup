@@ -1,0 +1,159 @@
+import status from "http-status";
+import { NextFunction, Request, Response } from "express";
+
+import { Event, EventBodyData, EventEnriched } from "../../types/event.js";
+import { EventRepository } from "../../middlewares/repository/eventRepository.js";
+
+export class EventController {
+  private repository: EventRepository;
+
+  public constructor(repository: EventRepository) {
+    this.repository = repository;
+  }
+
+  public async getAllByUserId(req: Request, res: Response, next: NextFunction) {
+    const userId: string = req.params.userId;
+
+    try {
+      const events: Event[] = await this.repository.getAllByUserId(userId);
+
+      if (!events.length) {
+        res.status(status.NO_CONTENT).json({ error: "Any event found" });
+        return;
+      }
+
+      res.json(events);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  public async getAllEnrichedByUserId(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) {
+    const userId: string = req.params.userId;
+
+    try {
+      const events: EventEnriched[] =
+        await this.repository.getAllEnrichedByUserId(userId);
+
+      if (!events.length) {
+        res.status(status.NO_CONTENT).json({ error: "Any event found" });
+        return;
+      }
+      res.json(events);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  public async getOneByUserId(req: Request, res: Response, next: NextFunction) {
+    const { userId, eventId } = req.params;
+
+    try {
+      const event: Event | null = await this.repository.getOneByUserId(
+        userId,
+        eventId,
+      );
+
+      if (!event) {
+        res.status(status.NOT_FOUND).json({ error: "Event not found" });
+        return;
+      }
+
+      res.json(event);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  public async getOneEnrichedByUserId(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) {
+    const { userId, eventId } = req.params;
+
+    try {
+      const event: EventEnriched | null =
+        await this.repository.getOneEnrichedByUserId(userId, eventId);
+
+      if (!event) {
+        res.status(status.NOT_FOUND).json({ error: "Event not found" });
+        return;
+      }
+
+      res.json(event);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  public async post(req: Request, res: Response, next: NextFunction) {
+    try {
+      if (!req.params.userId) {
+        res.status(status.BAD_REQUEST).json({ error: "User ID is required" });
+        return;
+      }
+
+      const userId: string = req.params.userId;
+      const eventData: EventBodyData = { ...req.body, user_id: userId };
+
+      const newEvent: EventEnriched = await this.repository.post(eventData);
+
+      res.status(status.CREATED).json(newEvent);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  public async update(req: Request, res: Response, next: NextFunction) {
+    try {
+      if (!req.params.userId) {
+        res.status(status.BAD_REQUEST).json({ error: "User ID is required" });
+        return;
+      }
+
+      const eventId: string = req.params.eventId;
+      const eventData: Partial<EventBodyData> = req.body;
+
+      const eventUpdated: Event | null = await this.repository.update(
+        eventId,
+        eventData,
+      );
+
+      if (!eventUpdated) {
+        res.status(status.NOT_FOUND).json({ error: "Event not found" });
+        return;
+      }
+
+      res.json(eventUpdated);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  public async delete(req: Request, res: Response, next: NextFunction) {
+    try {
+      if (!req.params.userId) {
+        res.status(status.BAD_REQUEST).json({ error: "User ID is required" });
+        return;
+      }
+
+      const { userId, eventId } = req.params;
+
+      const result: boolean = await this.repository.delete(userId, eventId);
+
+      if (!result) {
+        res.status(status.NOT_FOUND).json({ error: "Event not found" });
+        return;
+      }
+
+      res.status(status.NO_CONTENT).end();
+    } catch (error) {
+      next(error);
+    }
+  }
+}

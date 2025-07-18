@@ -320,6 +320,37 @@ describe("eventRouter", () => {
     });
   });
 
+  describe("POST /event/:eventId/removeCharacters", () => {
+    it("Propagate request to eventController.removeCharactersFromEvent", async () => {
+      //GIVEN
+      controller.removeCharactersFromEvent = setup.mockSucessCall(status.OK);
+      //WHEN
+      const res = await request(app).post(`/event/${eventId}/removeCharacters`);
+      //THEN
+      expect(controller.removeCharactersFromEvent).toHaveBeenCalled();
+      expect(receivedReq?.params.eventId).toBe(eventId);
+      expect(res.status).toBe(status.OK);
+      expect(res.body).toBe("Success!");
+    });
+
+    it("Next is called at end route.", async () => {
+      controller.removeCharactersFromEvent = setup.mockNextCall();
+
+      const res = await request(app).post(`/event/${eventId}/removeCharacters`);
+
+      expect(controller.removeCharactersFromEvent).toHaveBeenCalled();
+      expect(res.status).toBe(status.NOT_FOUND);
+      expect(res.body).toEqual({ called: "next" });
+    });
+
+    it("Excluded bad request when id isn't a UUID.", async () => {
+      const res = await request(app).post("/event/1234/removeCharacters");
+
+      expect(controller.removeCharactersFromEvent).not.toHaveBeenCalled();
+      expect(res.status).toBe(status.BAD_REQUEST);
+    });
+  });
+
   describe("PATCH /user/:userId/event/:eventId", () => {
     it("Propagate request to eventController.update", async () => {
       //GIVEN

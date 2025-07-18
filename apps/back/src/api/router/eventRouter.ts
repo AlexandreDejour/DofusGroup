@@ -31,8 +31,18 @@ export function createEventRouter(controller: EventController): Router {
   router.post(
     "/event/:eventId/addCharacters",
     validateUUID,
+    htmlSanitizer,
     (req, res, next) => {
       controller.addCharactersToEvent(req, res, next);
+    },
+  );
+
+  router.post(
+    "/event/:eventId/removeCharacters",
+    validateUUID,
+    htmlSanitizer,
+    (req, res, next) => {
+      controller.removeCharactersFromEvent(req, res, next);
     },
   );
 

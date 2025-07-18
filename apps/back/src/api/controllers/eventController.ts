@@ -138,10 +138,10 @@ export class EventController {
       }
 
       const eventId: string = req.params.eventId;
-      const charactersIds: string[] = req.body.characters_ids;
+      const charactersId: string[] = req.body.characters_id;
 
       const eventUpdated: Event | null =
-        await this.repository.removeCharactersFromEvent(eventId, charactersIds);
+        await this.repository.removeCharactersFromEvent(eventId, charactersId);
 
       if (!eventUpdated) {
         res.status(status.NOT_FOUND).json({ error: "Event not found" });

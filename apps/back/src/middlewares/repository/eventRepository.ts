@@ -121,7 +121,7 @@ export class EventRepository {
         return null;
       }
 
-      this.utils.checkTeamLength(result, charactersId);
+      this.utils.checkTeamMaxLength(result, charactersId);
 
       let characters: CharacterEntity[] = await CharacterEntity.findAll({
         where: {
@@ -162,18 +162,34 @@ export class EventRepository {
 
   public async removeCharactersFromEvent(
     eventId: string,
-    charactersIds: string[],
+    charactersId: string[],
   ): Promise<EventEnriched | null> {
     try {
-      const result: EventEntity | null = await EventEntity.findByPk(eventId);
+      const result: EventEntity | null = await EventEntity.findOne({
+        where: { id: eventId },
+        include: ["characters"],
+      });
 
       if (!result) {
         return null;
       }
 
-      result.removeCharacters(charactersIds);
+      this.utils.checkTeamMinLength(result, charactersId);
 
-      const event: EventEntity | null = await EventEntity.findByPk(result.id, {
+      let characters: CharacterEntity[] = await CharacterEntity.findAll({
+        where: {
+          id: {
+            [Op.in]: charactersId,
+          },
+        },
+      });
+
+      if (!characters.length) {
+        throw new Error("Characters not found");
+      }
+
+      const event: EventEntity | null = await EventEntity.findOne({
+        where: { id: result.id },
         include: ["tag", "user", "server", "characters"],
       });
 
@@ -181,6 +197,7 @@ export class EventRepository {
         // highly improbable but Typescript is happy
         throw new Error("Event has been create but is not found");
       }
+
       const updatedEvent: EventEnriched = event.get({ plain: true });
 
       return updatedEvent;

@@ -47,9 +47,10 @@ describe("CharacterController", () => {
 
   // --- GET ALL ---
   describe("getAllByUserId", () => {
+    req.params = { userId: "436d798e-b084-454c-8f78-593e966a9a66" };
+
     it("Return characters if exist.", async () => {
       // GIVEN
-      req.params = { userId: "436d798e-b084-454c-8f78-593e966a9a66" };
       const mockCharacters: Character[] = [
         {
           id: "0f309e32-2281-4b46-bb2e-bc2a7248e39b",
@@ -72,7 +73,6 @@ describe("CharacterController", () => {
     });
 
     it("Return 404 if any character found.", async () => {
-      req.params = { userId: "436d798e-b084-454c-8f78-593e966a9a66" };
       const mockCharacters: Character[] = [];
 
       mockGetAll.mockResolvedValue(mockCharacters);
@@ -94,11 +94,12 @@ describe("CharacterController", () => {
 
   // --- GET ONE ---
   describe("getOneByUserId", () => {
+    req.params = {
+      userId: "436d798e-b084-454c-8f78-593e966a9a66",
+      characterId: "0f309e32-2281-4b46-bb2e-bc2a7248e39b",
+    };
+
     it("Return character if exists", async () => {
-      req.params = {
-        userId: "436d798e-b084-454c-8f78-593e966a9a66",
-        characterId: "0f309e32-2281-4b46-bb2e-bc2a7248e39b",
-      };
       const mockCharacter: Character = {
         id: "0f309e32-2281-4b46-bb2e-bc2a7248e39b",
         name: "Night-Hunter",
@@ -116,11 +117,6 @@ describe("CharacterController", () => {
     });
 
     it("Call next() if character doesn't exists.", async () => {
-      req.params = {
-        userId: "436d798e-b084-454c-8f78-593e966a9a66",
-        characterId: "0f309e32-2281-4b46-bb2e-bc2a7248e39b",
-      };
-
       mockGetOne.mockResolvedValue(null);
       await underTest.getOneByUserId(req as Request, res as Response, next);
 
@@ -140,9 +136,10 @@ describe("CharacterController", () => {
 
   // --- GET ALL ENRICHED ---
   describe("getAllByUserIdEnriched", () => {
+    req.params = { userId: "436d798e-b084-454c-8f78-593e966a9a66" };
+
     it("Return characters if exist.", async () => {
       // GIVEN
-      req.params = { userId: "436d798e-b084-454c-8f78-593e966a9a66" };
       const mockCharactersEnriched: CharacterEnriched[] = [
         {
           id: "0f309e32-2281-4b46-bb2e-bc2a7248e39b",
@@ -180,7 +177,6 @@ describe("CharacterController", () => {
     });
 
     it("Return 404 if any character found.", async () => {
-      req.params = { userId: "436d798e-b084-454c-8f78-593e966a9a66" };
       const mockCharactersEnriched: CharacterEnriched[] = [];
 
       mockGetAllEnriched.mockResolvedValue(mockCharactersEnriched);
@@ -210,11 +206,12 @@ describe("CharacterController", () => {
 
   // --- GET ONE ENRICHED ---
   describe("getOneByUserIdEnriched", () => {
+    req.params = {
+      userId: "436d798e-b084-454c-8f78-593e966a9a66",
+      characterId: "0f309e32-2281-4b46-bb2e-bc2a7248e39b",
+    };
+
     it("Return character if exists", async () => {
-      req.params = {
-        userId: "436d798e-b084-454c-8f78-593e966a9a66",
-        characterId: "0f309e32-2281-4b46-bb2e-bc2a7248e39b",
-      };
       const mockCharacterEnriched: CharacterEnriched = {
         id: "0f309e32-2281-4b46-bb2e-bc2a7248e39b",
         name: "Night-Hunter",
@@ -247,11 +244,6 @@ describe("CharacterController", () => {
     });
 
     it("Call next() if character doesn't exists.", async () => {
-      req.params = {
-        userId: "436d798e-b084-454c-8f78-593e966a9a66",
-        characterId: "0f309e32-2281-4b46-bb2e-bc2a7248e39b",
-      };
-
       mockGetOneEnriched.mockResolvedValue(null);
       await underTest.getOneEnrichedByUserId(
         req as Request,
@@ -425,10 +417,10 @@ describe("CharacterController", () => {
 
     // --- DELETE ---
     describe("delete", () => {
+      req.params = { userId: "436d798e-b084-454c-8f78-593e966a9a66" };
+
       it("Return 204 if character is delete.", async () => {
         // GIVEN
-        req.params = { userId: "436d798e-b084-454c-8f78-593e966a9a66" };
-
         mockDelete.mockResolvedValue(true);
         // WHEN
         await underTest.delete(req as Request, res as Response, next);
@@ -439,10 +431,6 @@ describe("CharacterController", () => {
       });
 
       it("Call next() if character doesn't exists.", async () => {
-        req.params = {
-          userId: "436d798e-b084-454c-8f78-593e966a9a66",
-        };
-
         mockDelete.mockResolvedValue(false);
         await underTest.delete(req as Request, res as Response, next);
 

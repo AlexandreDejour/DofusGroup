@@ -5,7 +5,7 @@ const SEXES = ["M", "F"] as const;
 
 export const createCharacterSchema: Joi.ObjectSchema = Joi.object({
   name: Joi.string().min(1).max(20).required().messages({
-    "string.empty": "Name is required",
+    "string.empty": "Name can't be empty",
     "string.min": "Name must be at least 1 character long",
     "string.max": "Name must be at most 20 characters",
     "any.required": "Name is required",

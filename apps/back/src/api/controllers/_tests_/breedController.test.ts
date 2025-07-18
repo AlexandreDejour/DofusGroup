@@ -70,8 +70,8 @@ describe("BreedController", () => {
 
   // --- GET ONE ---
   describe("getOne", () => {
+    req.params = { breedId: "e9d9d650-e194-4a4d-9035-d3a87696a47d" };
     it("Return breed if exists", async () => {
-      req.params = { breedId: "e9d9d650-e194-4a4d-9035-d3a87696a47d" };
       const mockBreed: Breed = {
         id: "e9d9d650-e194-4a4d-9035-d3a87696a47d",
         name: "Sram",
@@ -84,8 +84,6 @@ describe("BreedController", () => {
     });
 
     it("Call next() if breed doesn't exists.", async () => {
-      req.params = { breedId: "e9d9d650-e194-4a4d-9035-d3a87696a47d" };
-
       mockGetOne.mockResolvedValue(null);
       await underTest.getOne(req as Request, res as Response, next);
 
@@ -94,8 +92,6 @@ describe("BreedController", () => {
     });
 
     it("Call next() in case of error.", async () => {
-      req.params = { breedId: "e9d9d650-e194-4a4d-9035-d3a87696a47d" };
-
       const error = new Error();
 
       mockGetOne.mockRejectedValue(error);

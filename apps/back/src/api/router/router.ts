@@ -24,6 +24,7 @@ import { createCharacterRouter } from "./characterRouter.js";
 import { CharacterController } from "../controllers/characterController.js";
 import { CharacterRepository } from "../../middlewares/repository/characterRepository.js";
 
+import { EventUtils } from "../../middlewares/repository/utils/eventUtils.js";
 import { CryptoService } from "../../middlewares/utils/cryptoService.js";
 import { DataEncryptionService } from "../../middlewares/utils/dataEncryptionService.js";
 
@@ -31,7 +32,9 @@ initAssociations(models);
 
 const tagController = new TagController(new TagRepository());
 const userController = new UserController(new UserRepository());
-const eventController = new EventController(new EventRepository());
+const eventController = new EventController(
+  new EventRepository(new EventUtils()),
+);
 const breedController = new BreedController(new BreedRepository());
 const serverController = new ServerController(new ServerRepository());
 const characterController = new CharacterController(new CharacterRepository());

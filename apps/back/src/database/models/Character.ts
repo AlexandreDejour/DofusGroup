@@ -55,7 +55,7 @@ export default class CharacterEntity extends Model<
 
     CharacterEntity.belongsToMany(models.Event, {
       foreignKey: "character_id",
-      otherKey: "server_id",
+      otherKey: "event_id",
       as: "events",
       through: "event_team",
     });

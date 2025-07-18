@@ -6,6 +6,7 @@ import type { Request, Response } from "express";
 import { Event, EventBodyData, EventEnriched } from "../../../types/event.js";
 import { EventController } from "../eventController.js";
 import { EventRepository } from "../../../middlewares/repository/eventRepository.js";
+import { EventUtils } from "../../../middlewares/repository/utils/eventUtils.js";
 
 describe("EventController", () => {
   let req: Partial<Request>;
@@ -45,7 +46,9 @@ describe("EventController", () => {
     vi.clearAllMocks();
   });
 
-  const underTest: EventController = new EventController(new EventRepository());
+  const underTest: EventController = new EventController(
+    new EventRepository(new EventUtils()),
+  );
   // --- GET ALL ---
   describe("getAll", () => {
     it("Return events if exist", async () => {

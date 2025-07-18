@@ -1,7 +1,16 @@
+import { Op } from "sequelize";
+
+import CharacterEntity from "../../database/models/Character.js";
 import EventEntity from "../../database/models/Event.js";
 import { Event, EventEnriched, EventBodyData } from "../../types/event.js";
+import { EventUtils } from "./utils/eventUtils.js";
 
 export class EventRepository {
+  private utils: EventUtils;
+
+  public constructor(utils: EventUtils) {
+    this.utils = utils;
+  }
   public async getAll(): Promise<Event[]> {
     try {
       const result: EventEntity[] = await EventEntity.findAll();
@@ -19,7 +28,15 @@ export class EventRepository {
   public async getAllEnriched(): Promise<EventEnriched[]> {
     try {
       const result: EventEntity[] = await EventEntity.findAll({
-        include: ["tag", "user", "server", "characters"],
+        include: [
+          "tag",
+          "server",
+          "characters",
+          {
+            association: "user",
+            attributes: { exclude: ["email", "password"] },
+          },
+        ],
       });
 
       const events: EventEnriched[] = result.map((event: EventEntity) =>
@@ -68,22 +85,21 @@ export class EventRepository {
 
   public async post(eventData: EventBodyData): Promise<EventEnriched> {
     try {
-      const { character_ids, ...eventFields } = eventData;
+      const { characters_id, ...eventFields } = eventData;
 
-      const result: EventEntity = await EventEntity.create(eventFields);
-
-      await result.addCharacters(character_ids);
-
-      const event: EventEntity | null = await EventEntity.findByPk(result.id, {
+      // Stage1 - create event
+      const event = await EventEntity.create(eventFields);
+      // Stage 2 - Add relations on junction table
+      await event.addCharacters(characters_id);
+      // Stage 3 - Load new event with all his associations
+      const enriched = await EventEntity.findByPk(event.id, {
         include: ["tag", "user", "server", "characters"],
       });
 
-      if (!event) {
-        // highly improbable but Typescript is happy
-        throw new Error("Event has been create but is not found");
-      }
+      // Highly improbable but satisfy TypeScript
+      if (!enriched) throw new Error("Event just created not found.");
 
-      const newEvent: EventEnriched = event.get({ plain: true });
+      const newEvent: Event = enriched.get({ plain: true });
 
       return newEvent;
     } catch (error) {
@@ -93,8 +109,11 @@ export class EventRepository {
 
   public async addCharactersToEvent(
     eventId: string,
-    charactersIds: string[],
+    charactersId: string[],
   ): Promise<EventEnriched | null> {
+    const validCharactersId = [];
+    const invalidCharacters = [];
+
     try {
       const result: EventEntity | null = await EventEntity.findByPk(eventId);
 
@@ -102,7 +121,28 @@ export class EventRepository {
         return null;
       }
 
-      result.addCharacters(charactersIds);
+      this.utils.checkTeamLength(result, charactersId);
+
+      let characters: CharacterEntity[] = await CharacterEntity.findAll({
+        where: {
+          id: {
+            [Op.in]: charactersId,
+          },
+        },
+      });
+
+      if (!characters.length) {
+        throw new Error("Characters not found");
+      }
+
+      characters = this.utils.exceptCharactersAlreadyInTeam(result, characters);
+
+      const validCharactersId = this.utils.checkCharactersServer(
+        result,
+        characters,
+      );
+
+      await result.addCharacters(validCharactersId);
 
       const event: EventEntity | null = await EventEntity.findByPk(result.id, {
         include: ["tag", "user", "server", "characters"],

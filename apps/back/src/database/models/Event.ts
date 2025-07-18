@@ -49,7 +49,7 @@ export default class EventEntity extends Model<
 
     EventEntity.belongsTo(models.User, {
       foreignKey: "user_id",
-      as: "author",
+      as: "user",
     });
 
     EventEntity.belongsToMany(models.Character, {

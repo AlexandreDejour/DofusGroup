@@ -62,17 +62,12 @@ export const createEventSchema: Joi.ObjectSchema = Joi.object({
     "any.required": "User ID is required",
     "string.base": "User ID must be a string",
   }),
-  user_id: Joi.string().guid({ version: "uuidv4" }).required().messages({
-    "string.guid": "User ID must be a valid UUID v4",
-    "any.required": "User ID is required",
-    "string.base": "User ID must be a string",
-  }),
   server_id: Joi.string().guid({ version: "uuidv4" }).required().messages({
     "string.guid": "Server ID must be a valid UUID v4",
     "any.required": "Server ID is required",
     "string.base": "Server ID must be a string",
   }),
-  character_id: Joi.array()
+  characters_id: Joi.array()
     .items(Joi.string().guid({ version: "uuidv4" }).required())
     .min(1)
     .max(8)

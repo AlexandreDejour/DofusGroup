@@ -121,7 +121,7 @@ export class EventRepository {
         return null;
       }
 
-      this.utils.checkTeamLength(result, charactersId);
+      this.utils.checkTeamMaxLength(result, charactersId);
 
       let characters: CharacterEntity[] = await CharacterEntity.findAll({
         where: {
@@ -162,16 +162,35 @@ export class EventRepository {
 
   public async removeCharactersFromEvent(
     eventId: string,
-    charactersIds: string[],
+    charactersId: string[],
   ): Promise<EventEnriched | null> {
     try {
       const result: EventEntity | null = await EventEntity.findByPk(eventId);
+      console.log(result);
 
       if (!result) {
         return null;
       }
 
-      result.removeCharacters(charactersIds);
+      this.utils.checkTeamMinLength(result, charactersId);
+
+      let characters: CharacterEntity[] = await CharacterEntity.findAll({
+        where: {
+          id: {
+            [Op.in]: charactersId,
+          },
+        },
+      });
+
+      if (!characters.length) {
+        throw new Error("Characters not found");
+      }
+
+      characters = this.utils.exceptCharactersNotInTeam(result, characters);
+
+      const validCharactersId = characters.map((c) => c.id);
+
+      await result.removeCharacters(validCharactersId);
 
       const event: EventEntity | null = await EventEntity.findByPk(result.id, {
         include: ["tag", "user", "server", "characters"],

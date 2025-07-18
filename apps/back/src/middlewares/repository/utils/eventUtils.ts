@@ -2,7 +2,7 @@ import CharacterEntity from "../../../database/models/Character.js";
 import EventEntity from "../../../database/models/Event.js";
 
 export class EventUtils {
-  public checkTeamLength(
+  public checkTeamMaxLength(
     eventEntity: EventEntity,
     charactersId: string[],
   ): void {
@@ -14,6 +14,20 @@ export class EventUtils {
       throw new Error(
         `Can't be more than ${eventEntity.max_players} players in team`,
       );
+    }
+  }
+
+  public checkTeamMinLength(
+    eventEntity: EventEntity,
+    charactersId: string[],
+  ): void {
+    const minLength = 1;
+    const existingCount = eventEntity.characters?.length ?? 0;
+    const incomingCount = charactersId.length;
+    const totalCount = existingCount - incomingCount;
+
+    if (totalCount < minLength) {
+      throw new Error(`Event can't have any characters`);
     }
   }
 
@@ -50,5 +64,18 @@ export class EventUtils {
     );
 
     return newCharacters;
+  }
+
+  public exceptCharactersNotInTeam(
+    eventEntity: EventEntity,
+    charactersEntity: CharacterEntity[],
+  ): CharacterEntity[] {
+    const existingCharacterIds = eventEntity.characters?.map((c) => c.id) ?? [];
+
+    const charactersToDelete = charactersEntity.filter((character) =>
+      existingCharacterIds.includes(character.id),
+    );
+
+    return charactersToDelete;
   }
 }

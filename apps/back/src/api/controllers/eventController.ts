@@ -206,6 +206,34 @@ export class EventController {
     }
   }
 
+  public async removeCharactersFromEvent(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) {
+    try {
+      if (!req.params.eventId) {
+        res.status(status.BAD_REQUEST).json({ error: "Event ID is required" });
+        return;
+      }
+
+      const eventId: string = req.params.eventId;
+      const charactersIds: string[] = req.body.characters_ids;
+
+      const eventUpdated: Event | null =
+        await this.repository.removeCharactersFromEvent(eventId, charactersIds);
+
+      if (!eventUpdated) {
+        res.status(status.NOT_FOUND).json({ error: "Event not found" });
+        return;
+      }
+
+      res.json(eventUpdated);
+    } catch (error) {
+      next(error);
+    }
+  }
+
   public async update(req: Request, res: Response, next: NextFunction) {
     try {
       if (!req.params.userId) {

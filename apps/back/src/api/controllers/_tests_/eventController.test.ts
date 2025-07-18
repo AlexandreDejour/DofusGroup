@@ -41,9 +41,13 @@ describe("EventController", () => {
   );
   const mockPost = vi.spyOn(EventRepository.prototype, "post");
   const mockUpdate = vi.spyOn(EventRepository.prototype, "update");
-  const mockAddCharacter = vi.spyOn(
+  const mockAddCharacters = vi.spyOn(
     EventRepository.prototype,
     "addCharactersToEvent",
+  );
+  const mockRemoveCharacters = vi.spyOn(
+    EventRepository.prototype,
+    "removeCharactersFromEvent",
   );
   const mockDelete = vi.spyOn(EventRepository.prototype, "delete");
 
@@ -582,6 +586,259 @@ describe("EventController", () => {
       expect(res.status).not.toHaveBeenCalledWith(status.NOT_FOUND);
     });
 
+    // --- ADD CHARACTERS TO EVENT ---
+    describe("addCharactersToEvent", () => {
+      it("Add characters if event exists", async () => {
+        req.params = { eventId: "182a492c-feb7-4af8-910c-e61dc2536754" };
+        req.body = {
+          characterIds: [
+            "1db5cd8a-cd22-48e8-9a4e-90ee032c9f15",
+            "44fec4c8-19a6-4aaa-8f6a-16afe92af491",
+          ],
+        };
+        const mockEventEnriched: EventEnriched = {
+          id: "182a492c-feb7-4af8-910c-e61dc2536754",
+          title: "Donjon minotot",
+          date: new Date("2026-01-01"),
+          duration: 60,
+          area: "Amakna",
+          sub_area: "Ile des taures",
+          donjon_name: "Labyrinthe du minotoror",
+          description: "donjon full succès",
+          max_players: 8,
+          status: "public",
+          tag: {
+            id: "f7a34554-d2d7-48d5-8bc2-1f7e4b06c8f8",
+            name: "Donjon",
+            color: "#DFF0FF",
+          },
+          server: {
+            id: "6c19c76b-cbc1-4a58-bdeb-b336eaf6f51c",
+            name: "Rafal",
+            mono_account: false,
+          },
+          user: {
+            id: "07a3cd78-3a4a-4aae-a681-7634d72197c2",
+            username: "toto",
+          },
+          characters: [
+            {
+              id: "1db5cd8a-cd22-48e8-9a4e-90ee032c9f15",
+              name: "Night-Hunter",
+              sex: "M",
+              level: 190,
+              alignment: "Bonta",
+              stuff: "https://d-bk.net/fr/d/1EFhw",
+              default_character: true,
+            },
+            {
+              id: "44fec4c8-19a6-4aaa-8f6a-16afe92af491",
+              name: "Peloty",
+              sex: "F",
+              level: 200,
+              alignment: "Bonta",
+              stuff: "https://d-bk.net/fr/d/3EFhw",
+              default_character: false,
+            },
+          ],
+        };
+
+        mockAddCharacters.mockResolvedValue(mockEventEnriched);
+
+        await underTest.addCharactersToEvent(
+          req as Request,
+          res as Response,
+          next,
+        );
+
+        expect(mockAddCharacters).toHaveBeenCalled();
+        expect(res.json).toHaveBeenCalledWith(mockEventEnriched);
+        expect(res.status).not.toHaveBeenCalledWith(status.NOT_FOUND);
+      });
+
+      it("Return 400 if userId isn't define.", async () => {
+        req.params = {};
+
+        await underTest.addCharactersToEvent(
+          req as Request,
+          res as Response,
+          next,
+        );
+
+        expect(res.status).toHaveBeenCalledWith(status.BAD_REQUEST);
+        expect(res.json).toHaveBeenCalledWith({
+          error: "Event ID is required",
+        });
+      });
+
+      it("Call next() if event doesn't exists.", async () => {
+        req.params = {
+          eventId: "923a9fe0-1395-4f4e-8d18-4a9ac183b924",
+        };
+        req.body = {
+          characterIds: [
+            "1db5cd8a-cd22-48e8-9a4e-90ee032c9f15",
+            "44fec4c8-19a6-4aaa-8f6a-16afe92af491",
+          ],
+        };
+
+        mockAddCharacters.mockResolvedValue(null);
+
+        await underTest.addCharactersToEvent(
+          req as Request,
+          res as Response,
+          next,
+        );
+
+        expect(res.status).toHaveBeenCalledWith(status.NOT_FOUND);
+        expect(res.json).toHaveBeenCalledWith({ error: "Event not found" });
+      });
+
+      it("Call next() in case of error.", async () => {
+        req.params = {
+          eventId: "923a9fe0-1395-4f4e-8d18-4a9ac183b924",
+        };
+        req.body = {
+          characterIds: [
+            "1db5cd8a-cd22-48e8-9a4e-90ee032c9f15",
+            "44fec4c8-19a6-4aaa-8f6a-16afe92af491",
+          ],
+        };
+        const error = new Error();
+
+        mockAddCharacters.mockRejectedValue(error);
+        await underTest.addCharactersToEvent(
+          req as Request,
+          res as Response,
+          next,
+        );
+
+        expect(next).toHaveBeenCalledWith(error);
+      });
+    });
+
+    // --- REMOVE CHARACTERS FROM EVENT ---
+    describe("removeCharactersFromEvent", () => {
+      it("Remove characters if event exists", async () => {
+        req.params = { eventId: "182a492c-feb7-4af8-910c-e61dc2536754" };
+        req.body = {
+          characterIds: [
+            "1db5cd8a-cd22-48e8-9a4e-90ee032c9f15",
+            "44fec4c8-19a6-4aaa-8f6a-16afe92af491",
+          ],
+        };
+        const mockEventEnriched: EventEnriched = {
+          id: "182a492c-feb7-4af8-910c-e61dc2536754",
+          title: "Donjon minotot",
+          date: new Date("2026-01-01"),
+          duration: 60,
+          area: "Amakna",
+          sub_area: "Ile des taures",
+          donjon_name: "Labyrinthe du minotoror",
+          description: "donjon full succès",
+          max_players: 8,
+          status: "public",
+          tag: {
+            id: "f7a34554-d2d7-48d5-8bc2-1f7e4b06c8f8",
+            name: "Donjon",
+            color: "#DFF0FF",
+          },
+          server: {
+            id: "6c19c76b-cbc1-4a58-bdeb-b336eaf6f51c",
+            name: "Rafal",
+            mono_account: false,
+          },
+          user: {
+            id: "07a3cd78-3a4a-4aae-a681-7634d72197c2",
+            username: "toto",
+          },
+          characters: [
+            {
+              id: "1b4a318a-d991-4ec9-8178-38e6bbb5c322",
+              name: "Chronos-Trigger",
+              sex: "M",
+              level: 180,
+              alignment: "Bonta",
+              stuff: "https://d-bk.net/fr/d/3EJhw",
+              default_character: true,
+            },
+          ],
+        };
+
+        mockRemoveCharacters.mockResolvedValue(mockEventEnriched);
+
+        await underTest.removeCharactersFromEvent(
+          req as Request,
+          res as Response,
+          next,
+        );
+
+        expect(mockRemoveCharacters).toHaveBeenCalled();
+        expect(res.json).toHaveBeenCalledWith(mockEventEnriched);
+        expect(res.status).not.toHaveBeenCalledWith(status.NOT_FOUND);
+      });
+
+      it("Return 400 if userId isn't define.", async () => {
+        req.params = {};
+
+        await underTest.removeCharactersFromEvent(
+          req as Request,
+          res as Response,
+          next,
+        );
+
+        expect(res.status).toHaveBeenCalledWith(status.BAD_REQUEST);
+        expect(res.json).toHaveBeenCalledWith({
+          error: "Event ID is required",
+        });
+      });
+
+      it("Call next() if event doesn't exists.", async () => {
+        req.params = {
+          eventId: "923a9fe0-1395-4f4e-8d18-4a9ac183b924",
+        };
+        req.body = {
+          characterIds: [
+            "1db5cd8a-cd22-48e8-9a4e-90ee032c9f15",
+            "44fec4c8-19a6-4aaa-8f6a-16afe92af491",
+          ],
+        };
+
+        mockRemoveCharacters.mockResolvedValue(null);
+
+        await underTest.removeCharactersFromEvent(
+          req as Request,
+          res as Response,
+          next,
+        );
+
+        expect(res.status).toHaveBeenCalledWith(status.NOT_FOUND);
+        expect(res.json).toHaveBeenCalledWith({ error: "Event not found" });
+      });
+
+      it("Call next() in case of error.", async () => {
+        req.params = {
+          eventId: "923a9fe0-1395-4f4e-8d18-4a9ac183b924",
+        };
+        req.body = {
+          characterIds: [
+            "1db5cd8a-cd22-48e8-9a4e-90ee032c9f15",
+            "44fec4c8-19a6-4aaa-8f6a-16afe92af491",
+          ],
+        };
+        const error = new Error();
+
+        mockRemoveCharacters.mockRejectedValue(error);
+        await underTest.addCharactersToEvent(
+          req as Request,
+          res as Response,
+          next,
+        );
+
+        expect(next).toHaveBeenCalledWith(error);
+      });
+    });
+
     // --- PATCH ---
     describe("update", () => {
       it("Return event if updated.", async () => {
@@ -678,136 +935,6 @@ describe("EventController", () => {
 
         mockUpdate.mockRejectedValue(error);
         await underTest.update(req as Request, res as Response, next);
-
-        expect(next).toHaveBeenCalledWith(error);
-      });
-    });
-
-    // --- ADD CHARACTERS TO EVENT ---
-    describe("addCharactersToEvent", () => {
-      it("Add characters if event exists", async () => {
-        req.params = { eventId: "182a492c-feb7-4af8-910c-e61dc2536754" };
-        req.body = {
-          characterIds: [
-            "1db5cd8a-cd22-48e8-9a4e-90ee032c9f15",
-            "44fec4c8-19a6-4aaa-8f6a-16afe92af491",
-          ],
-        };
-        const mockEventEnriched: EventEnriched = {
-          id: "182a492c-feb7-4af8-910c-e61dc2536754",
-          title: "Donjon minotot",
-          date: new Date("2026-01-01"),
-          duration: 60,
-          area: "Amakna",
-          sub_area: "Ile des taures",
-          donjon_name: "Labyrinthe du minotoror",
-          description: "donjon full succès",
-          max_players: 8,
-          status: "public",
-          tag: {
-            id: "f7a34554-d2d7-48d5-8bc2-1f7e4b06c8f8",
-            name: "Donjon",
-            color: "#DFF0FF",
-          },
-          server: {
-            id: "6c19c76b-cbc1-4a58-bdeb-b336eaf6f51c",
-            name: "Rafal",
-            mono_account: false,
-          },
-          user: {
-            id: "07a3cd78-3a4a-4aae-a681-7634d72197c2",
-            username: "toto",
-          },
-          characters: [
-            {
-              id: "1db5cd8a-cd22-48e8-9a4e-90ee032c9f15",
-              name: "Night-Hunter",
-              sex: "M",
-              level: 190,
-              alignment: "Bonta",
-              stuff: "https://d-bk.net/fr/d/1EFhw",
-              default_character: true,
-            },
-            {
-              id: "44fec4c8-19a6-4aaa-8f6a-16afe92af491",
-              name: "Peloty",
-              sex: "F",
-              level: 200,
-              alignment: "Bonta",
-              stuff: "https://d-bk.net/fr/d/3EFhw",
-              default_character: false,
-            },
-          ],
-        };
-
-        mockAddCharacter.mockResolvedValue(mockEventEnriched);
-
-        await underTest.addCharactersToEvent(
-          req as Request,
-          res as Response,
-          next,
-        );
-
-        expect(mockAddCharacter).toHaveBeenCalled();
-        expect(res.json).toHaveBeenCalledWith(mockEventEnriched);
-        expect(res.status).not.toHaveBeenCalledWith(status.NOT_FOUND);
-      });
-
-      it("Return 400 if userId isn't define.", async () => {
-        req.params = {};
-
-        await underTest.addCharactersToEvent(
-          req as Request,
-          res as Response,
-          next,
-        );
-
-        expect(res.status).toHaveBeenCalledWith(status.BAD_REQUEST);
-        expect(res.json).toHaveBeenCalledWith({
-          error: "Event ID is required",
-        });
-      });
-
-      it("Call next() if event doesn't exists.", async () => {
-        req.params = {
-          eventId: "923a9fe0-1395-4f4e-8d18-4a9ac183b924",
-        };
-        req.body = {
-          characterIds: [
-            "1db5cd8a-cd22-48e8-9a4e-90ee032c9f15",
-            "44fec4c8-19a6-4aaa-8f6a-16afe92af491",
-          ],
-        };
-
-        mockAddCharacter.mockResolvedValue(null);
-        await underTest.addCharactersToEvent(
-          req as Request,
-          res as Response,
-          next,
-        );
-
-        expect(res.status).toHaveBeenCalledWith(status.NOT_FOUND);
-        expect(res.json).toHaveBeenCalledWith({ error: "Event not found" });
-      });
-
-      it("Call next() in case of error.", async () => {
-        req.params = {
-          eventId: "923a9fe0-1395-4f4e-8d18-4a9ac183b924",
-        };
-        req.body = {
-          characterIds: [
-            "1db5cd8a-cd22-48e8-9a4e-90ee032c9f15",
-            "44fec4c8-19a6-4aaa-8f6a-16afe92af491",
-          ],
-        };
-        const error = new Error();
-
-        mockAddCharacter.mockRejectedValue(error);
-        await underTest.addCharactersToEvent(
-          req as Request,
-          res as Response,
-          next,
-        );
 
         expect(next).toHaveBeenCalledWith(error);
       });

@@ -210,8 +210,8 @@ export class EventController {
     next: NextFunction,
   ) {
     try {
-      if (!req.params.userId) {
-        res.status(status.BAD_REQUEST).json({ error: "User ID is required" });
+      if (!req.params.eventId) {
+        res.status(status.BAD_REQUEST).json({ error: "Event ID is required" });
         return;
       }
 
@@ -234,8 +234,8 @@ export class EventController {
 
   public async delete(req: Request, res: Response, next: NextFunction) {
     try {
-      if (!req.params.userId) {
-        res.status(status.BAD_REQUEST).json({ error: "User ID is required" });
+      if (!req.params.eventId) {
+        res.status(status.BAD_REQUEST).json({ error: "Event ID is required" });
         return;
       }
 

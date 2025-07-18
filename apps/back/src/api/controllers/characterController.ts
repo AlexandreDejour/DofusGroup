@@ -98,6 +98,7 @@ export class CharacterController {
 
   public async post(req: Request, res: Response, next: NextFunction) {
     try {
+      console.log(req.params.userId);
       if (!req.params.userId) {
         res.status(status.BAD_REQUEST).json({ error: "User ID is required" });
         return;
@@ -122,10 +123,11 @@ export class CharacterController {
         return;
       }
 
-      const characterId: string = req.params.characterId;
+      const { userId, characterId } = req.params;
       const characterData: Partial<CharacterBodyData> = req.body;
 
       const characterUpdated: Character | null = await this.repository.update(
+        userId,
         characterId,
         characterData,
       );

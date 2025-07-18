@@ -98,13 +98,14 @@ export class CharacterRepository {
   }
 
   public async update(
+    userId: string,
     characterId: string,
     characterData: Partial<CharacterBodyData>,
   ): Promise<Character | null> {
     try {
       const characterToUpdate: CharacterEntity | null =
         await CharacterEntity.findOne({
-          where: { id: characterId, user_id: characterData.user_id },
+          where: { id: characterId, user_id: userId },
         });
 
       if (!characterToUpdate) {

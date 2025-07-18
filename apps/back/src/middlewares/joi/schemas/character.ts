@@ -37,11 +37,6 @@ export const createCharacterSchema: Joi.ObjectSchema = Joi.object({
     "string.base": "Stuff must be a string",
   }),
   default_character: Joi.boolean().optional(),
-  user_id: Joi.string().guid({ version: "uuidv4" }).required().messages({
-    "string.guid": "User ID must be a valid UUID v4",
-    "any.required": "User ID is required",
-    "string.base": "User ID must be a string",
-  }),
   breed_id: Joi.string().guid({ version: "uuidv4" }).required().messages({
     "string.guid": "Breed ID must be a valid UUID v4",
     "any.required": "Breed ID is required",

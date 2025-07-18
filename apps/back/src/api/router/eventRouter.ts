@@ -29,6 +29,16 @@ export function createEventRouter(controller: EventController): Router {
   });
 
   router.post(
+    "/user/:userId/event",
+    validateUUID,
+    htmlSanitizer,
+    validateSchema(createEventSchema),
+    (req, res, next) => {
+      controller.post(req, res, next);
+    },
+  );
+
+  router.post(
     "/event/:eventId/addCharacters",
     validateUUID,
     htmlSanitizer,
@@ -46,33 +56,8 @@ export function createEventRouter(controller: EventController): Router {
     },
   );
 
-  router.get("/user/:userId/events", validateUUID, (req, res, next) => {
-    controller.getAllByUserId(req, res, next);
-  });
-
-  router.get(
-    "/user/:userId/events/enriched",
-    validateUUID,
-    (req, res, next) => {
-      controller.getAllEnrichedByUserId(req, res, next);
-    },
-  );
-
-  router.post(
-    "/user/:userId/event",
-    validateUUID,
-    htmlSanitizer,
-    validateSchema(createEventSchema),
-    (req, res, next) => {
-      controller.post(req, res, next);
-    },
-  );
-
   router
     .route("/user/:userId/event/:eventId")
-    .get(validateUUID, (req, res, next) => {
-      controller.getOneByUserId(req, res, next);
-    })
     .patch(
       validateUUID,
       htmlSanitizer,
@@ -84,14 +69,6 @@ export function createEventRouter(controller: EventController): Router {
     .delete(validateUUID, (req, res, next) => {
       controller.delete(req, res, next);
     });
-
-  router.get(
-    "/user/:userId/event/enriched/:eventId",
-    validateUUID,
-    (req, res, next) => {
-      controller.getOneEnrichedByUserId(req, res, next);
-    },
-  );
 
   return router;
 }

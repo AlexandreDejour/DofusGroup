@@ -169,30 +169,6 @@ export class EventRepository {
     }
   }
 
-  public async update(
-    eventId: string,
-    eventData: Partial<EventBodyData>,
-  ): Promise<EventEnriched | null> {
-    try {
-      const eventToUpdate: EventEntity | null = await EventEntity.findOne({
-        where: { id: eventId, user_id: eventData.user_id },
-        include: ["tag", "user", "server", "characters"],
-      });
-
-      if (!eventToUpdate) {
-        return null;
-      }
-
-      const result: EventEntity = await eventToUpdate.update(eventData);
-
-      const eventUpdated = result.get({ plain: true });
-
-      return eventUpdated;
-    } catch (error) {
-      throw error;
-    }
-  }
-
   public async addCharactersToEvent(
     eventId: string,
     charactersIds: string[],
@@ -217,6 +193,59 @@ export class EventRepository {
       const updatedEvent: EventEnriched = event.get({ plain: true });
 
       return updatedEvent;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  public async removeCharactersFromEvent(
+    eventId: string,
+    charactersIds: string[],
+  ): Promise<EventEnriched | null> {
+    try {
+      const result: EventEntity | null = await EventEntity.findByPk(eventId);
+
+      if (!result) {
+        return null;
+      }
+
+      result.removeCharacters(charactersIds);
+
+      const event: EventEntity | null = await EventEntity.findByPk(result.id, {
+        include: ["tag", "user", "server", "characters"],
+      });
+
+      if (!event) {
+        // highly improbable but Typescript is happy
+        throw new Error("Event has been create but is not found");
+      }
+      const updatedEvent: EventEnriched = event.get({ plain: true });
+
+      return updatedEvent;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  public async update(
+    eventId: string,
+    eventData: Partial<EventBodyData>,
+  ): Promise<EventEnriched | null> {
+    try {
+      const eventToUpdate: EventEntity | null = await EventEntity.findOne({
+        where: { id: eventId, user_id: eventData.user_id },
+        include: ["tag", "user", "server", "characters"],
+      });
+
+      if (!eventToUpdate) {
+        return null;
+      }
+
+      const result: EventEntity = await eventToUpdate.update(eventData);
+
+      const eventUpdated = result.get({ plain: true });
+
+      return eventUpdated;
     } catch (error) {
       throw error;
     }

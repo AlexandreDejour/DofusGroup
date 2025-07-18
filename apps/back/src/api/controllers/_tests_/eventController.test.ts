@@ -13,18 +13,38 @@ describe("EventController", () => {
   let next = vi.fn();
 
   vi.mock("../../../middlewares/repository/eventRepository.js");
-  const mockGetAll = vi.spyOn(EventRepository.prototype, "getAllByUserId");
-  const mockGetOne = vi.spyOn(EventRepository.prototype, "getOneByUserId");
+  const mockGetAll = vi.spyOn(EventRepository.prototype, "getAll");
   const mockGetAllEnriched = vi.spyOn(
+    EventRepository.prototype,
+    "getAllEnriched",
+  );
+  const mockGetOne = vi.spyOn(EventRepository.prototype, "getOne");
+  const mockGetOneEnriched = vi.spyOn(
+    EventRepository.prototype,
+    "getOneEnriched",
+  );
+  const mockGetAllByUserId = vi.spyOn(
+    EventRepository.prototype,
+    "getAllByUserId",
+  );
+  const mockGetOneByUserId = vi.spyOn(
+    EventRepository.prototype,
+    "getOneByUserId",
+  );
+  const mockGetAllEnrichedByUserId = vi.spyOn(
     EventRepository.prototype,
     "getAllEnrichedByUserId",
   );
-  const mockGetOneEnriched = vi.spyOn(
+  const mockGetOneEnrichedByUserId = vi.spyOn(
     EventRepository.prototype,
     "getOneEnrichedByUserId",
   );
   const mockPost = vi.spyOn(EventRepository.prototype, "post");
   const mockUpdate = vi.spyOn(EventRepository.prototype, "update");
+  const mockAddCharacter = vi.spyOn(
+    EventRepository.prototype,
+    "addCharactersToEvent",
+  );
   const mockDelete = vi.spyOn(EventRepository.prototype, "delete");
 
   req = {};
@@ -38,8 +58,225 @@ describe("EventController", () => {
   });
 
   const underTest: EventController = new EventController(new EventRepository());
-
   // --- GET ALL ---
+  describe("getAll", () => {
+    it("Return events if exist", async () => {
+      // GIVEN
+      const mockEvents: Event[] = [
+        {
+          id: "923a9fe0-1395-4f4e-8d18-4a9ac183b924",
+          title: "Donjon minotot",
+          date: new Date("2026-01-01"),
+          duration: 60,
+          area: "Amakna",
+          sub_area: "Ile des taures",
+          donjon_name: "Labyrinthe du minotoror",
+          description: "donjon full succès",
+          max_players: 8,
+          status: "public",
+        },
+      ];
+
+      mockGetAll.mockResolvedValue(mockEvents);
+      // WHEN
+      await underTest.getAll(req as Request, res as Response, next);
+      // THEN
+      expect(mockGetAll).toHaveBeenCalled();
+      expect(res.json).toHaveBeenCalledWith(mockEvents);
+      expect(res.status).not.toHaveBeenCalledWith(status.NOT_FOUND);
+    });
+
+    it("Return 404 if any event found.", async () => {
+      const mockEvents: Event[] = [];
+
+      mockGetAll.mockResolvedValue(mockEvents);
+      await underTest.getAll(req as Request, res as Response, next);
+
+      expect(res.status).toHaveBeenCalledWith(status.NO_CONTENT);
+      expect(res.json).toHaveBeenCalledWith({ error: "Any event found" });
+    });
+
+    it("Call next() in case of error.", async () => {
+      const error = new Error();
+
+      mockGetAll.mockRejectedValue(error);
+      await underTest.getAll(req as Request, res as Response, next);
+
+      expect(next).toHaveBeenCalledWith(error);
+    });
+  });
+
+  // --- GET ONE ---
+  describe("getOne", () => {
+    req.params = {
+      eventId: "923a9fe0-1395-4f4e-8d18-4a9ac183b924",
+    };
+
+    it("Return event if exists", async () => {
+      const mockEvent: Event = {
+        id: "923a9fe0-1395-4f4e-8d18-4a9ac183b924",
+        title: "Donjon minotot",
+        date: new Date("2026-01-01"),
+        duration: 60,
+        area: "Amakna",
+        sub_area: "Ile des taures",
+        donjon_name: "Labyrinthe du minotoror",
+        description: "donjon full succès",
+        max_players: 8,
+        status: "public",
+      };
+      mockGetOne.mockResolvedValue(mockEvent);
+
+      await underTest.getOne(req as Request, res as Response, next);
+
+      expect(mockGetOne).toHaveBeenCalled();
+      expect(res.json).toHaveBeenCalledWith(mockEvent);
+      expect(res.status).not.toHaveBeenCalledWith(status.NOT_FOUND);
+    });
+
+    it("Call next() if event doesn't exists.", async () => {
+      mockGetOne.mockResolvedValue(null);
+      await underTest.getOne(req as Request, res as Response, next);
+
+      expect(res.status).toHaveBeenCalledWith(status.NOT_FOUND);
+      expect(res.json).toHaveBeenCalledWith({ error: "Event not found" });
+    });
+
+    it("Call next() in case of error.", async () => {
+      const error = new Error();
+
+      mockGetOne.mockRejectedValue(error);
+      await underTest.getOne(req as Request, res as Response, next);
+
+      expect(next).toHaveBeenCalledWith(error);
+    });
+  });
+
+  // --- GET ALL ENRICHED ---
+  describe("getAllEnriched", () => {
+    it("Return events if exist.", async () => {
+      // GIVEN
+      const mockEventsEnriched: EventEnriched[] = [
+        {
+          id: "923a9fe0-1395-4f4e-8d18-4a9ac183b924",
+          title: "Donjon minotot",
+          date: new Date("2026-01-01"),
+          duration: 60,
+          area: "Amakna",
+          sub_area: "Ile des taures",
+          donjon_name: "Labyrinthe du minotoror",
+          description: "donjon full succès",
+          max_players: 8,
+          status: "public",
+          tag: {
+            id: "f7a34554-d2d7-48d5-8bc2-1f7e4b06c8f8",
+            name: "Donjon",
+            color: "#DFF0FF",
+          },
+          server: {
+            id: "6c19c76b-cbc1-4a58-bdeb-b336eaf6f51c",
+            name: "Rafal",
+            mono_account: false,
+          },
+          user: {
+            id: "07a3cd78-3a4a-4aae-a681-7634d72197c2",
+            username: "toto",
+          },
+          characters: [],
+        },
+      ];
+
+      mockGetAllEnriched.mockResolvedValue(mockEventsEnriched);
+      // WHEN
+      await underTest.getAllEnriched(req as Request, res as Response, next);
+      //THEN
+      expect(mockGetAllEnriched).toHaveBeenCalled();
+      expect(res.json).toHaveBeenCalledWith(mockEventsEnriched);
+      expect(res.status).not.toHaveBeenCalledWith(status.NOT_FOUND);
+    });
+
+    it("Return 404 if any event found.", async () => {
+      const mockEventsEnriched: EventEnriched[] = [];
+
+      mockGetAllEnriched.mockResolvedValue(mockEventsEnriched);
+      await underTest.getAllEnriched(req as Request, res as Response, next);
+
+      expect(res.status).toHaveBeenCalledWith(status.NO_CONTENT);
+      expect(res.json).toHaveBeenCalledWith({ error: "Any event found" });
+    });
+
+    it("Call next() in case of error.", async () => {
+      const error = new Error();
+
+      mockGetAllEnriched.mockRejectedValue(error);
+      await underTest.getAllEnriched(req as Request, res as Response, next);
+
+      expect(next).toHaveBeenCalledWith(error);
+    });
+  });
+
+  // --- GET ONE ENRICHED ---
+  describe("getOneByUserIdEnriched", () => {
+    req.params = {
+      eventId: "923a9fe0-1395-4f4e-8d18-4a9ac183b924",
+    };
+
+    it("Return event if exists", async () => {
+      const mockEventEnriched: EventEnriched = {
+        id: "923a9fe0-1395-4f4e-8d18-4a9ac183b924",
+        title: "Donjon minotot",
+        date: new Date("2026-01-01"),
+        duration: 60,
+        area: "Amakna",
+        sub_area: "Ile des taures",
+        donjon_name: "Labyrinthe du minotoror",
+        description: "donjon full succès",
+        max_players: 8,
+        status: "public",
+        tag: {
+          id: "f7a34554-d2d7-48d5-8bc2-1f7e4b06c8f8",
+          name: "Donjon",
+          color: "#DFF0FF",
+        },
+        server: {
+          id: "6c19c76b-cbc1-4a58-bdeb-b336eaf6f51c",
+          name: "Rafal",
+          mono_account: false,
+        },
+        user: {
+          id: "07a3cd78-3a4a-4aae-a681-7634d72197c2",
+          username: "toto",
+        },
+        characters: [],
+      };
+
+      mockGetOneEnriched.mockResolvedValue(mockEventEnriched);
+      await underTest.getOneEnriched(req as Request, res as Response, next);
+
+      expect(mockGetOneEnriched).toHaveBeenCalled();
+      expect(res.json).toHaveBeenCalledWith(mockEventEnriched);
+      expect(res.status).not.toHaveBeenCalledWith(status.NOT_FOUND);
+    });
+
+    it("Call next() if character doesn't exists.", async () => {
+      mockGetOneEnriched.mockResolvedValue(null);
+      await underTest.getOneEnriched(req as Request, res as Response, next);
+
+      expect(res.status).toHaveBeenCalledWith(status.NOT_FOUND);
+      expect(res.json).toHaveBeenCalledWith({ error: "Event not found" });
+    });
+
+    it("Call next() in case of error.", async () => {
+      const error = new Error();
+
+      mockGetOneEnriched.mockRejectedValue(error);
+      await underTest.getOneEnriched(req as Request, res as Response, next);
+
+      expect(next).toHaveBeenCalledWith(error);
+    });
+  });
+
+  // --- GET ALL BY USER ID ---
   describe("getAllByUserId", () => {
     req.params = { userId: "182a492c-feb7-4af8-910c-e61dc2536754" };
 
@@ -60,11 +297,11 @@ describe("EventController", () => {
         },
       ];
 
-      mockGetAll.mockResolvedValue(mockEvents);
+      mockGetAllByUserId.mockResolvedValue(mockEvents);
       // WHEN
       await underTest.getAllByUserId(req as Request, res as Response, next);
       //THEN
-      expect(mockGetAll).toHaveBeenCalled();
+      expect(mockGetAllByUserId).toHaveBeenCalled();
       expect(res.json).toHaveBeenCalledWith(mockEvents);
       expect(res.status).not.toHaveBeenCalledWith(status.NOT_FOUND);
     });
@@ -72,7 +309,7 @@ describe("EventController", () => {
     it("Return 404 if any event found.", async () => {
       const mockEvents: Event[] = [];
 
-      mockGetAll.mockResolvedValue(mockEvents);
+      mockGetAllByUserId.mockResolvedValue(mockEvents);
       await underTest.getAllByUserId(req as Request, res as Response, next);
 
       expect(res.status).toHaveBeenCalledWith(status.NO_CONTENT);
@@ -82,14 +319,14 @@ describe("EventController", () => {
     it("Call next() in case of error.", async () => {
       const error = new Error();
 
-      mockGetAll.mockRejectedValue(error);
+      mockGetAllByUserId.mockRejectedValue(error);
       await underTest.getAllByUserId(req as Request, res as Response, next);
 
       expect(next).toHaveBeenCalledWith(error);
     });
   });
 
-  // --- GET ONE ---
+  // --- GET ONE BY USER ID ---
   describe("getOneByUserId", () => {
     req.params = {
       userId: "182a492c-feb7-4af8-910c-e61dc2536754",
@@ -110,14 +347,16 @@ describe("EventController", () => {
         status: "public",
       };
 
-      mockGetOne.mockResolvedValue(mockEvent);
+      mockGetOneByUserId.mockResolvedValue(mockEvent);
       await underTest.getOneByUserId(req as Request, res as Response, next);
 
+      expect(mockGetOneByUserId).toHaveBeenCalled();
       expect(res.json).toHaveBeenCalledWith(mockEvent);
+      expect(res.status).not.toHaveBeenCalledWith(status.NOT_FOUND);
     });
 
     it("Call next() if event doesn't exists.", async () => {
-      mockGetOne.mockResolvedValue(null);
+      mockGetOneByUserId.mockResolvedValue(null);
       await underTest.getOneByUserId(req as Request, res as Response, next);
 
       expect(res.status).toHaveBeenCalledWith(status.NOT_FOUND);
@@ -127,14 +366,14 @@ describe("EventController", () => {
     it("Call next() in case of error.", async () => {
       const error = new Error();
 
-      mockGetOne.mockRejectedValue(error);
+      mockGetOneByUserId.mockRejectedValue(error);
       await underTest.getOneByUserId(req as Request, res as Response, next);
 
       expect(next).toHaveBeenCalledWith(error);
     });
   });
 
-  // --- GET ALL ENRICHED ---
+  // --- GET ALL BY USER ID ENRICHED ---
   describe("getAllByUserIdEnriched", () => {
     req.params = { userId: "182a492c-feb7-4af8-910c-e61dc2536754" };
 
@@ -170,7 +409,7 @@ describe("EventController", () => {
         },
       ];
 
-      mockGetAllEnriched.mockResolvedValue(mockEventsEnriched);
+      mockGetAllEnrichedByUserId.mockResolvedValue(mockEventsEnriched);
       // WHEN
       await underTest.getAllEnrichedByUserId(
         req as Request,
@@ -178,7 +417,7 @@ describe("EventController", () => {
         next,
       );
       //THEN
-      expect(mockGetAllEnriched).toHaveBeenCalled();
+      expect(mockGetAllEnrichedByUserId).toHaveBeenCalled();
       expect(res.json).toHaveBeenCalledWith(mockEventsEnriched);
       expect(res.status).not.toHaveBeenCalledWith(status.NOT_FOUND);
     });
@@ -186,7 +425,7 @@ describe("EventController", () => {
     it("Return 404 if any event found.", async () => {
       const mockEventsEnriched: EventEnriched[] = [];
 
-      mockGetAllEnriched.mockResolvedValue(mockEventsEnriched);
+      mockGetAllEnrichedByUserId.mockResolvedValue(mockEventsEnriched);
       await underTest.getAllEnrichedByUserId(
         req as Request,
         res as Response,
@@ -200,7 +439,7 @@ describe("EventController", () => {
     it("Call next() in case of error.", async () => {
       const error = new Error();
 
-      mockGetAllEnriched.mockRejectedValue(error);
+      mockGetAllEnrichedByUserId.mockRejectedValue(error);
       await underTest.getAllEnrichedByUserId(
         req as Request,
         res as Response,
@@ -211,7 +450,7 @@ describe("EventController", () => {
     });
   });
 
-  // --- GET ONE ENRICHED ---
+  // --- GET ONE BY USER ID ENRICHED ---
   describe("getOneByUserIdEnriched", () => {
     req.params = {
       userId: "182a492c-feb7-4af8-910c-e61dc2536754",
@@ -247,7 +486,7 @@ describe("EventController", () => {
         characters: [],
       };
 
-      mockGetOneEnriched.mockResolvedValue(mockEventEnriched);
+      mockGetOneEnrichedByUserId.mockResolvedValue(mockEventEnriched);
       await underTest.getOneEnrichedByUserId(
         req as Request,
         res as Response,
@@ -258,7 +497,7 @@ describe("EventController", () => {
     });
 
     it("Call next() if character doesn't exists.", async () => {
-      mockGetOneEnriched.mockResolvedValue(null);
+      mockGetOneEnrichedByUserId.mockResolvedValue(null);
       await underTest.getOneEnrichedByUserId(
         req as Request,
         res as Response,
@@ -272,7 +511,7 @@ describe("EventController", () => {
     it("Call next() in case of error.", async () => {
       const error = new Error();
 
-      mockGetOneEnriched.mockRejectedValue(error);
+      mockGetOneEnrichedByUserId.mockRejectedValue(error);
       await underTest.getOneEnrichedByUserId(
         req as Request,
         res as Response,

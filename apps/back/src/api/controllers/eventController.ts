@@ -38,7 +38,43 @@ export class EventController {
         res.status(status.NO_CONTENT).json({ error: "Any event found" });
         return;
       }
+
       res.json(events);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  public async getOne(req: Request, res: Response, next: NextFunction) {
+    const eventId: string = req.params.eventId;
+
+    try {
+      const event: Event | null = await this.repository.getOne(eventId);
+
+      if (!event) {
+        res.status(status.NOT_FOUND).json({ error: "Event not found" });
+        return;
+      }
+
+      res.json(event);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  public async getOneEnriched(req: Request, res: Response, next: NextFunction) {
+    const eventId: string = req.params.eventId;
+
+    try {
+      const event: EventEnriched | null =
+        await this.repository.getOneEnriched(eventId);
+
+      if (!event) {
+        res.status(status.NOT_FOUND).json({ error: "Event not found" });
+        return;
+      }
+
+      res.json(event);
     } catch (error) {
       next(error);
     }
@@ -156,6 +192,34 @@ export class EventController {
         eventId,
         eventData,
       );
+
+      if (!eventUpdated) {
+        res.status(status.NOT_FOUND).json({ error: "Event not found" });
+        return;
+      }
+
+      res.json(eventUpdated);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  public async addCharactersToEvent(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) {
+    try {
+      if (!req.params.userId) {
+        res.status(status.BAD_REQUEST).json({ error: "User ID is required" });
+        return;
+      }
+
+      const eventId: string = req.params.eventId;
+      const charactersIds: string[] = req.body.characters_ids;
+
+      const eventUpdated: Event | null =
+        await this.repository.addCharactersToEvent(eventId, charactersIds);
 
       if (!eventUpdated) {
         res.status(status.NOT_FOUND).json({ error: "Event not found" });

@@ -16,20 +16,20 @@ export function createEventRouter(controller: EventController): Router {
     controller.getAll(req, res, next);
   });
 
-  router.get("events/enriched", (req, res, next) => {
+  router.get("/events/enriched", (req, res, next) => {
     controller.getAllEnriched(req, res, next);
   });
 
-  router.get("event/:eventId", validateUUID, (req, res, next) => {
+  router.get("/event/:eventId", validateUUID, (req, res, next) => {
     controller.getOne(req, res, next);
   });
 
-  router.get("event/:eventId/enriched", validateUUID, (req, res, next) => {
+  router.get("/event/:eventId/enriched", validateUUID, (req, res, next) => {
     controller.getOneEnriched(req, res, next);
   });
 
   router.post(
-    "event/:eventId/addCharacters",
+    "/event/:eventId/addCharacters",
     validateUUID,
     (req, res, next) => {
       controller.addCharactersToEvent(req, res, next);

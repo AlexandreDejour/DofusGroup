@@ -284,14 +284,25 @@ describe("EventController", () => {
         status: "public",
         tag_id: "f7a34554-d2d7-48d5-8bc2-1f7e4b06c8f8",
         server_id: "6c19c76b-cbc1-4a58-bdeb-b336eaf6f51c",
-        user_id: "07a3cd78-3a4a-4aae-a681-7634d72197c2",
         character_ids: ["06effb95-8fad-442f-97f0-d2c278d4da9c"],
       };
       const mockDatas: EventBodyData = {
         ...req.body,
         user_id: req.params.userId,
       };
-      const mockNewEvent: EventEnriched = {
+      const mockNewEvent: Event = {
+        id: "923a9fe0-1395-4f4e-8d18-4a9ac183b924",
+        title: "Donjon minotot",
+        date: new Date("2026-01-01"),
+        duration: 60,
+        area: "Amakna",
+        sub_area: "Ile des taures",
+        donjon_name: "Labyrinthe du minotoror",
+        description: "donjon full succès",
+        max_players: 8,
+        status: "public",
+      };
+      const mockNewEventEnriched: EventEnriched = {
         id: "923a9fe0-1395-4f4e-8d18-4a9ac183b924",
         title: "Donjon minotot",
         date: new Date("2026-01-01"),
@@ -320,10 +331,12 @@ describe("EventController", () => {
       };
 
       mockPost.mockResolvedValue(mockNewEvent);
+      mockGetOneEnriched.mockResolvedValue(mockNewEvent);
       // WHEN
       await underTest.post(req as Request, res as Response, next);
       //THEN
       expect(mockPost).toHaveBeenCalledWith(mockDatas);
+      expect(mockGetOneEnriched).toHaveBeenCalledWith(mockNewEvent.id);
       expect(res.json).toHaveBeenCalledWith(mockNewEvent);
       expect(res.status).not.toHaveBeenCalledWith(status.NOT_FOUND);
     });
@@ -337,6 +350,18 @@ describe("EventController", () => {
             "1db5cd8a-cd22-48e8-9a4e-90ee032c9f15",
             "44fec4c8-19a6-4aaa-8f6a-16afe92af491",
           ],
+        };
+        const mockEvent: Event = {
+          id: "182a492c-feb7-4af8-910c-e61dc2536754",
+          title: "Donjon minotot",
+          date: new Date("2026-01-01"),
+          duration: 60,
+          area: "Amakna",
+          sub_area: "Ile des taures",
+          donjon_name: "Labyrinthe du minotoror",
+          description: "donjon full succès",
+          max_players: 8,
+          status: "public",
         };
         const mockEventEnriched: EventEnriched = {
           id: "182a492c-feb7-4af8-910c-e61dc2536754",
@@ -385,7 +410,8 @@ describe("EventController", () => {
           ],
         };
 
-        mockAddCharacters.mockResolvedValue(mockEventEnriched);
+        mockAddCharacters.mockResolvedValue(mockEvent);
+        mockGetOneEnriched.mockResolvedValue(mockEventEnriched);
 
         await underTest.addCharactersToEvent(
           req as Request,
@@ -394,6 +420,7 @@ describe("EventController", () => {
         );
 
         expect(mockAddCharacters).toHaveBeenCalled();
+        expect(mockGetOneEnriched).toHaveBeenCalledWith(mockEvent.id);
         expect(res.json).toHaveBeenCalledWith(mockEventEnriched);
         expect(res.status).not.toHaveBeenCalledWith(status.NOT_FOUND);
       });
@@ -464,12 +491,21 @@ describe("EventController", () => {
       it("Remove characters if event exists", async () => {
         req.params = { eventId: "182a492c-feb7-4af8-910c-e61dc2536754" };
         req.body = {
-          characterIds: [
-            "1db5cd8a-cd22-48e8-9a4e-90ee032c9f15",
-            "44fec4c8-19a6-4aaa-8f6a-16afe92af491",
-          ],
+          characterIds: ["1b4a318a-d991-4ec9-8178-38e6bbb5c322"],
         };
-        const mockEventEnriched: EventEnriched = {
+        const mockEvent: Event = {
+          id: "182a492c-feb7-4af8-910c-e61dc2536754",
+          title: "Donjon minotot",
+          date: new Date("2026-01-01"),
+          duration: 60,
+          area: "Amakna",
+          sub_area: "Ile des taures",
+          donjon_name: "Labyrinthe du minotoror",
+          description: "donjon full succès",
+          max_players: 8,
+          status: "public",
+        };
+        const mockEventUpdatedEnriched: EventEnriched = {
           id: "182a492c-feb7-4af8-910c-e61dc2536754",
           title: "Donjon minotot",
           date: new Date("2026-01-01"),
@@ -507,7 +543,8 @@ describe("EventController", () => {
           ],
         };
 
-        mockRemoveCharacters.mockResolvedValue(mockEventEnriched);
+        mockRemoveCharacters.mockResolvedValue(mockEvent);
+        mockGetOneEnriched.mockResolvedValue(mockEventUpdatedEnriched);
 
         await underTest.removeCharactersFromEvent(
           req as Request,
@@ -516,7 +553,10 @@ describe("EventController", () => {
         );
 
         expect(mockRemoveCharacters).toHaveBeenCalled();
-        expect(res.json).toHaveBeenCalledWith(mockEventEnriched);
+        expect(mockGetOneEnriched).toHaveBeenCalledWith(
+          mockEventUpdatedEnriched.id,
+        );
+        expect(res.json).toHaveBeenCalledWith(mockEventUpdatedEnriched);
         expect(res.status).not.toHaveBeenCalledWith(status.NOT_FOUND);
       });
 

@@ -152,8 +152,6 @@ export class EventRepository {
         return null;
       }
 
-      this.utils.checkTeamMinLength(result, charactersId);
-
       let characters: CharacterEntity[] = await CharacterEntity.findAll({
         where: {
           id: {
@@ -170,6 +168,8 @@ export class EventRepository {
         result,
         characters,
       );
+
+      this.utils.checkTeamMinLength(result, validCharactersId);
 
       if (!validCharactersId.length) {
         throw new Error("Unavailable characters to remove");

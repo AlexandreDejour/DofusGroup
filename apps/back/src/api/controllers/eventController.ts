@@ -134,7 +134,7 @@ export class EventController {
         return;
       }
 
-      res.json(eventUpdated);
+      res.json(eventUpdatedEnriched);
     } catch (error) {
       next(error);
     }

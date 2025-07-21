@@ -8,6 +8,7 @@ export default async function hashPassword(
   _res: Response,
   next: NextFunction,
 ) {
+  console.log(req.body);
   if (req.body.password) {
     const password = req.body.password;
 
@@ -25,5 +26,7 @@ export default async function hashPassword(
         ),
       );
     }
-  } else next();
+  } else {
+    next();
+  }
 }

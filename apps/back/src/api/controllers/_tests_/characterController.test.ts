@@ -317,135 +317,136 @@ describe("CharacterController", () => {
       expect(res.json).toHaveBeenCalledWith(mockNewCharacter);
       expect(res.status).not.toHaveBeenCalledWith(status.NOT_FOUND);
     });
+  });
 
-    // --- PATCH ---
-    describe("update", () => {
-      it("Return character if updated.", async () => {
-        // GIVEN
-        req.params = {
-          userId: "436d798e-b084-454c-8f78-593e966a9a66",
-          characterId: "3aa64b38-e41c-44ae-94ea-3b75082fb8fb",
-        };
-        req.body = {
-          level: 200,
-          alignment: "Brakmar",
-          default_character: false,
-        };
-        const mockDatas: CharacterBodyData = req.body;
-        const mockCharacterToUpdate: CharacterEnriched = {
-          id: "0f309e32-2281-4b46-bb2e-bc2a7248e39b",
-          name: "Night-Hunter",
-          sex: "M",
-          level: 190,
-          alignment: "Bonta",
-          stuff: "https://d-bk.net/fr/d/1EFhw",
-          default_character: true,
-          user: {
-            id: "436d798e-b084-454c-8f78-593e966a9a66",
-            username: "Goldorak",
-          },
-          breed: { id: "9a252130-3af3-4e5c-a957-a04a6f23c59a", name: "Sram" },
-          server: {
-            id: "c3e35f15-d01a-439e-98ed-4a15ff39dae2",
-            name: "Dakal",
-            mono_account: true,
-          },
-          events: [],
-        };
-        const mockUpdatedCharacter = { ...mockCharacterToUpdate, ...mockDatas };
+  // --- PATCH ---
+  describe("update", () => {
+    it("Return character if updated.", async () => {
+      // GIVEN
+      req.params = {
+        userId: "436d798e-b084-454c-8f78-593e966a9a66",
+        characterId: "0f309e32-2281-4b46-bb2e-bc2a7248e39b",
+      };
+      req.body = {
+        level: 200,
+        alignment: "Brakmar",
+        default_character: false,
+      };
+      const mockDatas: CharacterBodyData = req.body;
+      const mockCharacterToUpdate: CharacterEnriched = {
+        id: "0f309e32-2281-4b46-bb2e-bc2a7248e39b",
+        name: "Night-Hunter",
+        sex: "M",
+        level: 190,
+        alignment: "Bonta",
+        stuff: "https://d-bk.net/fr/d/1EFhw",
+        default_character: true,
+        user: {
+          id: "436d798e-b084-454c-8f78-593e966a9a66",
+          username: "Goldorak",
+        },
+        breed: { id: "9a252130-3af3-4e5c-a957-a04a6f23c59a", name: "Sram" },
+        server: {
+          id: "c3e35f15-d01a-439e-98ed-4a15ff39dae2",
+          name: "Dakal",
+          mono_account: true,
+        },
+        events: [],
+      };
+      const mockUpdatedCharacter = { ...mockCharacterToUpdate, ...mockDatas };
 
-        mockUpdate.mockResolvedValue(mockUpdatedCharacter);
-        // WHEN
-        await underTest.update(req as Request, res as Response, next);
-        //THEN
-        expect(mockUpdatedCharacter.level).toBe(200);
-        expect(mockUpdatedCharacter.alignment).toBe("Brakmar");
-        expect(mockUpdatedCharacter.default_character).toBe(false);
-        expect(mockUpdate).toHaveBeenCalledWith(
-          req.params.characterId,
-          mockDatas,
-        );
-        expect(res.json).toHaveBeenCalledWith(mockUpdatedCharacter);
-        expect(res.status).not.toHaveBeenCalledWith(status.NOT_FOUND);
-      });
-
-      it("Return 400 if userId isn't define.", async () => {
-        req.params = {};
-
-        await underTest.update(req as Request, res as Response, next);
-
-        expect(res.status).toHaveBeenCalledWith(status.BAD_REQUEST);
-        expect(res.json).toHaveBeenCalledWith({ error: "User ID is required" });
-      });
-
-      it("Call next() if character doesn't exists.", async () => {
-        req.params = {
-          userId: "436d798e-b084-454c-8f78-593e966a9a66",
-          characterId: "3aa64b38-e41c-44ae-94ea-3b75082fb8fb",
-        };
-        req.body = {
-          level: 200,
-          alignment: "Brakmar",
-          default_character: false,
-        };
-
-        mockUpdate.mockResolvedValue(null);
-        await underTest.update(req as Request, res as Response, next);
-
-        expect(res.status).toHaveBeenCalledWith(status.NOT_FOUND);
-        expect(res.json).toHaveBeenCalledWith({ error: "Character not found" });
-      });
-
-      it("Call next() in case of error.", async () => {
-        req.params = {
-          userId: "436d798e-b084-454c-8f78-593e966a9a66",
-          characterId: "3aa64b38-e41c-44ae-94ea-3b75082fb8fb",
-        };
-        req.body = {
-          level: 200,
-          alignment: "Brakmar",
-          default_character: false,
-        };
-        const error = new Error();
-
-        mockUpdate.mockRejectedValue(error);
-        await underTest.update(req as Request, res as Response, next);
-
-        expect(next).toHaveBeenCalledWith(error);
-      });
+      mockUpdate.mockResolvedValue(mockUpdatedCharacter);
+      // WHEN
+      await underTest.update(req as Request, res as Response, next);
+      //THEN
+      expect(mockUpdatedCharacter.level).toBe(200);
+      expect(mockUpdatedCharacter.alignment).toBe("Brakmar");
+      expect(mockUpdatedCharacter.default_character).toBe(false);
+      expect(mockUpdate).toHaveBeenCalledWith(
+        req.params.userId,
+        req.params.characterId,
+        mockDatas,
+      );
+      expect(res.json).toHaveBeenCalledWith(mockUpdatedCharacter);
+      expect(res.status).not.toHaveBeenCalledWith(status.NOT_FOUND);
     });
 
-    // --- DELETE ---
-    describe("delete", () => {
-      req.params = { userId: "436d798e-b084-454c-8f78-593e966a9a66" };
+    it("Return 400 if userId isn't define.", async () => {
+      req.params = {};
 
-      it("Return 204 if character is delete.", async () => {
-        // GIVEN
-        mockDelete.mockResolvedValue(true);
-        // WHEN
-        await underTest.delete(req as Request, res as Response, next);
-        //THEN
-        expect(mockDelete).toHaveBeenCalled();
-        expect(res.status).toHaveBeenCalledWith(status.NO_CONTENT);
-        expect(res.status).not.toHaveBeenCalledWith(status.NOT_FOUND);
-      });
+      await underTest.update(req as Request, res as Response, next);
 
-      it("Call next() if character doesn't exists.", async () => {
-        mockDelete.mockResolvedValue(false);
-        await underTest.delete(req as Request, res as Response, next);
+      expect(res.status).toHaveBeenCalledWith(status.BAD_REQUEST);
+      expect(res.json).toHaveBeenCalledWith({ error: "User ID is required" });
+    });
 
-        expect(res.status).toHaveBeenCalledWith(status.NOT_FOUND);
-        expect(res.json).toHaveBeenCalledWith({ error: "Character not found" });
-      });
+    it("Call next() if character doesn't exists.", async () => {
+      req.params = {
+        userId: "436d798e-b084-454c-8f78-593e966a9a66",
+        characterId: "3aa64b38-e41c-44ae-94ea-3b75082fb8fb",
+      };
+      req.body = {
+        level: 200,
+        alignment: "Brakmar",
+        default_character: false,
+      };
 
-      it("Call next() in case of error.", async () => {
-        const error = new Error();
+      mockUpdate.mockResolvedValue(null);
+      await underTest.update(req as Request, res as Response, next);
 
-        mockDelete.mockRejectedValue(error);
-        await underTest.delete(req as Request, res as Response, next);
+      expect(res.status).toHaveBeenCalledWith(status.NOT_FOUND);
+      expect(res.json).toHaveBeenCalledWith({ error: "Character not found" });
+    });
 
-        expect(next).toHaveBeenCalledWith(error);
-      });
+    it("Call next() in case of error.", async () => {
+      req.params = {
+        userId: "436d798e-b084-454c-8f78-593e966a9a66",
+        characterId: "3aa64b38-e41c-44ae-94ea-3b75082fb8fb",
+      };
+      req.body = {
+        level: 200,
+        alignment: "Brakmar",
+        default_character: false,
+      };
+      const error = new Error();
+
+      mockUpdate.mockRejectedValue(error);
+      await underTest.update(req as Request, res as Response, next);
+
+      expect(next).toHaveBeenCalledWith(error);
+    });
+  });
+
+  // --- DELETE ---
+  describe("delete", () => {
+    req.params = { userId: "436d798e-b084-454c-8f78-593e966a9a66" };
+
+    it("Return 204 if character is delete.", async () => {
+      // GIVEN
+      mockDelete.mockResolvedValue(true);
+      // WHEN
+      await underTest.delete(req as Request, res as Response, next);
+      //THEN
+      expect(mockDelete).toHaveBeenCalled();
+      expect(res.status).toHaveBeenCalledWith(status.NO_CONTENT);
+      expect(res.status).not.toHaveBeenCalledWith(status.NOT_FOUND);
+    });
+
+    it("Call next() if character doesn't exists.", async () => {
+      mockDelete.mockResolvedValue(false);
+      await underTest.delete(req as Request, res as Response, next);
+
+      expect(res.status).toHaveBeenCalledWith(status.NOT_FOUND);
+      expect(res.json).toHaveBeenCalledWith({ error: "Character not found" });
+    });
+
+    it("Call next() in case of error.", async () => {
+      const error = new Error();
+
+      mockDelete.mockRejectedValue(error);
+      await underTest.delete(req as Request, res as Response, next);
+
+      expect(next).toHaveBeenCalledWith(error);
     });
   });
 });

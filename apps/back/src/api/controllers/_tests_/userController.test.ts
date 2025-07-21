@@ -260,123 +260,123 @@ describe("UserController", () => {
       expect(res.status).toHaveBeenCalledWith(status.CONFLICT);
       expect(mockPost).not.toHaveBeenCalled();
     });
+  });
 
-    // --- PATCH ---
-    describe("update", () => {
-      it("Return user if updated.", async () => {
-        // GIVEN
-        req.params = {
-          userId: "07a3cd78-3a4a-4aae-a681-7634d72197c2",
-        };
-        req.body = {
-          username: "tata",
-          mail: "tata@exemple.com",
-        };
+  // --- PATCH ---
+  describe("update", () => {
+    it("Return user if updated.", async () => {
+      // GIVEN
+      req.params = {
+        userId: "07a3cd78-3a4a-4aae-a681-7634d72197c2",
+      };
+      req.body = {
+        username: "tata",
+        mail: "tata@exemple.com",
+      };
 
-        const mockDatas: UserBodyData = req.body;
-        const mockUserToUpdate: UserEnriched = {
-          id: "07a3cd78-3a4a-4aae-a681-7634d72197c2",
-          username: "toto",
-          characters: [
-            {
-              id: "c3e35f15-d01a-439e-98ed-4a15ff39dae2",
-              name: "Night-Hunter",
-              sex: "M",
-              level: 190,
-              alignment: "Bonta",
-              stuff: "https://d-bk.net/fr/d/1EFhw",
-              default_character: true,
-            },
-          ],
-          events: [],
-        };
-        const mockUpdatedUser = { ...mockUserToUpdate, ...mockDatas };
+      const mockDatas: UserBodyData = req.body;
+      const mockUserToUpdate: UserEnriched = {
+        id: "07a3cd78-3a4a-4aae-a681-7634d72197c2",
+        username: "toto",
+        characters: [
+          {
+            id: "c3e35f15-d01a-439e-98ed-4a15ff39dae2",
+            name: "Night-Hunter",
+            sex: "M",
+            level: 190,
+            alignment: "Bonta",
+            stuff: "https://d-bk.net/fr/d/1EFhw",
+            default_character: true,
+          },
+        ],
+        events: [],
+      };
+      const mockUpdatedUser = { ...mockUserToUpdate, ...mockDatas };
 
-        mockUpdate.mockResolvedValue(mockUpdatedUser);
-        // WHEN
-        await underTest.update(req as Request, res as Response, next);
-        //THEN
-        expect(mockUpdatedUser.username).toBe("tata");
-        expect(mockUpdatedUser.mail).toBe("tata@exemple.com");
-        expect(mockUpdate).toHaveBeenCalledWith(req.params.userId, mockDatas);
-        expect(res.json).toHaveBeenCalledWith(mockUpdatedUser);
-        expect(res.status).not.toHaveBeenCalledWith(status.NOT_FOUND);
-      });
-
-      it("Return 400 if userId isn't define.", async () => {
-        req.params = {};
-
-        await underTest.update(req as Request, res as Response, next);
-
-        expect(res.status).toHaveBeenCalledWith(status.BAD_REQUEST);
-        expect(res.json).toHaveBeenCalledWith({ error: "User ID is required" });
-      });
-
-      it("Call next() if user doesn't exists.", async () => {
-        req.params = {
-          userId: "07a3cd78-3a4a-4aae-a681-7634d72197c2",
-        };
-        req.body = {
-          username: "tata",
-          mail: "tata@exemple.com",
-        };
-
-        mockUpdate.mockResolvedValue(null);
-        await underTest.update(req as Request, res as Response, next);
-
-        expect(res.status).toHaveBeenCalledWith(status.NOT_FOUND);
-        expect(res.json).toHaveBeenCalledWith({ error: "User not found" });
-      });
-
-      it("Call next() in case of error.", async () => {
-        req.params = {
-          userId: "07a3cd78-3a4a-4aae-a681-7634d72197c2",
-        };
-        req.body = {
-          username: "tata",
-          mail: "tata@exemple.com",
-        };
-
-        const error = new Error();
-
-        mockUpdate.mockRejectedValue(error);
-        await underTest.update(req as Request, res as Response, next);
-
-        expect(next).toHaveBeenCalledWith(error);
-      });
+      mockUpdate.mockResolvedValue(mockUpdatedUser);
+      // WHEN
+      await underTest.update(req as Request, res as Response, next);
+      //THEN
+      expect(mockUpdatedUser.username).toBe("tata");
+      expect(mockUpdatedUser.mail).toBe("tata@exemple.com");
+      expect(mockUpdate).toHaveBeenCalledWith(req.params.userId, mockDatas);
+      expect(res.json).toHaveBeenCalledWith(mockUpdatedUser);
+      expect(res.status).not.toHaveBeenCalledWith(status.NOT_FOUND);
     });
 
-    // --- DELETE ---
-    describe("delete", () => {
-      req.params = { userId: "07a3cd78-3a4a-4aae-a681-7634d72197c2" };
+    it("Return 400 if userId isn't define.", async () => {
+      req.params = {};
 
-      it("Return 204 if user is delete.", async () => {
-        // GIVEN
-        mockDelete.mockResolvedValue(true);
-        // WHEN
-        await underTest.delete(req as Request, res as Response, next);
-        //THEN
-        expect(mockDelete).toHaveBeenCalled();
-        expect(res.status).toHaveBeenCalledWith(status.NO_CONTENT);
-        expect(res.status).not.toHaveBeenCalledWith(status.NOT_FOUND);
-      });
+      await underTest.update(req as Request, res as Response, next);
 
-      it("Call next() if character doesn't exists.", async () => {
-        mockDelete.mockResolvedValue(false);
-        await underTest.delete(req as Request, res as Response, next);
+      expect(res.status).toHaveBeenCalledWith(status.BAD_REQUEST);
+      expect(res.json).toHaveBeenCalledWith({ error: "User ID is required" });
+    });
 
-        expect(res.status).toHaveBeenCalledWith(status.NOT_FOUND);
-        expect(res.json).toHaveBeenCalledWith({ error: "User not found" });
-      });
+    it("Call next() if user doesn't exists.", async () => {
+      req.params = {
+        userId: "07a3cd78-3a4a-4aae-a681-7634d72197c2",
+      };
+      req.body = {
+        username: "tata",
+        mail: "tata@exemple.com",
+      };
 
-      it("Call next() in case of error.", async () => {
-        const error = new Error();
+      mockUpdate.mockResolvedValue(null);
+      await underTest.update(req as Request, res as Response, next);
 
-        mockDelete.mockRejectedValue(error);
-        await underTest.delete(req as Request, res as Response, next);
+      expect(res.status).toHaveBeenCalledWith(status.NOT_FOUND);
+      expect(res.json).toHaveBeenCalledWith({ error: "User not found" });
+    });
 
-        expect(next).toHaveBeenCalledWith(error);
-      });
+    it("Call next() in case of error.", async () => {
+      req.params = {
+        userId: "07a3cd78-3a4a-4aae-a681-7634d72197c2",
+      };
+      req.body = {
+        username: "tata",
+        mail: "tata@exemple.com",
+      };
+
+      const error = new Error();
+
+      mockUpdate.mockRejectedValue(error);
+      await underTest.update(req as Request, res as Response, next);
+
+      expect(next).toHaveBeenCalledWith(error);
+    });
+  });
+
+  // --- DELETE ---
+  describe("delete", () => {
+    req.params = { userId: "07a3cd78-3a4a-4aae-a681-7634d72197c2" };
+
+    it("Return 204 if user is delete.", async () => {
+      // GIVEN
+      mockDelete.mockResolvedValue(true);
+      // WHEN
+      await underTest.delete(req as Request, res as Response, next);
+      //THEN
+      expect(mockDelete).toHaveBeenCalled();
+      expect(res.status).toHaveBeenCalledWith(status.NO_CONTENT);
+      expect(res.status).not.toHaveBeenCalledWith(status.NOT_FOUND);
+    });
+
+    it("Call next() if character doesn't exists.", async () => {
+      mockDelete.mockResolvedValue(false);
+      await underTest.delete(req as Request, res as Response, next);
+
+      expect(res.status).toHaveBeenCalledWith(status.NOT_FOUND);
+      expect(res.json).toHaveBeenCalledWith({ error: "User not found" });
+    });
+
+    it("Call next() in case of error.", async () => {
+      const error = new Error();
+
+      mockDelete.mockRejectedValue(error);
+      await underTest.delete(req as Request, res as Response, next);
+
+      expect(next).toHaveBeenCalledWith(error);
     });
   });
 });

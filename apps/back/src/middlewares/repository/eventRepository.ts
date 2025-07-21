@@ -101,10 +101,7 @@ export class EventRepository {
   public async addCharactersToEvent(
     eventId: string,
     charactersId: string[],
-  ): Promise<EventEnriched | null> {
-    const validCharactersId = [];
-    const invalidCharacters = [];
-
+  ): Promise<Event | null> {
     try {
       const result: EventEntity | null = await EventEntity.findByPk(eventId);
 
@@ -135,17 +132,7 @@ export class EventRepository {
 
       await result.addCharacters(validCharactersId);
 
-      const event: EventEntity | null = await EventEntity.findByPk(result.id, {
-        include: ["tag", "user", "server", "characters"],
-      });
-
-      if (!event) {
-        // highly improbable but Typescript is happy
-        throw new Error("Event has been create but is not found");
-      }
-      const updatedEvent: EventEnriched = event.get({ plain: true });
-
-      return updatedEvent;
+      return result;
     } catch (error) {
       throw error;
     }
@@ -154,7 +141,7 @@ export class EventRepository {
   public async removeCharactersFromEvent(
     eventId: string,
     charactersId: string[],
-  ): Promise<EventEnriched | null> {
+  ): Promise<Event | null> {
     try {
       const result: EventEntity | null = await EventEntity.findOne({
         where: { id: eventId },
@@ -179,19 +166,18 @@ export class EventRepository {
         throw new Error("Characters not found");
       }
 
-      const event: EventEntity | null = await EventEntity.findOne({
-        where: { id: result.id },
-        include: ["tag", "user", "server", "characters"],
-      });
+      const validCharactersId = this.utils.exceptCharactersNotInTeam(
+        result,
+        characters,
+      );
 
-      if (!event) {
-        // highly improbable but Typescript is happy
-        throw new Error("Event has been create but is not found");
+      if (!validCharactersId.length) {
+        throw new Error("Unavailable characters to remove");
       }
 
-      const updatedEvent: EventEnriched = event.get({ plain: true });
+      await result.removeCharacters(validCharactersId);
 
-      return updatedEvent;
+      return result;
     } catch (error) {
       throw error;
     }

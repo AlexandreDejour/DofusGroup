@@ -116,11 +116,21 @@ export class EventController {
       const eventId: string = req.params.eventId;
       const charactersIds: string[] = req.body.characters_id;
 
-      const eventUpdated: Event | null =
+      let eventUpdated: Event | null =
         await this.repository.addCharactersToEvent(eventId, charactersIds);
 
       if (!eventUpdated) {
         res.status(status.NOT_FOUND).json({ error: "Event not found" });
+        return;
+      }
+
+      const eventUpdatedEnriched: EventEnriched | null =
+        await this.repository.getOneEnriched(eventUpdated.id);
+
+      if (!eventUpdatedEnriched) {
+        res
+          .status(status.INTERNAL_SERVER_ERROR)
+          .json({ error: "Failed to retrieve enriched event" });
         return;
       }
 
@@ -152,7 +162,17 @@ export class EventController {
         return;
       }
 
-      res.json(eventUpdated);
+      const eventUpdatedEnriched: EventEnriched | null =
+        await this.repository.getOneEnriched(eventUpdated.id);
+
+      if (!eventUpdatedEnriched) {
+        res
+          .status(status.INTERNAL_SERVER_ERROR)
+          .json({ error: "Failed to retrieve enriched event" });
+        return;
+      }
+
+      res.json(eventUpdatedEnriched);
     } catch (error) {
       next(error);
     }

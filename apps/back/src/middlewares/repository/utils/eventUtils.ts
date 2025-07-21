@@ -65,4 +65,21 @@ export class EventUtils {
 
     return newCharacters;
   }
+
+  public exceptCharactersNotInTeam(
+    eventEntity: EventEntity,
+    charactersEntity: CharacterEntity[],
+  ): string[] {
+    const existingCharactersIds =
+      eventEntity.characters?.map((c) => c.id) ?? [];
+
+    const availableCharactersToRemove = charactersEntity.filter((character) =>
+      existingCharactersIds.includes(character.id),
+    );
+
+    const availableCharactersId =
+      availableCharactersToRemove.map((c) => c.id) ?? [];
+
+    return availableCharactersId;
+  }
 }

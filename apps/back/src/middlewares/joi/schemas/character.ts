@@ -5,7 +5,7 @@ const SEXES = ["M", "F"] as const;
 
 export const createCharacterSchema: Joi.ObjectSchema = Joi.object({
   name: Joi.string().min(1).max(20).required().messages({
-    "string.empty": "Name is required",
+    "string.empty": "Name can't be empty",
     "string.min": "Name must be at least 1 character long",
     "string.max": "Name must be at most 20 characters",
     "any.required": "Name is required",
@@ -37,11 +37,6 @@ export const createCharacterSchema: Joi.ObjectSchema = Joi.object({
     "string.base": "Stuff must be a string",
   }),
   default_character: Joi.boolean().optional(),
-  user_id: Joi.string().guid({ version: "uuidv4" }).required().messages({
-    "string.guid": "User ID must be a valid UUID v4",
-    "any.required": "User ID is required",
-    "string.base": "User ID must be a string",
-  }),
   breed_id: Joi.string().guid({ version: "uuidv4" }).required().messages({
     "string.guid": "Breed ID must be a valid UUID v4",
     "any.required": "Breed ID is required",

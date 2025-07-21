@@ -73,8 +73,9 @@ describe("ServerController", () => {
 
   // --- GET ONE ---
   describe("getOne", () => {
+    req.params = { serverId: "0f309e32-2281-4b46-bb2e-bc2a7248e39b" };
+
     it("Return server if exists", async () => {
-      req.params = { serverId: "0f309e32-2281-4b46-bb2e-bc2a7248e39b" };
       const mockServer: Server = {
         id: "0f309e32-2281-4b46-bb2e-bc2a7248e39b",
         name: "Dakal",
@@ -88,8 +89,6 @@ describe("ServerController", () => {
     });
 
     it("Call next() if server doesn't exists.", async () => {
-      req.params = { serverId: "0f309e32-2281-4b46-bb2e-bc2a7248e39b" };
-
       mockGetOne.mockResolvedValue(null);
       await underTest.getOne(req as Request, res as Response, next);
 
@@ -98,8 +97,6 @@ describe("ServerController", () => {
     });
 
     it("Call next() in case of error.", async () => {
-      req.params = { serverId: "0f309e32-2281-4b46-bb2e-bc2a7248e39b" };
-
       const error = new Error();
 
       mockGetOne.mockRejectedValue(error);

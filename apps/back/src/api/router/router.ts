@@ -11,6 +11,9 @@ import { TagRepository } from "../../middlewares/repository/tagRepository.js";
 import { createUserRouter } from "./userRouter.js";
 import { UserController } from "../controllers/userController.js";
 import { UserRepository } from "../../middlewares/repository/userRepository.js";
+import { createEventRouter } from "./eventRouter.js";
+import { EventController } from "../controllers/eventController.js";
+import { EventRepository } from "../../middlewares/repository/eventRepository.js";
 import { createBreedRouter } from "./breedRouter.js";
 import { BreedController } from "../controllers/breedController.js";
 import { BreedRepository } from "../../middlewares/repository/breedRepository.js";
@@ -21,6 +24,7 @@ import { createCharacterRouter } from "./characterRouter.js";
 import { CharacterController } from "../controllers/characterController.js";
 import { CharacterRepository } from "../../middlewares/repository/characterRepository.js";
 
+import { EventUtils } from "../../middlewares/repository/utils/eventUtils.js";
 import { CryptoService } from "../../middlewares/utils/cryptoService.js";
 import { DataEncryptionService } from "../../middlewares/utils/dataEncryptionService.js";
 
@@ -28,6 +32,9 @@ initAssociations(models);
 
 const tagController = new TagController(new TagRepository());
 const userController = new UserController(new UserRepository());
+const eventController = new EventController(
+  new EventRepository(new EventUtils()),
+);
 const breedController = new BreedController(new BreedRepository());
 const serverController = new ServerController(new ServerRepository());
 const characterController = new CharacterController(new CharacterRepository());
@@ -40,6 +47,7 @@ router.get("/", (_req: Request, res: Response) => {
 
 router.use(createTagRouter(tagController));
 router.use(createUserRouter(userController, dataEncryptionService));
+router.use(createEventRouter(eventController));
 router.use(createBreedRouter(breedController));
 router.use(createServerRouter(serverController));
 router.use(createCharacterRouter(characterController));

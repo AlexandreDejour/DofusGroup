@@ -14,18 +14,9 @@ import Character from "./Character.js";
 import client from "../client.js";
 import { SequelizeModels } from "../types/sequelizeModels.js";
 
-export interface IEvent {
-  id: number;
-  title: string;
-  date: Date;
-  description: string;
-  max_players: number;
-  status: string;
-}
-
-export default class Event extends Model<
-  InferAttributes<Event>,
-  InferCreationAttributes<Event>
+export default class EventEntity extends Model<
+  InferAttributes<EventEntity>,
+  InferCreationAttributes<EventEntity>
 > {
   declare public id: CreationOptional<string>;
   declare public title: string;
@@ -38,37 +29,44 @@ export default class Event extends Model<
   declare public max_players: number;
   declare public status: string;
 
+  declare public tag_id: string;
+  declare public user_id: string;
+  declare public server_id: string;
+
   declare public tag?: Tag;
   declare public user?: User;
   declare public server?: Server;
   declare public characters?: Character[];
 
+  declare public addCharacters: (characterIds: string[]) => Promise<void>;
+  declare public removeCharacters: (characterIds: string[]) => Promise<void>;
+
   public static associate(models: SequelizeModels) {
-    Event.belongsTo(Tag, {
+    EventEntity.belongsTo(Tag, {
       foreignKey: "tag_id",
       as: "tag",
     });
 
-    Event.belongsTo(models.User, {
+    EventEntity.belongsTo(models.User, {
       foreignKey: "user_id",
-      as: "author",
+      as: "user",
     });
 
-    Event.belongsToMany(models.Character, {
+    EventEntity.belongsToMany(models.Character, {
       foreignKey: "event_id",
       otherKey: "character_id",
-      as: "team",
+      as: "characters",
       through: "event_team",
     });
 
-    Event.belongsTo(models.Server, {
+    EventEntity.belongsTo(models.Server, {
       foreignKey: "server_id",
       as: "server",
     });
   }
 }
 
-Event.init(
+EventEntity.init(
   {
     id: {
       type: DataTypes.UUID,
@@ -109,8 +107,21 @@ Event.init(
       type: DataTypes.STRING,
       defaultValue: "public",
     },
+    tag_id: {
+      type: DataTypes.UUID,
+      allowNull: false,
+    },
+    user_id: {
+      type: DataTypes.UUID,
+      allowNull: false,
+    },
+    server_id: {
+      type: DataTypes.UUID,
+      allowNull: false,
+    },
   },
   {
     sequelize: client,
+    tableName: "events",
   },
 );

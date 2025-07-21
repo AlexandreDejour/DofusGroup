@@ -92,7 +92,11 @@ export class EventController {
 
       const newEvent: EventEnriched = await this.repository.post(eventData);
 
-      res.status(status.CREATED).json(newEvent);
+      const newEventEnriched = await this.repository.getOneEnriched(
+        newEvent.id,
+      );
+
+      res.status(status.CREATED).json(newEventEnriched);
     } catch (error) {
       next(error);
     }

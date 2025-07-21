@@ -83,7 +83,7 @@ export class EventRepository {
     }
   }
 
-  public async post(eventData: EventBodyData): Promise<EventEnriched> {
+  public async post(eventData: EventBodyData): Promise<Event> {
     try {
       const { characters_id, ...eventFields } = eventData;
 
@@ -91,17 +91,8 @@ export class EventRepository {
       const event = await EventEntity.create(eventFields);
       // Stage 2 - Add relations on junction table
       await event.addCharacters(characters_id);
-      // Stage 3 - Load new event with all his associations
-      const enriched = await EventEntity.findByPk(event.id, {
-        include: ["tag", "user", "server", "characters"],
-      });
 
-      // Highly improbable but satisfy TypeScript
-      if (!enriched) throw new Error("Event just created not found.");
-
-      const newEvent: Event = enriched.get({ plain: true });
-
-      return newEvent;
+      return event;
     } catch (error) {
       throw error;
     }

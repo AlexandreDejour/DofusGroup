@@ -1,20 +1,29 @@
 import request from "supertest";
 import { vi, describe, it, expect, beforeEach } from "vitest";
+import express from "express";
 import status from "http-status";
 
 import { setup, receivedReq } from "./mock-tools.js";
 import { createUserRouter } from "../userRouter.js";
 import { UserController } from "../../controllers/userController.js";
+import { DataEncryptionService } from "../../../middlewares/utils/dataEncryptionService.js";
+import { CryptoService } from "../../../middlewares/utils/cryptoService.js";
 import { UserRepository } from "../../../middlewares/repository/userRepository.js";
 
 describe("userRouter", () => {
   const repository = {} as UserRepository;
   const controller = new UserController(repository);
+  const encrypter = new DataEncryptionService(new CryptoService());
   let app: ReturnType<typeof setup.App>;
 
   beforeEach(() => {
     vi.clearAllMocks();
-    app = setup.App(controller, createUserRouter);
+    app = express();
+    app.use(express.json());
+    app.use(createUserRouter(controller, encrypter));
+    app.use((_req, res) => {
+      res.status(status.NOT_FOUND).json({ called: "next" });
+    });
   });
 
   const userId = "527be2f3-5903-4a98-a47d-e4bd593db73e";
@@ -125,90 +134,120 @@ describe("userRouter", () => {
         expect(res.status).toBe(status.BAD_REQUEST);
       });
     });
+  });
 
-    describe("POST /user", () => {
-      it("Propagate request to userController.post", async () => {
-        //GIVEN
-        controller.post = setup.mockSucessCall(status.CREATED);
-        //WHEN
-        const res = await request(app).post(`/user`);
-        //THEN
-        expect(controller.post).toHaveBeenCalled();
-        expect(res.status).toBe(status.CREATED);
-        expect(res.body).toBe("Success!");
-      });
-
-      it("Next is called at end route.", async () => {
-        controller.post = setup.mockNextCall();
-
-        const res = await request(app).post(`/user`);
-
-        expect(controller.post).toHaveBeenCalled();
-        expect(res.status).toBe(status.NOT_FOUND);
-        expect(res.body).toEqual({ called: "next" });
-      });
+  describe("POST /user", () => {
+    it("Propagate request to userController.post", async () => {
+      //GIVEN
+      controller.post = setup.mockSucessCall(status.CREATED);
+      //WHEN
+      const res = await request(app)
+        .post("/user")
+        .send({
+          username: "toto",
+          password: "!SuperS3cr3t",
+          confirmPassword: "!SuperS3cr3t",
+          mail: "mail@example.com",
+        })
+        .set("Content-Type", "application/json");
+      //THEN
+      expect(controller.post).toHaveBeenCalled();
+      expect(res.status).toBe(status.CREATED);
+      expect(res.body).toBe("Success!");
     });
 
-    describe("PATCH /user/:userId", () => {
-      it("Propagate request to userController.update", async () => {
-        //GIVEN
-        controller.update = setup.mockSucessCall(status.OK);
-        //WHEN
-        const res = await request(app).patch(`/user/${userId}`);
-        //THEN
-        expect(controller.update).toHaveBeenCalled();
-        expect(receivedReq?.params.userId).toBe(userId);
-        expect(res.status).toBe(status.OK);
-        expect(res.body).toBe("Success!");
-      });
+    it("Next is called at end route.", async () => {
+      controller.post = setup.mockNextCall();
 
-      it("Next is called at end route.", async () => {
-        controller.update = setup.mockNextCall();
+      const res = await request(app)
+        .post("/user")
+        .send({
+          username: "toto",
+          password: "!SuperS3cr3t",
+          confirmPassword: "!SuperS3cr3t",
+          mail: "mail@example.com",
+        })
+        .set("Content-Type", "application/json");
 
-        const res = await request(app).patch(`/user/${userId}`);
+      expect(controller.post).toHaveBeenCalled();
+      expect(res.status).toBe(status.NOT_FOUND);
+      expect(res.body).toEqual({ called: "next" });
+    });
+  });
 
-        expect(controller.update).toHaveBeenCalled();
-        expect(res.status).toBe(status.NOT_FOUND);
-        expect(res.body).toEqual({ called: "next" });
-      });
-
-      it("Excluded bad request when id isn't a UUID.", async () => {
-        const res = await request(app).patch("/user/1234");
-
-        expect(controller.update).not.toHaveBeenCalled();
-        expect(res.status).toBe(status.BAD_REQUEST);
-      });
+  describe("PATCH /user/:userId", () => {
+    it("Propagate request to userController.update", async () => {
+      //GIVEN
+      controller.update = setup.mockSucessCall(status.OK);
+      //WHEN
+      const res = await request(app)
+        .patch(`/user/${userId}`)
+        .send({
+          password: "!SuperS3cr3t",
+          confirmPassword: "!SuperS3cr3t",
+          mail: "mail@example.com",
+        })
+        .set("Content-Type", "application/json");
+      //THEN
+      expect(controller.update).toHaveBeenCalled();
+      expect(receivedReq?.params.userId).toBe(userId);
+      expect(res.status).toBe(status.OK);
+      expect(res.body).toBe("Success!");
     });
 
-    describe("DELETE /user/:userId", () => {
-      it("Propagate request to userController.delete", async () => {
-        //GIVEN
-        controller.delete = setup.mockSucessCall(status.NO_CONTENT);
-        //WHEN
-        const res = await request(app).delete(`/user/${userId}`);
-        //THEN
-        expect(controller.delete).toHaveBeenCalled();
-        expect(receivedReq?.params.userId).toBe(userId);
-        expect(res.status).toBe(status.NO_CONTENT);
-        expect(res.body).toEqual({});
-      });
+    it("Next is called at end route.", async () => {
+      controller.update = setup.mockNextCall();
 
-      it("Next is called at end route.", async () => {
-        controller.delete = setup.mockNextCall();
+      const res = await request(app)
+        .patch(`/user/${userId}`)
+        .send({
+          password: "!SuperS3cr3t",
+          confirmPassword: "!SuperS3cr3t",
+          mail: "mail@example.com",
+        })
+        .set("Content-Type", "application/json");
 
-        const res = await request(app).delete(`/user/${userId}`);
+      expect(controller.update).toHaveBeenCalled();
+      expect(res.status).toBe(status.NOT_FOUND);
+      expect(res.body).toEqual({ called: "next" });
+    });
 
-        expect(controller.delete).toHaveBeenCalled();
-        expect(res.status).toBe(status.NOT_FOUND);
-        expect(res.body).toEqual({ called: "next" });
-      });
+    it("Excluded bad request when id isn't a UUID.", async () => {
+      const res = await request(app).patch("/user/1234");
 
-      it("Excluded bad request when id isn't a UUID.", async () => {
-        const res = await request(app).delete("/user/1234");
+      expect(controller.update).not.toHaveBeenCalled();
+      expect(res.status).toBe(status.BAD_REQUEST);
+    });
+  });
 
-        expect(controller.delete).not.toHaveBeenCalled();
-        expect(res.status).toBe(status.BAD_REQUEST);
-      });
+  describe("DELETE /user/:userId", () => {
+    it("Propagate request to userController.delete", async () => {
+      //GIVEN
+      controller.delete = setup.mockSucessCall(status.NO_CONTENT);
+      //WHEN
+      const res = await request(app).delete(`/user/${userId}`);
+      //THEN
+      expect(controller.delete).toHaveBeenCalled();
+      expect(receivedReq?.params.userId).toBe(userId);
+      expect(res.status).toBe(status.NO_CONTENT);
+      expect(res.body).toEqual({});
+    });
+
+    it("Next is called at end route.", async () => {
+      controller.delete = setup.mockNextCall();
+
+      const res = await request(app).delete(`/user/${userId}`);
+
+      expect(controller.delete).toHaveBeenCalled();
+      expect(res.status).toBe(status.NOT_FOUND);
+      expect(res.body).toEqual({ called: "next" });
+    });
+
+    it("Excluded bad request when id isn't a UUID.", async () => {
+      const res = await request(app).delete("/user/1234");
+
+      expect(controller.delete).not.toHaveBeenCalled();
+      expect(res.status).toBe(status.BAD_REQUEST);
     });
   });
 });

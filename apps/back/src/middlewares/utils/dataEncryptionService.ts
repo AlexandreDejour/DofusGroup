@@ -11,7 +11,6 @@ export class DataEncryptionService {
     if (!req.body) return next();
 
     try {
-      console.log(this.fieldsToEncrypt);
       for (const key of this.fieldsToEncrypt) {
         if (req.body[key]) {
           req.body[key] = this.cryptoService.encrypt(req.body[key]);

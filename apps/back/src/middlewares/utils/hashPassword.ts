@@ -25,5 +25,7 @@ export default async function hashPassword(
         ),
       );
     }
-  } else next();
+  } else {
+    next();
+  }
 }

@@ -20,7 +20,6 @@ export default function htmlSanitizer(
     }
     next();
   } catch (error) {
-    console.error(error);
     next(createHttpError(status.BAD_REQUEST, "Sanitization failed"));
   }
 }

@@ -12,14 +12,14 @@ describe("DataEncryptionService with spyOn", () => {
   let next: NextFunction;
 
   beforeEach(() => {
+    vi.restoreAllMocks();
+
     cryptoService = new CryptoService();
     service = new DataEncryptionService(cryptoService);
 
     req = { body: {} };
     res = {};
     next = vi.fn();
-
-    vi.restoreAllMocks();
   });
 
   it("should encrypt email in req.body", () => {
@@ -27,12 +27,12 @@ describe("DataEncryptionService with spyOn", () => {
       .spyOn(cryptoService, "encrypt")
       .mockImplementation((val) => `encrypted(${val})`);
 
-    req.body = { email: "user@example.com" };
+    req.body = { mail: "user@example.com" };
 
     service.encryptData(req as Request, res as Response, next);
 
     expect(encryptSpy).toHaveBeenCalledWith("user@example.com");
-    expect(req.body?.email).toBe("encrypted(user@example.com)");
+    expect(req.body?.mail).toBe("encrypted(user@example.com)");
     expect(next).toHaveBeenCalled();
   });
 
@@ -53,7 +53,7 @@ describe("DataEncryptionService with spyOn", () => {
       throw error;
     });
 
-    req.body = { email: "fail@example.com" };
+    req.body = { mail: "fail@example.com" };
     const nextMock = vi.fn();
 
     service.encryptData(req as Request, res as Response, nextMock);

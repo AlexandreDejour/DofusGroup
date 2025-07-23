@@ -1,6 +1,7 @@
 import { Tag } from "./tag.js";
 import { User } from "./user.js";
 import { Server } from "./server.js";
+import { Comment } from "./comment.js";
 import { Character } from "./character.js";
 
 export type Event = {
@@ -20,6 +21,7 @@ export type EventEnriched = Event & {
   tag?: Tag;
   user?: User;
   server?: Server;
+  comments?: Comment[];
   characters?: Character[];
 };
 

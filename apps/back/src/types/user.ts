@@ -1,4 +1,5 @@
 import { Event } from "./event.js";
+import { Comment } from "./comment.js";
 import { Character } from "./character.js";
 
 export type User = {
@@ -8,6 +9,7 @@ export type User = {
 
 export type UserEnriched = User & {
   events?: Event[];
+  comments?: Comment[];
   characters?: Character[];
 };
 

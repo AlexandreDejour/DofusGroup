@@ -68,7 +68,7 @@ export default class EventEntity extends Model<
 
     EventEntity.hasMany(models.Comment, {
       foreignKey: "event_id",
-      as: "events",
+      as: "comments",
     });
   }
 }

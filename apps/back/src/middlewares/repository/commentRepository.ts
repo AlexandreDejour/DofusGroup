@@ -35,7 +35,7 @@ export class CommentRepository {
           "event",
           {
             association: "user",
-            attributes: { exclude: ["email", "password"] },
+            attributes: { exclude: ["mail", "password"] },
           },
         ],
       });
@@ -89,7 +89,7 @@ export class CommentRepository {
           "event",
           {
             association: "user",
-            attributes: { exclude: ["email", "password"] },
+            attributes: { exclude: ["mail", "password"] },
           },
         ],
       });

@@ -21,6 +21,9 @@ import { createServerRouter } from "./serverRouter.js";
 import { ServerController } from "../controllers/serverController.js";
 import { ServerRepository } from "../../middlewares/repository/serverRepository.js";
 import { createCharacterRouter } from "./characterRouter.js";
+import { createCommentRouter } from "./commentRouter.js";
+import { CommentRepository } from "../../middlewares/repository/commentRepository.js";
+import { CommentController } from "../controllers/commentController.js";
 import { CharacterController } from "../controllers/characterController.js";
 import { CharacterRepository } from "../../middlewares/repository/characterRepository.js";
 
@@ -37,6 +40,7 @@ const eventController = new EventController(
 );
 const breedController = new BreedController(new BreedRepository());
 const serverController = new ServerController(new ServerRepository());
+const commentController = new CommentController(new CommentRepository());
 const characterController = new CharacterController(new CharacterRepository());
 
 const dataEncryptionService = new DataEncryptionService(new CryptoService());
@@ -50,6 +54,7 @@ router.use(createUserRouter(userController, dataEncryptionService));
 router.use(createEventRouter(eventController));
 router.use(createBreedRouter(breedController));
 router.use(createServerRouter(serverController));
+router.use(createCommentRouter(commentController));
 router.use(createCharacterRouter(characterController));
 
 export default router;

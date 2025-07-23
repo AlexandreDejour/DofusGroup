@@ -9,6 +9,7 @@ import {
 import Tag from "./Tag.js";
 import User from "./User.js";
 import Server from "./Server.js";
+import Comment from "./Comment.js";
 import Character from "./Character.js";
 
 import client from "../client.js";
@@ -36,6 +37,7 @@ export default class EventEntity extends Model<
   declare public tag?: Tag;
   declare public user?: User;
   declare public server?: Server;
+  declare public comments?: Comment[];
   declare public characters?: Character[];
 
   declare public addCharacters: (characterIds: string[]) => Promise<void>;
@@ -62,6 +64,11 @@ export default class EventEntity extends Model<
     EventEntity.belongsTo(models.Server, {
       foreignKey: "server_id",
       as: "server",
+    });
+
+    EventEntity.hasMany(models.Comment, {
+      foreignKey: "event_id",
+      as: "events",
     });
   }
 }

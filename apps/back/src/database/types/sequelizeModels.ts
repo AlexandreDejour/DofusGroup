@@ -3,6 +3,7 @@ import User from "../models/User.js";
 import Breed from "../models/Breeds.js";
 import Event from "../models/Event.js";
 import Server from "../models/Server.js";
+import Comment from "../models/Comment.js";
 import Character from "../models/Character.js";
 
 export interface SequelizeModels {
@@ -11,5 +12,6 @@ export interface SequelizeModels {
   Event: typeof Event;
   Breed: typeof Breed;
   Server: typeof Server;
+  Comment: typeof Comment;
   Character: typeof Character;
 }

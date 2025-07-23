@@ -7,6 +7,7 @@ import {
 } from "sequelize";
 
 import Event from "./Event.js";
+import Comment from "./Comment.js";
 import Character from "./Character.js";
 
 import client from "../client.js";
@@ -22,6 +23,7 @@ export default class UserEntity extends Model<
   declare public mail: string;
 
   declare public events?: Event[];
+  declare public comments?: Comment[];
   declare public characters?: Character[];
 
   public static associate(models: SequelizeModels) {
@@ -33,6 +35,11 @@ export default class UserEntity extends Model<
     UserEntity.hasMany(models.Character, {
       foreignKey: "user_id",
       as: "characters",
+    });
+
+    UserEntity.hasMany(models.Comment, {
+      foreignKey: "user_id",
+      as: "comments",
     });
   }
 }

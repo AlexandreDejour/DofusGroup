@@ -28,19 +28,19 @@ export const createUserSchema = Joi.object({
 });
 
 export const updateUserSchema = Joi.object({
-  username: Joi.string().alphanum().messages({
+  username: Joi.string().alphanum().optional().messages({
     "string.alphanum": "Username must be alphanumeric.",
     "string.base": "Username must be a string.",
   }),
-  password: Joi.string().pattern(passwordRegex).messages({
+  password: Joi.string().pattern(passwordRegex).optional().messages({
     "string.pattern.base": "Invalid password. Doesn't respect minimum rules.",
     "string.base": "Password must be a string.",
   }),
-  confirmPassword: Joi.string().valid(Joi.ref("password")).messages({
+  confirmPassword: Joi.string().valid(Joi.ref("password")).optional().messages({
     "any.only": "Passwords don't match.",
     "string.base": "Confirm Password must be a string.",
   }),
-  mail: Joi.string().email().messages({
+  mail: Joi.string().email().optional().messages({
     "string.email": "Invalid mail address.",
     "string.base": "Mail must be a string.",
   }),

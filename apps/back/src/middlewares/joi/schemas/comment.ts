@@ -6,6 +6,16 @@ export const createCommentSchema: Joi.ObjectSchema = Joi.object({
     "string.min": "Name must be at least 1 character long",
     "any.required": "Name is required",
   }),
+  user_id: Joi.string().guid({ version: "uuidv4" }).required().messages({
+    "string.guid": "User ID must be a valid UUID v4",
+    "any.required": "User ID is required",
+    "string.base": "User ID must be a string",
+  }),
+  event_id: Joi.string().guid({ version: "uuidv4" }).required().messages({
+    "string.guid": "Event ID must be a valid UUID v4",
+    "any.required": "Event ID is required",
+    "string.base": "Event ID must be a string",
+  }),
 });
 
 export const updateCommentSchema: Joi.ObjectSchema = Joi.object({
@@ -13,5 +23,13 @@ export const updateCommentSchema: Joi.ObjectSchema = Joi.object({
     "string.empty": "Name can't be empty",
     "string.min": "Name must be at least 1 character long",
     "string.base": "Alignment must be a string",
+  }),
+  user_id: Joi.string().guid({ version: "uuidv4" }).optional().messages({
+    "string.guid": "User ID must be a valid UUID v4",
+    "string.base": "User ID must be a string",
+  }),
+  event_id: Joi.string().guid({ version: "uuidv4" }).optional().messages({
+    "string.guid": "Event ID must be a valid UUID v4",
+    "string.base": "Event ID must be a string",
   }),
 });

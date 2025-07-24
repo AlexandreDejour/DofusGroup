@@ -33,9 +33,10 @@ export class EventRepository {
           "server",
           "comments",
           "characters",
+          "user",
           {
             association: "user",
-            attributes: { exclude: ["email", "password"] },
+            attributes: { exclude: ["mail", "password"] },
           },
         ],
       });
@@ -69,7 +70,16 @@ export class EventRepository {
   public async getOneEnriched(eventId: string): Promise<EventEnriched | null> {
     try {
       const result: EventEntity | null = await EventEntity.findByPk(eventId, {
-        include: ["tag", "user", "server", "comments", "characters"],
+        include: [
+          "tag",
+          "server",
+          "comments",
+          "characters",
+          {
+            association: "user",
+            attributes: { exclude: ["mail", "password"] },
+          },
+        ],
       });
 
       if (!result) {

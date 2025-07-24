@@ -106,10 +106,14 @@ export class CharacterController {
       const userId: string = req.params.userId;
       const characterData: CharacterBodyData = { ...req.body, user_id: userId };
 
-      const newCharacter: CharacterEnriched =
-        await this.repository.post(characterData);
+      const newCharacter = await this.repository.post(characterData);
 
-      res.status(status.CREATED).json(newCharacter);
+      const newCharacterEnriched = await this.repository.getOneEnrichedByUserId(
+        userId,
+        newCharacter.id,
+      );
+
+      res.status(status.CREATED).json(newCharacterEnriched);
     } catch (error) {
       next(error);
     }
@@ -136,7 +140,13 @@ export class CharacterController {
         return;
       }
 
-      res.json(characterUpdated);
+      const characterUpdatedEnriched =
+        await this.repository.getOneEnrichedByUserId(
+          userId,
+          characterUpdated.id,
+        );
+
+      res.json(characterUpdatedEnriched);
     } catch (error) {
       next(error);
     }

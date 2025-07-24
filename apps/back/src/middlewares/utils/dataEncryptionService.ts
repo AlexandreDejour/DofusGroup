@@ -22,21 +22,18 @@ export class DataEncryptionService {
     }
   };
 
-  decryptData(encryptedFields: { [key: string]: string }): {
-    [key: string]: string;
-  } {
-    const decryptedFields: { [key: string]: string } = {};
+  decryptData = (req: Request, _res: Response, next: NextFunction) => {
+    if (!req.body) return next();
 
-    for (const key in encryptedFields) {
-      try {
-        decryptedFields[key] = this.cryptoService.decrypt(encryptedFields[key]);
-      } catch (error) {
-        throw new Error(
-          `Decryption failed for field "${key}": ${(error as Error).message}`,
-        );
+    try {
+      for (const key of this.fieldsToEncrypt) {
+        if (req.body[key]) {
+          req.body[key] = this.cryptoService.decrypt(req.body[key]);
+        }
       }
+      next();
+    } catch (error) {
+      next(error);
     }
-
-    return decryptedFields;
-  }
+  };
 }

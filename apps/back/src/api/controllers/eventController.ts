@@ -198,6 +198,10 @@ export class EventController {
         return;
       }
 
+      const eventUpdatedEnriched = await this.repository.getOneEnriched(
+        eventUpdated.id,
+      );
+
       res.json(eventUpdated);
     } catch (error) {
       next(error);

@@ -5,6 +5,7 @@ import User from "./User.js";
 import Breed from "./Breeds.js";
 import Event from "./Event.js";
 import Server from "./Server.js";
+import Comment from "./Comment.js";
 import Character from "./Character.js";
 
 export const models: SequelizeModels = {
@@ -13,6 +14,7 @@ export const models: SequelizeModels = {
   Breed,
   Event,
   Server,
+  Comment,
   Character,
 };
 

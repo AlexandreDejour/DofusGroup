@@ -31,6 +31,7 @@ import { CharacterController } from "../controllers/characterController.js";
 import { CharacterRepository } from "../../middlewares/repository/characterRepository.js";
 
 import { EventUtils } from "../../middlewares/repository/utils/eventUtils.js";
+import { AuthService } from "../../middlewares/utils/authService.js";
 import { CryptoService } from "../../middlewares/utils/cryptoService.js";
 import { DataEncryptionService } from "../../middlewares/utils/dataEncryptionService.js";
 
@@ -47,11 +48,14 @@ const serverController = new ServerController(new ServerRepository());
 const commentController = new CommentController(new CommentRepository());
 const characterController = new CharacterController(new CharacterRepository());
 
+const authService = new AuthService();
 const dataEncryptionService = new DataEncryptionService(new CryptoService());
 
 router.get("/", (_req: Request, res: Response) => {
   res.send("Hello DofusGroup");
 });
+
+router.use(authService.setAuthUserHeader);
 
 router.use(createTagRouter(tagController));
 router.use(createAuthRouter(authController, dataEncryptionService));

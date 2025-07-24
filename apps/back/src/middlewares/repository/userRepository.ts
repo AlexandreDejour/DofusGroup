@@ -1,5 +1,10 @@
 import UserEntity from "../../database/models/User.js";
-import { User, UserBodyData, UserEnriched } from "../../types/user.js";
+import {
+  User,
+  AuthUser,
+  UserBodyData,
+  UserEnriched,
+} from "../../types/user.js";
 
 export class UserRepository {
   public async getAll(): Promise<User[]> {
@@ -90,13 +95,13 @@ export class UserRepository {
     }
   }
 
-  public async post(userData: UserBodyData): Promise<User> {
+  public async post(userData: UserBodyData): Promise<AuthUser> {
     try {
       const result: UserEntity = await UserEntity.create(userData);
 
-      const newuser = result.get({ plain: true });
+      const newUser = result.get({ plain: true });
 
-      return newuser;
+      return newUser;
     } catch (error) {
       throw error;
     }

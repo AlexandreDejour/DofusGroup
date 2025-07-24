@@ -13,6 +13,11 @@ export type UserEnriched = User & {
   characters?: Character[];
 };
 
+export type AuthUser = User & {
+  password: string;
+  mail: string;
+};
+
 export type UserBodyData = Omit<User, "id"> & {
   password: string;
   mail: string;

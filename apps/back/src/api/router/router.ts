@@ -8,6 +8,8 @@ import { models, initAssociations } from "../../database/models/initModels.js";
 import { createTagRouter } from "./tagRouter.js";
 import { TagController } from "../controllers/tagController.js";
 import { TagRepository } from "../../middlewares/repository/tagRepository.js";
+import { createAuthRouter } from "./authRouter.js";
+import { AuthController } from "../controllers/authController.js";
 import { createUserRouter } from "./userRouter.js";
 import { UserController } from "../controllers/userController.js";
 import { UserRepository } from "../../middlewares/repository/userRepository.js";
@@ -34,6 +36,7 @@ import { DataEncryptionService } from "../../middlewares/utils/dataEncryptionSer
 initAssociations(models);
 
 const tagController = new TagController(new TagRepository());
+const authController = new AuthController(new UserRepository());
 const userController = new UserController(new UserRepository());
 const eventController = new EventController(
   new EventRepository(new EventUtils()),
@@ -50,6 +53,7 @@ router.get("/", (_req: Request, res: Response) => {
 });
 
 router.use(createTagRouter(tagController));
+router.use(createAuthRouter(authController, dataEncryptionService));
 router.use(createUserRouter(userController, dataEncryptionService));
 router.use(createEventRouter(eventController));
 router.use(createBreedRouter(breedController));

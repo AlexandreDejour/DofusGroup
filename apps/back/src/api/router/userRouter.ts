@@ -6,10 +6,7 @@ import validateSchema from "../../middlewares/joi/validateSchema.js";
 import hashPassword from "../../middlewares/utils/hashPassword.js";
 import { DataEncryptionService } from "../../middlewares/utils/dataEncryptionService.js";
 import { UserController } from "../controllers/userController.js";
-import {
-  createUserSchema,
-  updateUserSchema,
-} from "../../middlewares/joi/schemas/user.js";
+import { updateUserSchema } from "../../middlewares/joi/schemas/user.js";
 
 export function createUserRouter(
   controller: UserController,
@@ -24,18 +21,6 @@ export function createUserRouter(
   router.get("/users/enriched", validateUUID, (req, res, next) => {
     controller.getAllEnriched(req, res, next);
   });
-
-  router.post(
-    "/user",
-    validateUUID,
-    htmlSanitizer,
-    validateSchema(createUserSchema),
-    encrypter.encryptData,
-    hashPassword,
-    (req, res, next) => {
-      controller.post(req, res, next);
-    },
-  );
 
   router
     .route("/user/:userId")

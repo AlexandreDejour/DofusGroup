@@ -3,6 +3,7 @@ import argon2 from "argon2";
 import { NextFunction, Request, Response } from "express";
 
 import { AuthUser } from "../../types/user.js";
+import { authUserSchema } from "../../middlewares/joi/schemas/auth.js";
 import { AuthRepository } from "../../middlewares/repository/authRepository.js";
 
 export class AuthController {
@@ -56,6 +57,32 @@ export class AuthController {
       const accessToken = this.repository.generateAccessToken(user.id);
 
       res.json({ ...user, accessToken, password: undefined });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  public async getAccount(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { value, error } = authUserSchema.validate(req.headers);
+
+      if (error) {
+        res
+          .status(status.BAD_REQUEST)
+          .json({ message: "Invalid or missing user ID" });
+        return;
+      }
+
+      const { id } = value;
+
+      const user = await this.repository.findOneById(id);
+
+      if (!user) {
+        res.status(status.NOT_FOUND).json({ message: "User not found" });
+        return;
+      }
+
+      res.json(user);
     } catch (error) {
       next(error);
     }

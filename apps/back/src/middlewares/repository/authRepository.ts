@@ -7,6 +7,24 @@ import { AuthUser, UserBodyData } from "../../types/user.js";
 export class AuthRepository {
   private config = Config.getInstance();
 
+  public async findOneById(id: string): Promise<AuthUser | null> {
+    try {
+      const result: UserEntity | null = await UserEntity.findOne({
+        where: { id: id },
+      });
+
+      if (!result) {
+        return null;
+      }
+
+      const user: AuthUser = result.get({ plain: true });
+
+      return user;
+    } catch (error) {
+      throw error;
+    }
+  }
+
   public async findOneByUsername(username: string): Promise<boolean> {
     try {
       const result: UserEntity | null = await UserEntity.findOne({

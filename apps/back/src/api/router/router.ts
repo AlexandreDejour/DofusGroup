@@ -58,7 +58,9 @@ router.get("/", (_req: Request, res: Response) => {
 router.use(authService.setAuthUserHeader);
 
 router.use(createTagRouter(tagController));
-router.use(createAuthRouter(authController, dataEncryptionService));
+router.use(
+  createAuthRouter(authController, authService, dataEncryptionService),
+);
 router.use(createUserRouter(userController, dataEncryptionService));
 router.use(createEventRouter(eventController));
 router.use(createBreedRouter(breedController));

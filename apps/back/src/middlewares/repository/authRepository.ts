@@ -5,7 +5,12 @@ import UserEntity from "../../database/models/User.js";
 import { AuthUser, UserBodyData } from "../../types/user.js";
 
 export class AuthRepository {
-  private config = Config.getInstance();
+  private jwtSecret: string;
+
+  constructor() {
+    const config = Config.getInstance();
+    this.jwtSecret = config.jwtSecret;
+  }
 
   public async findOneById(id: string): Promise<AuthUser | null> {
     try {
@@ -72,13 +77,13 @@ export class AuthRepository {
   }
 
   public async generateAccessToken(userId: string) {
-    if (!this.config.jwtSecret) {
+    if (!this.jwtSecret) {
       throw new Error("JWT_SECRET is not set");
     }
 
-    console.log(this.config.jwtSecret);
+    console.log(this.jwtSecret);
 
-    return jwt.sign({ sub: userId }, this.config.jwtSecret, {
+    return jwt.sign({ sub: userId }, this.jwtSecret, {
       expiresIn: "2h",
     });
   }

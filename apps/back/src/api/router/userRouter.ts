@@ -1,9 +1,9 @@
 import { Router } from "express";
 
 import validateUUID from "../../middlewares/utils/validateUUID.js";
+import hashPassword from "../../middlewares/utils/hashPassword.js";
 import htmlSanitizer from "../../middlewares/utils/htmlSanitizer.js";
 import validateSchema from "../../middlewares/joi/validateSchema.js";
-import hashPassword from "../../middlewares/utils/hashPassword.js";
 import { DataEncryptionService } from "../../middlewares/utils/dataEncryptionService.js";
 import { UserController } from "../controllers/userController.js";
 import { updateUserSchema } from "../../middlewares/joi/schemas/user.js";
@@ -14,11 +14,11 @@ export function createUserRouter(
 ): Router {
   const router: Router = Router();
 
-  router.get("/users", validateUUID, (req, res, next) => {
+  router.get("/users", (req, res, next) => {
     controller.getAll(req, res, next);
   });
 
-  router.get("/users/enriched", validateUUID, (req, res, next) => {
+  router.get("/users/enriched", (req, res, next) => {
     controller.getAllEnriched(req, res, next);
   });
 

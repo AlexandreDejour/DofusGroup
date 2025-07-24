@@ -10,6 +10,7 @@ import { TagController } from "../controllers/tagController.js";
 import { TagRepository } from "../../middlewares/repository/tagRepository.js";
 import { createAuthRouter } from "./authRouter.js";
 import { AuthController } from "../controllers/authController.js";
+import { AuthRepository } from "../../middlewares/repository/authRepository.js";
 import { createUserRouter } from "./userRouter.js";
 import { UserController } from "../controllers/userController.js";
 import { UserRepository } from "../../middlewares/repository/userRepository.js";
@@ -36,7 +37,7 @@ import { DataEncryptionService } from "../../middlewares/utils/dataEncryptionSer
 initAssociations(models);
 
 const tagController = new TagController(new TagRepository());
-const authController = new AuthController(new UserRepository());
+const authController = new AuthController(new AuthRepository());
 const userController = new UserController(new UserRepository());
 const eventController = new EventController(
   new EventRepository(new EventUtils()),

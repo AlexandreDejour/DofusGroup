@@ -1,10 +1,5 @@
 import UserEntity from "../../database/models/User.js";
-import {
-  User,
-  AuthUser,
-  UserBodyData,
-  UserEnriched,
-} from "../../types/user.js";
+import { User, UserBodyData, UserEnriched } from "../../types/user.js";
 
 export class UserRepository {
   public async getAll(): Promise<User[]> {
@@ -74,34 +69,6 @@ export class UserRepository {
       const user: UserEnriched = result.get({ plain: true });
 
       return user;
-    } catch (error) {
-      throw error;
-    }
-  }
-
-  public async findOneByUsername(username: string): Promise<boolean> {
-    try {
-      const result: User | null = await UserEntity.findOne({
-        where: { username: username },
-      });
-
-      if (result) {
-        return true;
-      }
-
-      return false;
-    } catch (error) {
-      throw error;
-    }
-  }
-
-  public async post(userData: UserBodyData): Promise<AuthUser> {
-    try {
-      const result: UserEntity = await UserEntity.create(userData);
-
-      const newUser = result.get({ plain: true });
-
-      return newUser;
     } catch (error) {
       throw error;
     }

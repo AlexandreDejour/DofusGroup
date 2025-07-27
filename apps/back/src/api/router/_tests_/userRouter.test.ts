@@ -234,6 +234,18 @@ describe("userRouter", () => {
       expect(controller.update).not.toHaveBeenCalled();
       expect(res.status).toBe(status.BAD_REQUEST);
     });
+
+    it("Rejects unauthorized request when token userId ≠ params", async () => {
+      const otherUserId = "9da844de-dcc1-4b39-a4cf-19d800f4c122";
+
+      const res = await request(app)
+        .patch(`/user/${otherUserId}`)
+        .set("Cookie", [`token=${token}`]);
+
+      expect(controller.update).not.toHaveBeenCalled();
+      expect(res.status).toBe(status.FORBIDDEN);
+      expect(res.body).toEqual({ error: "Forbidden access" });
+    });
   });
 
   describe("DELETE /user/:userId", () => {

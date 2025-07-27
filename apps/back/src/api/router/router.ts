@@ -65,7 +65,7 @@ router.use(
 router.use(createEventRouter(eventController, authService));
 router.use(createBreedRouter(breedController));
 router.use(createServerRouter(serverController));
-router.use(createCommentRouter(commentController));
+router.use(createCommentRouter(commentController, authService));
 router.use(createCharacterRouter(characterController, authService));
 
 export default router;

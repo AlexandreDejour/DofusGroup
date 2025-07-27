@@ -5,12 +5,12 @@ import cookieParser from "cookie-parser";
 import status from "http-status";
 import jwt from "jsonwebtoken";
 
+import { Config } from "../../../config/config.js";
 import { setup, receivedReq } from "./mock-tools.js";
+import { AuthService } from "../../../middlewares/utils/authService.js";
 import { createCharacterRouter } from "../characterRouter.js";
 import { CharacterController } from "../../controllers/characterController.js";
-import { AuthService } from "../../../middlewares/utils/authService.js";
 import { CharacterRepository } from "../../../middlewares/repository/characterRepository.js";
-import { Config } from "../../../config/config.js";
 
 describe("characterRouter", () => {
   const repository = {} as CharacterRepository;

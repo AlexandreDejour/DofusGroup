@@ -62,7 +62,7 @@ router.use(
 router.use(
   createUserRouter(userController, authService, dataEncryptionService),
 );
-router.use(createEventRouter(eventController));
+router.use(createEventRouter(eventController, authService));
 router.use(createBreedRouter(breedController));
 router.use(createServerRouter(serverController));
 router.use(createCommentRouter(commentController));

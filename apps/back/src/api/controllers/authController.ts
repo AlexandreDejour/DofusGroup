@@ -57,9 +57,17 @@ export class AuthController {
           .json({ error: "Mail or password unavailable" });
       }
 
-      const accessToken = this.service.generateAccessToken(user.id);
+      const accessToken = await this.service.generateAccessToken(user.id);
 
-      res.json({ ...user, accessToken, password: undefined });
+      res
+        .cookie("token", accessToken, {
+          httpOnly: true, // Prevents access via JavaScriptt (XSS protection)
+          // TODO swap to true
+          secure: false, // Use HTTPS in prod
+          sameSite: "strict", // CRSF protection
+          maxAge: 7200000, // Life time (2h)
+        })
+        .json({ ...user, password: undefined });
     } catch (error) {
       next(error);
     }

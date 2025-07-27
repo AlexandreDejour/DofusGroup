@@ -29,7 +29,6 @@ import { CommentRepository } from "../../middlewares/repository/commentRepositor
 import { CommentController } from "../controllers/commentController.js";
 import { CharacterController } from "../controllers/characterController.js";
 import { CharacterRepository } from "../../middlewares/repository/characterRepository.js";
-
 import { EventUtils } from "../../middlewares/repository/utils/eventUtils.js";
 import { AuthService } from "../../middlewares/utils/authService.js";
 import { CryptoService } from "../../middlewares/utils/cryptoService.js";
@@ -38,7 +37,10 @@ import { DataEncryptionService } from "../../middlewares/utils/dataEncryptionSer
 initAssociations(models);
 
 const tagController = new TagController(new TagRepository());
-const authController = new AuthController(new AuthRepository());
+const authController = new AuthController(
+  new AuthService(),
+  new AuthRepository(),
+);
 const userController = new UserController(new UserRepository());
 const eventController = new EventController(
   new EventRepository(new EventUtils()),

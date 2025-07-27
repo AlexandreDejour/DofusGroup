@@ -44,6 +44,7 @@ export class CryptoService {
   }
 
   decrypt(payload: string): string {
+    console.log(payload);
     const parts = payload.split(":");
     if (parts.length !== 3) {
       throw new Error("Invalid payload format, expected iv:tag:data");

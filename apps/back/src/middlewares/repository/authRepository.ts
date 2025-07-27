@@ -20,33 +20,17 @@ export class AuthRepository {
     }
   }
 
-  public async findOneByUsername(username: string): Promise<boolean> {
+  public async findOneByUsername(username: string): Promise<AuthUser | null> {
     try {
       const result: UserEntity | null = await UserEntity.findOne({
         where: { username: username },
-      });
-
-      if (result) {
-        return true;
-      }
-
-      return false;
-    } catch (error) {
-      throw error;
-    }
-  }
-
-  public async findOneByMail(mail: string): Promise<AuthUser | null> {
-    try {
-      const result: UserEntity | null = await UserEntity.findOne({
-        where: { mail: mail },
       });
 
       if (!result) {
         return null;
       }
 
-      const user: AuthUser = result.get({ plain: true });
+      const user = result.get({ plain: true });
 
       return user;
     } catch (error) {

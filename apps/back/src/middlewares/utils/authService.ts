@@ -74,8 +74,6 @@ export class AuthService {
       throw new Error("JWT_SECRET is not set");
     }
 
-    console.log(this.jwtSecret);
-
     return jwt.sign({ sub: userId }, this.jwtSecret, {
       expiresIn: "2h",
     });

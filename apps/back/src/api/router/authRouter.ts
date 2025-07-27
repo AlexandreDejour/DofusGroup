@@ -32,7 +32,6 @@ export function createAuthRouter(
     "/auth/login",
     htmlSanitizer,
     validateSchema(loginSchema),
-    encrypter.decryptData,
     (req, res, next) => {
       controller.login(req, res, next);
     },

@@ -2,7 +2,7 @@ import status from "http-status";
 import argon2 from "argon2";
 import { NextFunction, Request, Response } from "express";
 
-import { AuthUser } from "../../types/user.js";
+import { AuthUser, User } from "../../types/user.js";
 import { authUserSchema } from "../../middlewares/joi/schemas/auth.js";
 import { AuthRepository } from "../../middlewares/repository/authRepository.js";
 import { AuthService } from "../../middlewares/utils/authService.js";
@@ -20,7 +20,7 @@ export class AuthController {
     const username = req.body.username;
 
     try {
-      const isExist: boolean =
+      const isExist: AuthUser | null =
         await this.repository.findOneByUsername(username);
 
       if (isExist) {
@@ -37,15 +37,16 @@ export class AuthController {
   }
 
   public async login(req: Request, res: Response, next: NextFunction) {
-    const { mail, password } = req.body;
+    const { username, password } = req.body;
 
     try {
-      let user: AuthUser | null = await this.repository.findOneByMail(mail);
+      let user: AuthUser | null =
+        await this.repository.findOneByUsername(username);
 
       if (!user) {
         res
           .status(status.UNAUTHORIZED)
-          .json({ error: "Mail or password unavailable" });
+          .json({ error: "Username or password unavailable" });
         return;
       }
 
@@ -54,7 +55,7 @@ export class AuthController {
       if (!isPasswordMatch) {
         res
           .status(status.UNAUTHORIZED)
-          .json({ error: "Mail or password unavailable" });
+          .json({ error: "Username or password unavailable" });
       }
 
       const accessToken = await this.service.generateAccessToken(user.id);

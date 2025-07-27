@@ -4,12 +4,14 @@ import validateUUID from "../../middlewares/utils/validateUUID.js";
 import hashPassword from "../../middlewares/utils/hashPassword.js";
 import htmlSanitizer from "../../middlewares/utils/htmlSanitizer.js";
 import validateSchema from "../../middlewares/joi/validateSchema.js";
+import { AuthService } from "../../middlewares/utils/authService.js";
 import { DataEncryptionService } from "../../middlewares/utils/dataEncryptionService.js";
 import { UserController } from "../controllers/userController.js";
 import { updateUserSchema } from "../../middlewares/joi/schemas/user.js";
 
 export function createUserRouter(
   controller: UserController,
+  authService: AuthService,
   encrypter: DataEncryptionService,
 ): Router {
   const router: Router = Router();
@@ -29,6 +31,7 @@ export function createUserRouter(
     })
     .patch(
       validateUUID,
+      authService.checkPermission,
       htmlSanitizer,
       validateSchema(updateUserSchema),
       encrypter.encryptData,
@@ -37,7 +40,7 @@ export function createUserRouter(
         controller.update(req, res, next);
       },
     )
-    .delete(validateUUID, (req, res, next) => {
+    .delete(validateUUID, authService.checkPermission, (req, res, next) => {
       controller.delete(req, res, next);
     });
 

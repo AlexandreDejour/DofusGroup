@@ -61,7 +61,9 @@ router.use(createTagRouter(tagController));
 router.use(
   createAuthRouter(authController, authService, dataEncryptionService),
 );
-router.use(createUserRouter(userController, dataEncryptionService));
+router.use(
+  createUserRouter(userController, authService, dataEncryptionService),
+);
 router.use(createEventRouter(eventController));
 router.use(createBreedRouter(breedController));
 router.use(createServerRouter(serverController));

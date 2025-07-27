@@ -18,7 +18,7 @@ export class AuthService {
     this.jwtSecret = config.jwtSecret;
   }
 
-  public async setAuthUserHeader(
+  public async setAuthUserRequest(
     req: AuthenticatedRequest,
     _res: Response,
     next: NextFunction,

@@ -27,7 +27,7 @@ describe("userRouter", () => {
     app.use(cookieParser());
     app.use(express.json());
     app.use((req, res, next) => {
-      service.setAuthUserHeader(req, res, next);
+      service.setAuthUserRequest(req, res, next);
     });
     app.use(createUserRouter(controller, service, encrypter));
     app.use((_req, res) => {

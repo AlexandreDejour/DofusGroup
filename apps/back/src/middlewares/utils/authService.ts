@@ -5,6 +5,10 @@ import { jwtSchema } from "../joi/schemas/auth.js";
 import { Config } from "../../config/config.js";
 import status from "http-status";
 
+export interface AuthenticatedRequest extends Request {
+  userId?: string;
+}
+
 export class AuthService {
   private config = Config.getInstance();
   private jwtSecret: string;
@@ -15,32 +19,25 @@ export class AuthService {
   }
 
   public async setAuthUserHeader(
-    req: Request,
+    req: AuthenticatedRequest,
     _res: Response,
     next: NextFunction,
   ) {
-    const authorization = req.headers.authorization;
+    const token = req.cookies.token;
 
-    if (!authorization) {
+    if (!token) {
       return next();
     }
 
-    const [type, token] = authorization.split(" ");
-
     try {
-      if (type !== "Bearer") {
-        return next();
-      }
-
       const { value, error } = jwtSchema.validate(
         jwt.verify(token, this.config.jwtSecret),
       );
-
       if (error) {
         return next(error);
       }
 
-      req.headers["x-user-id-x"] = value.sub;
+      req.userId = value.sub;
 
       next();
     } catch (error) {
@@ -49,19 +46,19 @@ export class AuthService {
   }
 
   public async checkPermission(
-    req: Request,
+    req: AuthenticatedRequest,
     res: Response,
     next: NextFunction,
   ) {
-    if (!req.headers["x-user-id-x"]) {
+    if (!req.userId) {
       res.status(status.UNAUTHORIZED).json({ error: "Unautorized access" });
       return;
     }
 
-    const headersId = req.headers["x-user-id-x"];
+    const tokenId = req.userId;
     const paramsId = req.params.userId;
 
-    if (headersId !== paramsId) {
+    if (tokenId !== paramsId) {
       res.status(status.FORBIDDEN).json({ error: "Forbidden access" });
       return;
     }

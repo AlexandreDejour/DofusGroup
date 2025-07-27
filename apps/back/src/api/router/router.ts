@@ -53,11 +53,9 @@ const characterController = new CharacterController(new CharacterRepository());
 const authService = new AuthService();
 const dataEncryptionService = new DataEncryptionService(new CryptoService());
 
-router.get("/", (_req: Request, res: Response) => {
-  res.send("Hello DofusGroup");
+router.use((req, res, next) => {
+  authService.setAuthUserHeader(req, res, next);
 });
-
-router.use(authService.setAuthUserHeader);
 
 router.use(createTagRouter(tagController));
 router.use(

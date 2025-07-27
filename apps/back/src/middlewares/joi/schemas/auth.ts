@@ -18,19 +18,13 @@ export const loginSchema: Joi.ObjectSchema = Joi.object({
 
 export const jwtSchema: Joi.ObjectSchema = Joi.object({
   sub: Joi.string(),
+  iat: Joi.number().required(),
+  exp: Joi.number().required(),
 });
 
 export const authUserSchema: Joi.ObjectSchema = Joi.object({
-  "x-user-id-x": Joi.string()
-    .guid({ version: "uuidv4" })
-    .optional()
-    .messages({
-      "string.guid": "Userid must be UUID V4",
-      "string.base": "User id must be a string",
-    })
-    .custom((data) => {
-      return {
-        id: data["x-user-id"],
-      };
-    }),
+  userId: Joi.string().guid({ version: "uuidv4" }).optional().messages({
+    "string.guid": "User id must be UUID V4",
+    "string.base": "User id must be a string",
+  }),
 });

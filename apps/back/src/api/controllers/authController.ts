@@ -2,6 +2,7 @@ import status from "http-status";
 import argon2 from "argon2";
 import { NextFunction, Request, Response } from "express";
 
+import { AuthenticatedRequest } from "../../middlewares/utils/authService.js";
 import { AuthUser, User } from "../../types/user.js";
 import { authUserSchema } from "../../middlewares/joi/schemas/auth.js";
 import { AuthRepository } from "../../middlewares/repository/authRepository.js";
@@ -74,9 +75,13 @@ export class AuthController {
     }
   }
 
-  public async getAccount(req: Request, res: Response, next: NextFunction) {
+  public async getAccount(
+    req: AuthenticatedRequest,
+    res: Response,
+    next: NextFunction,
+  ) {
     try {
-      const { value, error } = authUserSchema.validate(req.headers);
+      const { value, error } = authUserSchema.validate({ userId: req.userId });
 
       if (error) {
         res
@@ -85,7 +90,7 @@ export class AuthController {
         return;
       }
 
-      const { id } = value;
+      const id = value.userId;
 
       const user = await this.repository.findOneById(id);
 

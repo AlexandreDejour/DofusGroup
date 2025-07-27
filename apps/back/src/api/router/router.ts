@@ -1,8 +1,6 @@
 import { Router } from "express";
 const router: Router = Router();
 
-import { Request, Response } from "express";
-
 import { models, initAssociations } from "../../database/models/initModels.js";
 
 import { createTagRouter } from "./tagRouter.js";

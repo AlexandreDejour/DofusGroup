@@ -5,11 +5,14 @@ import { NextFunction, Request, Response } from "express";
 import { AuthUser } from "../../types/user.js";
 import { authUserSchema } from "../../middlewares/joi/schemas/auth.js";
 import { AuthRepository } from "../../middlewares/repository/authRepository.js";
+import { AuthService } from "../../middlewares/utils/authService.js";
 
 export class AuthController {
+  private service: AuthService;
   private repository: AuthRepository;
 
-  public constructor(repository: AuthRepository) {
+  public constructor(service: AuthService, repository: AuthRepository) {
+    this.service = service;
     this.repository = repository;
   }
 
@@ -54,7 +57,7 @@ export class AuthController {
           .json({ error: "Mail or password unavailable" });
       }
 
-      const accessToken = this.repository.generateAccessToken(user.id);
+      const accessToken = this.service.generateAccessToken(user.id);
 
       res.json({ ...user, accessToken, password: undefined });
     } catch (error) {

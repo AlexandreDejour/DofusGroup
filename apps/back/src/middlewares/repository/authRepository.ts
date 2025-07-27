@@ -1,17 +1,7 @@
-import jwt from "jsonwebtoken";
-
-import { Config } from "../../config/config.js";
 import UserEntity from "../../database/models/User.js";
 import { AuthUser, UserBodyData } from "../../types/user.js";
 
 export class AuthRepository {
-  private jwtSecret: string;
-
-  constructor() {
-    const config = Config.getInstance();
-    this.jwtSecret = config.jwtSecret;
-  }
-
   public async findOneById(id: string): Promise<AuthUser | null> {
     try {
       const result: UserEntity | null = await UserEntity.findOne({
@@ -74,17 +64,5 @@ export class AuthRepository {
     } catch (error) {
       throw error;
     }
-  }
-
-  public async generateAccessToken(userId: string) {
-    if (!this.jwtSecret) {
-      throw new Error("JWT_SECRET is not set");
-    }
-
-    console.log(this.jwtSecret);
-
-    return jwt.sign({ sub: userId }, this.jwtSecret, {
-      expiresIn: "2h",
-    });
   }
 }

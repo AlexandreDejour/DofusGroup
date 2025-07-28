@@ -3,7 +3,7 @@ import argon2 from "argon2";
 import { NextFunction, Request, Response } from "express";
 
 import { AuthenticatedRequest } from "../../middlewares/utils/authService.js";
-import { AuthUser, User } from "../../types/user.js";
+import { AuthUser } from "../../types/user.js";
 import { authUserSchema } from "../../middlewares/joi/schemas/auth.js";
 import { AuthRepository } from "../../middlewares/repository/authRepository.js";
 import { AuthService } from "../../middlewares/utils/authService.js";
@@ -41,7 +41,7 @@ export class AuthController {
     const { username, password } = req.body;
 
     try {
-      let user: AuthUser | null =
+      const user: AuthUser | null =
         await this.repository.findOneByUsername(username);
 
       if (!user) {
@@ -57,19 +57,21 @@ export class AuthController {
         res
           .status(status.UNAUTHORIZED)
           .json({ error: "Username or password unavailable" });
+        return;
       }
 
       const accessToken = await this.service.generateAccessToken(user.id);
+      const { password: _password, ...userWithoutPassword } = user;
 
       res
         .cookie("token", accessToken, {
           httpOnly: true, // Prevents access via JavaScriptt (XSS protection)
           // TODO swap to true
-          secure: false, // Use HTTPS in prod
+          secure: false, // Use HTTPS in production
           sameSite: "strict", // CRSF protection
           maxAge: 7200000, // Life time (2h)
         })
-        .json({ ...user, password: undefined });
+        .json(userWithoutPassword);
     } catch (error) {
       next(error);
     }

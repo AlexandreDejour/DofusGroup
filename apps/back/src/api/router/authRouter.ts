@@ -37,6 +37,10 @@ export function createAuthRouter(
     },
   );
 
+  router.post("/auth/logout", (req, res, next) => {
+    controller.logout(req, res);
+  });
+
   router.get(
     "/auth/:userId/account",
     validateUUID,

@@ -73,7 +73,7 @@ export class CharacterRepository {
   public async getOneEnrichedByUserId(
     userId: string,
     characterId: string,
-  ): Promise<Character | null> {
+  ): Promise<CharacterEnriched | null> {
     try {
       const result: CharacterEntity | null = await CharacterEntity.findOne({
         where: { id: characterId, user_id: userId },
@@ -92,7 +92,7 @@ export class CharacterRepository {
         return null;
       }
 
-      const character: Character = result.get({ plain: true });
+      const character: CharacterEnriched = result.get({ plain: true });
 
       return character;
     } catch (error) {

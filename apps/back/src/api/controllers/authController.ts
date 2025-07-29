@@ -106,4 +106,13 @@ export class AuthController {
       next(error);
     }
   }
+
+  public logout(_req: Request, res: Response) {
+    res.clearCookie("token", {
+      httpOnly: true,
+      secure: false,
+      sameSite: "strict",
+    });
+    res.json({ message: "Successfully logout" });
+  }
 }

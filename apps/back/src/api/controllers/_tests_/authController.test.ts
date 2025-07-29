@@ -53,6 +53,7 @@ describe("AuthController", () => {
   req = {};
   res = {
     cookie: vi.fn().mockReturnThis(),
+    clearCookie: vi.fn(),
     json: vi.fn(),
     status: vi.fn().mockReturnThis(),
   };
@@ -188,20 +189,22 @@ describe("AuthController", () => {
     });
   });
 
-  // GET ACCOUNT //
+  // --- GET ACCOUNT ---
   describe("getAccount", () => {
     it("Return user if valid userId and user exists", async () => {
-      const req: Partial<AuthenticatedRequest> = { userId: "123" };
+      const req: Partial<AuthenticatedRequest> = {
+        userId: "3521dd0c-c303-4239-a545-10e5476abe2a",
+      };
 
       const mockUser: AuthUser = {
-        id: "123",
+        id: "3521dd0c-c303-4239-a545-10e5476abe2a",
         username: "user1",
         password: "hashedpass",
         mail: "user1@example.com",
       };
 
       (authUserSchema.validate as Mock).mockReturnValue({
-        value: { userId: "123" },
+        value: { userId: "3521dd0c-c303-4239-a545-10e5476abe2a" },
         error: undefined,
       });
       mockFindById.mockResolvedValue(mockUser);
@@ -212,18 +215,33 @@ describe("AuthController", () => {
         next,
       );
 
-      expect(mockFindById).toHaveBeenCalledWith("123");
+      expect(mockFindById).toHaveBeenCalledWith(
+        "3521dd0c-c303-4239-a545-10e5476abe2a",
+      );
       expect(res.json).toHaveBeenCalledWith(mockUser);
       expect(res.status).not.toHaveBeenCalledWith(status.NOT_FOUND);
     });
 
     it("Return 400 if userId is missing or invalid", async () => {
-      const req: Partial<AuthenticatedRequest> = { userId: undefined };
+      const req: Partial<AuthenticatedRequest> = { userId: "123" };
 
       (authUserSchema.validate as Mock).mockReturnValue({
         value: { userId: "123" },
-        error: undefined,
+        error: {
+          details: [
+            {
+              message: "User id must be UUID V4",
+              path: ["userId"],
+              type: "string.guid",
+              context: {
+                label: "userId",
+                key: "userId",
+              },
+            },
+          ],
+        },
       });
+
       await underTest.getAccount(
         req as AuthenticatedRequest,
         res as Response,
@@ -238,10 +256,12 @@ describe("AuthController", () => {
     });
 
     it("Return 404 if user not found", async () => {
-      const req: Partial<AuthenticatedRequest> = { userId: "non-existent-id" };
+      const req: Partial<AuthenticatedRequest> = {
+        userId: "3521dd0c-c303-4239-a545-10e5476abe2a",
+      };
 
       (authUserSchema.validate as Mock).mockReturnValue({
-        value: { userId: "123" },
+        value: { userId: "3521dd0c-c303-4239-a545-10e5476abe2a" },
         error: undefined,
       });
       mockFindById.mockResolvedValue(null);
@@ -252,11 +272,27 @@ describe("AuthController", () => {
         next,
       );
 
-      expect(mockFindById).toHaveBeenCalledWith("non-existent-id");
+      expect(mockFindById).toHaveBeenCalledWith(
+        "3521dd0c-c303-4239-a545-10e5476abe2a",
+      );
       expect(res.status).toHaveBeenCalledWith(status.NOT_FOUND);
       expect(res.json).toHaveBeenCalledWith({
         message: "User not found",
       });
+    });
+  });
+
+  // --- LOGOUT ---
+  describe("logout", () => {
+    it("Return empty cookie", () => {
+      underTest.logout(req as Request, res as Response);
+
+      expect(res.clearCookie).toHaveBeenCalledWith("token", {
+        httpOnly: true,
+        secure: false,
+        sameSite: "strict",
+      });
+      expect(res.json).toHaveBeenCalledWith({ message: "Successfully logout" });
     });
   });
 });

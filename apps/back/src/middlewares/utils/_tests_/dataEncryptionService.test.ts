@@ -22,7 +22,7 @@ describe("DataEncryptionService with spyOn", () => {
     next = vi.fn();
   });
 
-  it("should encrypt email in req.body", () => {
+  it("should encrypt mail in req.body", () => {
     const encryptSpy = vi
       .spyOn(cryptoService, "encrypt")
       .mockImplementation((val) => `encrypted(${val})`);
@@ -36,10 +36,10 @@ describe("DataEncryptionService with spyOn", () => {
     expect(next).toHaveBeenCalled();
   });
 
-  it("should skip encryption if email is missing", () => {
+  it("should skip encryption if mail is missing", () => {
     const encryptSpy = vi.spyOn(cryptoService, "encrypt");
 
-    req.body = {}; // no email
+    req.body = {}; // no mail
 
     service.encryptData(req as Request, res as Response, next);
 
@@ -61,34 +61,47 @@ describe("DataEncryptionService with spyOn", () => {
     expect(nextMock).toHaveBeenCalledWith(error);
   });
 
-  it("should decrypt multiple fields", () => {
+  it("should skip decryption if mail is missing", () => {
+    const decryptSpy = vi.spyOn(cryptoService, "decrypt");
+
+    req.body = {}; // no mail
+
+    service.decryptData(req as Request, res as Response, next);
+
+    expect(decryptSpy).not.toHaveBeenCalled();
+    expect(next).toHaveBeenCalled();
+  });
+
+  it("should decrypt field", () => {
     const decryptSpy = vi
       .spyOn(cryptoService, "decrypt")
       .mockImplementation((val) =>
         val.replace("encrypted(", "").replace(")", ""),
       );
 
-    const encryptedFields = {
-      email: "encrypted(user@example.com)",
-      phone: "encrypted(0600000000)",
+    req.body = {
+      mail: "encrypted(user@example.com)",
     };
 
-    const result = service.decryptData(encryptedFields);
+    service.decryptData(req as Request, res as Response, next);
 
-    expect(decryptSpy).toHaveBeenCalledTimes(2);
-    expect(result).toEqual({
-      email: "user@example.com",
-      phone: "0600000000",
+    expect(decryptSpy).toHaveBeenCalled();
+    expect(req.body).toEqual({
+      mail: "user@example.com",
     });
   });
 
-  it("should throw error if decryption fails", () => {
+  it("should call next with error if encryption throws", () => {
+    const error = new Error("decryption failed");
     vi.spyOn(cryptoService, "decrypt").mockImplementation(() => {
-      throw new Error("bad data");
+      throw error;
     });
 
-    expect(() => service.decryptData({ email: "invalid" })).toThrowError(
-      'Decryption failed for field "email": bad data',
-    );
+    req.body = { mail: "fail@example.com" };
+    const nextMock = vi.fn();
+
+    service.decryptData(req as Request, res as Response, nextMock);
+
+    expect(nextMock).toHaveBeenCalledWith(error);
   });
 });

@@ -15,13 +15,13 @@ services:
 
   back:
     build: ./apps/back
+    env_file: .env
     volumes:
       - ./apps/back:/app
     ports:
       - "3000:3000"
     environment:
       - PG_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
-      - JWT_SECRET=s3cret
     depends_on:
       db:
         condition: service_healthy

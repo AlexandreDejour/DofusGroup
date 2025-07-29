@@ -288,7 +288,16 @@ describe("CharacterController", () => {
         ...req.body,
         user_id: req.params.userId,
       };
-      const mockNewCharacter: CharacterEnriched = {
+      const mockNewCharacter: Character = {
+        id: "0f309e32-2281-4b46-bb2e-bc2a7248e39b",
+        name: "Night-Hunter",
+        sex: "M",
+        level: 190,
+        alignment: "Bonta",
+        stuff: "https://d-bk.net/fr/d/1EFhw",
+        default_character: true,
+      };
+      const mockNewCharacterEnriched: CharacterEnriched = {
         id: "0f309e32-2281-4b46-bb2e-bc2a7248e39b",
         name: "Night-Hunter",
         sex: "M",
@@ -310,11 +319,12 @@ describe("CharacterController", () => {
       };
 
       mockPost.mockResolvedValue(mockNewCharacter);
+      mockGetOneEnriched.mockResolvedValue(mockNewCharacterEnriched);
       // WHEN
       await underTest.post(req as Request, res as Response, next);
       //THEN
       expect(mockPost).toHaveBeenCalledWith(mockDatas);
-      expect(res.json).toHaveBeenCalledWith(mockNewCharacter);
+      expect(res.json).toHaveBeenCalledWith(mockNewCharacterEnriched);
       expect(res.status).not.toHaveBeenCalledWith(status.NOT_FOUND);
     });
   });
@@ -356,6 +366,7 @@ describe("CharacterController", () => {
       const mockUpdatedCharacter = { ...mockCharacterToUpdate, ...mockDatas };
 
       mockUpdate.mockResolvedValue(mockUpdatedCharacter);
+      mockGetOneEnriched.mockResolvedValue(mockUpdatedCharacter);
       // WHEN
       await underTest.update(req as Request, res as Response, next);
       //THEN

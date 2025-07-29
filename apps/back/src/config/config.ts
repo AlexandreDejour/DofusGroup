@@ -11,6 +11,7 @@ export class Config {
   readonly pgUrl: string;
   readonly cryptoAlgorithm: string;
   readonly cryptoKey: string;
+  readonly jwtSecret: string;
 
   private constructor() {
     this.port = Number(process.env.PORT);
@@ -18,6 +19,7 @@ export class Config {
     this.pgUrl = process.env.PG_URL as string;
     this.cryptoAlgorithm = process.env.CRYPTO_ALGORITHM as string;
     this.cryptoKey = process.env.CRYPTO_KEY as string;
+    this.jwtSecret = process.env.JWT_SECRET as string;
   }
 
   public static getInstance(): Config {

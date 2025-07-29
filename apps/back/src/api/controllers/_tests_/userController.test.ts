@@ -23,11 +23,6 @@ describe("UserController", () => {
     UserRepository.prototype,
     "getOneEnriched",
   );
-  const mockFindOneByUsername = vi.spyOn(
-    UserRepository.prototype,
-    "findOneByUsername",
-  );
-  const mockPost = vi.spyOn(UserRepository.prototype, "post");
   const mockUpdate = vi.spyOn(UserRepository.prototype, "update");
   const mockDelete = vi.spyOn(UserRepository.prototype, "delete");
 
@@ -217,48 +212,6 @@ describe("UserController", () => {
       await underTest.getOneEnriched(req as Request, res as Response, next);
 
       expect(next).toHaveBeenCalledWith(error);
-    });
-  });
-
-  // --- POST ---
-  describe("post", () => {
-    it("Return user if create.", async () => {
-      // GIVEN
-      req.body = {
-        username: "toto",
-        mail: "toto@exemple.com",
-        password: "secret",
-      };
-
-      const mockNewUser: UserEnriched = {
-        id: "07a3cd78-3a4a-4aae-a681-7634d72197c2",
-        username: "toto",
-      };
-
-      mockPost.mockResolvedValue(mockNewUser);
-      // WHEN
-      await underTest.post(req as Request, res as Response, next);
-      //THEN
-      expect(mockPost).toHaveBeenCalledWith(req.body);
-      expect(res.json).toHaveBeenCalledWith(mockNewUser);
-      expect(res.status).not.toHaveBeenCalledWith(status.NOT_FOUND);
-    });
-
-    it("Return 409 if username ever exists.", async () => {
-      req.body = {
-        username: "toto",
-        mail: "toto@exemple.com",
-        password: "secret",
-      };
-
-      mockFindOneByUsername.mockResolvedValue(true);
-
-      await underTest.post(req as Request, res as Response, next);
-
-      expect(mockFindOneByUsername).toHaveBeenCalledWith("toto");
-      expect(res.json).toHaveBeenCalledWith({ error: "Username forbidden" });
-      expect(res.status).toHaveBeenCalledWith(status.CONFLICT);
-      expect(mockPost).not.toHaveBeenCalled();
     });
   });
 

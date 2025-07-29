@@ -14,7 +14,7 @@ import { DataEncryptionService } from "../../../middlewares/utils/dataEncryption
 import { CryptoService } from "../../../middlewares/utils/cryptoService.js";
 import { AuthRepository } from "../../../middlewares/repository/authRepository.js";
 
-describe("userRouter", () => {
+describe("authRouter", () => {
   const repository = {} as AuthRepository;
   const service = new AuthService();
   const controller = new AuthController(service, repository);
@@ -23,16 +23,13 @@ describe("userRouter", () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    app = express();
-    app.use(cookieParser());
-    app.use(express.json());
-    app.use((req, res, next) => {
-      service.setAuthUserRequest(req, res, next);
-    });
-    app.use(createAuthRouter(controller, service, encrypter));
-    app.use((_req, res) => {
-      res.status(status.NOT_FOUND).json({ called: "next" });
-    });
+    app = setup.App<AuthController, [AuthService, DataEncryptionService]>(
+      controller,
+      createAuthRouter,
+      {
+        routerFactoryArgs: [service, encrypter],
+      },
+    );
   });
 
   const config = Config.getInstance();

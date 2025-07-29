@@ -23,16 +23,13 @@ describe("userRouter", () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    app = express();
-    app.use(cookieParser());
-    app.use(express.json());
-    app.use((req, res, next) => {
-      service.setAuthUserRequest(req, res, next);
-    });
-    app.use(createUserRouter(controller, service, encrypter));
-    app.use((_req, res) => {
-      res.status(status.NOT_FOUND).json({ called: "next" });
-    });
+    app = setup.App<UserController, [AuthService, DataEncryptionService]>(
+      controller,
+      createUserRouter,
+      {
+        routerFactoryArgs: [service, encrypter],
+      },
+    );
   });
 
   const config = Config.getInstance();

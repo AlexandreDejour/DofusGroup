@@ -20,16 +20,13 @@ describe("characterRouter", () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    app = express();
-    app.use(cookieParser());
-    app.use(express.json());
-    app.use((req, res, next) => {
-      service.setAuthUserRequest(req, res, next);
-    });
-    app.use(createCharacterRouter(controller, service));
-    app.use((_req, res) => {
-      res.status(status.NOT_FOUND).json({ called: "next" });
-    });
+    app = setup.App<CharacterController, [AuthService]>(
+      controller,
+      createCharacterRouter,
+      {
+        routerFactoryArgs: [service],
+      },
+    );
   });
 
   const config = Config.getInstance();

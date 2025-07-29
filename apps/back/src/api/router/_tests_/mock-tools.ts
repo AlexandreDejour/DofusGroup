@@ -1,20 +1,44 @@
 import { vi } from "vitest";
-import express, { Express, NextFunction, Request, Response } from "express";
+import express, {
+  Express,
+  NextFunction,
+  Request,
+  Response,
+  Router,
+} from "express";
 import status from "http-status";
+import cookieParser from "cookie-parser";
+
+import { AuthService } from "../../../middlewares/utils/authService.js";
 
 export let app: Express;
 export let receivedReq: Request | undefined;
 
 export const setup = {
-  App<TController>(
+  App<TController, TArgs extends unknown[]>(
     controller: TController,
-    createRouter: (controller: TController) => express.Router,
+    routerFactory: (controller: TController, ...args: TArgs) => Router,
+    options?: { routerFactoryArgs?: TArgs },
   ): Express {
-    app = express();
-    app.use(createRouter(controller));
+    const app = express();
+    app.use(express.json());
+    app.use(cookieParser());
+
+    const args = options?.routerFactoryArgs ?? ([] as unknown as TArgs);
+
+    for (const arg of args) {
+      if (arg instanceof AuthService) {
+        app.use(arg.setAuthUserRequest.bind(arg));
+      }
+    }
+
+    const router = routerFactory(controller, ...args);
+    app.use(router);
+
     app.use((_req, res) => {
       res.status(status.NOT_FOUND).json({ called: "next" });
     });
+
     return app;
   },
 

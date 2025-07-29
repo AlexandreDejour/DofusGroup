@@ -38,7 +38,7 @@ export function createAuthRouter(
   );
 
   router.post("/auth/logout", (req, res, next) => {
-    controller.logout(req, res);
+    controller.logout(req, res, next);
   });
 
   router.get(

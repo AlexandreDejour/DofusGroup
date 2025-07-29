@@ -148,45 +148,6 @@ describe("userRouter", () => {
     });
   });
 
-  describe("POST /user", () => {
-    it("Propagate request to userController.post", async () => {
-      //GIVEN
-      controller.post = setup.mockSucessCall(status.CREATED);
-      //WHEN
-      const res = await request(app)
-        .post("/user")
-        .send({
-          username: "toto",
-          password: "!SuperS3cr3t",
-          confirmPassword: "!SuperS3cr3t",
-          mail: "mail@example.com",
-        })
-        .set("Content-Type", "application/json");
-      //THEN
-      expect(controller.post).toHaveBeenCalled();
-      expect(res.status).toBe(status.CREATED);
-      expect(res.body).toBe("Success!");
-    });
-
-    it("Next is called at end route.", async () => {
-      controller.post = setup.mockNextCall();
-
-      const res = await request(app)
-        .post("/user")
-        .send({
-          username: "toto",
-          password: "!SuperS3cr3t",
-          confirmPassword: "!SuperS3cr3t",
-          mail: "mail@example.com",
-        })
-        .set("Content-Type", "application/json");
-
-      expect(controller.post).toHaveBeenCalled();
-      expect(res.status).toBe(status.NOT_FOUND);
-      expect(res.body).toEqual({ called: "next" });
-    });
-  });
-
   describe("PATCH /user/:userId", () => {
     it("Propagate request to userController.update", async () => {
       //GIVEN

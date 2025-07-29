@@ -107,7 +107,7 @@ export class AuthController {
     }
   }
 
-  public logout(_req: Request, res: Response) {
+  public logout(_req: Request, res: Response, _next: NextFunction) {
     res.clearCookie("token", {
       httpOnly: true,
       secure: false,

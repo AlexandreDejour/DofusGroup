@@ -3,13 +3,17 @@ import { Router } from "express";
 import validateUUID from "../../middlewares/utils/validateUUID.js";
 import htmlSanitizer from "../../middlewares/utils/htmlSanitizer.js";
 import validateSchema from "../../middlewares/joi/validateSchema.js";
+import { AuthService } from "../../middlewares/utils/authService.js";
 import { EventController } from "../controllers/eventController.js";
 import {
   createEventSchema,
   updateEventSchema,
 } from "../../middlewares/joi/schemas/event.js";
 
-export function createEventRouter(controller: EventController): Router {
+export function createEventRouter(
+  controller: EventController,
+  authService: AuthService,
+): Router {
   const router: Router = Router();
 
   router.get("/events", (req, res, next) => {
@@ -31,6 +35,7 @@ export function createEventRouter(controller: EventController): Router {
   router.post(
     "/user/:userId/event",
     validateUUID,
+    authService.checkPermission,
     htmlSanitizer,
     validateSchema(createEventSchema),
     (req, res, next) => {
@@ -60,13 +65,14 @@ export function createEventRouter(controller: EventController): Router {
     .route("/user/:userId/event/:eventId")
     .patch(
       validateUUID,
+      authService.checkPermission,
       htmlSanitizer,
       validateSchema(updateEventSchema),
       (req, res, next) => {
         controller.update(req, res, next);
       },
     )
-    .delete(validateUUID, (req, res, next) => {
+    .delete(validateUUID, authService.checkPermission, (req, res, next) => {
       controller.delete(req, res, next);
     });
 

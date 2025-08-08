@@ -74,34 +74,6 @@ export class UserRepository {
     }
   }
 
-  public async findOneByUsername(username: string): Promise<boolean> {
-    try {
-      const result: User | null = await UserEntity.findOne({
-        where: { username: username },
-      });
-
-      if (result) {
-        return true;
-      }
-
-      return false;
-    } catch (error) {
-      throw error;
-    }
-  }
-
-  public async post(userData: UserBodyData): Promise<User> {
-    try {
-      const result: UserEntity = await UserEntity.create(userData);
-
-      const newuser = result.get({ plain: true });
-
-      return newuser;
-    } catch (error) {
-      throw error;
-    }
-  }
-
   public async update(
     userId: string,
     userData: Partial<UserBodyData>,

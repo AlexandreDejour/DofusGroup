@@ -28,7 +28,15 @@ export class CharacterRepository {
     try {
       const result: CharacterEntity[] = await CharacterEntity.findAll({
         where: { user_id: userId },
-        include: ["server", "breed", "events"],
+        include: [
+          "server",
+          "breed",
+          "events",
+          {
+            association: "user",
+            attributes: { exclude: ["mail", "password"] },
+          },
+        ],
       });
 
       const characters: CharacterEnriched[] = result.map(
@@ -65,18 +73,26 @@ export class CharacterRepository {
   public async getOneEnrichedByUserId(
     userId: string,
     characterId: string,
-  ): Promise<Character | null> {
+  ): Promise<CharacterEnriched | null> {
     try {
       const result: CharacterEntity | null = await CharacterEntity.findOne({
         where: { id: characterId, user_id: userId },
-        include: ["server", "breed", "events"],
+        include: [
+          "server",
+          "breed",
+          "events",
+          {
+            association: "user",
+            attributes: { exclude: ["mail", "password"] },
+          },
+        ],
       });
 
       if (!result) {
         return null;
       }
 
-      const character: Character = result.get({ plain: true });
+      const character: CharacterEnriched = result.get({ plain: true });
 
       return character;
     } catch (error) {

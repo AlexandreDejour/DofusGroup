@@ -1,0 +1,91 @@
+:root {
+  --text-bg: #1f1b3e;
+  --nav-bg: #636078;
+  --link-bg: #4b495b;
+  --link-font: #ffffff;
+  --semi-bold: 600;
+}
+
+header {
+  width: 100vw;
+  height: 15vh;
+  display: flex;
+  align-items: center;
+
+  .logo {
+    width: 17.5%;
+    height: 100%;
+    margin-right: 2.5%;
+    background-image: url("/public/dofus_group_logo.svg");
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+    font-size: 80%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    h1 {
+      background-color: var(--text-bg);
+    }
+  }
+
+  nav {
+    width: 82.5%;
+    height: 50%;
+    padding: 2.5%;
+    background-color: var(--nav-bg);
+    font-weight: var(--semi-bold);
+    display: flex;
+    align-items: center;
+    border-radius: 2rem 0rem 0rem 2rem;
+
+    ul {
+      width: 100%;
+      margin: 0%;
+      padding: 0;
+      font-size: 100%;
+      display: flex;
+      justify-content: space-evenly;
+      align-items: center;
+      list-style: none;
+      gap: 2%;
+
+      li {
+        width: 25%;
+        padding: 2% 1%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        a {
+          width: 80%;
+          color: var(--link-font);
+          text-decoration: none;
+        }
+
+        button {
+          width: 80%;
+        }
+      }
+
+      .link {
+        border-radius: 1rem;
+        transition: background-color 0.2s ease;
+      }
+
+      .link:hover {
+        background-color: var(--link-bg);
+      }
+    }
+  }
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    --text-bg: #bab6a0;
+    --nav-bg: #e4e4dc;
+    --link-bg: #cfcfc2;
+    --link-font: #000000;
+  }
+}

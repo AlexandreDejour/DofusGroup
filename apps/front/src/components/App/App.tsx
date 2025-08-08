@@ -1,16 +1,18 @@
-import "./App.scss"
+import "./App.scss";
 
 import React from "react";
 import { Routes, Route } from "react-router-dom";
 
-import { Home } from "./Routes/Home/Home";
+import Header from "./Header/Header";
+import Home from "./Routes/Home/Home";
 
-function App() {
+export default function App() {
   return (
-    <Routes>
-      <Route path="/" element={<Home/>}/>
-    </Routes>
-  )
+    <div className="app_container">
+      <Header></Header>
+      <Routes>
+        <Route path="/" element={<Home />} />
+      </Routes>
+    </div>
+  );
 }
-
-export { App };

@@ -1,10 +1,10 @@
 services:
   front:
     build:
-      context: ./apps/front/app
+      context: ./apps/front
     command: ["npm", "run", "start"]
     volumes:
-      - ./apps/front/app:/app
+      - ./apps/front:/app
     ports:
       - "5173:5173"
     depends_on:

@@ -5,6 +5,7 @@ import { Routes, Route } from "react-router-dom";
 
 import Header from "./Header/Header";
 import Home from "./Routes/Home/Home";
+import Footer from "./Footer/Footer";
 
 export default function App() {
   return (
@@ -13,6 +14,7 @@ export default function App() {
       <Routes>
         <Route path="/" element={<Home />} />
       </Routes>
+      <Footer></Footer>
     </div>
   );
 }

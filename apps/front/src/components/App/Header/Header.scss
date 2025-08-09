@@ -1,10 +1,4 @@
-:root {
-  --text-bg: #1f1b3e;
-  --nav-bg: #636078;
-  --link-bg: #4b495b;
-  --link-font: #ffffff;
-  --semi-bold: 600;
-}
+@use "../../../assets/styles/variables";
 
 header {
   width: 100vw;
@@ -26,7 +20,7 @@ header {
     align-items: center;
 
     h1 {
-      background-color: var(--text-bg);
+      background-color: var(--main-bg);
     }
   }
 
@@ -60,7 +54,7 @@ header {
 
         a {
           width: 80%;
-          color: var(--link-font);
+          color: var(--main-text);
           text-decoration: none;
         }
 
@@ -75,17 +69,8 @@ header {
       }
 
       .link:hover {
-        background-color: var(--link-bg);
+        background-color: var(--link-hover-bg);
       }
     }
-  }
-}
-
-@media (prefers-color-scheme: light) {
-  :root {
-    --text-bg: #bab6a0;
-    --nav-bg: #e4e4dc;
-    --link-bg: #cfcfc2;
-    --link-font: #000000;
   }
 }

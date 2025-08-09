@@ -1,0 +1,30 @@
+:root {
+  color-scheme: light dark;
+  --main-text: #ffffff;
+  --text-button: #000000;
+  --main-bg: #1f1b3e;
+  --nav-bg: #636078;
+  --link-hover-bg: #4b495b;
+  --button-bg: radial-gradient(
+    circle,
+    rgba(96, 186, 96, 1) 0%,
+    rgba(156, 217, 92, 1) 90%
+  );
+  --box-shadow: 5px 5px 2px 1px rgba(0, 0, 0, 0.5);
+  --box-shadow-hover: 0px 0px 0px 0px rgba(0, 0, 0, 0.5);
+  --semi-bold: 600;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    --main-text: #000000;
+    --main-bg: #bab6a0;
+    --nav-bg: #e4e4dc;
+    --link-hover-bg: #cfcfc2;
+  }
+}

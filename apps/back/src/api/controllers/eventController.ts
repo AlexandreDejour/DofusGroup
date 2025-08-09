@@ -11,16 +11,35 @@ export class EventController {
     this.repository = repository;
   }
 
-  public async getAll(_req: Request, res: Response, next: NextFunction) {
+  public async getAll(req: Request, res: Response, next: NextFunction) {
     try {
-      const events: Event[] = await this.repository.getAll();
+      const limitParam = parseInt(req.query.limit as string, 10);
+      const pageParam = parseInt(req.query.page as string, 10);
+
+      const limit = !isNaN(limitParam) && limitParam > 0 ? limitParam : 10;
+      const page = !isNaN(pageParam) && pageParam > 0 ? pageParam : 1;
+
+      let events: Event[] = await this.repository.getAll();
 
       if (!events.length) {
         res.status(status.NO_CONTENT).json({ error: "Any event found" });
         return;
       }
 
-      res.json(events);
+      const total = events.length;
+      const totalPages = Math.ceil(total / limit);
+      const start = (page - 1) * limit;
+      const end = start + limit;
+
+      const pagedEvents = events.slice(start, end);
+
+      res.json({
+        data: pagedEvents,
+        page,
+        limit,
+        total,
+        totalPages,
+      });
     } catch (error) {
       next(error);
     }

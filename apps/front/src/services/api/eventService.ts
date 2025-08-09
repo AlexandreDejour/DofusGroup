@@ -1,3 +1,4 @@
+import { Event } from "../../types";
 import { ApiClient } from "../client/client";
 
 export class EventService {
@@ -8,7 +9,7 @@ export class EventService {
   }
 
   public async getEvents() {
-    const response = await this.axios.get("/events");
+    const response = await this.axios.get<Event[]>("/events");
     return response.data;
   }
 }

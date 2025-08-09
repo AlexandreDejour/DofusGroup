@@ -18,6 +18,7 @@
   "devDependencies": {
     "@eslint/js": "^9.28.0",
     "@types/cookie-parser": "^1.4.9",
+    "@types/cors": "^2.8.19",
     "@types/express": "^5.0.3",
     "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^24.0.0",
@@ -41,6 +42,7 @@
   "dependencies": {
     "argon2": "^0.43.1",
     "cookie-parser": "^1.4.7",
+    "cors": "^2.8.5",
     "dotenv": "^16.5.0",
     "express": "^5.1.0",
     "http-errors": "^2.0.0",

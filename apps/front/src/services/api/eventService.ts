@@ -1,4 +1,4 @@
-import { Event } from "../../types";
+import { PaginatedEvents } from "../../types";
 import { ApiClient } from "../client/client";
 
 export class EventService {
@@ -8,8 +8,13 @@ export class EventService {
     this.axios = axios.instance;
   }
 
-  public async getEvents() {
-    const response = await this.axios.get<Event[]>("/events");
+  public async getEvents(
+    limit?: number,
+    page?: number,
+  ): Promise<PaginatedEvents> {
+    const response = await this.axios.get<PaginatedEvents>("/events", {
+      params: { limit, page },
+    });
     return response.data;
   }
 }

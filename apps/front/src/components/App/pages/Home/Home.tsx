@@ -1,6 +1,6 @@
 import "./Home.scss";
 
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { isAxiosError } from "axios";
 
 import { Event } from "../../../../types";
@@ -18,8 +18,8 @@ export default function Home() {
   useEffect(() => {
     const fetchEvents = async () => {
       try {
-        const eventsData = await eventService.getEvents();
-        setEvents(eventsData);
+        const eventsData = await eventService.getEvents(10, 1);
+        setEvents(eventsData.events);
       } catch (error) {
         if (isAxiosError(error)) {
           console.error("Axios error:", error.message);
@@ -39,6 +39,14 @@ export default function Home() {
           {events.map((event) => (
             <li key={event.id}>
               <h2>{event.title}</h2>
+              <p>{event.tag.name}</p>
+              <p>{event.server.name}</p>
+              <p>{new Date(event.date).toLocaleString()}</p>
+              <p>{event.duration}</p>
+              <p>
+                {event.characters ? event.characters.length : 0}/
+                {event.max_players}
+              </p>
             </li>
           ))}
         </ul>

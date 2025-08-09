@@ -9,4 +9,16 @@ export interface Event {
   description?: string;
   max_players: number;
   status: string;
+  // TODO Define types
+  tag: Tag;
+  server: Server;
+  characters: Character[];
+}
+
+export interface PaginatedEvents {
+  events: Event[];
+  page: number;
+  limit: number;
+  total: number;
+  totalPages: number;
 }

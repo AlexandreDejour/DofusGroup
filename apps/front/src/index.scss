@@ -1,0 +1,62 @@
+:root {
+  color-scheme: light dark;
+  --text: #ffffff;
+  --text-button: #000000;
+  --bg: #1f1b3e;
+  --semi-bold: 600;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+html {
+  overflow-x: hidden;
+}
+
+body {
+  margin: 1%;
+  width: 100vw;
+  font-family: "Lexend", sans-serif;
+  font-size: 1rem;
+  color: var(--text);
+  background-color: var(--bg);
+  display: flex;
+  justify-content: center;
+}
+
+button {
+  cursor: pointer;
+  padding: 7.5% 12.5%;
+  background: radial-gradient(
+    circle,
+    rgba(96, 186, 96, 1) 0%,
+    rgba(156, 217, 92, 1) 90%
+  );
+  color: var(--text-button);
+  border: none;
+  border-radius: 0.5rem;
+  box-shadow: 5px 5px 2px 1px rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: filter 0.2s ease;
+}
+
+button:hover {
+  box-shadow: 0px 0px 0px 0px rgba(0, 0, 0, 0.5);
+  filter: brightness(1.2);
+}
+
+button:focus,
+button:focus-visible {
+  outline: 4px auto -webkit-focus-ring-color;
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    --text: #000000;
+    --bg: #bab6a0;
+  }
+}

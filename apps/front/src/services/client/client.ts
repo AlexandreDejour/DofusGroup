@@ -1,9 +1,13 @@
-import axios from "axios";
+import axios, { AxiosInstance } from "axios";
 
-import { Config } from "../../config/config";
+export class ApiClient {
+  private axiosInstance: AxiosInstance;
 
-const config = Config.getInstance();
+  constructor(baseURL: string) {
+    this.axiosInstance = axios.create({ baseURL });
+  }
 
-export const axiosInstance = axios.create({
-  baseURL: config.baseUrl,
-});
+  get instance() {
+    return this.axiosInstance;
+  }
+}

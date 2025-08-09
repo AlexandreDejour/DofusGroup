@@ -13,7 +13,9 @@ export class EventRepository {
   }
   public async getAll(): Promise<Event[]> {
     try {
-      const result: EventEntity[] = await EventEntity.findAll();
+      const result: EventEntity[] = await EventEntity.findAll({
+        include: ["tag", "server", "characters"],
+      });
 
       const events: Event[] = result.map((event: EventEntity) =>
         event.get({ plain: true }),

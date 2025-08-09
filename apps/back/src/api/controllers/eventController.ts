@@ -26,6 +26,15 @@ export class EventController {
         return;
       }
 
+      // Filter passed events
+      const now = new Date();
+      events = events.filter((event) => new Date(event.date) >= now);
+
+      // Filter by ascending date
+      events.sort(
+        (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime(),
+      );
+
       const total = events.length;
       const totalPages = Math.ceil(total / limit);
       const start = (page - 1) * limit;
@@ -34,7 +43,7 @@ export class EventController {
       const pagedEvents = events.slice(start, end);
 
       res.json({
-        data: pagedEvents,
+        events: pagedEvents,
         page,
         limit,
         total,

@@ -51,26 +51,16 @@ header {
         display: flex;
         justify-content: center;
         align-items: center;
+        border-radius: 1rem;
 
-        a {
+        .nav_link {
           width: 80%;
-          color: var(--primary-text);
-          text-decoration: none;
         }
 
         button {
           width: 80%;
           padding: 7.5% 12.5%;
         }
-      }
-
-      .link {
-        border-radius: 1rem;
-        transition: background-color 0.2s ease;
-      }
-
-      .link:hover {
-        background-color: var(--link-hover-bg);
       }
     }
   }

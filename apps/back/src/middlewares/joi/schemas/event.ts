@@ -14,35 +14,31 @@ export const createEventSchema: Joi.ObjectSchema = Joi.object({
     "date.min": "Date must be equal or upper than now",
     "any.required": "Date is required",
   }),
-  duration: Joi.number().min(1).max(1440).required().messages({
+  duration: Joi.number().min(1).max(1440).optional().allow(null).messages({
     "number.base": "Duration must be a number",
     "number.min": "Duration must be least 1 character long",
     "number.max": "Duration must be at most 1440",
     "any.required": "Duration is required",
   }),
-  area: Joi.string().min(1).max(50).required().messages({
-    "string.empty": "Area is required",
+  area: Joi.string().min(1).max(50).optional().allow(null).messages({
+    "string.base": "Max players must be a string",
     "string.min": "Area must be at least 1 character long",
     "string.max": "Area must be at most 50 characterss",
-    "any.required": "Area is required",
   }),
-  sub_area: Joi.string().min(1).max(50).required().messages({
-    "string.empty": "Sub area is required",
+  sub_area: Joi.string().min(1).max(50).optional().allow(null).messages({
+    "string.base": "Max players must be a string",
     "string.min": "Sub area must be at least 1 character long",
     "string.max": "Sub area must be at most 50 characterss",
-    "any.required": "Sub area is required",
   }),
-  donjon_name: Joi.string().min(1).max(50).required().messages({
-    "string.empty": "Donjon name is required",
+  donjon_name: Joi.string().min(1).max(50).optional().allow(null).messages({
+    "string.base": "Max players must be a string",
     "string.min": "Donjon name must be at least 1 character long",
     "string.max": "Donjon name must be at most 50 characterss",
-    "any.required": "Donjon name is required",
   }),
-  description: Joi.string().min(1).max(255).required().messages({
-    "string.empty": "Description is required",
+  description: Joi.string().min(1).max(255).optional().allow(null).messages({
+    "string.base": "Max players must be a string",
     "string.min": "Description must be at least 1 character long",
     "string.max": "Description must be at most 255 characters",
-    "any.required": "Description is required",
   }),
   max_players: Joi.number().min(1).max(8).required().messages({
     "number.base": "Max players must be a number",

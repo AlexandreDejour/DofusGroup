@@ -1,4 +1,4 @@
-import { Event } from "../../../types/event";
+import { Event } from "../../types/event";
 import "./EventCard.scss";
 
 import { useNavigate } from "react-router";

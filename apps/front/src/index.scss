@@ -46,6 +46,7 @@ a {
   transition: background-color 0.2s ease;
 }
 
-.link:hover {
+.link:hover,
+.link.active {
   background-color: var(--link-hover-bg);
 }

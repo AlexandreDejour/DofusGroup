@@ -19,7 +19,9 @@ export default function Pagination({
         const page = i + 1;
         return (
           <Link
-            className="pagination_list_item link"
+            className={`pagination_list_item link ${
+              page === currentPage ? "active" : ""
+            }`}
             to={`events/page${page}`}
             key={page}
             onClick={() => onPageChange(page)}

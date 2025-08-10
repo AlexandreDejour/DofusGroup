@@ -40,14 +40,14 @@ export default function Home() {
 
   return (
     <main className="home">
-      <header className="home_aside">
-        <p className="home_aside_title">Titre</p>
-        <p className="home_aside_tag">Tag</p>
-        <p className="home_aside_server">Serveur</p>
-        <p className="home_aside_date">Date</p>
-        <p className="home_aside_duration">Durée</p>
-        <p className="home_aside_players">Joueurs</p>
-        <p className="home_aside_details"></p>
+      <header className="home_header">
+        <p className="home_header_title">Titre</p>
+        <p className="home_header_tag">Tag</p>
+        <p className="home_header_server">Serveur</p>
+        <p className="home_header_date">Date</p>
+        <p className="home_header_duration">Durée</p>
+        <p className="home_header_players">Joueurs</p>
+        <p className="home_header_details"></p>
       </header>
 
       {events && events.length ? (
@@ -62,11 +62,17 @@ export default function Home() {
         <p>Chargement en cours</p>
       )}
 
-      <Pagination
-        totalPages={totalPages}
-        currentPage={currentPage}
-        onPageChange={(page) => setCurrentPage}
-      />
+      {totalPages ? (
+        <div className="home_pagination">
+          <Pagination
+            totalPages={totalPages}
+            currentPage={currentPage}
+            onPageChange={(page) => setCurrentPage}
+          />
+        </div>
+      ) : (
+        ""
+      )}
     </main>
   );
 }

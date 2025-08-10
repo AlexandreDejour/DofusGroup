@@ -8,6 +8,8 @@ interface EventCardProps {
 }
 
 export default function EventCard({ event }: EventCardProps) {
+  const navigate = useNavigate();
+
   return (
     <article className="event_card">
       <h2 className="event_card_title">{event.title}</h2>
@@ -27,7 +29,12 @@ export default function EventCard({ event }: EventCardProps) {
       <p className="event_card_players">
         {event.characters ? event.characters.length : 0}/{event.max_players}
       </p>
-      <button className="event_card_button">Détails</button>
+      <button
+        className="event_card_button"
+        onClick={() => navigate(`/details/${event.id}`)}
+      >
+        Détails
+      </button>
     </article>
   );
 }

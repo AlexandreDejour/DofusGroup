@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { isAxiosError } from "axios";
 
 import EventCard from "../../EventCard/EventCard";
+import Pagination from "../../Pagination/Pagination";
 
 import { Event } from "../../../../types/event";
 import { Config } from "../../../../config/config";
@@ -16,12 +17,15 @@ const eventService = new EventService(axios);
 
 export default function Home() {
   const [events, setEvents] = useState<Event[] | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
 
   useEffect(() => {
     const fetchEvents = async () => {
       try {
         const eventsData = await eventService.getEvents(10, 1);
         setEvents(eventsData.events);
+        setTotalPages(eventsData.totalPages);
       } catch (error) {
         if (isAxiosError(error)) {
           console.error("Axios error:", error.message);
@@ -45,6 +49,7 @@ export default function Home() {
         <p className="home_aside_players">Joueurs</p>
         <p className="home_aside_details"></p>
       </header>
+
       {events && events.length ? (
         <ul>
           {events.map((event) => (
@@ -56,6 +61,12 @@ export default function Home() {
       ) : (
         <p>Chargement en cours</p>
       )}
+
+      <Pagination
+        totalPages={totalPages}
+        currentPage={currentPage}
+        onPageChange={(page) => setCurrentPage}
+      />
     </main>
   );
 }

@@ -10,10 +10,10 @@ export default function Header() {
       </div>
       <nav>
         <ul>
-          <li className="link">
+          <li className="nav_link link">
             <Link to="/events">Évènements</Link>
           </li>
-          <li className="link">
+          <li className="nav_link link">
             <Link to="/about">À propos</Link>
           </li>
           <li>

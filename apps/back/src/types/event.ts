@@ -15,17 +15,20 @@ export type Event = {
   description?: string;
   max_players: number;
   status: string;
-};
-
-export type EventEnriched = Event & {
   tag?: Tag;
-  user?: User;
   server?: Server;
-  comments?: Comment[];
   characters?: Character[];
 };
 
-export type EventBodyData = Omit<Event, "id"> & {
+export type EventEnriched = Event & {
+  user?: User;
+  comments?: Comment[];
+};
+
+export type EventBodyData = Omit<
+  Event,
+  "id" | "tag" | "server" | "characters"
+> & {
   tag_id: string;
   user_id: string;
   server_id: string;

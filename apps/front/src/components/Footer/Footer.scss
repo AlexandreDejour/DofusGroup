@@ -3,16 +3,16 @@ footer {
   margin-top: 2%;
   padding: 2%;
   text-align: left;
-  background-color: var(--nav-bg);
+  background-color: var(--secondary-bg);
   display: flex;
   justify-content: space-evenly;
 
-  div {
+  .footer_container {
     width: 30%;
 
     h3 {
       width: 80%;
-      border-bottom: 2px solid var(--main-text);
+      border-bottom: 2px solid var(--primary-text);
     }
 
     ul {
@@ -25,7 +25,7 @@ footer {
       }
 
       a {
-        color: var(--main-text);
+        color: var(--primary-text);
         text-decoration: none;
       }
 
@@ -34,7 +34,7 @@ footer {
       }
 
       a:visited {
-        color: var(--main-text);
+        color: var(--primary-text);
       }
     }
   }

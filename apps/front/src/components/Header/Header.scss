@@ -1,4 +1,4 @@
-@use "../../../assets/styles/variables";
+@use "../../assets/styles/variables";
 
 header {
   width: 100vw;
@@ -10,7 +10,7 @@ header {
     width: 17.5%;
     height: 15vh;
     margin-right: 2.5%;
-    background-image: url("/public/dofus_group_logo.svg");
+    background-image: url("/public/dofusgroup_logo_plein.png");
     background-size: contain;
     background-position: center;
     background-repeat: no-repeat;
@@ -20,14 +20,14 @@ header {
     align-items: center;
 
     h1 {
-      background-color: var(--main-bg);
+      background-color: var(--primary-bg);
     }
   }
 
   nav {
     width: 82.5%;
     padding: 1% 1% 1% 2%;
-    background-color: var(--nav-bg);
+    background-color: var(--secondary-bg);
     font-size: 1.2rem;
     font-weight: var(--semi-bold);
     display: flex;
@@ -51,25 +51,16 @@ header {
         display: flex;
         justify-content: center;
         align-items: center;
+        border-radius: 1rem;
 
-        a {
+        .nav_link {
           width: 80%;
-          color: var(--main-text);
-          text-decoration: none;
         }
 
         button {
           width: 80%;
+          padding: 7.5% 12.5%;
         }
-      }
-
-      .link {
-        border-radius: 1rem;
-        transition: background-color 0.2s ease;
-      }
-
-      .link:hover {
-        background-color: var(--link-hover-bg);
       }
     }
   }

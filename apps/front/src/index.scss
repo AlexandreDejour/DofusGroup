@@ -8,15 +8,14 @@ body {
   width: 100vw;
   font-family: "Lexend", sans-serif;
   font-size: 1rem;
-  color: var(--main-text);
-  background-color: var(--main-bg);
+  color: var(--primary-text);
+  background-color: var(--primary-bg);
   display: flex;
   justify-content: center;
 }
 
 button {
   cursor: pointer;
-  padding: 7.5% 12.5%;
   background: var(--button-bg);
   color: var(--text-button);
   border: none;
@@ -36,4 +35,18 @@ button:hover {
 button:focus,
 button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
+}
+
+a {
+  text-decoration: none;
+  color: var(--primary-text);
+}
+
+.link {
+  transition: background-color 0.2s ease;
+}
+
+.link:hover,
+.link.active {
+  background-color: var(--link-hover-bg);
 }

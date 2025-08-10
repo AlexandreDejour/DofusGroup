@@ -23,7 +23,7 @@ export default function Home() {
   useEffect(() => {
     const fetchEvents = async () => {
       try {
-        const eventsData = await eventService.getEvents(10, 1);
+        const eventsData = await eventService.getEvents(10, currentPage);
         setEvents(eventsData.events);
         setTotalPages(eventsData.totalPages);
       } catch (error) {
@@ -36,7 +36,7 @@ export default function Home() {
     };
 
     fetchEvents();
-  }, []);
+  }, [currentPage]);
 
   return (
     <main className="home">

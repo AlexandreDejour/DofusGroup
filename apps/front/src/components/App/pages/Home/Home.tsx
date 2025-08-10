@@ -36,6 +36,15 @@ export default function Home() {
 
   return (
     <main className="home">
+      <header className="home_aside">
+        <p className="home_aside_title">Titre</p>
+        <p className="home_aside_tag">Tag</p>
+        <p className="home_aside_server">Serveur</p>
+        <p className="home_aside_date">Date</p>
+        <p className="home_aside_duration">Durée</p>
+        <p className="home_aside_players">Joueurs</p>
+        <p className="home_aside_details"></p>
+      </header>
       {events && events.length ? (
         <ul>
           {events.map((event) => (

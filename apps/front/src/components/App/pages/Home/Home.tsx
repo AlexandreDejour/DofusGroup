@@ -3,6 +3,8 @@ import "./Home.scss";
 import { useEffect, useState } from "react";
 import { isAxiosError } from "axios";
 
+import EventCard from "../../EventCard/EventCard";
+
 import { Event } from "../../../../types/event";
 import { Config } from "../../../../config/config";
 import { ApiClient } from "../../../../services/client/client";
@@ -37,17 +39,7 @@ export default function Home() {
       {events && events.length ? (
         <ul>
           {events.map((event) => (
-            <li key={event.id}>
-              <h2>{event.title}</h2>
-              <p>{event.tag.name}</p>
-              <p>{event.server.name}</p>
-              <p>{new Date(event.date).toLocaleString()}</p>
-              <p>{event.duration}</p>
-              <p>
-                {event.characters ? event.characters.length : 0}/
-                {event.max_players}
-              </p>
-            </li>
+            <EventCard event={event} />
           ))}
         </ul>
       ) : (

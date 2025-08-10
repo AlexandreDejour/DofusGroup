@@ -68,6 +68,7 @@ export default function Home() {
             totalPages={totalPages}
             currentPage={currentPage}
             onPageChange={(page) => setCurrentPage}
+            maxVisiblePages={10}
           />
         </div>
       ) : (

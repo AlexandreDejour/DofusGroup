@@ -1,5 +1,5 @@
 import { PaginatedEvents } from "../../types/event";
-import { ApiClient } from "../client/client";
+import { ApiClient } from "../client";
 
 export class EventService {
   private axios;

@@ -3,13 +3,13 @@ import "./Home.scss";
 import { useEffect, useState } from "react";
 import { isAxiosError } from "axios";
 
-import EventCard from "../../EventCard/EventCard";
-import Pagination from "../../Pagination/Pagination";
+import EventCard from "../../components/EventCard/EventCard";
+import Pagination from "../../components/Pagination/Pagination";
 
-import { Event } from "../../../../types/event";
-import { Config } from "../../../../config/config";
-import { ApiClient } from "../../../../services/client/client";
-import { EventService } from "../../../../services/api/eventService";
+import { Event } from "../../types/event";
+import { Config } from "../../config/config";
+import { ApiClient } from "../../services/client";
+import { EventService } from "../../services/api/eventService";
 
 const config = Config.getInstance();
 const axios = new ApiClient(config.baseUrl);

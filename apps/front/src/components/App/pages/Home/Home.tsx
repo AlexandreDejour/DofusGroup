@@ -39,7 +39,9 @@ export default function Home() {
       {events && events.length ? (
         <ul>
           {events.map((event) => (
-            <EventCard event={event} />
+            <li key={event.id}>
+              <EventCard event={event} />
+            </li>
           ))}
         </ul>
       ) : (

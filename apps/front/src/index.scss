@@ -8,15 +8,14 @@ body {
   width: 100vw;
   font-family: "Lexend", sans-serif;
   font-size: 1rem;
-  color: var(--main-text);
-  background-color: var(--main-bg);
+  color: var(--primary-text);
+  background-color: var(--primary-bg);
   display: flex;
   justify-content: center;
 }
 
 button {
   cursor: pointer;
-  padding: 7.5% 12.5%;
   background: var(--button-bg);
   color: var(--text-button);
   border: none;

@@ -5,7 +5,7 @@ import "./Footer.scss";
 export default function Footer() {
   return (
     <footer>
-      <div>
+      <div className="footer_container">
         <h3>DofusGroup</h3>
         <ul>
           <li className="link">
@@ -16,7 +16,7 @@ export default function Footer() {
           </li>
         </ul>
       </div>
-      <div>
+      <div className="footer_container">
         <h3>Autres liens</h3>
         <ul>
           <li>
@@ -33,7 +33,7 @@ export default function Footer() {
           </li>
         </ul>
       </div>
-      <div>
+      <div className="footer_container">
         <h3>Sites utiles</h3>
         <ul>
           <li>

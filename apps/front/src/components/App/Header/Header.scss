@@ -20,14 +20,14 @@ header {
     align-items: center;
 
     h1 {
-      background-color: var(--main-bg);
+      background-color: var(--primary-bg);
     }
   }
 
   nav {
     width: 82.5%;
     padding: 1% 1% 1% 2%;
-    background-color: var(--nav-bg);
+    background-color: var(--secondary-bg);
     font-size: 1.2rem;
     font-weight: var(--semi-bold);
     display: flex;
@@ -54,12 +54,13 @@ header {
 
         a {
           width: 80%;
-          color: var(--main-text);
+          color: var(--primary-text);
           text-decoration: none;
         }
 
         button {
           width: 80%;
+          padding: 7.5% 12.5%;
         }
       }
 

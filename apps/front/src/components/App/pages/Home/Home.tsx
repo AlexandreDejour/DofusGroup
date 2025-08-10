@@ -3,7 +3,7 @@ import "./Home.scss";
 import { useEffect, useState } from "react";
 import { isAxiosError } from "axios";
 
-import { Event } from "../../../../types";
+import { Event } from "../../../../types/event";
 import { Config } from "../../../../config/config";
 import { ApiClient } from "../../../../services/client/client";
 import { EventService } from "../../../../services/api/eventService";

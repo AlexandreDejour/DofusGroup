@@ -1,4 +1,4 @@
-import { PaginatedEvents } from "../../types";
+import { PaginatedEvents } from "../../types/event";
 import { ApiClient } from "../client/client";
 
 export class EventService {

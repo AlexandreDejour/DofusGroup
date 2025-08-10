@@ -1,4 +1,8 @@
-export interface Event {
+import { Tag } from "./tag";
+import { Server } from "./server";
+import { Character } from "./character";
+
+export type Event = {
   id: string;
   title: string;
   date: Date;
@@ -9,16 +13,15 @@ export interface Event {
   description?: string;
   max_players: number;
   status: string;
-  // TODO Define types
   tag: Tag;
   server: Server;
   characters: Character[];
-}
+};
 
-export interface PaginatedEvents {
+export type PaginatedEvents = {
   events: Event[];
   page: number;
   limit: number;
   total: number;
   totalPages: number;
-}
+};

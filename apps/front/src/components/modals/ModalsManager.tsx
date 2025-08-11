@@ -17,7 +17,7 @@ export default function ModalsManager() {
         <button
           type="button"
           aria-label="Close modal"
-          className="modal_content_close"
+          className="modal_content_close link"
           onClick={closeModal}
         >
           <FontAwesomeIcon icon={faXmark} />

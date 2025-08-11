@@ -2,9 +2,13 @@ import "./RegisterForm.scss";
 
 interface RegisterFormProps {
   handleSubmit: (formData: FormData) => Promise<void>;
+  error: string | null;
 }
 
-export default function RegisterForm({ handleSubmit }: RegisterFormProps) {
+export default function RegisterForm({
+  handleSubmit,
+  error,
+}: RegisterFormProps) {
   return (
     <div className="register_modal">
       <h3 className="register_modal_title">Inscription</h3>
@@ -66,6 +70,8 @@ export default function RegisterForm({ handleSubmit }: RegisterFormProps) {
           S'incrire
         </button>
       </form>
+
+      {error && <p>{error}</p>}
     </div>
   );
 }

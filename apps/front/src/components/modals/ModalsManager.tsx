@@ -1,5 +1,6 @@
 import "./ModalsManager.scss";
 
+import { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import { useModal } from "../../contexts/modalContext";
@@ -7,11 +8,37 @@ import RegisterForm from "./RegisterForm/RegisterForm";
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
 
 export default function ModalsManager() {
-  const { isOpen, modalType, closeModal } = useModal();
+  const { isOpen, modalType, error, closeModal, setError } = useModal();
 
   async function handleSubmit(formData: FormData) {
-    const data = Object.fromEntries(formData);
-    console.log(data);
+    const passwordRegex = new RegExp(
+      "^(?=.*[A-Z])(?=.*\\d)(?=.*[!@#$%^&*()_\\-+=\\[\\]{};'\":\\\\|,.<>/?`~]).{8,}$",
+    );
+    try {
+      const data = Object.fromEntries(formData);
+
+      if (data.password) {
+        if (!passwordRegex.test(data.password as string)) {
+          throw new Error(
+            "Le mot de passe ne respecte pas les conditions minimales de sécurité",
+          );
+        }
+        if (data.password !== data.confirmPassword) {
+          throw new Error(
+            "Le mot de passe et la confirmation doivent être identique",
+          );
+        }
+      }
+      setError(null);
+      console.log(data);
+      closeModal();
+    } catch (error) {
+      if (error instanceof Error) {
+        setError(error.message);
+      } else {
+        setError("Une erreur est survenue");
+      }
+    }
   }
 
   if (!isOpen) return null;
@@ -30,7 +57,7 @@ export default function ModalsManager() {
 
         <div className="modal_content_form">
           {modalType === "register" && (
-            <RegisterForm handleSubmit={handleSubmit} />
+            <RegisterForm handleSubmit={handleSubmit} error={error} />
           )}
         </div>
       </div>

@@ -14,7 +14,7 @@ body {
   justify-content: center;
 }
 
-button {
+.button {
   cursor: pointer;
   background: var(--button-bg);
   color: var(--text-button);
@@ -27,13 +27,13 @@ button {
   transition: filter 0.2s ease;
 }
 
-button:hover {
+.button:hover {
   box-shadow: var(--box-shadow-hover);
   filter: brightness(1.2);
 }
 
-button:focus,
-button:focus-visible {
+.button:focus,
+.button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
 }
 

@@ -30,7 +30,7 @@ export default function EventCard({ event }: EventCardProps) {
         {event.characters ? event.characters.length : 0}/{event.max_players}
       </p>
       <button
-        className="event_card_button"
+        className="event_card_button button"
         onClick={() => navigate(`/details/${event.id}`)}
       >
         Détails

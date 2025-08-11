@@ -21,10 +21,16 @@ export default function Header() {
             <Link to="/about">À propos</Link>
           </li>
           <li>
-            <button type="button">Connexion</button>
+            <button type="button" className="button">
+              Connexion
+            </button>
           </li>
           <li>
-            <button type="button" onClick={() => openModal("register")}>
+            <button
+              type="button"
+              onClick={() => openModal("register")}
+              className="button"
+            >
               Inscription
             </button>
           </li>

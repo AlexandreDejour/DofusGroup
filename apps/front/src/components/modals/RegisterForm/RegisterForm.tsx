@@ -1,15 +1,14 @@
 import "./RegisterForm.scss";
 
-export default function RegisterForm() {
-  async function handleAction(formData: FormData) {
-    const data = Object.fromEntries(formData);
-    console.log(data);
-  }
+interface RegisterFormProps {
+  handleSubmit: (formData: FormData) => Promise<void>;
+}
 
+export default function RegisterForm({ handleSubmit }: RegisterFormProps) {
   return (
     <div className="register_modal">
       <h3 className="register_modal_title">Inscription</h3>
-      <form action="{handeAction}" className="register_modal_form">
+      <form action={handleSubmit} className="register_modal_form">
         <label htmlFor="username" className="register_modal_form_label">
           <span>Username:</span>
           <input
@@ -17,6 +16,7 @@ export default function RegisterForm() {
             name="username"
             id="username"
             required
+            placeholder="Username"
             className="register_modal_form_label_input"
           />
         </label>
@@ -28,6 +28,7 @@ export default function RegisterForm() {
             name="mail"
             id="mail"
             required
+            placeholder="Email"
             className="register_modal_form_label_input"
           />
         </label>
@@ -39,6 +40,8 @@ export default function RegisterForm() {
             name="password"
             id="password"
             required
+            title="Le mot de passe ne respecte pas les conditions minimales de sécurité"
+            placeholder="Mot de passe"
             className="register_modal_form_label_input"
           />
         </label>
@@ -50,6 +53,7 @@ export default function RegisterForm() {
             name="confirmPassword"
             id="confirmPassword"
             required
+            placeholder="Confirmation mot de passe"
             className="register_modal_form_label_input"
           />
         </label>

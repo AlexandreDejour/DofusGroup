@@ -9,6 +9,11 @@ import { faXmark } from "@fortawesome/free-solid-svg-icons";
 export default function ModalsManager() {
   const { isOpen, modalType, closeModal } = useModal();
 
+  async function handleSubmit(formData: FormData) {
+    const data = Object.fromEntries(formData);
+    console.log(data);
+  }
+
   if (!isOpen) return null;
 
   return (
@@ -24,7 +29,9 @@ export default function ModalsManager() {
         </button>
 
         <div className="modal_content_form">
-          {modalType === "register" && <RegisterForm />}
+          {modalType === "register" && (
+            <RegisterForm handleSubmit={handleSubmit} />
+          )}
         </div>
       </div>
     </div>

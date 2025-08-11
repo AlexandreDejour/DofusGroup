@@ -1,6 +1,6 @@
 import "./ModalsManager.scss";
 
-import { useState } from "react";
+import DOMPurify from "dompurify";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import { useModal } from "../../contexts/modalContext";
@@ -14,8 +14,16 @@ export default function ModalsManager() {
     const passwordRegex = new RegExp(
       "^(?=.*[A-Z])(?=.*\\d)(?=.*[!@#$%^&*()_\\-+=\\[\\]{};'\":\\\\|,.<>/?`~]).{8,}$",
     );
+
     try {
-      const data = Object.fromEntries(formData);
+      const rawData = Object.fromEntries(formData);
+
+      const data = Object.fromEntries(
+        Object.entries(rawData).map(([key, value]) => [
+          key,
+          DOMPurify.sanitize(value as string),
+        ]),
+      );
 
       if (data.password) {
         if (!passwordRegex.test(data.password as string)) {

@@ -34,3 +34,11 @@ export type EventBodyData = Omit<
   server_id: string;
   characters_id: string[];
 };
+
+export type PaginatedEvents = {
+  events: Event[];
+  limit: number;
+  page: number;
+  total: number;
+  totalPages: number;
+};

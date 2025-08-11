@@ -1,9 +1,14 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
 import status from "http-status";
-import type { Request, Response } from "express";
+import type { NextFunction, Request, Response } from "express";
 
-import { Event, EventBodyData, EventEnriched } from "../../../types/event.js";
+import {
+  Event,
+  EventBodyData,
+  EventEnriched,
+  PaginatedEvents,
+} from "../../../types/event.js";
 import { EventController } from "../eventController.js";
 import { EventRepository } from "../../../middlewares/repository/eventRepository.js";
 import { EventUtils } from "../../../middlewares/repository/utils/eventUtils.js";
@@ -11,7 +16,7 @@ import { EventUtils } from "../../../middlewares/repository/utils/eventUtils.js"
 describe("EventController", () => {
   let req: Partial<Request>;
   let res: Partial<Response>;
-  let next = vi.fn();
+  let next: NextFunction;
 
   vi.mock("../../../middlewares/repository/eventRepository.js");
   const mockGetAll = vi.spyOn(EventRepository.prototype, "getAll");
@@ -36,14 +41,18 @@ describe("EventController", () => {
   );
   const mockDelete = vi.spyOn(EventRepository.prototype, "delete");
 
-  req = {};
-  res = {
-    json: vi.fn(),
-    status: vi.fn().mockReturnThis(),
-  };
-
   beforeEach(() => {
     vi.clearAllMocks();
+    req = {
+      params: {},
+      query: {},
+      body: {},
+    };
+    res = {
+      json: vi.fn(),
+      status: vi.fn().mockReturnThis(),
+    };
+    next = vi.fn();
   });
 
   const underTest: EventController = new EventController(
@@ -53,6 +62,11 @@ describe("EventController", () => {
   describe("getAll", () => {
     it("Return events if exist", async () => {
       // GIVEN
+      req.query = {
+        limit: "10",
+        page: "1",
+      };
+
       const mockEvents: Event[] = [
         {
           id: "923a9fe0-1395-4f4e-8d18-4a9ac183b924",
@@ -68,12 +82,33 @@ describe("EventController", () => {
         },
       ];
 
+      const mockPaginatedEvents: PaginatedEvents = {
+        events: [
+          {
+            id: "923a9fe0-1395-4f4e-8d18-4a9ac183b924",
+            title: "Donjon minotot",
+            date: new Date("2026-01-01"),
+            duration: 60,
+            area: "Amakna",
+            sub_area: "Ile des taures",
+            donjon_name: "Labyrinthe du minotoror",
+            description: "donjon full succès",
+            max_players: 8,
+            status: "public",
+          },
+        ],
+        limit: 10,
+        page: 1,
+        total: 1,
+        totalPages: 1,
+      };
+
       mockGetAll.mockResolvedValue(mockEvents);
       // WHEN
       await underTest.getAll(req as Request, res as Response, next);
       // THEN
       expect(mockGetAll).toHaveBeenCalled();
-      expect(res.json).toHaveBeenCalledWith(mockEvents);
+      expect(res.json).toHaveBeenCalledWith(mockPaginatedEvents);
       expect(res.status).not.toHaveBeenCalledWith(status.NOT_FOUND);
     });
 
@@ -99,9 +134,9 @@ describe("EventController", () => {
 
   // --- GET ONE ---
   describe("getOne", () => {
-    req.params = {
-      eventId: "923a9fe0-1395-4f4e-8d18-4a9ac183b924",
-    };
+    beforeEach(() => {
+      req.params = { eventId: "923a9fe0-1395-4f4e-8d18-4a9ac183b924" };
+    });
 
     it("Return event if exists", async () => {
       const mockEvent: Event = {
@@ -208,9 +243,9 @@ describe("EventController", () => {
 
   // --- GET ONE ENRICHED ---
   describe("getOneByUserIdEnriched", () => {
-    req.params = {
-      eventId: "923a9fe0-1395-4f4e-8d18-4a9ac183b924",
-    };
+    beforeEach(() => {
+      req.params = { eventId: "923a9fe0-1395-4f4e-8d18-4a9ac183b924" };
+    });
 
     it("Return event if exists", async () => {
       const mockEventEnriched: EventEnriched = {
@@ -725,7 +760,12 @@ describe("EventController", () => {
 
   // --- DELETE ---
   describe("delete", () => {
-    req.params = { userId: "182a492c-feb7-4af8-910c-e61dc2536754" };
+    beforeEach(() => {
+      req.params = {
+        userId: "182a492c-feb7-4af8-910c-e61dc2536754",
+        eventId: "923a9fe0-1395-4f4e-8d18-4a9ac183b924",
+      };
+    });
 
     it("Return 204 if event is delete.", async () => {
       // GIVEN

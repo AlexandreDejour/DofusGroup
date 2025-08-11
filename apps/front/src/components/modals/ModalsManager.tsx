@@ -16,13 +16,16 @@ export default function ModalsManager() {
       <div className="modal_content" onClick={(e) => e.stopPropagation()}>
         <button
           type="button"
+          aria-label="Close modal"
           className="modal_content_close"
           onClick={closeModal}
         >
           <FontAwesomeIcon icon={faXmark} />
         </button>
 
-        {modalType === "register" && <RegisterForm />}
+        <div className="modal_content_form">
+          {modalType === "register" && <RegisterForm />}
+        </div>
       </div>
     </div>
   );

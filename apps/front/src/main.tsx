@@ -7,6 +7,9 @@ import { BrowserRouter } from "react-router-dom";
 
 import App from "./components/App";
 import ModalProvider from "./contexts/modalContext";
+import fontAwesomeLibrary from "./assets/icons/fontAwesomeLibrary";
+
+fontAwesomeLibrary();
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>

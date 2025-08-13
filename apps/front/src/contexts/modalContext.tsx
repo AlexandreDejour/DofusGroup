@@ -50,7 +50,7 @@ export default function ModalProvider({ children }: ModalProviderProps) {
         ];
         const data = formDataToObject<RegisterForm>(formData, keys);
         console.log(data);
-        const response = authService.register(data);
+        const response = await authService.register(data);
         console.log(response);
       }
 

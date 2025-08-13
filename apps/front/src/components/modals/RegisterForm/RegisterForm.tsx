@@ -12,7 +12,7 @@ export default function RegisterForm({
   return (
     <div className="register_modal">
       <h3 className="register_modal_title">Inscription</h3>
-      <form onSubmit={handleSubmit} className="register_modal_form">
+      <form onSubmit={handleSubmit} className="register_modal_form" role="form">
         <label htmlFor="username" className="register_modal_form_label">
           <span>Username:</span>
           <input
@@ -65,6 +65,7 @@ export default function RegisterForm({
         <button
           type="submit"
           aria-label="Register"
+          role="button"
           className="register_modal_form_button button"
         >
           S'incrire

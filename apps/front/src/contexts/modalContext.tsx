@@ -10,7 +10,7 @@ const config = Config.getInstance();
 const axios = new ApiClient(config.baseUrl);
 const authService = new AuthService(axios);
 
-interface ModalContextType {
+export interface ModalContextType {
   isOpen: boolean;
   modalType: string | null; // ex: "register", "login", "newEvent", etc.
   formData: FormData;

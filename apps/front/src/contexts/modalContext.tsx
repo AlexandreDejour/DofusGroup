@@ -1,5 +1,4 @@
 import React, { createContext, useContext, useState } from "react";
-import DOMPurify from "dompurify";
 
 import { Config } from "../config/config";
 import { ApiClient } from "../services/client";
@@ -18,6 +17,7 @@ interface ModalContextType {
   resetForm: React.Dispatch<React.SetStateAction<FormData>>;
   error: string | null;
   setError: (message: string | null) => void;
+  handleSubmit: (event: React.FormEvent<HTMLFormElement>) => Promise<void>;
   openModal: (type: string) => void;
   closeModal: () => void;
 }
@@ -34,31 +34,27 @@ export default function ModalProvider({ children }: ModalProviderProps) {
   const [formData, setFormData] = useState<FormData>(new FormData());
   const [error, setError] = useState<string | null>(null);
 
-  async function handleSubmit(event: Event, formData: FormData) {
+  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
+    const form = event.currentTarget as HTMLFormElement;
+    const formData = new FormData(form);
+
     try {
-      const rawData = Object.fromEntries(formData);
-
-      const data = Object.fromEntries(
-        Object.entries(rawData).map(([key, value]) => [
-          key,
-          DOMPurify.sanitize(value as string),
-        ]),
-      );
-
       if (modalType === "register") {
-        const data = formDataToObject<RegisterForm>(formData, [
+        const keys: (keyof RegisterForm)[] = [
           "username",
           "mail",
           "password",
           "confirmPassword",
-        ]);
+        ];
+        const data = formDataToObject<RegisterForm>(formData, keys);
+        console.log(data);
         const response = authService.register(data);
+        console.log(response);
       }
 
       setError(null);
-      console.log(data);
       closeModal();
     } catch (error) {
       if (error instanceof Error) {
@@ -80,6 +76,7 @@ export default function ModalProvider({ children }: ModalProviderProps) {
     setIsOpen(false);
     setModalType(null);
     setError(null);
+    setFormData(new FormData());
   };
 
   const contextValues: ModalContextType = {
@@ -89,6 +86,7 @@ export default function ModalProvider({ children }: ModalProviderProps) {
     resetForm,
     error,
     setError,
+    handleSubmit,
     openModal,
     closeModal,
   };

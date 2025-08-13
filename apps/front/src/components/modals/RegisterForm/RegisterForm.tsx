@@ -1,7 +1,7 @@
 import "./RegisterForm.scss";
 
 interface RegisterFormProps {
-  handleSubmit: (formData: FormData) => Promise<void>;
+  handleSubmit: (event: React.FormEvent<HTMLFormElement>) => void;
   error: string | null;
 }
 
@@ -12,7 +12,7 @@ export default function RegisterForm({
   return (
     <div className="register_modal">
       <h3 className="register_modal_title">Inscription</h3>
-      <form action={handleSubmit} className="register_modal_form">
+      <form onSubmit={handleSubmit} className="register_modal_form">
         <label htmlFor="username" className="register_modal_form_label">
           <span>Username:</span>
           <input

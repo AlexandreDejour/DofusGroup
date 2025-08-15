@@ -10,13 +10,14 @@ export default function LoginForm({ handleSubmit, error }: LoginFormProps) {
     <div className="login_modal">
       <h3 className="login_modal_title">Connexion</h3>
       <form onSubmit={handleSubmit} className="login_modal_form" role="form">
-        <label htmlFor="mail" className="login_modal_form_label">
-          <span>Email:</span>
+        <label htmlFor="username" className="login_modal_form_label">
+          <span>Pseudo:</span>
           <input
-            type="email"
-            name="mail"
-            id="mail"
-            placeholder="Email"
+            type="text"
+            name="username"
+            id="username"
+            required
+            placeholder="Pseudo"
             className="login_modal_form_label_input"
           />
         </label>
@@ -27,6 +28,7 @@ export default function LoginForm({ handleSubmit, error }: LoginFormProps) {
             type="password"
             name="password"
             id="password"
+            required
             placeholder="Mot de passe"
             className="login_modal_form_label_input"
           />

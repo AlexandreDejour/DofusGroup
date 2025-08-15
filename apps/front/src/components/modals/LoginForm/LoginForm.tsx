@@ -17,7 +17,7 @@ export default function LoginForm({ handleSubmit, error }: LoginFormProps) {
             name="mail"
             id="mail"
             placeholder="Email"
-            className="login_modal_form_input"
+            className="login_modal_form_label_input"
           />
         </label>
 
@@ -27,7 +27,8 @@ export default function LoginForm({ handleSubmit, error }: LoginFormProps) {
             type="password"
             name="password"
             id="password"
-            className="login_modal_form_input"
+            placeholder="Mot de passe"
+            className="login_modal_form_label_input"
           />
         </label>
 

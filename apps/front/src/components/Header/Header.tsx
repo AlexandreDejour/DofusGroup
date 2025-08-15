@@ -1,8 +1,12 @@
-import { Link } from "react-router-dom";
-
 import "./Header.scss";
 
+import { Link } from "react-router-dom";
+
+import { useModal } from "../../contexts/modalContext";
+
 export default function Header() {
+  const { openModal } = useModal();
+
   return (
     <header>
       <div className="logo">
@@ -17,10 +21,18 @@ export default function Header() {
             <Link to="/about">À propos</Link>
           </li>
           <li>
-            <button type="button">Connexion</button>
+            <button type="button" className="button">
+              Connexion
+            </button>
           </li>
           <li>
-            <button type="button">Inscription</button>
+            <button
+              type="button"
+              onClick={() => openModal("register")}
+              className="button"
+            >
+              Inscription
+            </button>
           </li>
         </ul>
       </nav>

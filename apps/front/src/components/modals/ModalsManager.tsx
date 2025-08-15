@@ -12,11 +12,12 @@ export default function ModalsManager() {
   if (!isOpen) return null;
 
   return (
-    <div className="modal" onClick={closeModal}>
+    <div className="modal" onClick={closeModal} role="dialog">
       <div className="modal_content" onClick={(e) => e.stopPropagation()}>
         <button
           type="button"
           aria-label="Close modal"
+          role="button"
           className="modal_content_close link"
           onClick={closeModal}
         >

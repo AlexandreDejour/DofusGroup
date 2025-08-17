@@ -10,13 +10,14 @@ vi.mock("../../../config/config.ts", () => ({
   },
 }));
 
-// Mock context before import component
+// Mock context before component import
 let mockUseModal: () => any = () => ({
   isOpen: true,
   modalType: "register",
   error: null,
   handleSubmit: vi.fn(),
   closeModal: vi.fn(),
+  openModal: vi.fn(),
 });
 
 vi.mock("../../../contexts/modalContext", () => ({
@@ -27,53 +28,59 @@ vi.mock("../../../contexts/modalContext", () => ({
 
 import ModalsManager from "../ModalsManager";
 
+function renderModalsManager() {
+  return render(
+    <ModalProvider>
+      <ModalsManager />
+    </ModalProvider>,
+  );
+}
+
 describe("ModalsManager", () => {
-  it("Display RegisterForm When modalType is 'register'", () => {
-    render(
-      <ModalProvider>
-        <ModalsManager />
-      </ModalProvider>,
-    );
-    expect(screen.getByRole("form")).toBeInTheDocument();
-    expect(screen.getByText(/Inscription/i)).toBeInTheDocument();
-  });
+  let closeModal: ReturnType<typeof vi.fn>;
 
-  it("Display close button", () => {
-    render(
-      <ModalProvider>
-        <ModalsManager />
-      </ModalProvider>,
-    );
-    expect(screen.getByLabelText(/Close modal/i)).toBeInTheDocument();
-  });
-
-  it("Close modal when you click on the background", () => {
-    const closeModal = vi.fn();
+  beforeEach(() => {
+    // Default mock setup
+    closeModal = vi.fn();
     mockUseModal = () => ({
       isOpen: true,
       modalType: "register",
       error: null,
       handleSubmit: vi.fn(),
       closeModal,
+      openModal: vi.fn(),
     });
-    render(
-      <ModalProvider>
-        <ModalsManager />
-      </ModalProvider>,
-    );
+  });
+
+  it("Display RegisterForm When modalType is 'register'", () => {
+    renderModalsManager();
+    expect(screen.getByRole("form")).toBeInTheDocument();
+    expect(screen.getByText(/Inscription/i)).toBeInTheDocument();
+  });
+
+  it("Display close button", () => {
+    renderModalsManager();
+    expect(screen.getByLabelText(/Close modal/i)).toBeInTheDocument();
+  });
+
+  it("Close modal when you click on the background", () => {
+    renderModalsManager();
     fireEvent.click(screen.getByRole("dialog"));
     expect(closeModal).toHaveBeenCalled();
   });
 
   it("Display nothing if isOpen is false", () => {
+    // overload mock for this specific test
     mockUseModal = () => ({
       isOpen: false,
       modalType: "register",
       error: null,
       handleSubmit: vi.fn(),
       closeModal: vi.fn(),
+      openModal: vi.fn(),
     });
-    const { container } = render(<ModalsManager />);
+
+    const { container } = renderModalsManager();
     expect(container.firstChild).toBeNull();
   });
 });

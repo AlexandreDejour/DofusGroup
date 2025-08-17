@@ -67,7 +67,7 @@ export default function Home() {
           <Pagination
             totalPages={totalPages}
             currentPage={currentPage}
-            onPageChange={(page) => setCurrentPage}
+            onPageChange={(page: number) => setCurrentPage(page)}
             maxVisiblePages={10}
           />
         </div>

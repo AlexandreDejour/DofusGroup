@@ -5,6 +5,8 @@
   justify-content: space-evenly;
 
   &_item {
+    all: unset;
+    cursor: pointer;
     padding: 1% 2%;
     border-radius: 0.5rem;
   }

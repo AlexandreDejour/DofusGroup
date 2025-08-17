@@ -25,7 +25,7 @@ export default function EventCard({ event }: EventCardProps) {
           timeZone: "UTC",
         })}
       </p>
-      <p className="event_card_duration">{event.duration}</p>
+      <p className="event_card_duration">{event.duration} min</p>
       <p className="event_card_players">
         {event.characters ? event.characters.length : 0}/{event.max_players}
       </p>

@@ -4,7 +4,7 @@ export default function getVisiblePages(
   maxVisiblePages: number,
 ) {
   const half = Math.floor(maxVisiblePages / 2);
-  let start = currentPage - half;
+  let start = currentPage - half + (maxVisiblePages % 2 === 0 ? 1 : 0);
   let end = currentPage + half;
 
   if (start < 1) {

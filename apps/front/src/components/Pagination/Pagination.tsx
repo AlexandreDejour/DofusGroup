@@ -22,16 +22,15 @@ export default function Pagination({
   return (
     <ul className="pagination_list">
       {pages.map((page) => (
-        <Link
+        <button
           className={`pagination_list_item link ${
             page === currentPage ? "active" : ""
           }`}
-          to={`events/page${page}`}
           key={page}
           onClick={() => onPageChange(page)}
         >
           {page}
-        </Link>
+        </button>
       ))}
     </ul>
   );

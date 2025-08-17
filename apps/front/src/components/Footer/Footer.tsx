@@ -9,7 +9,7 @@ export default function Footer() {
         <h3>DofusGroup</h3>
         <ul>
           <li className="link">
-            <Link to="/events">Évènements</Link>
+            <Link to="/">Évènements</Link>
           </li>
           <li className="link">
             <Link to="/about">À propos</Link>
@@ -37,16 +37,30 @@ export default function Footer() {
         <h3>Sites utiles</h3>
         <ul>
           <li>
-            <a href="https://www.dofus.com/fr">Dofus</a>
+            <a href="https://www.dofus.com/fr" target="_blank" rel="noreferrer">
+              Dofus
+            </a>
           </li>
           <li>
-            <a href="https://www.dofusbook.net/fr/">DofusBook</a>
+            <a
+              href="https://www.dofusbook.net/fr/"
+              target="_blank"
+              rel="noreferrer"
+            >
+              DofusBook
+            </a>
           </li>
           <li>
-            <a href="https://dofusdb.fr/fr/">DofusDB</a>
+            <a href="https://dofusdb.fr/fr/" target="_blank" rel="noreferrer">
+              DofusDB
+            </a>
           </li>
           <li>
-            <a href="https://www.dofuspourlesnoobs.com/">
+            <a
+              href="https://www.dofuspourlesnoobs.com/"
+              target="_blank"
+              rel="noreferrer"
+            >
               Dofus pour les noobs
             </a>
           </li>

@@ -1,7 +1,5 @@
 import "./Pagination.scss";
 
-import { Link } from "react-router";
-
 import getVisiblePages from "./utils/getVisiblePages";
 
 interface PaginationProps {
@@ -23,6 +21,9 @@ export default function Pagination({
     <ul className="pagination_list">
       {pages.map((page) => (
         <button
+          type="button"
+          aria-label={`To page ${page}`}
+          role="button"
           className={`pagination_list_item link ${
             page === currentPage ? "active" : ""
           }`}

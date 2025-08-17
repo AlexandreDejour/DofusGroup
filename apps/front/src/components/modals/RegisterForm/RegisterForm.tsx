@@ -65,7 +65,6 @@ export default function RegisterForm({
         <button
           type="submit"
           aria-label="Register"
-          role="button"
           className="register_modal_form_button button"
         >
           S'incrire

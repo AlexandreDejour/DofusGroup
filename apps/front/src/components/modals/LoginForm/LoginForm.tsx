@@ -37,7 +37,6 @@ export default function LoginForm({ handleSubmit, error }: LoginFormProps) {
         <button
           type="submit"
           aria-label="Login"
-          role="button"
           className="login_modal_form_button button"
         >
           Se connecter

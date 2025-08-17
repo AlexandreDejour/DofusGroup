@@ -18,7 +18,6 @@ export default function ModalsManager() {
         <button
           type="button"
           aria-label="Close modal"
-          role="button"
           className="modal_content_close link"
           onClick={closeModal}
         >

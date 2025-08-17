@@ -23,7 +23,6 @@ export default function Pagination({
         <button
           type="button"
           aria-label={`To page ${page}`}
-          role="button"
           className={`pagination_list_item link ${
             page === currentPage ? "active" : ""
           }`}

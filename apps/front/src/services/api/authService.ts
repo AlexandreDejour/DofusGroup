@@ -1,25 +1,26 @@
 import { ApiClient } from "../client";
 
 import type { AuthUser } from "../../types/user";
-import type { RegisterForm } from "../../types/form";
+import type { LoginForm, RegisterForm } from "../../types/form";
 
 export class AuthService {
   private axios;
+  private passwordRegex;
 
   constructor(axios: ApiClient) {
     this.axios = axios.instance;
+    this.passwordRegex = new RegExp(
+      "^(?=.*[A-Z])(?=.*\\d)(?=.*[!@#$%^&*()_\\-+=\\[\\]{};'\":\\\\|,.<>/?`~]).{8,}$",
+    );
   }
 
   public async register(data: RegisterForm): Promise<AuthUser> {
-    const passwordRegex = new RegExp(
-      "^(?=.*[A-Z])(?=.*\\d)(?=.*[!@#$%^&*()_\\-+=\\[\\]{};'\":\\\\|,.<>/?`~]).{8,}$",
-    );
-
-    if (!passwordRegex.test(data.password)) {
+    if (!this.passwordRegex.test(data.password)) {
       throw new Error(
         "Le mot de passe ne respecte pas les conditions minimales de sécurité.",
       );
     }
+
     if (data.password !== data.confirmPassword) {
       throw new Error(
         "Le mot de passe et la confirmation doivent être identique.",
@@ -32,6 +33,24 @@ export class AuthService {
     } catch (error: any) {
       if (error.response?.status === 409) {
         throw new Error("Ce nom d'utilisateur ou email n'est pas disponible.");
+      }
+      throw error;
+    }
+  }
+
+  public async login(data: LoginForm): Promise<AuthUser> {
+    if (!this.passwordRegex.test(data.password)) {
+      throw new Error("Email ou mot de passe érroné.");
+    }
+
+    try {
+      const response = await this.axios.post<AuthUser>("auth/login", data, {
+        withCredentials: true,
+      });
+      return response.data;
+    } catch (error: any) {
+      if (error.response?.status === 401) {
+        throw new Error("Email ou mot de passe érroné.");
       }
       throw error;
     }

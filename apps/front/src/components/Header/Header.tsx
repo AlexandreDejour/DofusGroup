@@ -21,7 +21,11 @@ export default function Header() {
             <Link to="/about">À propos</Link>
           </li>
           <li>
-            <button type="button" className="button">
+            <button
+              type="button"
+              onClick={() => openModal("login")}
+              className="button"
+            >
               Connexion
             </button>
           </li>

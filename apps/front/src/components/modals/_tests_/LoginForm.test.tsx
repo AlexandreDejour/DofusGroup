@@ -1,28 +1,24 @@
 import "@testing-library/jest-dom";
 import { render, screen, fireEvent } from "@testing-library/react";
 
-import RegisterForm from "../RegisterForm/RegisterForm";
+import LoginForm from "../LoginForm/LoginForm";
 
-describe("RegisterForm", () => {
+describe("LoginForm", () => {
   it("Display all form fields and button", () => {
-    render(<RegisterForm handleSubmit={vi.fn()} error={null} />);
+    render(<LoginForm handleSubmit={vi.fn()} error={null} />);
     expect(screen.getByLabelText(/Pseudo:/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/Email:/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/^Mot de passe:$/i)).toBeInTheDocument();
-    expect(
-      screen.getByLabelText(/^Confirmation mot de passe:$/i),
-    ).toBeInTheDocument();
     expect(screen.getByRole("button")).toBeInTheDocument();
   });
 
   it("Display message if error is define", () => {
-    render(<RegisterForm handleSubmit={vi.fn()} error="Error !" />);
+    render(<LoginForm handleSubmit={vi.fn()} error="Error !" />);
     expect(screen.getByText("Error !")).toBeInTheDocument();
   });
 
   it("Call handleSubmit on form submit", () => {
     const handleSubmit = vi.fn();
-    render(<RegisterForm handleSubmit={handleSubmit} error={null} />);
+    render(<LoginForm handleSubmit={handleSubmit} error={null} />);
     fireEvent.submit(screen.getByRole("form"));
     expect(handleSubmit).toHaveBeenCalled();
   });

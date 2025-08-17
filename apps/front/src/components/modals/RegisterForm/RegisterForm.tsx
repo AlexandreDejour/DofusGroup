@@ -14,13 +14,13 @@ export default function RegisterForm({
       <h3 className="register_modal_title">Inscription</h3>
       <form onSubmit={handleSubmit} className="register_modal_form" role="form">
         <label htmlFor="username" className="register_modal_form_label">
-          <span>Username:</span>
+          <span>Pseudo:</span>
           <input
             type="text"
             name="username"
             id="username"
             required
-            placeholder="Username"
+            placeholder="Pseudo"
             className="register_modal_form_label_input"
           />
         </label>

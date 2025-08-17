@@ -1,10 +1,11 @@
 import "./ModalsManager.scss";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faXmark } from "@fortawesome/free-solid-svg-icons";
 
 import { useModal } from "../../contexts/modalContext";
 import RegisterForm from "./RegisterForm/RegisterForm";
-import { faXmark } from "@fortawesome/free-solid-svg-icons";
+import LoginForm from "./LoginForm/LoginForm";
 
 export default function ModalsManager() {
   const { isOpen, modalType, error, handleSubmit, closeModal } = useModal();
@@ -27,6 +28,13 @@ export default function ModalsManager() {
         <div className="modal_content_form">
           {modalType === "register" && (
             <RegisterForm
+              handleSubmit={(event) => handleSubmit(event)}
+              error={error}
+            />
+          )}
+
+          {modalType === "login" && (
+            <LoginForm
               handleSubmit={(event) => handleSubmit(event)}
               error={error}
             />

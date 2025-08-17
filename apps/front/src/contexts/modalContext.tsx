@@ -4,7 +4,7 @@ import { Config } from "../config/config";
 import { ApiClient } from "../services/client";
 import { AuthService } from "../services/api/authService";
 import formDataToObject from "./utils/formDataToObject";
-import { RegisterForm } from "../types/form";
+import { RegisterForm, LoginForm } from "../types/form";
 
 const config = Config.getInstance();
 const axios = new ApiClient(config.baseUrl);
@@ -49,8 +49,14 @@ export default function ModalProvider({ children }: ModalProviderProps) {
           "confirmPassword",
         ];
         const data = formDataToObject<RegisterForm>(formData, keys);
-        console.log(data);
         const response = await authService.register(data);
+      }
+
+      if (modalType === "login") {
+        const keys: (keyof LoginForm)[] = ["username", "password"];
+        const data = formDataToObject<LoginForm>(formData, keys);
+        console.log(data);
+        const response = await authService.login(data);
         console.log(response);
       }
 

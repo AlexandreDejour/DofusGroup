@@ -2,10 +2,11 @@ import "./App.scss";
 
 import { Routes, Route } from "react-router-dom";
 
-import Header from "./Header/Header";
-import ModalsManager from "./modals/ModalsManager";
 import Home from "../pages/Home/Home";
+import Header from "./Header/Header";
 import Footer from "./Footer/Footer";
+import ModalsManager from "./modals/ModalsManager";
+import NotificationContainer from "./Notification/NotificationContainer";
 
 export default function App() {
   return (
@@ -15,6 +16,7 @@ export default function App() {
       <Routes>
         <Route path="/" element={<Home />} />
       </Routes>
+      <NotificationContainer />
       <Footer />
     </div>
   );

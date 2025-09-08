@@ -8,15 +8,18 @@ import { BrowserRouter } from "react-router-dom";
 import App from "./components/App";
 import ModalProvider from "./contexts/modalContext";
 import fontAwesomeLibrary from "./assets/icons/fontAwesomeLibrary";
+import NotificationProvider from "./contexts/notificationContext";
 
 fontAwesomeLibrary();
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <BrowserRouter>
-      <ModalProvider>
-        <App />
-      </ModalProvider>
+      <NotificationProvider>
+        <ModalProvider>
+          <App />
+        </ModalProvider>
+      </NotificationProvider>
     </BrowserRouter>
   </React.StrictMode>,
 );

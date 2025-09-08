@@ -5,9 +5,6 @@ on:
     branches:
       - main
       - development
-  push:
-    branches:
-      - workflows/tests
 
 jobs:
   tests:

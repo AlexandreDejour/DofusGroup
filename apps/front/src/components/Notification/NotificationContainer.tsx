@@ -1,4 +1,3 @@
-import React from "react";
 import "./NotificationContainer.scss";
 import { useNotification } from "../../contexts/notificationContext";
 import NotificationItem from "./NotificationItem";

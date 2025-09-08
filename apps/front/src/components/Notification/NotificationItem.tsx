@@ -1,6 +1,7 @@
-import React, { useState } from "react";
-
 import "./NotificationItem.scss";
+
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faXmark } from "@fortawesome/free-solid-svg-icons";
 
 import type { Notification } from "../../types/notification";
 
@@ -44,7 +45,7 @@ export default function NotificationItem({
         onClick={() => onClose(notification.id)}
         aria-label="Close notifisation"
       >
-        ×
+        <FontAwesomeIcon icon={faXmark} />
       </button>
     </div>
   );

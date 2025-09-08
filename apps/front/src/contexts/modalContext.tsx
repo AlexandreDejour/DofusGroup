@@ -1,9 +1,10 @@
-import React, { createContext, useContext, useState } from "react";
+import React, { createContext, useCallback, useContext, useState } from "react";
 
 import { Config } from "../config/config";
 import { ApiClient } from "../services/client";
 import { AuthService } from "../services/api/authService";
 import formDataToObject from "./utils/formDataToObject";
+import { useNotification } from "./notificationContext";
 import { RegisterForm, LoginForm } from "../types/form";
 
 const config = Config.getInstance();
@@ -15,8 +16,6 @@ export interface ModalContextType {
   modalType: string | null; // ex: "register", "login", "newEvent", etc.
   formData: FormData;
   resetForm: React.Dispatch<React.SetStateAction<FormData>>;
-  error: string | null;
-  setError: (message: string | null) => void;
   handleSubmit: (event: React.FormEvent<HTMLFormElement>) => Promise<void>;
   openModal: (type: string) => void;
   closeModal: () => void;
@@ -29,72 +28,81 @@ interface ModalProviderProps {
 const ModalContext = createContext<ModalContextType | null>(null);
 
 export default function ModalProvider({ children }: ModalProviderProps) {
+  const { showSuccess, showError } = useNotification();
   const [isOpen, setIsOpen] = useState(false);
   const [modalType, setModalType] = useState<string | null>(null);
   const [formData, setFormData] = useState<FormData>(new FormData());
-  const [error, setError] = useState<string | null>(null);
-
-  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-
-    const form = event.currentTarget as HTMLFormElement;
-    const formData = new FormData(form);
-
-    try {
-      if (modalType === "register") {
-        const keys: (keyof RegisterForm)[] = [
-          "username",
-          "mail",
-          "password",
-          "confirmPassword",
-        ];
-        const data = formDataToObject<RegisterForm>(formData, keys);
-        const response = await authService.register(data);
-      }
-
-      if (modalType === "login") {
-        const keys: (keyof LoginForm)[] = ["username", "password"];
-        const data = formDataToObject<LoginForm>(formData, keys);
-        console.log(data);
-        const response = await authService.login(data);
-        console.log(response);
-      }
-
-      setError(null);
-      closeModal();
-    } catch (error) {
-      if (error instanceof Error) {
-        setError(error.message);
-      } else {
-        setError("Une erreur est survenue");
-      }
-    }
-  }
 
   const resetForm = () => setFormData(new FormData());
 
-  const openModal = (type: string) => {
+  const openModal = useCallback((type: string) => {
     setModalType(type);
     setIsOpen(true);
-  };
+  }, []);
 
-  const closeModal = () => {
+  const closeModal = useCallback(() => {
     setIsOpen(false);
     setModalType(null);
-    setError(null);
     setFormData(new FormData());
-  };
+  }, []);
+
+  const handleSubmit = useCallback(
+    async (event: React.FormEvent<HTMLFormElement>) => {
+      event.preventDefault();
+
+      const form = event.currentTarget as HTMLFormElement;
+      const formData = new FormData(form);
+
+      try {
+        if (modalType === "register") {
+          const keys: (keyof RegisterForm)[] = [
+            "username",
+            "mail",
+            "password",
+            "confirmPassword",
+          ];
+          const data = formDataToObject<RegisterForm>(formData, keys);
+          await authService.register(data);
+
+          showSuccess(
+            "Inscription réussi !",
+            "Votre compte a été créé avec succès. Veuillez vous connecter.",
+            6000,
+          );
+        }
+
+        if (modalType === "login") {
+          const keys: (keyof LoginForm)[] = ["username", "password"];
+          const data = formDataToObject<LoginForm>(formData, keys);
+          const response = await authService.login(data);
+          console.log(response);
+
+          showSuccess(
+            "Connexion réussie !",
+            `Bonjour ${response.username} ! Vous êtes maintenant connecté(e).`,
+          );
+        }
+
+        closeModal();
+      } catch (error) {
+        if (error instanceof Error) {
+          showError("Erreur", error.message);
+        } else {
+          showError("Erreur", "Une erreur est survenue");
+        }
+      }
+    },
+    [modalType, closeModal],
+  );
 
   const contextValues: ModalContextType = {
     isOpen,
     modalType,
     formData,
     resetForm,
-    error,
-    setError,
-    handleSubmit,
     openModal,
     closeModal,
+    handleSubmit,
   };
 
   return (

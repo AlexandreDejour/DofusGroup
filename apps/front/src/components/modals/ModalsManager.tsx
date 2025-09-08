@@ -8,7 +8,7 @@ import RegisterForm from "./RegisterForm/RegisterForm";
 import LoginForm from "./LoginForm/LoginForm";
 
 export default function ModalsManager() {
-  const { isOpen, modalType, error, handleSubmit, closeModal } = useModal();
+  const { isOpen, modalType, handleSubmit, closeModal } = useModal();
 
   if (!isOpen) return null;
 
@@ -26,17 +26,11 @@ export default function ModalsManager() {
 
         <div className="modal_content_form">
           {modalType === "register" && (
-            <RegisterForm
-              handleSubmit={(event) => handleSubmit(event)}
-              error={error}
-            />
+            <RegisterForm handleSubmit={(event) => handleSubmit(event)} />
           )}
 
           {modalType === "login" && (
-            <LoginForm
-              handleSubmit={(event) => handleSubmit(event)}
-              error={error}
-            />
+            <LoginForm handleSubmit={(event) => handleSubmit(event)} />
           )}
         </div>
       </div>

@@ -2,10 +2,9 @@ import "./LoginForm.scss";
 
 interface LoginFormProps {
   handleSubmit: (event: React.FormEvent<HTMLFormElement>) => void;
-  error: string | null;
 }
 
-export default function LoginForm({ handleSubmit, error }: LoginFormProps) {
+export default function LoginForm({ handleSubmit }: LoginFormProps) {
   return (
     <div className="login_modal">
       <h3 className="login_modal_title">Connexion</h3>
@@ -42,8 +41,6 @@ export default function LoginForm({ handleSubmit, error }: LoginFormProps) {
           Se connecter
         </button>
       </form>
-
-      {error && <p>{error}</p>}
     </div>
   );
 }

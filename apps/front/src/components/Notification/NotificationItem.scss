@@ -13,7 +13,7 @@
   overflow: hidden;
   backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.2);
-  animation: slideIn 0.3s ease-out;
+  animation: slideInTop 0.5s forwards;
 
   &::before {
     content: "";
@@ -135,24 +135,28 @@
   }
 }
 
-@keyframes slideIn {
+.notification--closing {
+  animation: slideOutTop 0.5s forwards;
+}
+
+@keyframes slideInTop {
   from {
-    transform: translateX(100%);
+    transform: translateY(-100%); // commence **au-dessus de l'écran**
     opacity: 0;
   }
   to {
-    transform: translateX(0);
+    transform: translateY(0); // arrive à sa position normale
     opacity: 1;
   }
 }
 
-@keyframes slideOut {
+@keyframes slideOutTop {
   from {
-    transform: translateX(0);
+    transform: translateY(0); // position normale
     opacity: 1;
   }
   to {
-    transform: translateX(100%);
+    transform: translateY(-100%); // disparaît vers le haut
     opacity: 0;
   }
 }

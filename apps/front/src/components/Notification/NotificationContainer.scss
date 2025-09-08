@@ -1,18 +1,12 @@
 .notification-container {
   position: fixed;
-  top: 1rem;
-  right: 1rem;
+  top: 20%;
+  left: 50%;
+  transform: translateX(-50%);
   z-index: 9999;
   max-width: 400px;
   width: 100%;
   pointer-events: none;
-
-  @media (max-width: 768px) {
-    top: 0.5rem;
-    right: 0.5rem;
-    left: 0.5rem;
-    max-width: none;
-  }
 
   .notification {
     pointer-events: auto;

@@ -33,11 +33,12 @@ export class AuthService {
       const { value, error } = jwtSchema.validate(
         jwt.verify(token, this.config.jwtSecret),
       );
+
       if (error) {
         return next(error);
       }
 
-      req.userId = value.sub;
+      req.userId = value.id;
 
       next();
     } catch (error) {

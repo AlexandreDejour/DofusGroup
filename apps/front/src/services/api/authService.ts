@@ -50,7 +50,7 @@ export class AuthService {
     }
 
     try {
-      const response = await this.axios.post<AuthUser>("auth/login", data, {
+      const response = await this.axios.post<AuthUser>("/auth/login", data, {
         withCredentials: true,
       });
       return response.data;
@@ -74,7 +74,7 @@ export class AuthService {
       return response.data;
     } catch (error) {
       if (axios.isAxiosError(error)) {
-        if (error.response?.status === 400 || 401 || 404) {
+        if ([400, 401, 404].includes(error.response?.status ?? 0)) {
           throw new Error("Utilisateur inconnu.");
         }
       }

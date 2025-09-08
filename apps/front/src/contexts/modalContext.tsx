@@ -4,6 +4,7 @@ import { Config } from "../config/config";
 import { ApiClient } from "../services/client";
 import { AuthService } from "../services/api/authService";
 import formDataToObject from "./utils/formDataToObject";
+import { useNotification } from "./notificationContext";
 import { RegisterForm, LoginForm } from "../types/form";
 
 const config = Config.getInstance();
@@ -15,8 +16,6 @@ export interface ModalContextType {
   modalType: string | null; // ex: "register", "login", "newEvent", etc.
   formData: FormData;
   resetForm: React.Dispatch<React.SetStateAction<FormData>>;
-  error: string | null;
-  setError: (message: string | null) => void;
   handleSubmit: (event: React.FormEvent<HTMLFormElement>) => Promise<void>;
   openModal: (type: string) => void;
   closeModal: () => void;
@@ -29,10 +28,10 @@ interface ModalProviderProps {
 const ModalContext = createContext<ModalContextType | null>(null);
 
 export default function ModalProvider({ children }: ModalProviderProps) {
+  const { showSuccess, showError } = useNotification();
   const [isOpen, setIsOpen] = useState(false);
   const [modalType, setModalType] = useState<string | null>(null);
   const [formData, setFormData] = useState<FormData>(new FormData());
-  const [error, setError] = useState<string | null>(null);
 
   const resetForm = () => setFormData(new FormData());
 
@@ -44,7 +43,6 @@ export default function ModalProvider({ children }: ModalProviderProps) {
   const closeModal = useCallback(() => {
     setIsOpen(false);
     setModalType(null);
-    setError(null);
     setFormData(new FormData());
   }, []);
 
@@ -64,7 +62,13 @@ export default function ModalProvider({ children }: ModalProviderProps) {
             "confirmPassword",
           ];
           const data = formDataToObject<RegisterForm>(formData, keys);
-          const response = await authService.register(data);
+          await authService.register(data);
+
+          showSuccess(
+            "Inscription réussi !",
+            "Votre compte a été créé avec succès. Veuillez vous connecter.",
+            6000,
+          );
         }
 
         if (modalType === "login") {
@@ -72,15 +76,19 @@ export default function ModalProvider({ children }: ModalProviderProps) {
           const data = formDataToObject<LoginForm>(formData, keys);
           const response = await authService.login(data);
           console.log(response);
+
+          showSuccess(
+            "Connexion réussie !",
+            `Bonjour ${response.username} ! Vous êtes maintenant connecté(e).`,
+          );
         }
 
-        setError(null);
         closeModal();
       } catch (error) {
         if (error instanceof Error) {
-          setError(error.message);
+          showError("Erreur", error.message);
         } else {
-          setError("Une erreur est survenue");
+          showError("Erreur", "Une erreur est survenue");
         }
       }
     },
@@ -92,8 +100,6 @@ export default function ModalProvider({ children }: ModalProviderProps) {
     modalType,
     formData,
     resetForm,
-    error,
-    setError,
     openModal,
     closeModal,
     handleSubmit,

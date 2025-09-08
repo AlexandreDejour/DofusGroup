@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 
 import "./NotificationItem.scss";
 
@@ -27,7 +27,11 @@ export default function NotificationItem({
   };
 
   return (
-    <div className={`notification notification--${notification.type}`}>
+    <div
+      className={`notification ${
+        notification.isClosing ? "notification--closing" : ""
+      } notification--${notification.type}`}
+    >
       <div className="notification__content">
         <div className="notification__header">
           <span className="notification__icon">{getIcon()}</span>
@@ -38,7 +42,7 @@ export default function NotificationItem({
       <button
         className="notification__close"
         onClick={() => onClose(notification.id)}
-        aria-label="Fermer la notification"
+        aria-label="Close notifisation"
       >
         ×
       </button>

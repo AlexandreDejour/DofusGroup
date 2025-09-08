@@ -1,3 +1,5 @@
+import axios, { Axios } from "axios";
+
 import { ApiClient } from "../client";
 
 import type { AuthUser } from "../../types/user";
@@ -30,9 +32,13 @@ export class AuthService {
     try {
       const response = await this.axios.post<AuthUser>("/auth/register", data);
       return response.data;
-    } catch (error: any) {
-      if (error.response?.status === 409) {
-        throw new Error("Ce nom d'utilisateur ou email n'est pas disponible.");
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        if (error.response?.status === 409) {
+          throw new Error(
+            "Ce nom d'utilisateur ou email n'est pas disponible.",
+          );
+        }
       }
       throw error;
     }
@@ -48,9 +54,45 @@ export class AuthService {
         withCredentials: true,
       });
       return response.data;
-    } catch (error: any) {
-      if (error.response?.status === 401) {
-        throw new Error("Email ou mot de passe érroné.");
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        if (error.response?.status === 401) {
+          throw new Error("Email ou mot de passe érroné.");
+        }
+      }
+      throw error;
+    }
+  }
+
+  public async apiMe(): Promise<AuthUser> {
+    try {
+      const response = await this.axios.get<AuthUser>("/auth/me", {
+        withCredentials: true,
+      });
+
+      console.log(response);
+      return response.data;
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        if (error.response?.status === 400 || 401 || 404) {
+          throw new Error("Utilisateur inconnu.");
+        }
+      }
+      throw error;
+    }
+  }
+
+  public async logout() {
+    try {
+      const response = await this.axios.post("/auth/logout", null, {
+        withCredentials: true,
+      });
+
+      console.log(response);
+      return response.data;
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        throw new Error(error.message);
       }
       throw error;
     }

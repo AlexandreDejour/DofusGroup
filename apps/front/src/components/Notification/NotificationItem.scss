@@ -8,10 +8,10 @@
   margin-bottom: 0.75rem;
   border-radius: 0.75rem;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  font-family: "Inter", sans-serif;
+  font-family: "Lexend", sans-serif;
   position: relative;
   overflow: hidden;
-  backdrop-filter: blur(10px);
+  backdrop-filter: blur(20px);
   border: 1px solid rgba(255, 255, 255, 0.2);
   animation: slideInTop 0.5s forwards;
 
@@ -25,58 +25,44 @@
   }
 
   &--success {
-    background: rgba(34, 197, 94, 0.1);
-    border-left-color: #22c55e;
-    color: #15803d;
+    background: var(--notification-sucess-background);
+    border-left-color: var(--notification-success);
+    color: var(--notification-success);
 
     &::before {
-      background: #22c55e;
+      background: var(--notification-success);
     }
 
     .notification__title {
-      color: #15803d;
+      color: var(--notification-success);
     }
   }
 
   &--error {
-    background: rgba(239, 68, 68, 0.1);
-    border-left-color: #ef4444;
-    color: #dc2626;
+    background: var(--notification-error-background);
+    border-left-color: var(--notification-error);
+    color: var(--notification-error);
 
     &::before {
-      background: #ef4444;
+      background: var(--notification-error);
     }
 
     .notification__title {
-      color: #dc2626;
-    }
-  }
-
-  &--warning {
-    background: rgba(245, 158, 11, 0.1);
-    border-left-color: #f59e0b;
-    color: #d97706;
-
-    &::before {
-      background: #f59e0b;
-    }
-
-    .notification__title {
-      color: #d97706;
+      color: var(--notification-error);
     }
   }
 
   &--info {
-    background: rgba(59, 130, 246, 0.1);
-    border-left-color: #3b82f6;
-    color: #2563eb;
+    background: var(--notification-info-background);
+    border-left-color: var(--notification-info);
+    color: var(--notification-info);
 
     &::before {
-      background: #3b82f6;
+      background: var(--notification-info);
     }
 
     .notification__title {
-      color: #2563eb;
+      color: var(--notification-info);
     }
   }
 

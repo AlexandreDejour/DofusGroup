@@ -18,6 +18,13 @@ jobs:
     defaults:
       run:
         working-directory: apps/${{ matrix.app }}
+    env:
+      PORT: 3000
+      BASE_URL: ${{ secrets.BASE_URL }}
+      PG_URL: ${{ secrets.PG_URL }}
+      CRYPTO_KEY: ${{ secrets.CRYPTO_KEY }}
+      CRYPTO_ALGORITHM: ${{ secrets.CRYPTO_ALGORITHM }}
+      JWT_SECRET: ${{ secrets.JWT_SECRET }}
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3

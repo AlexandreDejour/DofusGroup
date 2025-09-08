@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState } from "react";
+import React, { createContext, useCallback, useContext, useState } from "react";
 
 import { Config } from "../config/config";
 import { ApiClient } from "../services/client";
@@ -34,56 +34,58 @@ export default function ModalProvider({ children }: ModalProviderProps) {
   const [formData, setFormData] = useState<FormData>(new FormData());
   const [error, setError] = useState<string | null>(null);
 
-  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-
-    const form = event.currentTarget as HTMLFormElement;
-    const formData = new FormData(form);
-
-    try {
-      if (modalType === "register") {
-        const keys: (keyof RegisterForm)[] = [
-          "username",
-          "mail",
-          "password",
-          "confirmPassword",
-        ];
-        const data = formDataToObject<RegisterForm>(formData, keys);
-        const response = await authService.register(data);
-      }
-
-      if (modalType === "login") {
-        const keys: (keyof LoginForm)[] = ["username", "password"];
-        const data = formDataToObject<LoginForm>(formData, keys);
-        console.log(data);
-        const response = await authService.login(data);
-        console.log(response);
-      }
-
-      setError(null);
-      closeModal();
-    } catch (error) {
-      if (error instanceof Error) {
-        setError(error.message);
-      } else {
-        setError("Une erreur est survenue");
-      }
-    }
-  }
-
   const resetForm = () => setFormData(new FormData());
 
-  const openModal = (type: string) => {
+  const openModal = useCallback((type: string) => {
     setModalType(type);
     setIsOpen(true);
-  };
+  }, []);
 
-  const closeModal = () => {
+  const closeModal = useCallback(() => {
     setIsOpen(false);
     setModalType(null);
     setError(null);
     setFormData(new FormData());
-  };
+  }, []);
+
+  const handleSubmit = useCallback(
+    async (event: React.FormEvent<HTMLFormElement>) => {
+      event.preventDefault();
+
+      const form = event.currentTarget as HTMLFormElement;
+      const formData = new FormData(form);
+
+      try {
+        if (modalType === "register") {
+          const keys: (keyof RegisterForm)[] = [
+            "username",
+            "mail",
+            "password",
+            "confirmPassword",
+          ];
+          const data = formDataToObject<RegisterForm>(formData, keys);
+          const response = await authService.register(data);
+        }
+
+        if (modalType === "login") {
+          const keys: (keyof LoginForm)[] = ["username", "password"];
+          const data = formDataToObject<LoginForm>(formData, keys);
+          const response = await authService.login(data);
+          console.log(response);
+        }
+
+        setError(null);
+        closeModal();
+      } catch (error) {
+        if (error instanceof Error) {
+          setError(error.message);
+        } else {
+          setError("Une erreur est survenue");
+        }
+      }
+    },
+    [modalType, closeModal],
+  );
 
   const contextValues: ModalContextType = {
     isOpen,
@@ -92,9 +94,9 @@ export default function ModalProvider({ children }: ModalProviderProps) {
     resetForm,
     error,
     setError,
-    handleSubmit,
     openModal,
     closeModal,
+    handleSubmit,
   };
 
   return (

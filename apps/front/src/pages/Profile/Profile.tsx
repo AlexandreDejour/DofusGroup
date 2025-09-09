@@ -12,6 +12,7 @@ import { Config } from "../../config/config";
 import { ApiClient } from "../../services/client";
 import { UserService } from "../../services/api/userService";
 import EventCard from "../../components/EventCard/EventCard";
+import CharacterCard from "../../components/CharacterCard/CharacterCard";
 
 const config = Config.getInstance();
 const axios = new ApiClient(config.baseUrl);
@@ -51,17 +52,65 @@ export default function Profile() {
     <>
       {userEnriched ? (
         <main className="profile">
-          <section>
-            <h3>Profil</h3>
-            <div>
-              <p>{userEnriched.username}</p>
+          <section className="profile_section">
+            <h2 className="profile_section_title">Profil</h2>
+
+            <div className="profile_section_details">
+              <p className="profile_section_details_info">
+                Pseudo: {userEnriched.username}
+              </p>
+              <p className="profile_section_details_info">
+                Évènements: {userEnriched.events?.length}
+              </p>
+              <p className="profile_section_details_info">
+                Personnages: {userEnriched.characters?.length}
+              </p>
+            </div>
+
+            <div className="profile_section_actions">
+              <button
+                type="button"
+                className="profile_section_actions_button button"
+              >
+                Modifier le pseudo
+              </button>
+              <button
+                type="button"
+                className="profile_section_actions_button button"
+              >
+                Modifier le mot de passe
+              </button>
+              <button
+                type="button"
+                className="profile_section_actions_button button"
+              >
+                Modifier l'email
+              </button>
+              <button
+                type="button"
+                className="profile_section_actions_button button delete"
+              >
+                Supprimer mon compte
+              </button>
+              <button
+                type="button"
+                className="profile_section_actions_button button"
+              >
+                Créer un évènement
+              </button>
+              <button
+                type="button"
+                className="profile_section_actions_button button"
+              >
+                Créer un personnage
+              </button>
             </div>
           </section>
 
-          <section>
-            <h3>Évènements</h3>
+          <section className="profile_section">
+            <h2 className="profile_section_title">Évènements</h2>
             {userEnriched.events && userEnriched.events.length ? (
-              <ul>
+              <ul className="profile_section_list_event">
                 {userEnriched.events.map((event) => (
                   <li key={event.id}>
                     <EventCard event={event} />
@@ -71,21 +120,16 @@ export default function Profile() {
             ) : null}
           </section>
 
-          <section>
-            <h3>Personnages</h3>
+          <section className="profile_section">
+            <h2 className="profile_section_title">Personnages</h2>
             {userEnriched.characters && userEnriched.characters.length ? (
-              <ul>
+              <ul className="profile_section_list_character">
                 {userEnriched.characters.map((character) => (
-                  <li key={character.id}>
-                    <article className="character_card">
-                      <h2 className="character_card_title">{character.name}</h2>
-                      <img
-                        className="character_card_img"
-                        src={character.breed?.name}
-                        alt=""
-                      />
-                      <p className="character_card_level">{character.level}</p>
-                    </article>
+                  <li
+                    key={character.id}
+                    className="profile_section_list_character_item"
+                  >
+                    <CharacterCard character={character} />
                   </li>
                 ))}
               </ul>

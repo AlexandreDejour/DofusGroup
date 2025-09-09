@@ -70,7 +70,6 @@ export class AuthService {
         withCredentials: true,
       });
 
-      console.log(response);
       return response.data;
     } catch (error) {
       if (axios.isAxiosError(error)) {

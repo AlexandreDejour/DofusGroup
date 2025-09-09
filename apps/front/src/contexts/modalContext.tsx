@@ -1,5 +1,6 @@
 import React, { createContext, useCallback, useContext, useState } from "react";
 
+import { useAuth } from "./authContext";
 import { Config } from "../config/config";
 import { ApiClient } from "../services/client";
 import { AuthService } from "../services/api/authService";
@@ -28,6 +29,7 @@ interface ModalProviderProps {
 const ModalContext = createContext<ModalContextType | null>(null);
 
 export default function ModalProvider({ children }: ModalProviderProps) {
+  const { setUser } = useAuth();
   const { showSuccess, showError } = useNotification();
   const [isOpen, setIsOpen] = useState(false);
   const [modalType, setModalType] = useState<string | null>(null);
@@ -75,7 +77,8 @@ export default function ModalProvider({ children }: ModalProviderProps) {
           const keys: (keyof LoginForm)[] = ["username", "password"];
           const data = formDataToObject<LoginForm>(formData, keys);
           const response = await authService.login(data);
-          console.log(response);
+
+          setUser(response);
 
           showSuccess(
             "Connexion réussie !",

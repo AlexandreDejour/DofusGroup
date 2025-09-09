@@ -11,6 +11,7 @@ import { UserEnriched } from "../../types/user";
 import { Config } from "../../config/config";
 import { ApiClient } from "../../services/client";
 import { UserService } from "../../services/api/userService";
+import EventCard from "../../components/EventCard/EventCard";
 
 const config = Config.getInstance();
 const axios = new ApiClient(config.baseUrl);
@@ -44,13 +45,42 @@ export default function Profile() {
     };
 
     fetchUserExtended();
-  }, [userEnriched]);
+  }, []);
 
   return (
     <>
       {userEnriched ? (
         <main className="profile">
-          <p>{userEnriched.username}</p>
+          <section>
+            <h3>Profil</h3>
+            <div>
+              <p>{userEnriched.username}</p>
+            </div>
+          </section>
+
+          <section>
+            <h3>Évènements</h3>
+            {userEnriched.events && userEnriched.events.length ? (
+              <ul>
+                {userEnriched.events.map((event) => (
+                  <li key={event.id}>
+                    <EventCard event={event} />
+                  </li>
+                ))}
+              </ul>
+            ) : null}
+          </section>
+
+          <section>
+            <h3>Personnages</h3>
+            {userEnriched.characters && userEnriched.characters.length ? (
+              <ul>
+                {userEnriched.characters.map((character) => (
+                  <li key={character.id}>{character.name}</li>
+                ))}
+              </ul>
+            ) : null}
+          </section>
         </main>
       ) : null}
     </>

@@ -14,8 +14,8 @@ export class AuthService {
   private jwtSecret: string;
 
   constructor() {
-    const config = Config.getInstance();
-    this.jwtSecret = config.jwtSecret;
+    this.config = Config.getInstance();
+    this.jwtSecret = this.config.jwtSecret;
   }
 
   public async setAuthUserRequest(

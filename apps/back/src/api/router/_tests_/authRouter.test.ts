@@ -1,7 +1,5 @@
 import request from "supertest";
 import { vi, describe, it, expect, beforeEach } from "vitest";
-import express from "express";
-import cookieParser from "cookie-parser";
 import status from "http-status";
 import jwt from "jsonwebtoken";
 

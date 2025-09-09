@@ -15,6 +15,7 @@ export class UserService {
       const response = await this.axios.get<UserEnriched>(
         `/user/${id}/enriched`,
       );
+
       return response.data;
     } catch (error) {
       if (axios.isAxiosError(error)) {

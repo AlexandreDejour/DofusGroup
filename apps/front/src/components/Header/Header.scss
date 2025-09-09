@@ -2,15 +2,16 @@
 
 .header {
   width: 100vw;
+  height: 12.5vh;
   margin: 1% 1% 2% 1%;
   display: flex;
   align-items: center;
 
   &_logo {
     width: 17.5%;
-    height: 15vh;
+    height: 100%;
     margin-right: 2.5%;
-    background-image: url("/public/dofusgroup_logo_plein.png");
+    background-image: url("/dofusgroup_logo_plein.webp");
     background-size: contain;
     background-position: center;
     background-repeat: no-repeat;
@@ -26,7 +27,7 @@
 
   &_nav {
     width: 82.5%;
-    padding: 1% 1% 1% 2%;
+    padding: 1% 2% 1% 2%;
     background-color: var(--secondary-bg);
     font-size: 1.2rem;
     font-weight: var(--semi-bold);

@@ -76,7 +76,17 @@ export default function Profile() {
             {userEnriched.characters && userEnriched.characters.length ? (
               <ul>
                 {userEnriched.characters.map((character) => (
-                  <li key={character.id}>{character.name}</li>
+                  <li key={character.id}>
+                    <article className="character_card">
+                      <h2 className="character_card_title">{character.name}</h2>
+                      <img
+                        className="character_card_img"
+                        src={character.breed?.name}
+                        alt=""
+                      />
+                      <p className="character_card_level">{character.level}</p>
+                    </article>
+                  </li>
                 ))}
               </ul>
             ) : null}

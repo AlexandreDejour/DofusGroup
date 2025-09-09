@@ -12,7 +12,7 @@ export default function EventCard({ event }: EventCardProps) {
 
   return (
     <article className="event_card">
-      <h2 className="event_card_title">{event.title}</h2>
+      <h3 className="event_card_title">{event.title}</h3>
       <p
         className="event_card_tag"
         style={{ backgroundColor: event.tag.color }}

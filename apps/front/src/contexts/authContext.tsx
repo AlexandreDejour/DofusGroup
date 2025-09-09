@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
+import { useNavigate } from "react-router";
 import { isAxiosError } from "axios";
 
 import type { AuthUser } from "../types/user";
@@ -25,6 +26,7 @@ interface AuthProviderProps {
 const AuthContext = createContext<AuthContextType | null>(null);
 
 export default function AuthProvider({ children }: AuthProviderProps) {
+  const navigate = useNavigate();
   const [user, setUser] = useState<AuthUser | null>(null);
   const { showInfo } = useNotification();
 
@@ -47,8 +49,9 @@ export default function AuthProvider({ children }: AuthProviderProps) {
 
   const logout = async () => {
     await authService.logout();
-    setUser(null);
 
+    setUser(null);
+    navigate("/", { replace: true });
     showInfo("À bientôt !", "Vous avez été déconnecté(e) avec succès.", 3000);
   };
 

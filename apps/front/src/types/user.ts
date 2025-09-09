@@ -1,4 +1,4 @@
-import { Character } from "./character";
+import { CharacterEnriched } from "./character";
 import { Comment } from "./comment";
 import { Event } from "./event";
 
@@ -15,5 +15,5 @@ export type AuthUser = User & {
 export type UserEnriched = User & {
   events?: Event[];
   comments?: Comment[];
-  characters?: Character[];
+  characters?: CharacterEnriched[];
 };

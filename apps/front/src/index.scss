@@ -37,6 +37,10 @@ body {
   outline: 4px auto -webkit-focus-ring-color;
 }
 
+.delete {
+  background: var(--button-delete-bg);
+}
+
 a {
   text-decoration: none;
   color: var(--primary-text);

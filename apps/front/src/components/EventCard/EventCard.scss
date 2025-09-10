@@ -1,17 +1,19 @@
 @use "../../assets/styles/variables";
 
 .event_card {
+  width: 100%;
   margin: 2% 0%;
   padding: 2%;
   background-color: var(--secondary-bg);
   font-size: 1.1rem;
   display: flex;
   justify-content: space-evenly;
-  border-radius: 1rem;
   align-items: center;
+  border-radius: 1rem;
 
   &_title {
     width: 30%;
+    font-size: 1.3rem;
   }
 
   &_tag {

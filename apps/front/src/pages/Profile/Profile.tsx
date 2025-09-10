@@ -110,30 +110,31 @@ export default function Profile() {
           <section className="profile_section">
             <h2 className="profile_section_title">Évènements</h2>
             {userEnriched.events && userEnriched.events.length ? (
-              <ul className="profile_section_list_event">
+              <ul className="profile_section_list">
                 {userEnriched.events.map((event) => (
-                  <li key={event.id}>
+                  <li key={event.id} className="profile_section_list_item">
                     <EventCard event={event} />
                   </li>
                 ))}
               </ul>
-            ) : null}
+            ) : (
+              <p>Vous n'avez créé aucun évènement</p>
+            )}
           </section>
 
           <section className="profile_section">
             <h2 className="profile_section_title">Personnages</h2>
             {userEnriched.characters && userEnriched.characters.length ? (
-              <ul className="profile_section_list_character">
+              <ul className="profile_section_list">
                 {userEnriched.characters.map((character) => (
-                  <li
-                    key={character.id}
-                    className="profile_section_list_character_item"
-                  >
+                  <li key={character.id} className="profile_section_list_item">
                     <CharacterCard character={character} />
                   </li>
                 ))}
               </ul>
-            ) : null}
+            ) : (
+              <p>Vous n'avez créé aucun personnage</p>
+            )}
           </section>
         </main>
       ) : null}

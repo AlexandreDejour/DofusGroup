@@ -1,5 +1,5 @@
 .profile {
-  width: 90%;
+  width: 95%;
   margin: auto;
   font-size: 1.1rem;
   display: flex;
@@ -45,31 +45,11 @@
       }
     }
 
-    &_list_event {
+    &_list {
       width: 100%;
       margin: 0;
       padding: 0;
       list-style: none;
-
-      &_item {
-        width: 30%;
-      }
-    }
-
-    &_list_character {
-      width: 100%;
-      margin: 0;
-      padding: 0;
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: space-between;
-      align-items: center;
-      list-style: none;
-
-      &_item {
-        width: 30%;
-        margin-bottom: 2%;
-      }
     }
   }
 }

@@ -9,9 +9,13 @@ import { CharacterEnriched } from "../../types/character";
 
 interface CharacterCardProps {
   character: CharacterEnriched;
+  handleDelete: (targetType: string, targetId: string) => Promise<void>;
 }
 
-export default function CharacterCard({ character }: CharacterCardProps) {
+export default function CharacterCard({
+  character,
+  handleDelete,
+}: CharacterCardProps) {
   const navigate = useNavigate();
 
   return (
@@ -43,6 +47,8 @@ export default function CharacterCard({ character }: CharacterCardProps) {
         <button
           className="character_card_buttons_delete button delete"
           aria-label={`Delete event ${character.name}`}
+          value="character"
+          onClick={() => handleDelete("character", character.id)}
         >
           <FontAwesomeIcon icon={faTrash} />
         </button>

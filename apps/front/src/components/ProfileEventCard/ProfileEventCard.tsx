@@ -9,9 +9,13 @@ import { Event } from "../../types/event";
 
 interface ProfileEventCardProps {
   event: Event;
+  handleDelete: (targetType: string, targetId: string) => Promise<void>;
 }
 
-export default function ProfileEventCard({ event }: ProfileEventCardProps) {
+export default function ProfileEventCard({
+  event,
+  handleDelete,
+}: ProfileEventCardProps) {
   const navigate = useNavigate();
 
   return (
@@ -41,6 +45,8 @@ export default function ProfileEventCard({ event }: ProfileEventCardProps) {
         <button
           className="character_card_buttons_delete button delete"
           aria-label={`Delete event ${event.title}`}
+          value="event"
+          onClick={() => handleDelete("event", event.id)}
         >
           <FontAwesomeIcon icon={faTrash} />
         </button>

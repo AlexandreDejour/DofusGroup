@@ -1,7 +1,7 @@
 import "@testing-library/jest-dom";
 import { render, screen, fireEvent } from "@testing-library/react";
 
-import LoginForm from "../LoginForm/LoginForm";
+import LoginForm from "../Forms/LoginForm";
 
 describe("LoginForm", () => {
   it("Display all form fields and button", () => {

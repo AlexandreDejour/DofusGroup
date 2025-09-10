@@ -1,7 +1,7 @@
 import "@testing-library/jest-dom";
 import { render, screen, fireEvent } from "@testing-library/react";
 
-import RegisterForm from "../RegisterForm/RegisterForm";
+import RegisterForm from "../Forms/RegisterForm";
 
 describe("RegisterForm", () => {
   it("Display all form fields and button", () => {

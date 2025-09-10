@@ -2,7 +2,7 @@ import "./Profile.scss";
 
 import { isAxiosError } from "axios";
 import { useNavigate } from "react-router";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import { useAuth } from "../../contexts/authContext";
 import { useNotification } from "../../contexts/notificationContext";
@@ -13,10 +13,14 @@ import { ApiClient } from "../../services/client";
 import { UserService } from "../../services/api/userService";
 import ProfileEventCard from "../../components/ProfileEventCard/ProfileEventCard";
 import CharacterCard from "../../components/CharacterCard/CharacterCard";
+import { EventService } from "../../services/api/eventService";
+import { CharacterService } from "../../services/api/characterService";
 
 const config = Config.getInstance();
 const axios = new ApiClient(config.baseUrl);
 const userService = new UserService(axios);
+const eventService = new EventService(axios);
+const characterService = new CharacterService(axios);
 
 export default function Profile() {
   const navigate = useNavigate();
@@ -47,6 +51,38 @@ export default function Profile() {
 
     fetchUserExtended();
   }, []);
+
+  const handleDelete = useCallback(
+    async (targetType: string, targetId: string) => {
+      if (!user || !userEnriched) return;
+      try {
+        if (targetType === "event") {
+          await eventService.delete(user.id, targetId);
+
+          setUserEnriched({
+            ...userEnriched,
+            events: userEnriched.events?.filter((e) => e.id !== targetId) || [],
+          });
+        }
+
+        if (targetType === "character") {
+          await characterService.delete(user.id, targetId);
+          setUserEnriched({
+            ...userEnriched,
+            characters:
+              userEnriched.characters?.filter((c) => c.id !== targetId) || [],
+          });
+        }
+      } catch (error) {
+        if (error instanceof Error) {
+          showError("Erreur", error.message);
+        } else {
+          showError("Erreur", "Une erreur est survenue");
+        }
+      }
+    },
+    [],
+  );
 
   return (
     <>
@@ -113,7 +149,10 @@ export default function Profile() {
               <ul className="profile_section_list">
                 {userEnriched.events.map((event) => (
                   <li key={event.id} className="profile_section_list_item">
-                    <ProfileEventCard event={event} />
+                    <ProfileEventCard
+                      event={event}
+                      handleDelete={handleDelete}
+                    />
                   </li>
                 ))}
               </ul>
@@ -128,7 +167,10 @@ export default function Profile() {
               <ul className="profile_section_list">
                 {userEnriched.characters.map((character) => (
                   <li key={character.id} className="profile_section_list_item">
-                    <CharacterCard character={character} />
+                    <CharacterCard
+                      character={character}
+                      handleDelete={handleDelete}
+                    />
                   </li>
                 ))}
               </ul>

@@ -39,7 +39,6 @@ export class AuthService {
       }
 
       req.userId = value.id;
-
       next();
     } catch (error) {
       next(error);

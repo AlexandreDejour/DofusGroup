@@ -26,7 +26,7 @@ export default function CharacterCard({ character }: CharacterCardProps) {
         <img
           className="character_card_img"
           src={`/miniatures/${character.breed.name.toLocaleLowerCase()}_female.webp`}
-          alt=""
+          alt={`Miniature de classe ${character.breed.name.toLocaleLowerCase()}`}
         />
       )}
 
@@ -40,7 +40,10 @@ export default function CharacterCard({ character }: CharacterCardProps) {
         >
           Détails
         </button>
-        <button className="character_card_buttons_delete button delete">
+        <button
+          className="character_card_buttons_delete button delete"
+          aria-label={`Delete event ${character.name}`}
+        >
           <FontAwesomeIcon icon={faTrash} />
         </button>
       </div>

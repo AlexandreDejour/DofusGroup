@@ -38,7 +38,10 @@ export default function ProfileEventCard({ event }: ProfileEventCardProps) {
         >
           Détails
         </button>
-        <button className="character_card_buttons_delete button delete">
+        <button
+          className="character_card_buttons_delete button delete"
+          aria-label={`Delete event ${event.title}`}
+        >
           <FontAwesomeIcon icon={faTrash} />
         </button>
       </div>

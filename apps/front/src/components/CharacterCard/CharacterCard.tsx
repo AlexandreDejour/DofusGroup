@@ -1,5 +1,7 @@
 import "./CharacterCard.scss";
 
+import { useNavigate } from "react-router";
+
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
 
@@ -10,6 +12,8 @@ interface CharacterCardProps {
 }
 
 export default function CharacterCard({ character }: CharacterCardProps) {
+  const navigate = useNavigate();
+
   return (
     <article className="character_card">
       {character.sex === "M" ? (
@@ -30,7 +34,10 @@ export default function CharacterCard({ character }: CharacterCardProps) {
       <p className="character_card_breed">{character.breed.name}</p>
       <p className="character_card_level">niveau: {character.level}</p>
       <div className="character_card_buttons">
-        <button className="character_card_buttons_details button">
+        <button
+          className="character_card_buttons_details button"
+          onClick={() => navigate(`/details/${character.id}`)}
+        >
           Détails
         </button>
         <button className="character_card_buttons_delete button delete">

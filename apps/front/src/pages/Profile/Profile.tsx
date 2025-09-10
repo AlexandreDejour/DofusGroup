@@ -11,7 +11,7 @@ import { UserEnriched } from "../../types/user";
 import { Config } from "../../config/config";
 import { ApiClient } from "../../services/client";
 import { UserService } from "../../services/api/userService";
-import EventCard from "../../components/EventCard/EventCard";
+import ProfileEventCard from "../../components/ProfileEventCard/ProfileEventCard";
 import CharacterCard from "../../components/CharacterCard/CharacterCard";
 
 const config = Config.getInstance();
@@ -113,7 +113,7 @@ export default function Profile() {
               <ul className="profile_section_list">
                 {userEnriched.events.map((event) => (
                   <li key={event.id} className="profile_section_list_item">
-                    <EventCard event={event} />
+                    <ProfileEventCard event={event} />
                   </li>
                 ))}
               </ul>

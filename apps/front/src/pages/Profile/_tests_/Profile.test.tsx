@@ -1,0 +1,269 @@
+import { render, screen, waitFor } from "@testing-library/react";
+import { describe, vi } from "vitest";
+import { MemoryRouter } from "react-router-dom";
+
+// Mock useAuth
+vi.mock("../../../contexts/authContext", () => ({
+  useAuth: () => ({
+    user: { id: "15ff46b5-60f3-4e86-98bc-da8fcaa3e29e", username: "toto" },
+  }),
+}));
+
+// Mock useNotification
+const showError = vi.fn();
+vi.mock("../../../contexts/notificationContext", () => ({
+  __esModule: true,
+  default: ({ children }: { children: React.ReactNode }) => children,
+  useNotification: () => ({
+    showError,
+  }),
+}));
+
+// Mock config
+vi.mock("../../../config/config.ts", () => ({
+  Config: {
+    getInstance: () => ({
+      baseUrl: "http://localhost",
+    }),
+  },
+}));
+
+// Mock useNavigate de react-router
+const mockNavigate = vi.fn();
+vi.mock("react-router", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("react-router")>();
+  return {
+    ...actual,
+    useNavigate: () => mockNavigate,
+  };
+});
+
+// Mock ProfileEventCard
+vi.mock("../../../components/ProfileEventCard/ProfileEventCard", () => ({
+  default: ({ event }: any) => (
+    <section data-testid="event-card">
+      <h3>{event.title}</h3>
+      <p data-testid="event-tag">{event.tag.name}</p>
+      <p data-testid="event-date">
+        {new Date(event.date).toLocaleString("fr-FR", { timeZone: "UTC" })}
+      </p>
+      <p data-testid="event-players">
+        {event.characters ? event.characters.length : 0}/{event.max_players}
+      </p>
+      <div>
+        <button>Détails</button>
+        <button>Delete</button>
+      </div>
+    </section>
+  ),
+}));
+
+// Mock CharacterCard
+vi.mock("../../../components/CharacterCard/CharacterCard", () => ({
+  default: ({ character }: any) => (
+    <section data-testid="character-card">
+      <h3 data-testid="character-name">{character.name}</h3>
+      <p data-testid="character-breed">{character.breed?.name}</p>
+      <p data-testid="character-level">niveau: {character.level}</p>
+      <div>
+        <button>Détails</button>
+        <button>Delete</button>
+      </div>
+    </section>
+  ),
+}));
+
+// Mock UserService
+let getOneEnrichedMock: any;
+vi.mock("../../../services/api/userService", () => {
+  return {
+    UserService: vi.fn().mockImplementation(() => ({
+      getOneEnriched: (...args: any[]) => getOneEnrichedMock(...args),
+    })),
+  };
+});
+
+import Profile from "../Profile";
+import NotificationProvider from "../../../contexts/notificationContext";
+
+const renderProfile = () => {
+  return render(
+    <MemoryRouter>
+      <NotificationProvider>
+        <Profile />
+      </NotificationProvider>
+    </MemoryRouter>,
+  );
+};
+
+describe("Profile Page", () => {
+  beforeEach(() => {
+    getOneEnrichedMock = vi.fn().mockResolvedValue({
+      id: "15ff46b5-60f3-4e86-98bc-da8fcaa3e29e",
+      username: "toto",
+      createdAt: "2025-07-27T17:40:34.489Z",
+      updatedAt: "2025-07-27T17:40:34.489Z",
+      characters: [
+        {
+          id: "9f0eaa8c-eec1-4e85-9365-7653c1330325",
+          name: "Chronos",
+          sex: "M",
+          level: 50,
+          alignment: "Bonta",
+          stuff: "https://d-bk.net/fr/d/1QVjw",
+          default_character: true,
+          user_id: "15ff46b5-60f3-4e86-98bc-da8fcaa3e29e",
+          server_id: "de5a6c69-bc0b-496c-9b62-bd7ea076b8ed",
+          breed_id: "d81c200e-831c-419a-948f-c45d1bbf6aac",
+          createdAt: "2025-07-27T18:59:55.613Z",
+          updatedAt: "2025-07-27T18:59:55.613Z",
+          breed: { name: "Cra" },
+        },
+      ],
+      events: [
+        {
+          id: "ef9891a6-dcab-4846-8f9c-2044efe2096c",
+          title: "Rafle perco",
+          date: "2025-12-24T23:59:59.000Z",
+          duration: 180,
+          area: null,
+          sub_area: null,
+          donjon_name: null,
+          description: "on rase tout",
+          max_players: 8,
+          status: "public",
+          tag_id: "31d0d841-1345-4939-9495-0f802362eb79",
+          user_id: "15ff46b5-60f3-4e86-98bc-da8fcaa3e29e",
+          server_id: "62592fd9-66b8-410c-a42e-f98b9a8173f1",
+          createdAt: "2025-08-10T11:21:30.520Z",
+          updatedAt: "2025-08-10T11:21:30.520Z",
+          tag: {
+            id: "31d0d841-1345-4939-9495-0f802362eb79",
+            name: "Percepteur",
+            color: "#2c3e50",
+            createdAt: "2025-07-27T12:39:28.731Z",
+            updatedAt: "2025-07-27T12:39:28.731Z",
+          },
+          characters: [
+            {
+              id: "cfff40b3-9625-4f0a-854b-d8d6d6b4b667",
+              name: "Chronos",
+              sex: "M",
+              level: 50,
+              alignment: "Neutre",
+              stuff: "https://d-bk.net/fr/d/1QVjw",
+              default_character: false,
+              user_id: "15ff46b5-60f3-4e86-98bc-da8fcaa3e29e",
+              server_id: "de5a6c69-bc0b-496c-9b62-bd7ea076b8ed",
+              breed_id: "d81c200e-831c-419a-948f-c45d1bbf6aac",
+              createdAt: "2025-07-27T18:23:32.837Z",
+              updatedAt: "2025-07-27T18:23:32.837Z",
+              event_team: {
+                createdAt: "2025-08-10T11:21:30.544Z",
+                updatedAt: "2025-08-10T11:21:30.544Z",
+                event_id: "ef9891a6-dcab-4846-8f9c-2044efe2096c",
+                character_id: "cfff40b3-9625-4f0a-854b-d8d6d6b4b667",
+              },
+              breed: {
+                id: "d81c200e-831c-419a-948f-c45d1bbf6aac",
+                name: "Cra",
+                createdAt: "2025-07-27T12:39:28.731Z",
+                updatedAt: "2025-07-27T12:39:28.731Z",
+              },
+            },
+          ],
+        },
+      ],
+    });
+    showError.mockClear();
+    mockNavigate.mockClear();
+  });
+
+  afterEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it("Display user data after API call", async () => {
+    renderProfile();
+
+    await waitFor(() => {
+      expect(screen.getByText("Pseudo: toto")).toBeInTheDocument();
+      expect(screen.getByText("Évènements: 1")).toBeInTheDocument();
+      expect(screen.getByText("Personnages: 1")).toBeInTheDocument();
+      expect(
+        screen.getByRole("button", { name: "Modifier le pseudo" }),
+      ).toBeInTheDocument();
+      expect(
+        screen.getByRole("button", { name: "Modifier le mot de passe" }),
+      ).toBeInTheDocument();
+      expect(
+        screen.getByRole("button", { name: "Modifier l'email" }),
+      ).toBeInTheDocument();
+      expect(
+        screen.getByRole("button", { name: "Supprimer mon compte" }),
+      ).toBeInTheDocument();
+      expect(
+        screen.getByRole("button", { name: "Créer un évènement" }),
+      ).toBeInTheDocument();
+      expect(
+        screen.getByRole("button", { name: "Créer un personnage" }),
+      ).toBeInTheDocument();
+    });
+  });
+
+  it("Display events list after API call", async () => {
+    renderProfile();
+
+    await waitFor(() => {
+      const card = screen.getByTestId("event-card");
+      expect(card).toBeInTheDocument();
+      expect(screen.getByText("Rafle perco")).toBeInTheDocument();
+      expect(screen.getByTestId("event-tag")).toHaveTextContent("Percepteur");
+      expect(screen.getByTestId("event-date")).toHaveTextContent(
+        new Date("2025-12-24T23:59:59.000Z").toLocaleString("fr-FR", {
+          timeZone: "UTC",
+        }),
+      );
+      expect(screen.getByTestId("event-players")).toHaveTextContent("1/8");
+    });
+  });
+
+  it("Display characters list after API call", async () => {
+    renderProfile();
+
+    await waitFor(() => {
+      const card = screen.getByTestId("character-card");
+      expect(card).toBeInTheDocument();
+      expect(screen.getByTestId("character-name")).toHaveTextContent("Chronos");
+      expect(screen.getByTestId("character-breed")).toHaveTextContent("Cra");
+      expect(screen.getByTestId("character-level")).toHaveTextContent("50");
+    });
+  });
+
+  it("Manage axios error", async () => {
+    getOneEnrichedMock = vi
+      .fn()
+      .mockRejectedValue(
+        Object.assign(new Error("Erreur axios"), { isAxiosError: true }),
+      );
+    renderProfile();
+
+    await waitFor(() => {
+      expect(showError).toHaveBeenCalledWith("Erreur", "Erreur axios");
+    });
+  });
+
+  it("Manage general error", async () => {
+    getOneEnrichedMock = vi
+      .fn()
+      .mockRejectedValue(new Error("Erreur générale"));
+    renderProfile();
+
+    await waitFor(() => {
+      expect(showError).toHaveBeenCalledWith(
+        "Erreur",
+        "Une erreur est survenue",
+      );
+    });
+  });
+});

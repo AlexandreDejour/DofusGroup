@@ -5,16 +5,18 @@ import { useNavigate } from "react-router";
 import { useCallback, useEffect, useState } from "react";
 
 import { useAuth } from "../../contexts/authContext";
+import { useModal } from "../../contexts/modalContext";
 import { useNotification } from "../../contexts/notificationContext";
 
 import { UserEnriched } from "../../types/user";
+
 import { Config } from "../../config/config";
 import { ApiClient } from "../../services/client";
 import { UserService } from "../../services/api/userService";
-import ProfileEventCard from "../../components/ProfileEventCard/ProfileEventCard";
-import CharacterCard from "../../components/CharacterCard/CharacterCard";
 import { EventService } from "../../services/api/eventService";
 import { CharacterService } from "../../services/api/characterService";
+import CharacterCard from "../../components/CharacterCard/CharacterCard";
+import ProfileEventCard from "../../components/ProfileEventCard/ProfileEventCard";
 
 const config = Config.getInstance();
 const axios = new ApiClient(config.baseUrl);
@@ -25,6 +27,7 @@ const characterService = new CharacterService(axios);
 export default function Profile() {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { openModal } = useModal();
   const { showError } = useNotification();
   const [userEnriched, setUserEnriched] = useState<UserEnriched | null>(null);
 
@@ -86,14 +89,14 @@ export default function Profile() {
 
   return (
     <>
-      {userEnriched ? (
+      {user && userEnriched ? (
         <main className="profile">
           <section className="profile_section">
             <h2 className="profile_section_title">Profil</h2>
 
             <div className="profile_section_details">
               <p className="profile_section_details_info">
-                Pseudo: {userEnriched.username}
+                Pseudo: {user.username}
               </p>
               <p className="profile_section_details_info">
                 Évènements: {userEnriched.events?.length}
@@ -107,18 +110,21 @@ export default function Profile() {
               <button
                 type="button"
                 className="profile_section_actions_button button"
+                onClick={() => openModal("username")}
               >
                 Modifier le pseudo
               </button>
               <button
                 type="button"
                 className="profile_section_actions_button button"
+                onClick={() => openModal("password")}
               >
                 Modifier le mot de passe
               </button>
               <button
                 type="button"
                 className="profile_section_actions_button button"
+                onClick={() => openModal("mail")}
               >
                 Modifier l'email
               </button>
@@ -157,7 +163,7 @@ export default function Profile() {
                 ))}
               </ul>
             ) : (
-              <p>Vous n'avez créé aucun évènement</p>
+              <p>Aucun évènement</p>
             )}
           </section>
 
@@ -175,7 +181,7 @@ export default function Profile() {
                 ))}
               </ul>
             ) : (
-              <p>Vous n'avez créé aucun personnage</p>
+              <p>Aucun personnage</p>
             )}
           </section>
         </main>

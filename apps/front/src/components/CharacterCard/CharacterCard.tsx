@@ -20,7 +20,7 @@ export default function CharacterCard({ character }: CharacterCardProps) {
         <img
           className="character_card_img"
           src={`/miniatures/${character.breed.name.toLocaleLowerCase()}_male.webp`}
-          alt=""
+          alt={`Miniature de classe ${character.breed.name.toLocaleLowerCase()}`}
         />
       ) : (
         <img

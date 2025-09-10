@@ -114,9 +114,9 @@ describe("Header", () => {
         "href",
         "/",
       );
-      expect(screen.getByRole("link", { name: "Personnages" })).toHaveAttribute(
+      expect(screen.getByRole("link", { name: "À propos" })).toHaveAttribute(
         "href",
-        "/characters",
+        "/about",
       );
       expect(screen.getByRole("link", { name: "Profil" })).toHaveAttribute(
         "href",
@@ -141,12 +141,6 @@ describe("Header", () => {
       ).not.toBeInTheDocument();
       expect(
         screen.queryByRole("button", { name: "Inscription" }),
-      ).not.toBeInTheDocument();
-    });
-
-    it("Not display link <<À propos>>", () => {
-      expect(
-        screen.queryByRole("link", { name: "À propos" }),
       ).not.toBeInTheDocument();
     });
   });

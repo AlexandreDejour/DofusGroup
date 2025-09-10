@@ -19,11 +19,11 @@ export default function Header() {
           <li className="header_nav_list_item nav_link link">
             <Link to="/">Évènements</Link>
           </li>
+          <li className="header_nav_list_item nav_link link">
+            <Link to="/about">À propos</Link>
+          </li>
           {user ? (
             <>
-              <li className="header_nav_list_item nav_link link">
-                <Link to="/characters">Personnages</Link>
-              </li>
               <li className="header_nav_list_item nav_link link">
                 <Link to="/profile">Profil</Link>
               </li>
@@ -39,9 +39,6 @@ export default function Header() {
             </>
           ) : (
             <>
-              <li className="header_nav_list_item nav_link link">
-                <Link to="/about">À propos</Link>
-              </li>
               <li className="header_nav_list_item">
                 <button
                   type="button"

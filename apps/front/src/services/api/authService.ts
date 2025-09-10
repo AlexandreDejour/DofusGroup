@@ -1,9 +1,9 @@
-import axios, { Axios } from "axios";
+import axios from "axios";
 
 import { ApiClient } from "../client";
 
 import type { AuthUser } from "../../types/user";
-import type { LoginForm, RegisterForm } from "../../types/form";
+import type { LoginForm, RegisterForm, UpdateForm } from "../../types/form";
 
 export class AuthService {
   private axios;

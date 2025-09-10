@@ -1,16 +1,21 @@
 import React, { createContext, useCallback, useContext, useState } from "react";
 
 import { useAuth } from "./authContext";
+import { useNotification } from "./notificationContext";
+
+import { RegisterForm, LoginForm, UpdateForm } from "../types/form";
+
 import { Config } from "../config/config";
 import { ApiClient } from "../services/client";
-import { AuthService } from "../services/api/authService";
 import formDataToObject from "./utils/formDataToObject";
-import { useNotification } from "./notificationContext";
-import { RegisterForm, LoginForm } from "../types/form";
+import { AuthService } from "../services/api/authService";
+import { UserService } from "../services/api/userService";
+import isUpdateField from "../components/modals/utils/isUpdateField";
 
 const config = Config.getInstance();
 const axios = new ApiClient(config.baseUrl);
 const authService = new AuthService(axios);
+const userService = new UserService(axios);
 
 export interface ModalContextType {
   isOpen: boolean;
@@ -18,7 +23,7 @@ export interface ModalContextType {
   formData: FormData;
   resetForm: React.Dispatch<React.SetStateAction<FormData>>;
   handleSubmit: (event: React.FormEvent<HTMLFormElement>) => Promise<void>;
-  openModal: (type: string) => void;
+  openModal: (modalType: ModalType) => void;
   closeModal: () => void;
 }
 
@@ -26,19 +31,27 @@ interface ModalProviderProps {
   children: React.ReactNode;
 }
 
+export type ModalType =
+  | "register"
+  | "login"
+  | "mail"
+  | "password"
+  | "username"
+  | null;
+
 const ModalContext = createContext<ModalContextType | null>(null);
 
 export default function ModalProvider({ children }: ModalProviderProps) {
-  const { setUser } = useAuth();
+  const { user, setUser } = useAuth();
   const { showSuccess, showError } = useNotification();
   const [isOpen, setIsOpen] = useState(false);
-  const [modalType, setModalType] = useState<string | null>(null);
+  const [modalType, setModalType] = useState<ModalType>(null);
   const [formData, setFormData] = useState<FormData>(new FormData());
 
   const resetForm = () => setFormData(new FormData());
 
-  const openModal = useCallback((type: string) => {
-    setModalType(type);
+  const openModal = useCallback((modalType: ModalType) => {
+    setModalType(modalType);
     setIsOpen(true);
   }, []);
 
@@ -54,6 +67,8 @@ export default function ModalProvider({ children }: ModalProviderProps) {
 
       const form = event.currentTarget as HTMLFormElement;
       const formData = new FormData(form);
+
+      if (!modalType) return;
 
       try {
         if (modalType === "register") {
@@ -83,6 +98,21 @@ export default function ModalProvider({ children }: ModalProviderProps) {
           showSuccess(
             "Connexion réussie !",
             `Bonjour ${response.username} ! Vous êtes maintenant connecté(e).`,
+          );
+        }
+
+        if (isUpdateField(modalType)) {
+          if (!user) return;
+
+          const keys: (keyof UpdateForm)[] = [modalType];
+          const data = formDataToObject<UpdateForm>(formData, keys);
+          const response = await userService.update(user.id, data);
+
+          setUser(response);
+
+          showSuccess(
+            "Mise à jour réussie !",
+            `Vos informations ont été mise à jour avec succès.`,
           );
         }
 

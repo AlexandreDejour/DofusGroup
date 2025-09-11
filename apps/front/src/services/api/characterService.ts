@@ -20,7 +20,7 @@ export class CharacterService {
         if (error.response?.status === 400) {
           throw new Error("Cette action est impossible.");
         } else if (error.response?.status === 404) {
-          throw new Error("Cette évènement n'existe plus.");
+          throw new Error("Ce personnage n'existe plus.");
         }
       }
       throw error;

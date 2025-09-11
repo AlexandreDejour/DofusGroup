@@ -18,7 +18,7 @@ export default function UpdateForm({ field, handleSubmit }: UpdateFormProps) {
     <div className="content_modal">
       <h3 className="content_modal_title">Modifier {label}</h3>
       <form onSubmit={handleSubmit} className="content_modal_form">
-        <label htmlFor="field" className="content_modal_form_label">
+        <label htmlFor={field} className="content_modal_form_label">
           <span>{label.charAt(0).toUpperCase() + label.slice(1)}</span>
           <input
             type={type}

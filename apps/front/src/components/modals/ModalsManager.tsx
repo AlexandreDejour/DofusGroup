@@ -8,6 +8,7 @@ import { useModal } from "../../contexts/modalContext";
 import LoginForm from "./Forms/LoginForm";
 import UpdateForm from "./Forms/UpdateForm";
 import RegisterForm from "./Forms/RegisterForm";
+import NewCharacterForm from "./Forms/NewCharacterForm";
 
 export default function ModalsManager() {
   const { isOpen, modalType, handleSubmit, closeModal } = useModal();
@@ -37,6 +38,10 @@ export default function ModalsManager() {
 
           {["mail", "password", "username"].includes(modalType) && (
             <UpdateForm field={modalType} handleSubmit={handleSubmit} />
+          )}
+
+          {modalType === "newCharacter" && (
+            <NewCharacterForm handleSubmit={(event) => handleSubmit(event)} />
           )}
         </div>
       </div>

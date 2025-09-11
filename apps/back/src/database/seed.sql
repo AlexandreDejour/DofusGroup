@@ -8,14 +8,14 @@ INSERT INTO tags (id, name, color, created_at, updated_at) VALUES
 (gen_random_uuid(), 'Drop', '#16a085', NOW(), NOW()),
 (gen_random_uuid(), 'Quête', '#9b59b6', NOW(), NOW()),
 (gen_random_uuid(), 'AVA', '#f39c12', NOW(), NOW()),
-(gen_random_uuid(), 'Percepteur', '#2c3e50', NOW(), NOW()),
+(gen_random_uuid(), 'Percepteur', '#6D28D9', NOW(), NOW()),
 (gen_random_uuid(), 'Kolizéum', '#f1c40f', NOW(), NOW());
 
 INSERT INTO breeds (id, name, created_at, updated_at) VALUES
 (gen_random_uuid(), 'Cra', NOW(), NOW()),
 (gen_random_uuid(), 'Ecaflip', NOW(), NOW()),
 (gen_random_uuid(), 'Eliotrope', NOW(), NOW()),
-(gen_random_uuid(), 'Enirispa', NOW(), NOW()),
+(gen_random_uuid(), 'Eniripsa', NOW(), NOW()),
 (gen_random_uuid(), 'Enutrof', NOW(), NOW()),
 (gen_random_uuid(), 'Feca', NOW(), NOW()),
 (gen_random_uuid(), 'Forgelance', NOW(), NOW()),

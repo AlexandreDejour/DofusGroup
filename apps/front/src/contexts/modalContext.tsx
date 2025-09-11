@@ -3,19 +3,26 @@ import React, { createContext, useCallback, useContext, useState } from "react";
 import { useAuth } from "./authContext";
 import { useNotification } from "./notificationContext";
 
-import { RegisterForm, LoginForm, UpdateForm } from "../types/form";
+import {
+  RegisterForm,
+  LoginForm,
+  UpdateForm,
+  CreateCharacterForm,
+} from "../types/form";
 
 import { Config } from "../config/config";
 import { ApiClient } from "../services/client";
 import formDataToObject from "./utils/formDataToObject";
 import { AuthService } from "../services/api/authService";
 import { UserService } from "../services/api/userService";
+import { CharacterService } from "../services/api/characterService";
 import isUpdateField from "../components/modals/utils/isUpdateField";
 
 const config = Config.getInstance();
 const axios = new ApiClient(config.baseUrl);
 const authService = new AuthService(axios);
 const userService = new UserService(axios);
+const characterService = new CharacterService(axios);
 
 export interface ModalContextType {
   isOpen: boolean;
@@ -37,6 +44,7 @@ export type ModalType =
   | "mail"
   | "password"
   | "username"
+  | "newCharacter"
   | null;
 
 const ModalContext = createContext<ModalContextType | null>(null);
@@ -113,6 +121,28 @@ export default function ModalProvider({ children }: ModalProviderProps) {
           showSuccess(
             "Mise à jour réussie !",
             `Vos informations ont été mise à jour avec succès.`,
+          );
+        }
+
+        if (modalType === "newCharacter") {
+          if (!user) return;
+
+          const keys: (keyof CreateCharacterForm)[] = [
+            "name",
+            "sex",
+            "level",
+            "alignment",
+            "stuff",
+            "default_character",
+            "breed",
+            "server",
+          ];
+          const data = formDataToObject<CreateCharacterForm>(formData, keys);
+          await characterService.create(user.id, data);
+
+          showSuccess(
+            "Création de personnage réussie !",
+            `Vous avez créer un nouveau personnage.`,
           );
         }
 

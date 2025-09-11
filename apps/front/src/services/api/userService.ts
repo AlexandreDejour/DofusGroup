@@ -1,4 +1,4 @@
-import axios, { Axios } from "axios";
+import axios from "axios";
 
 import { ApiClient } from "../client";
 import { AuthUser, UserEnriched } from "../../types/user";

@@ -143,6 +143,7 @@ export default function Profile() {
               <button
                 type="button"
                 className="profile_section_actions_button button"
+                onClick={() => openModal("newCharacter")}
               >
                 Créer un personnage
               </button>

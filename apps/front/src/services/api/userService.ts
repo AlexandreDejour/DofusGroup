@@ -15,6 +15,21 @@ export class UserService {
     );
   }
 
+  public async getOne(userId: string): Promise<AuthUser> {
+    try {
+      const response = await this.axios.get<AuthUser>(`/user/${userId}`);
+
+      return response.data;
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        if (error.response?.status === 404) {
+          throw new Error("Utilisateur introuvable.");
+        }
+      }
+      throw error;
+    }
+  }
+
   public async getOneEnriched(id: string): Promise<UserEnriched> {
     try {
       const response = await this.axios.get<UserEnriched>(

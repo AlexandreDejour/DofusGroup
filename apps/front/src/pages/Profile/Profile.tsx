@@ -53,7 +53,7 @@ export default function Profile() {
     };
 
     fetchUserEnriched();
-  }, []);
+  }, [user]);
 
   const handleDelete = useCallback(
     async (targetType: string, targetId: string) => {

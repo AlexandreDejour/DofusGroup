@@ -148,7 +148,11 @@ export default function ModalProvider({ children }: ModalProviderProps) {
             booleanKeys,
             numberKeys,
           );
+
           await characterService.create(user.id, data);
+          const response = await userService.getOne(user.id);
+
+          setUser({ ...user, ...response });
 
           showSuccess(
             "Création de personnage réussie !",

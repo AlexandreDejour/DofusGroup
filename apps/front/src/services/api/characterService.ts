@@ -39,6 +39,7 @@ export class CharacterService {
         `/user/${userId}/character/${characterId}`,
         { withCredentials: true },
       );
+
       return response;
     } catch (error) {
       if (axios.isAxiosError(error)) {

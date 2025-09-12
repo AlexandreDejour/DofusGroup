@@ -26,13 +26,15 @@ const characterService = new CharacterService(axios);
 
 export default function Profile() {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, setUser, isAuthLoading } = useAuth();
   const { openModal } = useModal();
   const { showError } = useNotification();
   const [userEnriched, setUserEnriched] = useState<UserEnriched | null>(null);
 
   useEffect(() => {
     const fetchUserEnriched = async () => {
+      if (isAuthLoading) return;
+
       if (!user) {
         navigate("/", { replace: true });
         return;
@@ -53,28 +55,25 @@ export default function Profile() {
     };
 
     fetchUserEnriched();
-  }, [user]);
+  }, [user, isAuthLoading]);
 
   const handleDelete = useCallback(
     async (targetType: string, targetId: string) => {
-      if (!user || !userEnriched) return;
+      if (!user) return;
+
       try {
         if (targetType === "event") {
           await eventService.delete(user.id, targetId);
+          const response = await userService.getOne(user.id);
 
-          setUserEnriched({
-            ...userEnriched,
-            events: userEnriched.events?.filter((e) => e.id !== targetId) || [],
-          });
+          setUser({ ...user, ...response });
         }
 
         if (targetType === "character") {
           await characterService.delete(user.id, targetId);
-          setUserEnriched({
-            ...userEnriched,
-            characters:
-              userEnriched.characters?.filter((c) => c.id !== targetId) || [],
-          });
+          const response = await userService.getOne(user.id);
+
+          setUser({ ...user, ...response });
         }
       } catch (error) {
         if (error instanceof Error) {
@@ -84,7 +83,7 @@ export default function Profile() {
         }
       }
     },
-    [],
+    [user, setUser],
   );
 
   return (

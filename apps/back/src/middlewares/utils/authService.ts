@@ -57,6 +57,8 @@ export class AuthService {
 
     const tokenId = req.userId;
     const paramsId = req.params.userId;
+    console.log("req.user", tokenId);
+    console.log("req.params", paramsId);
 
     if (tokenId !== paramsId) {
       res.status(status.FORBIDDEN).json({ error: "Forbidden access" });

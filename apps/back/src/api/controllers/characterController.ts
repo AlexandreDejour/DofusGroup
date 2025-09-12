@@ -98,6 +98,7 @@ export class CharacterController {
 
   public async post(req: Request, res: Response, next: NextFunction) {
     try {
+      console.log(req.params);
       if (!req.params.userId) {
         res.status(status.BAD_REQUEST).json({ error: "User ID is required" });
         return;

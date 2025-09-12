@@ -16,6 +16,7 @@ const authService = new AuthService(axios);
 export interface AuthContextType {
   user: AuthUser | null;
   setUser: (user: AuthUser | null) => void;
+  isAuthLoading: boolean;
   logout: () => void;
 }
 
@@ -28,6 +29,7 @@ const AuthContext = createContext<AuthContextType | null>(null);
 export default function AuthProvider({ children }: AuthProviderProps) {
   const navigate = useNavigate();
   const [user, setUser] = useState<AuthUser | null>(null);
+  const [isAuthLoading, setIsAuthLoading] = useState<boolean>(true);
   const { showInfo } = useNotification();
 
   useEffect(() => {
@@ -42,6 +44,8 @@ export default function AuthProvider({ children }: AuthProviderProps) {
         } else if (error instanceof Error) {
           console.error("General error:", error.message);
         }
+      } finally {
+        setIsAuthLoading(false);
       }
     };
     fetchUser();
@@ -58,6 +62,7 @@ export default function AuthProvider({ children }: AuthProviderProps) {
   const contextValues: AuthContextType = {
     user,
     setUser,
+    isAuthLoading,
     logout,
   };
 

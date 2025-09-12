@@ -45,7 +45,6 @@ export default function ProfileEventCard({
         <button
           className="character_card_buttons_delete button delete"
           aria-label={`Delete event ${event.title}`}
-          value="event"
           onClick={() => handleDelete("event", event.id)}
         >
           <FontAwesomeIcon icon={faTrash} />

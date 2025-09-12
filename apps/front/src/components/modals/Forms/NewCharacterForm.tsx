@@ -33,7 +33,6 @@ export default function NewCharacterForm({
   const [server, setServer] = useState<string>("");
   const [sex, setSex] = useState<string>("M");
   const [alignment, setAlignment] = useState<string>("");
-  const [isDefault, setIsDefault] = useState<boolean>(false);
 
   useEffect(() => {
     const fetchBreeds = async () => {
@@ -94,7 +93,7 @@ export default function NewCharacterForm({
           onChange={setBreed}
         />
 
-        <GenderRadio name="gender" value={sex} onChange={setSex} />
+        <GenderRadio name="sex" value={sex} onChange={setSex} />
 
         <label
           htmlFor="level"
@@ -142,8 +141,7 @@ export default function NewCharacterForm({
             type="checkbox"
             name="default_character"
             id="default_character"
-            checked={isDefault}
-            onChange={(e) => setIsDefault(e.target.checked)}
+            defaultChecked
             className="content_modal_form_label_input"
           />
         </label>

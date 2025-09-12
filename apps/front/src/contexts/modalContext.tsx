@@ -134,10 +134,20 @@ export default function ModalProvider({ children }: ModalProviderProps) {
             "alignment",
             "stuff",
             "default_character",
-            "breed",
-            "server",
+            "breed_id",
+            "server_id",
           ];
-          const data = formDataToObject<CreateCharacterForm>(formData, keys);
+          const booleanKeys: (keyof CreateCharacterForm)[] = [
+            "default_character",
+          ];
+          const numberKeys: (keyof CreateCharacterForm)[] = ["level"];
+
+          const data = formDataToObject<CreateCharacterForm>(
+            formData,
+            keys,
+            booleanKeys,
+            numberKeys,
+          );
           await characterService.create(user.id, data);
 
           showSuccess(

@@ -32,7 +32,7 @@ export default function Profile() {
   const [userEnriched, setUserEnriched] = useState<UserEnriched | null>(null);
 
   useEffect(() => {
-    const fetchUserExtended = async () => {
+    const fetchUserEnriched = async () => {
       if (!user) {
         navigate("/", { replace: true });
         return;
@@ -52,7 +52,7 @@ export default function Profile() {
       }
     };
 
-    fetchUserExtended();
+    fetchUserEnriched();
   }, []);
 
   const handleDelete = useCallback(

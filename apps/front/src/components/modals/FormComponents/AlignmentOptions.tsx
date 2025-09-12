@@ -18,13 +18,12 @@ export default function AlignmentOptions({
   ];
 
   return (
-    <label htmlFor="server" className="content_modal_form_label">
-      <span>Serveur:</span>
+    <label htmlFor="alignment" className="content_modal_form_label">
+      <span>Alignement:</span>
       <select
         name={name}
-        id="server"
+        id="alignment"
         value={value}
-        required
         onChange={(event) => onChange(event.target.value)}
       >
         <option value="" disabled>

@@ -23,8 +23,8 @@ export default function ServerOptions({
     <label htmlFor="server" className="content_modal_form_label">
       <span>Serveur:</span>
       <select
-        name={name}
-        id="server"
+        id={name}
+        name={`${name}_id`}
         value={value}
         required
         onChange={(event) => onChange(event.target.value)}

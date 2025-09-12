@@ -34,7 +34,7 @@ export default function BreedRadio({
             <input
               type="radio"
               id={opt.value}
-              name={name}
+              name={`${name}_id`}
               value={opt.value}
               required
               className="sr-only"

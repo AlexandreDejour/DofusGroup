@@ -16,6 +16,6 @@ export type CreateCharacterForm = {
   alignment?: string;
   stuff?: string;
   default_character: boolean;
-  breed: string;
-  server: string;
+  breed_id: string;
+  server_id: string;
 };

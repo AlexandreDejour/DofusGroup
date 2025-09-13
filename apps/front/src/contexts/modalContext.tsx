@@ -8,6 +8,7 @@ import {
   LoginForm,
   UpdateForm,
   CreateCharacterForm,
+  CreateEventForm,
 } from "../types/form";
 
 import { Config } from "../config/config";
@@ -15,6 +16,7 @@ import { ApiClient } from "../services/client";
 import formDataToObject from "./utils/formDataToObject";
 import { AuthService } from "../services/api/authService";
 import { UserService } from "../services/api/userService";
+import { EventService } from "../services/api/eventService";
 import { CharacterService } from "../services/api/characterService";
 import isUpdateField from "../components/modals/utils/isUpdateField";
 
@@ -22,6 +24,7 @@ const config = Config.getInstance();
 const axios = new ApiClient(config.baseUrl);
 const authService = new AuthService(axios);
 const userService = new UserService(axios);
+const eventService = new EventService(axios);
 const characterService = new CharacterService(axios);
 
 export interface ModalContextType {
@@ -45,6 +48,7 @@ export type ModalType =
   | "password"
   | "username"
   | "newCharacter"
+  | "newEvent"
   | null;
 
 const ModalContext = createContext<ModalContextType | null>(null);
@@ -157,6 +161,49 @@ export default function ModalProvider({ children }: ModalProviderProps) {
           showSuccess(
             "Création de personnage réussie !",
             `Vous avez créer un nouveau personnage.`,
+          );
+        }
+
+        if (modalType === "newEvent") {
+          if (!user) return;
+
+          const keys: (keyof CreateEventForm)[] = [
+            "title",
+            "date",
+            "duration",
+            "area",
+            "sub_area",
+            "donjon_name",
+            "description",
+            "max_players",
+            "status",
+            "tag_id",
+            "server_id",
+            "characters_id",
+          ];
+          const dateKeys: (keyof CreateEventForm)[] = ["date"];
+          const numberKeys: (keyof CreateEventForm)[] = [
+            "duration",
+            "max_players",
+          ];
+          const arrayKeys: (keyof CreateEventForm)[] = ["characters_id"];
+
+          const data = formDataToObject<CreateEventForm>(
+            formData,
+            keys,
+            dateKeys,
+            numberKeys,
+            arrayKeys,
+          );
+
+          await eventService.create(user.id, data);
+          const response = await userService.getOne(user.id);
+
+          setUser({ ...user, ...response });
+
+          showSuccess(
+            "Création d'évènement réussie !",
+            `Vous avez créer un nouvel évènement.`,
           );
         }
 

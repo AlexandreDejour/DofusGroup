@@ -8,6 +8,7 @@ import { useModal } from "../../contexts/modalContext";
 import LoginForm from "./Forms/LoginForm";
 import UpdateForm from "./Forms/UpdateForm";
 import RegisterForm from "./Forms/RegisterForm";
+import NewEventForm from "./Forms/NewEventForm";
 import NewCharacterForm from "./Forms/NewCharacterForm";
 
 export default function ModalsManager() {
@@ -42,6 +43,10 @@ export default function ModalsManager() {
 
           {modalType === "newCharacter" && (
             <NewCharacterForm handleSubmit={(event) => handleSubmit(event)} />
+          )}
+
+          {modalType === "newEvent" && (
+            <NewEventForm handleSubmit={(event) => handleSubmit(event)} />
           )}
         </div>
       </div>

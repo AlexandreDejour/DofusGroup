@@ -5,15 +5,27 @@ import { CreateCharacterForm } from "../../types/form";
 
 export class CharacterService {
   private axios;
+  private urlRegex;
 
   constructor(axios: ApiClient) {
     this.axios = axios.instance;
+    this.urlRegex = new RegExp("^https://d-bk.net/[^/]+/d/[A-Za-z0-9]{5}$");
   }
 
   public async create(
     userId: string,
     data: CreateCharacterForm,
   ): Promise<Character> {
+    if (!(data.level >= 1 && data.level <= 200)) {
+      throw new Error(
+        "Le niveau de votre personnage doit être compris entre 1 et 200.",
+      );
+    }
+
+    if (data.stuff && !this.urlRegex.test(data.stuff)) {
+      throw new Error("Seules les URL provenant de DofusBook sont acceptées.");
+    }
+
     try {
       const response = await this.axios.post<Character>(
         `/user/${userId}/character`,

@@ -25,7 +25,19 @@ export class CharacterService {
       if (axios.isAxiosError(error)) {
         if (error.response?.status === 400) {
           throw new Error(
+            "Les informations transmises sont érronées ou incomplètes.",
+          );
+        }
+
+        if (error.response?.status === 401) {
+          throw new Error(
             "Vous devez être connecter pour créer un personnage.",
+          );
+        }
+
+        if (error.response?.status === 403) {
+          throw new Error(
+            "La création de personnage est réservée à votre compte.",
           );
         }
       }
@@ -43,8 +55,8 @@ export class CharacterService {
       return response;
     } catch (error) {
       if (axios.isAxiosError(error)) {
-        if (error.response?.status === 400) {
-          throw new Error("Cette action est impossible.");
+        if ([400, 401, 403].includes(error.response?.status ?? 0)) {
+          throw new Error("Cette action n'est pas autorisée.");
         } else if (error.response?.status === 404) {
           throw new Error("Ce personnage n'existe plus.");
         }

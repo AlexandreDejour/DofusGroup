@@ -62,7 +62,7 @@ export class UserService {
       return response.data;
     } catch (error) {
       if (axios.isAxiosError(error)) {
-        if ([400, 401, 404].includes(error.response?.status ?? 0)) {
+        if ([400, 401, 403, 404].includes(error.response?.status ?? 0)) {
           throw new Error("Utilisateur inconnu.");
         }
       }

@@ -69,4 +69,23 @@ export class UserService {
       throw error;
     }
   }
+
+  public async delete(userId: string) {
+    try {
+      const response = await this.axios.delete(`/user/${userId}`, {
+        withCredentials: true,
+      });
+
+      return response;
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        if ([400, 401, 403].includes(error.response?.status ?? 0)) {
+          throw new Error("Cette action n'est pas autorisée.");
+        } else if (error.response?.status === 404) {
+          throw new Error("Cette utilisateur n'existe plus.");
+        }
+      }
+      throw error;
+    }
+  }
 }

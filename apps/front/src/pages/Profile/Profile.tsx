@@ -58,22 +58,28 @@ export default function Profile() {
   }, [user, isAuthLoading]);
 
   const handleDelete = useCallback(
-    async (targetType: string, targetId: string) => {
+    async (targetType: string, targetId?: string) => {
       if (!user) return;
 
       try {
-        if (targetType === "event") {
+        if (targetType === "event" && targetId) {
           await eventService.delete(user.id, targetId);
           const response = await userService.getOne(user.id);
 
           setUser({ ...user, ...response });
         }
 
-        if (targetType === "character") {
+        if (targetType === "character" && targetId) {
           await characterService.delete(user.id, targetId);
           const response = await userService.getOne(user.id);
 
           setUser({ ...user, ...response });
+        }
+
+        if (targetType === "user") {
+          await userService.delete(user.id);
+
+          setUser(null);
         }
       } catch (error) {
         if (error instanceof Error) {
@@ -130,12 +136,14 @@ export default function Profile() {
               <button
                 type="button"
                 className="profile_section_actions_button button delete"
+                onClick={() => handleDelete("user")}
               >
                 Supprimer mon compte
               </button>
               <button
                 type="button"
                 className="profile_section_actions_button button"
+                onClick={() => openModal("newEvent")}
               >
                 Créer un évènement
               </button>

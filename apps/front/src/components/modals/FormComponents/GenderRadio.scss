@@ -20,6 +20,35 @@
     &_label {
       width: 15%;
       margin: 1%;
+      border-radius: 0.5rem;
+
+      &_icon {
+        font-size: 2rem;
+        padding: 20%;
+        border-radius: 0.5rem;
+      }
+
+      &_icon:hover {
+        cursor: pointer;
+      }
+
+      .mars:hover {
+        border: 2px solid var(--male-hover-border);
+      }
+
+      .venus:hover {
+        border: 2px solid var(--female-hover-border);
+      }
+
+      input:checked + .mars {
+        border: 2px solid var(--male-hover-border);
+        border-radius: 0.5rem;
+      }
+
+      input:checked + .venus {
+        border: 2px solid var(--female-hover-border);
+        border-radius: 0.5rem;
+      }
     }
   }
 }

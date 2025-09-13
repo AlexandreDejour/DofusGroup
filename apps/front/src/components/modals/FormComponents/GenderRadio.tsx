@@ -18,12 +18,22 @@ export default function GenderRadio({
     {
       value: "M",
       label: "Mâle",
-      icon: <FontAwesomeIcon icon={faMars} style={{ fontSize: "2rem" }} />,
+      icon: (
+        <FontAwesomeIcon
+          icon={faMars}
+          className="gender_choices_label_icon mars"
+        />
+      ),
     },
     {
       value: "F",
       label: "Femelle",
-      icon: <FontAwesomeIcon icon={faVenus} style={{ fontSize: "2rem" }} />,
+      icon: (
+        <FontAwesomeIcon
+          icon={faVenus}
+          className="gender_choices_label_icon venus"
+        />
+      ),
     },
   ];
 
@@ -37,17 +47,17 @@ export default function GenderRadio({
             htmlFor={opt.value}
             className="gender_choices_label"
           >
-            {opt.icon}
             <input
               type="radio"
               id={opt.value}
               name={name}
               value={opt.value}
               required
-              className="gender_choices_label_input"
+              className="sr-only"
               checked={value === opt.value}
               onChange={() => onChange(opt.value)}
             />
+            {opt.icon}
             <span className="sr-only">{opt.label}</span>
           </label>
         ))}

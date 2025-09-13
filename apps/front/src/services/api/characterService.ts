@@ -12,6 +12,25 @@ export class CharacterService {
     this.urlRegex = new RegExp("^https://d-bk.net/[^/]+/d/[A-Za-z0-9]{5}$");
   }
 
+  public async getAllByUserId(userId: string): Promise<Character[]> {
+    try {
+      const response = await this.axios.get<Character[]>(
+        `/user/${userId}/characters`,
+      );
+
+      return response.data;
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        if (error.response?.status === 204) {
+          throw new Error(
+            "Vous n'avez créé aucun personnage sur votre compte.",
+          );
+        }
+      }
+      throw error;
+    }
+  }
+
   public async create(
     userId: string,
     data: CreateCharacterForm,

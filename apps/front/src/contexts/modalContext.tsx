@@ -90,7 +90,7 @@ export default function ModalProvider({ children }: ModalProviderProps) {
             "password",
             "confirmPassword",
           ];
-          const data = formDataToObject<RegisterForm>(formData, keys);
+          const data = formDataToObject<RegisterForm>(formData, { keys });
           await authService.register(data);
 
           showSuccess(
@@ -102,7 +102,7 @@ export default function ModalProvider({ children }: ModalProviderProps) {
 
         if (modalType === "login") {
           const keys: (keyof LoginForm)[] = ["username", "password"];
-          const data = formDataToObject<LoginForm>(formData, keys);
+          const data = formDataToObject<LoginForm>(formData, { keys });
           const response = await authService.login(data);
 
           setUser(response);
@@ -117,7 +117,7 @@ export default function ModalProvider({ children }: ModalProviderProps) {
           if (!user) return;
 
           const keys: (keyof UpdateForm)[] = [modalType];
-          const data = formDataToObject<UpdateForm>(formData, keys);
+          const data = formDataToObject<UpdateForm>(formData, { keys });
           const response = await userService.update(user.id, data);
 
           setUser(response);
@@ -146,12 +146,11 @@ export default function ModalProvider({ children }: ModalProviderProps) {
           ];
           const numberKeys: (keyof CreateCharacterForm)[] = ["level"];
 
-          const data = formDataToObject<CreateCharacterForm>(
-            formData,
+          const data = formDataToObject<CreateCharacterForm>(formData, {
             keys,
             booleanKeys,
             numberKeys,
-          );
+          });
 
           await characterService.create(user.id, data);
           const response = await userService.getOne(user.id);
@@ -188,13 +187,12 @@ export default function ModalProvider({ children }: ModalProviderProps) {
           ];
           const arrayKeys: (keyof CreateEventForm)[] = ["characters_id"];
 
-          const data = formDataToObject<CreateEventForm>(
-            formData,
+          const data = formDataToObject<CreateEventForm>(formData, {
             keys,
             dateKeys,
             numberKeys,
             arrayKeys,
-          );
+          });
 
           await eventService.create(user.id, data);
           const response = await userService.getOne(user.id);

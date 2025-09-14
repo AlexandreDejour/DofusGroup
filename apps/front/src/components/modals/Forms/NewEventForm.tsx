@@ -158,14 +158,29 @@ export default function NewEventForm({ handleSubmit }: NewEventFormProps) {
     const fetchDungeons = async () => {
       const selectedTag = tags.find((t) => t.id === tag);
 
-      if (!selectedTag || selectedTag.name !== "Donjon") return;
+      if (!selectedTag || selectedTag.name !== "Donjon") {
+        setIsDungeon(false);
+        return;
+      }
 
       setIsDungeon(true);
 
       try {
-        const response = await dofusDBService.getDungeons();
-        console.log(response);
-        setDungeons(response);
+        if (subArea) {
+          const selectedSubArea = subAreas.find((s) => s.name.fr === subArea);
+
+          if (!selectedSubArea) return;
+
+          const response = await dofusDBService.getDungeons(
+            selectedSubArea.dungeonId,
+          );
+
+          setDungeons(response);
+        } else {
+          const response = await dofusDBService.getDungeons();
+
+          setDungeons(response);
+        }
       } catch (error) {
         if (isAxiosError(error)) {
           showError("Erreur", error.message);
@@ -177,7 +192,7 @@ export default function NewEventForm({ handleSubmit }: NewEventFormProps) {
     };
 
     fetchDungeons();
-  }, [tag]);
+  }, [tag, subArea]);
 
   return (
     <div className="content_modal">

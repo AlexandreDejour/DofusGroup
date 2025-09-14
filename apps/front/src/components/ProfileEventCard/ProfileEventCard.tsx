@@ -28,8 +28,9 @@ export default function ProfileEventCard({
         {event.tag.name}
       </p>
       <p className="event_card_date">
-        {new Date(event.date).toLocaleString("fr-FR", {
-          timeZone: "UTC",
+        {new Date(event.date).toLocaleString(undefined, {
+          dateStyle: "short",
+          timeStyle: "short",
         })}
       </p>
       <p className="event_card_players">

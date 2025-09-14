@@ -39,9 +39,9 @@ export default function NewCharacterForm({
   const [alignment, setAlignment] = useState<string>("");
 
   const alignments = [
-    { name: "Bonta" },
-    { name: "Brâkmar" },
-    { name: "Neutre" },
+    { id: 1, name: "Bonta" },
+    { id: 2, name: "Brâkmar" },
+    { id: 3, name: "Neutre" },
   ];
 
   useEffect(() => {

@@ -2,17 +2,17 @@ import "./SelectOptions.scss";
 
 import { BaseOptions } from "../../utils/generateOptions";
 
-interface SelectOptionsProps<T> {
+interface SelectOptionsProps<T, ID extends string | number> {
   name: string;
   value: string;
   items: T[];
-  generateOptions: (items: T[]) => BaseOptions[];
+  generateOptions: (items: T[]) => BaseOptions<ID>[];
   label: string;
   placeholder?: string;
   onChange: (value: string) => void;
 }
 
-export default function SelectOptions<T>({
+export default function SelectOptions<T, ID extends string | number>({
   name,
   value,
   items,
@@ -20,7 +20,7 @@ export default function SelectOptions<T>({
   label,
   placeholder,
   onChange,
-}: SelectOptionsProps<T>) {
+}: SelectOptionsProps<T, ID>) {
   const options = generateOptions(items);
 
   return (
@@ -30,14 +30,13 @@ export default function SelectOptions<T>({
         id={name}
         name={`${name}_id`}
         value={value}
-        required
         onChange={(e) => onChange(e.target.value)}
       >
         <option value="" disabled>
           {placeholder ?? `Sélectionnez ${label.toLowerCase()}`}
         </option>
         {options.map((opt) => (
-          <option key={opt.value} value={opt.value}>
+          <option key={opt.id} value={opt.value}>
             {opt.label}
           </option>
         ))}

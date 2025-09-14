@@ -1,20 +1,26 @@
+import "../Form.scss";
+
 import { useEffect, useState } from "react";
 import { isAxiosError } from "axios";
-import { useNotification } from "../../../contexts/notificationContext";
-import "../Form.scss";
+
+import { Tag } from "../../../types/tag";
+import { Server } from "../../../types/server";
+import { Character } from "../../../types/character";
 import { Area, Dungeon, SubArea } from "../../../types/dofusDB";
-import { DofusDBService } from "../../../services/api/dofusDBService";
+
+import { useAuth } from "../../../contexts/authContext";
+import { useNotification } from "../../../contexts/notificationContext";
+
 import { Config } from "../../../config/config";
 import { ApiClient } from "../../../services/client";
-import SelectOptions from "../FormComponents/Options/SelectOptions";
 import { generateOptions } from "../utils/generateOptions";
-import { Tag } from "../../../types/tag";
 import { TagService } from "../../../services/api/tagService";
-import { Server } from "../../../types/server";
 import { ServerService } from "../../../services/api/serverService";
-import { Character } from "../../../types/character";
+import { DofusDBService } from "../../../services/api/dofusDBService";
 import { CharacterService } from "../../../services/api/characterService";
-import { useAuth } from "../../../contexts/authContext";
+import formatDateToLocalInput from "../utils/formatDateToLocalInput";
+
+import SelectOptions from "../FormComponents/Options/SelectOptions";
 import CharactersOptions from "../FormComponents/Options/CharacterOptions";
 
 const config = Config.getInstance();
@@ -31,27 +37,30 @@ interface NewEventFormProps {
 export default function NewEventForm({ handleSubmit }: NewEventFormProps) {
   const { user } = useAuth();
   const { showError } = useNotification();
+
   const [tags, setTags] = useState<Tag[]>([]);
-  const [tag, setTag] = useState<string>("");
+  const [areas, setAreas] = useState<Area[]>([]);
   const [servers, setServers] = useState<Server[]>([]);
-  const [server, setServer] = useState<string>("");
+  const [subAreas, setSubAreas] = useState<SubArea[]>([]);
+  const [dungeons, setDungeons] = useState<Dungeon[]>([]);
   const [characters, setCharacters] = useState<Character[]>([]);
+
+  const [tag, setTag] = useState<string>("");
+  const [date, setDate] = useState<string>("");
+  const [area, setArea] = useState<string>("");
+  const [status, setStatus] = useState<string>("");
+  const [server, setServer] = useState<string>("");
+  const [subArea, setSubArea] = useState<string>("");
+  const [dungeon, setDungeon] = useState<string>("");
   const [registeredCharacters, setRegisteredCharacters] = useState<string[]>(
     [],
   );
-  const [areas, setAreas] = useState<Area[]>([]);
-  const [area, setArea] = useState<string>("");
-  const [subAreas, setSubAreas] = useState<SubArea[]>([]);
-  const [subArea, setSubArea] = useState<string>("");
-  const [dungeons, setDungeons] = useState<Dungeon[]>([]);
-  const [dungeon, setDungeon] = useState<string>("");
+
   const [isDungeon, setIsDungeon] = useState(false);
 
-  const [status, setStatus] = useState<string>("");
-
   const statutes = [
-    { label: "Privé", value: "private" },
-    { label: "Public", value: "public" },
+    { id: 1, label: "Privé", value: "private" },
+    { id: 2, label: "Public", value: "public" },
   ];
 
   useEffect(() => {
@@ -137,6 +146,8 @@ export default function NewEventForm({ handleSubmit }: NewEventFormProps) {
       }
     };
 
+    setDate(formatDateToLocalInput(new Date()));
+
     fetchTags();
     fetchServers();
     fetchCharacters();
@@ -205,12 +216,14 @@ export default function NewEventForm({ handleSubmit }: NewEventFormProps) {
         <label htmlFor="date" className="content_modal_form_label">
           <span>Date:</span>
           <input
-            type="datetime-locale"
+            type="datetime-local"
             name="date"
             id="date"
-            value={new Date().toISOString().slice(0, 16)}
+            value={date}
+            min={formatDateToLocalInput(new Date())}
             required
             className="content_modal_form_label_input"
+            onChange={(e) => setDate(e.target.value)}
           />
         </label>
 
@@ -269,10 +282,10 @@ export default function NewEventForm({ handleSubmit }: NewEventFormProps) {
 
         <label htmlFor="description" className="content_modal_form_label">
           <span>Description:</span>
-          <input
-            type="textarea"
+          <textarea
             name="description"
             id="description"
+            rows={3}
             placeholder="Description"
             className="content_modal_form_label_input"
           />
@@ -283,7 +296,7 @@ export default function NewEventForm({ handleSubmit }: NewEventFormProps) {
           value={registeredCharacters}
           items={characters}
           generateOptions={generateOptions.characters}
-          label="Vos personnages isncrits"
+          label="Vos personnages inscrits"
           onChange={setRegisteredCharacters}
         />
 

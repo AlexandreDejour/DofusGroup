@@ -2,25 +2,23 @@ import "./SelectOptions.scss";
 
 import { BaseOptions } from "../../utils/generateOptions";
 
-interface CharactersOptionsProps<T> {
+interface CharactersOptionsProps<T, ID extends string | number> {
   name: string;
   value: string[];
   items: T[];
-  generateOptions: (items: T[]) => BaseOptions[];
+  generateOptions: (items: T[]) => BaseOptions<ID>[];
   label: string;
-  placeholder?: string;
   onChange: (value: string[]) => void;
 }
 
-export default function CharactersOptions<T>({
+export default function CharactersOptions<T, ID extends string | number>({
   name,
   value,
   items,
   generateOptions,
   label,
-  placeholder,
   onChange,
-}: CharactersOptionsProps<T>) {
+}: CharactersOptionsProps<T, ID>) {
   const options = generateOptions(items);
 
   return (
@@ -39,9 +37,6 @@ export default function CharactersOptions<T>({
           onChange(selectedOptions);
         }}
       >
-        <option value="" disabled>
-          {placeholder ?? `Sélectionnez ${label.toLowerCase()}`}
-        </option>
         {options.map((opt) => (
           <option key={opt.value} value={opt.value}>
             {opt.label}

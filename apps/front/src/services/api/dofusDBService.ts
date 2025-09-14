@@ -33,7 +33,7 @@ export class DofusDBService {
   public async getSubAreas(areaId: number): Promise<SubArea[]> {
     const params: Record<string, number> = {};
     params["areaId"] = areaId;
-    params["$limit"] = 20;
+    params["$limit"] = 50;
 
     try {
       const response = await this.axios.get("https://api.dofusdb.fr/subareas", {
@@ -54,18 +54,37 @@ export class DofusDBService {
     }
   }
 
-  public async getDungeons(dungeonId?: number): Promise<Dungeon[]> {
+  public async getDungeons(): Promise<Dungeon[]> {
+    const limit = 50; // max API rule
+    let skip = 0;
+    let allDungeons: Dungeon[] = [];
+    let hasMore = true;
+
     try {
-      const response = await this.axios.get("https://api.dofusdb.fr/dungeons");
+      while (hasMore) {
+        const response = await this.axios.get(
+          "https://api.dofusdb.fr/dungeons",
+          {
+            params: {
+              $limit: limit,
+              $skip: skip,
+            },
+          },
+        );
 
-      const dungeons: Dungeon[] = response.data.data.map(
-        (dungeon: Dungeon) => ({
-          id: dungeon.id,
-          name: dungeon.name,
-        }),
-      );
+        const dungeons: Dungeon[] = response.data.data.map((d: Dungeon) => ({
+          id: d.id,
+          name: d.name,
+        }));
 
-      return dungeons;
+        allDungeons = [...allDungeons, ...dungeons];
+
+        // if less than "limit" => more data
+        hasMore = dungeons.length === limit;
+        skip += limit;
+      }
+
+      return allDungeons;
     } catch (error) {
       throw error;
     }

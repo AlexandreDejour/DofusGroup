@@ -1,49 +1,79 @@
 import DOMPurify from "dompurify";
 
-export default function formDataToObject<
-  T extends Record<
-    string,
-    string | string[] | number | boolean | Date | undefined
-  >,
->(
+export default function formDataToObject<T extends Record<string, any>>(
   formData: FormData,
-  keys: (keyof T)[],
-  booleanKeys: (keyof T)[] = [],
-  numberKeys: (keyof T)[] = [],
-  dateKeys: (keyof T)[] = [],
-  arrayKeys: (keyof T)[] = [],
+  {
+    keys,
+    booleanKeys = [],
+    numberKeys = [],
+    dateKeys = [],
+    arrayKeys = [],
+  }: {
+    keys: (keyof T)[];
+    booleanKeys?: (keyof T)[];
+    numberKeys?: (keyof T)[];
+    dateKeys?: (keyof T)[];
+    arrayKeys?: (keyof T)[];
+  },
 ): T {
-  const obj = Object.fromEntries(formData) as Record<string, string>;
+  // entries sous forme [key, value] (value peut être string ou File)
+  const entries = Array.from(formData.entries());
+  const obj = entries.reduce<Record<string, FormDataEntryValue>>(
+    (acc, [k, v]) => {
+      // si plusieurs valeurs pour la même clé, Object.fromEntries garderait la dernière,
+      // on utilisera getAll pour arrayKeys quand nécessaire.
+      acc[k] = v;
+      return acc;
+    },
+    {},
+  );
+
   const result: Partial<T> = {};
 
   keys.forEach((key) => {
+    const k = key as string;
+
     if (booleanKeys.includes(key)) {
-      // For checkbox, key exist if checked, else missing
-      (result as any)[key] = formData.has(key as string);
-    } else if (numberKeys.includes(key)) {
-      const raw = obj[key as string];
-      if (raw !== undefined && raw !== "") {
-        (result as any)[key] = Number(DOMPurify.sanitize(raw));
+      (result as any)[key] = formData.has(k);
+      return;
+    }
+
+    if (arrayKeys.includes(key)) {
+      const rawValues = formData
+        .getAll(k)
+        .map((v) => (typeof v === "string" ? DOMPurify.sanitize(v) : v));
+      (result as any)[key] = rawValues.filter((val) => val !== "");
+      return;
+    }
+
+    const raw = obj[k];
+
+    if (raw === undefined || raw === "") {
+      return;
+    }
+
+    if (numberKeys.includes(key)) {
+      if (typeof raw === "string") {
+        const safe = DOMPurify.sanitize(raw);
+        (result as any)[key] = Number(safe);
       }
-      // else, don't add key
-    } else if (dateKeys.includes(key)) {
-      const raw = obj[key as string];
-      if (raw !== undefined && raw !== "") {
-        // on sanitize puis on crée un Date
+      return;
+    }
+
+    if (dateKeys.includes(key)) {
+      if (typeof raw === "string") {
         const safe = DOMPurify.sanitize(raw);
         (result as any)[key] = new Date(safe);
       }
-    } else if (arrayKeys.includes(key)) {
-      const rawValues = formData.getAll(key as string);
-      (result as any)[key] = rawValues
-        .map((val) => DOMPurify.sanitize(val as string))
-        .filter((val) => val !== ""); // clean & ignore vides
+      return;
+    }
+
+    // Default : string or File
+    if (typeof raw === "string") {
+      (result as any)[key] = DOMPurify.sanitize(raw);
     } else {
-      const raw = obj[key as string];
-      if (raw !== undefined && raw !== "") {
-        (result as any)[key] = DOMPurify.sanitize(raw);
-      }
-      // else, don't add key
+      // File (input type="file") ou autre
+      (result as any)[key] = raw;
     }
   });
 

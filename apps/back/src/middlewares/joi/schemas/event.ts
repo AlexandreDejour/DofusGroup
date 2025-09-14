@@ -21,22 +21,22 @@ export const createEventSchema: Joi.ObjectSchema = Joi.object({
     "any.required": "Duration is required",
   }),
   area: Joi.string().min(1).max(50).optional().allow(null).messages({
-    "string.base": "Max players must be a string",
+    "string.base": "Area must be a string",
     "string.min": "Area must be at least 1 character long",
     "string.max": "Area must be at most 50 characterss",
   }),
   sub_area: Joi.string().min(1).max(50).optional().allow(null).messages({
-    "string.base": "Max players must be a string",
+    "string.base": "Sub area must be a string",
     "string.min": "Sub area must be at least 1 character long",
     "string.max": "Sub area must be at most 50 characterss",
   }),
   donjon_name: Joi.string().min(1).max(50).optional().allow(null).messages({
-    "string.base": "Max players must be a string",
+    "string.base": "Donjon name must be a string",
     "string.min": "Donjon name must be at least 1 character long",
     "string.max": "Donjon name must be at most 50 characterss",
   }),
   description: Joi.string().min(1).max(255).optional().allow(null).messages({
-    "string.base": "Max players must be a string",
+    "string.base": "Description must be a string",
     "string.min": "Description must be at least 1 character long",
     "string.max": "Description must be at most 255 characters",
   }),
@@ -54,9 +54,9 @@ export const createEventSchema: Joi.ObjectSchema = Joi.object({
       "string.base": "Status must be a string",
     }),
   tag_id: Joi.string().guid({ version: "uuidv4" }).required().messages({
-    "string.guid": "User ID must be a valid UUID v4",
-    "any.required": "User ID is required",
-    "string.base": "User ID must be a string",
+    "string.guid": "Tag ID must be a valid UUID v4",
+    "any.required": "Tag ID is required",
+    "string.base": "Tag ID must be a string",
   }),
   server_id: Joi.string().guid({ version: "uuidv4" }).required().messages({
     "string.guid": "Server ID must be a valid UUID v4",

@@ -31,6 +31,13 @@ export class EventService {
   }
 
   public async create(userId: string, data: CreateEventForm): Promise<Event> {
+    if (!data.server_id) throw new Error("Vous devez renseigner un serveur.");
+
+    if (!data.tag_id) throw new Error("Vous devez renseigner un tag.");
+
+    if (!(data.max_players >= 2 && data.max_players <= 8))
+      throw new Error("Le nombre de joueurs doit être compris entre 2 et 8.");
+
     try {
       const response = await this.axios.post<Event>(
         `/user/${userId}/event`,

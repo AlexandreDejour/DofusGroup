@@ -2,16 +2,16 @@ import { describe, it, beforeEach, expect, vi } from "vitest";
 
 import axios from "axios";
 
-import { Breed } from "../../../types/breed";
+import { Tag } from "../../../types/tag";
 
 import { ApiClient } from "../../client";
-import { BreedService } from "../breedService";
+import { TagService } from "../tagService";
 
 vi.mock("axios");
 
-describe("BreedService", () => {
+describe("TagService", () => {
   let apiClientMock: any;
-  let breedService: BreedService;
+  let tagService: TagService;
 
   beforeEach(() => {
     apiClientMock = {
@@ -19,23 +19,22 @@ describe("BreedService", () => {
         get: vi.fn(),
       },
     };
-    breedService = new BreedService(apiClientMock as ApiClient);
+    tagService = new TagService(apiClientMock as ApiClient);
     vi.mocked(axios.isAxiosError).mockReturnValue(false);
   });
 
-  describe("getBreeds", () => {
+  describe("getTags", () => {
     it("should call axios.get with the correct URL on success", async () => {
-      // Données de mock pour une réponse réussie
-      const mockBreeds: Breed[] = [
-        { id: "123", name: "Iop" },
-        { id: "456", name: "Cra" },
+      const mockTags: Tag[] = [
+        { id: "123", name: "Donjon", color: "#0000" },
+        { id: "456", name: "XP", color: "#ffff" },
       ];
-      apiClientMock.instance.get.mockResolvedValue({ data: mockBreeds });
+      apiClientMock.instance.get.mockResolvedValue({ data: mockTags });
 
-      const result = await breedService.getBreeds();
+      const result = await tagService.getTags();
 
-      expect(apiClientMock.instance.get).toHaveBeenCalledWith("/breeds");
-      expect(result).toEqual(mockBreeds);
+      expect(apiClientMock.instance.get).toHaveBeenCalledWith("/tags");
+      expect(result).toEqual(mockTags);
     });
 
     it("should throw a specific error if response status is 204", async () => {
@@ -47,8 +46,8 @@ describe("BreedService", () => {
       vi.mocked(axios.isAxiosError).mockReturnValue(true);
       apiClientMock.instance.get.mockRejectedValue(axiosError);
 
-      await expect(breedService.getBreeds()).rejects.toThrow(
-        "Aucune classe disponible.",
+      await expect(tagService.getTags()).rejects.toThrow(
+        "Aucun tag disponible.",
       );
     });
 
@@ -56,7 +55,7 @@ describe("BreedService", () => {
       const genericError = new Error("Network error");
       apiClientMock.instance.get.mockRejectedValue(genericError);
 
-      await expect(breedService.getBreeds()).rejects.toThrow("Network error");
+      await expect(tagService.getTags()).rejects.toThrow("Network error");
     });
   });
 });

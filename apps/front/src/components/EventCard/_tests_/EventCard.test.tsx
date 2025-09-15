@@ -62,6 +62,13 @@ const renderEventCard = (event = mockEvent) =>
 describe("EventCard", () => {
   beforeEach(() => {
     mockNavigate.mockReset();
+    vi.spyOn(Date.prototype, "toLocaleString").mockReturnValue(
+      "17/08/2025 12:00",
+    );
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
   });
 
   it("Display event title", () => {
@@ -83,7 +90,8 @@ describe("EventCard", () => {
 
   it("Display date", () => {
     renderEventCard();
-    expect(screen.getByText("17/08/2025 12:00:00")).toBeInTheDocument();
+    expect(screen.getByText("17/08/2025 12:00")).toBeInTheDocument();
+    expect(Date.prototype.toLocaleString).toHaveBeenCalled();
   });
 
   it("Display Duration", () => {

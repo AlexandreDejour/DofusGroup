@@ -5,6 +5,7 @@ import { useNotification } from "../../../contexts/notificationContext";
 
 import { BreedRadioProps } from "../FormComponents/Radio/BreedRadio";
 import { GenderRadioProps } from "../FormComponents/Radio/GenderRadio";
+import { SelectOptionsProps } from "../FormComponents/Options/SelectOptions";
 
 import NewCharacterForm from "../Forms/NewCharacterForm";
 import * as BreedService from "../../../services/api/breedService";
@@ -53,7 +54,7 @@ vi.mock("../FormComponents/Radio/GenderRadio", () => ({
 }));
 
 vi.mock("../FormComponents/Options/SelectOptions", () => ({
-  default: ({ name, onChange, value, label }: any) => (
+  default: ({ name, onChange, value, label }: SelectOptionsProps<any, any>) => (
     // Le data-testid est maintenant unique pour chaque SelectOptions
     <div data-testid={`select-options-${name}`}>
       <label>{label}</label>

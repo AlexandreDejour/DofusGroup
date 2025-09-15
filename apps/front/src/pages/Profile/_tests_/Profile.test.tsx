@@ -1,11 +1,61 @@
-import { render, screen, waitFor } from "@testing-library/react";
-import { describe, vi } from "vitest";
+import {
+  render,
+  screen,
+  waitFor,
+  act,
+  fireEvent,
+} from "@testing-library/react";
+import { describe, it, vi, beforeEach, afterEach } from "vitest";
 import { MemoryRouter } from "react-router-dom";
 
-// Mock useAuth
+// Mock des services
+let deleteEventMock: any;
+let deleteCharacterMock: any;
+let deleteUserMock: any;
+let getOneMock: any;
+let getOneEnrichedMock: any;
+
+// Mock config
+vi.mock("../../../config/config.ts", () => ({
+  Config: {
+    getInstance: () => ({
+      baseUrl: "http://localhost",
+    }),
+  },
+}));
+
+// Mock useAuth (méthode simplifiée)
 vi.mock("../../../contexts/authContext", () => ({
+  __esModule: true,
   useAuth: () => ({
-    user: { id: "15ff46b5-60f3-4e86-98bc-da8fcaa3e29e", username: "toto" },
+    user: {
+      id: "15ff46b5-60f3-4e86-98bc-da8fcaa3e29e",
+      username: "toto",
+      characters: [
+        {
+          id: "9f0eaa8c-eec1-4e85-9365-7653c1330325",
+          name: "Chronos",
+        },
+      ],
+      events: [
+        {
+          id: "ef9891a6-dcab-4846-8f9c-2044efe2096c",
+          title: "Rafle perco",
+        },
+      ],
+    },
+    setUser: vi.fn(),
+    isAuthLoading: false,
+  }),
+}));
+
+// Mock useModal
+const openModal = vi.fn();
+vi.mock("../../../contexts/modalContext", () => ({
+  __esModule: true,
+  default: ({ children }: { children: React.ReactNode }) => children,
+  useModal: () => ({
+    openModal,
   }),
 }));
 
@@ -19,15 +69,6 @@ vi.mock("../../../contexts/notificationContext", () => ({
   }),
 }));
 
-// Mock config
-vi.mock("../../../config/config.ts", () => ({
-  Config: {
-    getInstance: () => ({
-      baseUrl: "http://localhost",
-    }),
-  },
-}));
-
 // Mock useNavigate de react-router
 const mockNavigate = vi.fn();
 vi.mock("react-router", async (importOriginal) => {
@@ -38,9 +79,35 @@ vi.mock("react-router", async (importOriginal) => {
   };
 });
 
+vi.mock("../../../services/api/eventService", () => {
+  return {
+    EventService: vi.fn().mockImplementation(() => ({
+      delete: (...args: any[]) => deleteEventMock(...args),
+    })),
+  };
+});
+
+vi.mock("../../../services/api/characterService", () => {
+  return {
+    CharacterService: vi.fn().mockImplementation(() => ({
+      delete: (...args: any[]) => deleteCharacterMock(...args),
+    })),
+  };
+});
+
+vi.mock("../../../services/api/userService", () => {
+  return {
+    UserService: vi.fn().mockImplementation(() => ({
+      getOneEnriched: (...args: any[]) => getOneEnrichedMock(...args),
+      getOne: (...args: any[]) => getOneMock(...args),
+      delete: (...args: any[]) => deleteUserMock(...args),
+    })),
+  };
+});
+
 // Mock ProfileEventCard
 vi.mock("../../../components/ProfileEventCard/ProfileEventCard", () => ({
-  default: ({ event }: any) => (
+  default: ({ event, handleDelete }: any) => (
     <section data-testid="event-card">
       <h3>{event.title}</h3>
       <p data-testid="event-tag">{event.tag.name}</p>
@@ -52,7 +119,8 @@ vi.mock("../../../components/ProfileEventCard/ProfileEventCard", () => ({
       </p>
       <div>
         <button>Détails</button>
-        <button>Delete</button>
+        {/* Pass the handleDelete prop and call it with the correct arguments */}
+        <button onClick={() => handleDelete("event", event.id)}>Delete</button>
       </div>
     </section>
   ),
@@ -60,28 +128,21 @@ vi.mock("../../../components/ProfileEventCard/ProfileEventCard", () => ({
 
 // Mock CharacterCard
 vi.mock("../../../components/CharacterCard/CharacterCard", () => ({
-  default: ({ character }: any) => (
+  default: ({ character, handleDelete }: any) => (
     <section data-testid="character-card">
       <h3 data-testid="character-name">{character.name}</h3>
       <p data-testid="character-breed">{character.breed?.name}</p>
       <p data-testid="character-level">niveau: {character.level}</p>
       <div>
         <button>Détails</button>
-        <button>Delete</button>
+        {/* Pass the handleDelete prop and call it with the correct arguments */}
+        <button onClick={() => handleDelete("character", character.id)}>
+          Delete
+        </button>
       </div>
     </section>
   ),
 }));
-
-// Mock UserService
-let getOneEnrichedMock: any;
-vi.mock("../../../services/api/userService", () => {
-  return {
-    UserService: vi.fn().mockImplementation(() => ({
-      getOneEnriched: (...args: any[]) => getOneEnrichedMock(...args),
-    })),
-  };
-});
 
 import Profile from "../Profile";
 import NotificationProvider from "../../../contexts/notificationContext";
@@ -97,6 +158,13 @@ const renderProfile = () => {
 };
 
 describe("Profile Page", () => {
+  const mockUserAfterDelete = {
+    id: "15ff46b5-60f3-4e86-98bc-da8fcaa3e29e",
+    username: "toto",
+    events: [],
+    characters: [],
+  };
+
   beforeEach(() => {
     getOneEnrichedMock = vi.fn().mockResolvedValue({
       id: "15ff46b5-60f3-4e86-98bc-da8fcaa3e29e",
@@ -175,7 +243,12 @@ describe("Profile Page", () => {
         },
       ],
     });
+    getOneMock = vi.fn().mockResolvedValue(mockUserAfterDelete);
+    deleteEventMock = vi.fn().mockResolvedValue({});
+    deleteCharacterMock = vi.fn().mockResolvedValue({});
+    deleteUserMock = vi.fn().mockResolvedValue({});
     showError.mockClear();
+    openModal.mockClear();
     mockNavigate.mockClear();
   });
 
@@ -211,6 +284,53 @@ describe("Profile Page", () => {
     });
   });
 
+  it("should open modals for different actions when buttons are clicked", async () => {
+    renderProfile();
+
+    await waitFor(() => {
+      expect(getOneEnrichedMock).toHaveBeenCalled();
+    });
+
+    const editUsernameButton = screen.getByRole("button", {
+      name: "Modifier le pseudo",
+    });
+    const createEventButton = screen.getByRole("button", {
+      name: "Créer un évènement",
+    });
+
+    await act(async () => {
+      fireEvent.click(editUsernameButton);
+    });
+
+    expect(openModal).toHaveBeenCalledWith("username");
+
+    await act(async () => {
+      fireEvent.click(createEventButton);
+    });
+
+    expect(openModal).toHaveBeenCalledWith("newEvent");
+  });
+
+  it("should delete the user account and log out", async () => {
+    renderProfile();
+
+    await waitFor(() => {
+      expect(screen.getByText("Pseudo: toto")).toBeInTheDocument();
+    });
+
+    const deleteAccountButton = screen.getByRole("button", {
+      name: "Supprimer mon compte",
+    });
+
+    await act(async () => {
+      fireEvent.click(deleteAccountButton);
+    });
+
+    expect(deleteUserMock).toHaveBeenCalledWith(
+      "15ff46b5-60f3-4e86-98bc-da8fcaa3e29e",
+    );
+  });
+
   it("Display events list after API call", async () => {
     renderProfile();
 
@@ -228,6 +348,26 @@ describe("Profile Page", () => {
     });
   });
 
+  it("should call the deleteEvent service when the delete button is clicked", async () => {
+    renderProfile();
+
+    await waitFor(() => {
+      expect(screen.getByText("Rafle perco")).toBeInTheDocument();
+    });
+
+    const deleteButton = screen.getAllByRole("button", { name: "Delete" })[0];
+
+    await act(async () => {
+      fireEvent.click(deleteButton);
+    });
+
+    // Check delete service is call with valid arguments
+    expect(deleteEventMock).toHaveBeenCalledWith(
+      "15ff46b5-60f3-4e86-98bc-da8fcaa3e29e",
+      "ef9891a6-dcab-4846-8f9c-2044efe2096c",
+    );
+  });
+
   it("Display characters list after API call", async () => {
     renderProfile();
 
@@ -238,6 +378,26 @@ describe("Profile Page", () => {
       expect(screen.getByTestId("character-breed")).toHaveTextContent("Cra");
       expect(screen.getByTestId("character-level")).toHaveTextContent("50");
     });
+  });
+
+  it("should call the deleteCharacter service when the delete button is clicked", async () => {
+    renderProfile();
+
+    await waitFor(() => {
+      expect(screen.getByText("Chronos")).toBeInTheDocument();
+    });
+
+    const deleteButton = screen.getAllByRole("button", { name: "Delete" })[1];
+
+    await act(async () => {
+      fireEvent.click(deleteButton);
+    });
+
+    // Check delete service is call with valid arguments
+    expect(deleteCharacterMock).toHaveBeenCalledWith(
+      "15ff46b5-60f3-4e86-98bc-da8fcaa3e29e",
+      "9f0eaa8c-eec1-4e85-9365-7653c1330325",
+    );
   });
 
   it("Manage axios error", async () => {

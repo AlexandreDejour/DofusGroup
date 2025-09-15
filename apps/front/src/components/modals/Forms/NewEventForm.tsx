@@ -21,7 +21,7 @@ import { CharacterService } from "../../../services/api/characterService";
 import formatDateToLocalInput from "../utils/formatDateToLocalInput";
 
 import SelectOptions from "../FormComponents/Options/SelectOptions";
-import CharactersOptions from "../FormComponents/Options/CharacterOptions";
+import CharactersOptions from "../FormComponents/Options/CharactersOptions";
 
 const config = Config.getInstance();
 const axios = new ApiClient(config.baseUrl);

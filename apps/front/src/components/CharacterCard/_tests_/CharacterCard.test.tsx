@@ -55,19 +55,22 @@ const mockCharacter = {
   },
 };
 
+const handleDelete = vi.fn();
+
 const renderCharacterCard = (character = mockCharacter) =>
   render(
     <MemoryRouter>
-      <CharacterCard character={character} />
+      <CharacterCard character={character} handleDelete={handleDelete} />
     </MemoryRouter>,
   );
 
 describe("CharacterCard", () => {
   beforeEach(() => {
     mockNavigate.mockReset();
+    handleDelete.mockReset();
   });
 
-  it("affiche la bonne image pour un personnage masculin", () => {
+  it("Dispay image with male character ", () => {
     const maleCharacter = { ...mockCharacter, sex: "M" };
     renderCharacterCard(maleCharacter);
     const img = screen.getByRole("img");
@@ -75,7 +78,7 @@ describe("CharacterCard", () => {
     expect(img).toHaveAttribute("alt", "Miniature de classe cra");
   });
 
-  it("affiche la bonne image pour un personnage féminin", () => {
+  it("Display image with female character", () => {
     const femaleCharacter = { ...mockCharacter, sex: "F" };
     renderCharacterCard(femaleCharacter);
     const img = screen.getByRole("img");

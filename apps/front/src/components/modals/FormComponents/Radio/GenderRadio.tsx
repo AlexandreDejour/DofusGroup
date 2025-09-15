@@ -3,7 +3,7 @@ import "./GenderRadio.scss";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMars, faVenus } from "@fortawesome/free-solid-svg-icons";
 
-interface GenderRadioProps {
+export interface GenderRadioProps {
   name: string;
   value: string;
   onChange: (value: string) => void;

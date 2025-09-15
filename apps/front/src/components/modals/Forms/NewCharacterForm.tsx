@@ -10,9 +10,9 @@ import { useNotification } from "../../../contexts/notificationContext";
 
 import { Config } from "../../../config/config";
 import { ApiClient } from "../../../services/client";
+import { generateOptions } from "../utils/generateOptions";
 import { BreedService } from "../../../services/api/breedService";
 import { ServerService } from "../../../services/api/serverService";
-import { generateOptions } from "../utils/generateOptions";
 
 import BreedRadio from "../FormComponents/Radio/BreedRadio";
 import GenderRadio from "../FormComponents/Radio/GenderRadio";

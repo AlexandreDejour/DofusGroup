@@ -1,6 +1,6 @@
 import { BaseOptions } from "../../utils/generateOptions";
 
-interface SelectOptionsProps<T, ID extends string | number> {
+export interface SelectOptionsProps<T, ID extends string | number> {
   name: string;
   value: string;
   items: T[];

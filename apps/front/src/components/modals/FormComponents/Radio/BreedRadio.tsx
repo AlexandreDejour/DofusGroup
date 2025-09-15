@@ -4,7 +4,7 @@ import { Breed } from "../../../../types/breed";
 
 import { generateOptions } from "../../utils/generateOptions";
 
-interface BreedRadioProps {
+export interface BreedRadioProps {
   name: string;
   value: string;
   sex: string;

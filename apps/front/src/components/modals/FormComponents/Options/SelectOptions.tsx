@@ -1,5 +1,3 @@
-import "./SelectOptions.scss";
-
 import { BaseOptions } from "../../utils/generateOptions";
 
 interface SelectOptionsProps<T, ID extends string | number> {

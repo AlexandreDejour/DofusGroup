@@ -1,3 +1,6 @@
+import CharacterEntity from "../../database/models/Character.js";
+import CommentEntity from "../../database/models/Comment.js";
+import EventEntity from "../../database/models/Event.js";
 import UserEntity from "../../database/models/User.js";
 import { User, UserBodyData, UserEnriched } from "../../types/user.js";
 
@@ -58,7 +61,15 @@ export class UserRepository {
     try {
       const result: UserEntity | null = await UserEntity.findOne({
         where: { id: userId },
-        include: ["characters", "events"],
+        include: [
+          { model: CharacterEntity, as: "characters", include: ["breed"] },
+          {
+            model: EventEntity,
+            as: "events",
+            include: ["tag", "server", "characters"],
+          },
+          { model: CommentEntity, as: "comments" },
+        ],
         attributes: { exclude: ["password", "mail"] },
       });
 

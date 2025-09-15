@@ -35,7 +35,7 @@ describe("userRouter", () => {
   const config = Config.getInstance();
   const secret = config.jwtSecret;
   const userId = "527be2f3-5903-4a98-a47d-e4bd593db73e";
-  const token = jwt.sign({ sub: userId }, secret, { expiresIn: "2h" });
+  const token = jwt.sign({ id: userId }, secret, { expiresIn: "2h" });
 
   describe("GET /users", () => {
     it("Propagate request to userController.getAll", async () => {

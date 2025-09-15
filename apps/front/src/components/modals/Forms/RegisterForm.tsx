@@ -1,4 +1,4 @@
-import "./RegisterForm.scss";
+import "../Form.scss";
 
 interface RegisterFormProps {
   handleSubmit: (event: React.FormEvent<HTMLFormElement>) => void;
@@ -6,10 +6,10 @@ interface RegisterFormProps {
 
 export default function RegisterForm({ handleSubmit }: RegisterFormProps) {
   return (
-    <div className="register_modal">
-      <h3 className="register_modal_title">Inscription</h3>
-      <form onSubmit={handleSubmit} className="register_modal_form" role="form">
-        <label htmlFor="username" className="register_modal_form_label">
+    <div className="content_modal">
+      <h3 className="content_modal_title">Inscription</h3>
+      <form onSubmit={handleSubmit} className="content_modal_form" role="form">
+        <label htmlFor="username" className="content_modal_form_label">
           <span>Pseudo:</span>
           <input
             type="text"
@@ -17,11 +17,11 @@ export default function RegisterForm({ handleSubmit }: RegisterFormProps) {
             id="username"
             required
             placeholder="Pseudo"
-            className="register_modal_form_label_input"
+            className="content_modal_form_label_input"
           />
         </label>
 
-        <label htmlFor="mail" className="register_modal_form_label">
+        <label htmlFor="mail" className="content_modal_form_label">
           <span>Email:</span>
           <input
             type="email"
@@ -29,11 +29,11 @@ export default function RegisterForm({ handleSubmit }: RegisterFormProps) {
             id="mail"
             required
             placeholder="Email"
-            className="register_modal_form_label_input"
+            className="content_modal_form_label_input"
           />
         </label>
 
-        <label htmlFor="password" className="register_modal_form_label">
+        <label htmlFor="password" className="content_modal_form_label">
           <span>Mot de passe:</span>
           <input
             type="password"
@@ -42,11 +42,11 @@ export default function RegisterForm({ handleSubmit }: RegisterFormProps) {
             required
             title="Le mot de passe ne respecte pas les conditions minimales de sécurité"
             placeholder="Mot de passe"
-            className="register_modal_form_label_input"
+            className="content_modal_form_label_input"
           />
         </label>
 
-        <label htmlFor="confirmPassword" className="register_modal_form_label">
+        <label htmlFor="confirmPassword" className="content_modal_form_label">
           <span>Confirmation mot de passe:</span>
           <input
             type="password"
@@ -54,14 +54,14 @@ export default function RegisterForm({ handleSubmit }: RegisterFormProps) {
             id="confirmPassword"
             required
             placeholder="Confirmation mot de passe"
-            className="register_modal_form_label_input"
+            className="content_modal_form_label_input"
           />
         </label>
 
         <button
           type="submit"
           aria-label="Register"
-          className="register_modal_form_button button"
+          className="content_modal_form_button button"
         >
           S'incrire
         </button>

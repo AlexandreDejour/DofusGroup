@@ -14,8 +14,8 @@ vi.mock("../../../config/config.ts", () => ({
 
 vi.mock("../../../components/EventCard/EventCard", () => ({
   default: ({ event }: any) => (
-    <div data-testid="event-card">
-      <h2>{event.title}</h2>
+    <article data-testid="event-card">
+      <h3>{event.title}</h3>
       <p data-testid="event-tag">{event.tag.name}</p>
       <p data-testid="event-server">{event.server.name}</p>
       <p data-testid="event-date">
@@ -26,7 +26,7 @@ vi.mock("../../../components/EventCard/EventCard", () => ({
         {event.characters ? event.characters.length : 0}/{event.max_players}
       </p>
       <button>Détails</button>
-    </div>
+    </article>
   ),
 }));
 
@@ -37,7 +37,7 @@ vi.mock("../../../components/Pagination/Pagination", () => ({
     onPageChange,
     maxVisiblePages,
   }: any) => {
-    // on peut simuler une liste simple de pages de 1 à totalPages (ou limitée par maxVisiblePages)
+    // Can simulate simple list with only one page
     const pages = Array.from(
       { length: Math.min(totalPages, maxVisiblePages) },
       (_, i) => i + 1,
@@ -78,7 +78,7 @@ const renderHome = () => {
   );
 };
 
-describe("Home component", () => {
+describe("Home page", () => {
   beforeEach(() => {
     mockGetEvents = vi
       .fn()
@@ -92,7 +92,7 @@ describe("Home component", () => {
             date: "2025-08-17T12:00:00Z",
             duration: 90,
             characters: [{ name: "Char 1" }, { name: "Char 2" }],
-            max_players: 10,
+            max_players: 8,
           },
         ],
         totalPages: 3,
@@ -138,7 +138,7 @@ describe("Home component", () => {
         }),
       );
       expect(screen.getByTestId("event-duration")).toHaveTextContent("90 min");
-      expect(screen.getByTestId("event-players")).toHaveTextContent("2/10");
+      expect(screen.getByTestId("event-players")).toHaveTextContent("2/8");
     });
   });
 

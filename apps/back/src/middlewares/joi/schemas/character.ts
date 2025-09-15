@@ -1,5 +1,7 @@
 import Joi from "joi";
 
+const urlRegex = new RegExp("^https:\/\/d-bk\.net\/[^\/]+\/d\/[A-Za-z0-9]{5}$");
+
 const ALIGNMENTS = ["Brâkmar", "Neutre", "Bonta"] as const;
 const SEXES = ["M", "F"] as const;
 
@@ -32,8 +34,9 @@ export const createCharacterSchema: Joi.ObjectSchema = Joi.object({
       "any.only": `Alignment must be either ${ALIGNMENTS.join(", ")}`,
       "string.base": "Alignment must be a string",
     }),
-  stuff: Joi.string().uri().optional().messages({
+  stuff: Joi.string().uri().pattern(urlRegex).optional().messages({
     "string.uri": "Stuff must be a valid URL",
+    "string.pattern.base": "Invalid url. Doesn't respect rules.",
     "string.base": "Stuff must be a string",
   }),
   default_character: Joi.boolean().optional(),

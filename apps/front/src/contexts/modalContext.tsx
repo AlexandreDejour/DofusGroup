@@ -1,15 +1,31 @@
 import React, { createContext, useCallback, useContext, useState } from "react";
 
+import { useAuth } from "./authContext";
+import { useNotification } from "./notificationContext";
+
+import {
+  RegisterForm,
+  LoginForm,
+  UpdateForm,
+  CreateCharacterForm,
+  CreateEventForm,
+} from "../types/form";
+
 import { Config } from "../config/config";
 import { ApiClient } from "../services/client";
-import { AuthService } from "../services/api/authService";
 import formDataToObject from "./utils/formDataToObject";
-import { useNotification } from "./notificationContext";
-import { RegisterForm, LoginForm } from "../types/form";
+import { AuthService } from "../services/api/authService";
+import { UserService } from "../services/api/userService";
+import { EventService } from "../services/api/eventService";
+import { CharacterService } from "../services/api/characterService";
+import isUpdateField from "../components/modals/utils/isUpdateField";
 
 const config = Config.getInstance();
 const axios = new ApiClient(config.baseUrl);
 const authService = new AuthService(axios);
+const userService = new UserService(axios);
+const eventService = new EventService(axios);
+const characterService = new CharacterService(axios);
 
 export interface ModalContextType {
   isOpen: boolean;
@@ -17,7 +33,7 @@ export interface ModalContextType {
   formData: FormData;
   resetForm: React.Dispatch<React.SetStateAction<FormData>>;
   handleSubmit: (event: React.FormEvent<HTMLFormElement>) => Promise<void>;
-  openModal: (type: string) => void;
+  openModal: (modalType: ModalType) => void;
   closeModal: () => void;
 }
 
@@ -25,18 +41,29 @@ interface ModalProviderProps {
   children: React.ReactNode;
 }
 
+export type ModalType =
+  | "register"
+  | "login"
+  | "mail"
+  | "password"
+  | "username"
+  | "newCharacter"
+  | "newEvent"
+  | null;
+
 const ModalContext = createContext<ModalContextType | null>(null);
 
 export default function ModalProvider({ children }: ModalProviderProps) {
+  const { user, setUser } = useAuth();
   const { showSuccess, showError } = useNotification();
   const [isOpen, setIsOpen] = useState(false);
-  const [modalType, setModalType] = useState<string | null>(null);
+  const [modalType, setModalType] = useState<ModalType>(null);
   const [formData, setFormData] = useState<FormData>(new FormData());
 
   const resetForm = () => setFormData(new FormData());
 
-  const openModal = useCallback((type: string) => {
-    setModalType(type);
+  const openModal = useCallback((modalType: ModalType) => {
+    setModalType(modalType);
     setIsOpen(true);
   }, []);
 
@@ -53,6 +80,8 @@ export default function ModalProvider({ children }: ModalProviderProps) {
       const form = event.currentTarget as HTMLFormElement;
       const formData = new FormData(form);
 
+      if (!modalType) return;
+
       try {
         if (modalType === "register") {
           const keys: (keyof RegisterForm)[] = [
@@ -61,7 +90,7 @@ export default function ModalProvider({ children }: ModalProviderProps) {
             "password",
             "confirmPassword",
           ];
-          const data = formDataToObject<RegisterForm>(formData, keys);
+          const data = formDataToObject<RegisterForm>(formData, { keys });
           await authService.register(data);
 
           showSuccess(
@@ -73,13 +102,106 @@ export default function ModalProvider({ children }: ModalProviderProps) {
 
         if (modalType === "login") {
           const keys: (keyof LoginForm)[] = ["username", "password"];
-          const data = formDataToObject<LoginForm>(formData, keys);
+          const data = formDataToObject<LoginForm>(formData, { keys });
           const response = await authService.login(data);
-          console.log(response);
+
+          setUser(response);
 
           showSuccess(
             "Connexion réussie !",
             `Bonjour ${response.username} ! Vous êtes maintenant connecté(e).`,
+          );
+        }
+
+        if (isUpdateField(modalType)) {
+          if (!user) return;
+
+          const keys: (keyof UpdateForm)[] = [modalType];
+          const data = formDataToObject<UpdateForm>(formData, { keys });
+          const response = await userService.update(user.id, data);
+
+          setUser(response);
+
+          showSuccess(
+            "Mise à jour réussie !",
+            `Vos informations ont été mise à jour avec succès.`,
+          );
+        }
+
+        if (modalType === "newCharacter") {
+          if (!user) return;
+
+          const keys: (keyof CreateCharacterForm)[] = [
+            "name",
+            "sex",
+            "level",
+            "alignment",
+            "stuff",
+            "default_character",
+            "breed_id",
+            "server_id",
+          ];
+          const booleanKeys: (keyof CreateCharacterForm)[] = [
+            "default_character",
+          ];
+          const numberKeys: (keyof CreateCharacterForm)[] = ["level"];
+
+          const data = formDataToObject<CreateCharacterForm>(formData, {
+            keys,
+            booleanKeys,
+            numberKeys,
+          });
+
+          await characterService.create(user.id, data);
+          const response = await userService.getOne(user.id);
+
+          setUser({ ...user, ...response });
+
+          showSuccess(
+            "Création de personnage réussie !",
+            `Vous avez créer un nouveau personnage.`,
+          );
+        }
+
+        if (modalType === "newEvent") {
+          if (!user) return;
+
+          const keys: (keyof CreateEventForm)[] = [
+            "title",
+            "date",
+            "duration",
+            "area",
+            "sub_area",
+            "donjon_name",
+            "description",
+            "max_players",
+            "status",
+            "tag_id",
+            "server_id",
+            "characters_id",
+          ];
+          const dateKeys: (keyof CreateEventForm)[] = ["date"];
+          const numberKeys: (keyof CreateEventForm)[] = [
+            "duration",
+            "max_players",
+          ];
+          const arrayKeys: (keyof CreateEventForm)[] = ["characters_id"];
+
+          const data = formDataToObject<CreateEventForm>(formData, {
+            keys,
+            dateKeys,
+            numberKeys,
+            arrayKeys,
+          });
+
+          await eventService.create(user.id, data);
+          const response = await userService.getOne(user.id);
+
+          setUser({ ...user, ...response });
+
+          showSuccess(
+            "Création d'évènement réussie !",
+            `Vous avez créer un nouvel évènement.`,
           );
         }
 

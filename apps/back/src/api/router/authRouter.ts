@@ -41,6 +41,10 @@ export function createAuthRouter(
     controller.logout(req, res, next);
   });
 
+  router.get("/auth/me", (req, res, next) => {
+    controller.apiMe(req, res, next);
+  });
+
   router.get(
     "/auth/:userId/account",
     validateUUID,

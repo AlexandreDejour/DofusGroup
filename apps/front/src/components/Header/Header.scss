@@ -1,16 +1,17 @@
 @use "../../assets/styles/variables";
 
-header {
+.header {
   width: 100vw;
+  height: 12.5vh;
   margin: 1% 1% 2% 1%;
   display: flex;
   align-items: center;
 
-  .logo {
+  &_logo {
     width: 17.5%;
-    height: 15vh;
+    height: 100%;
     margin-right: 2.5%;
-    background-image: url("/public/dofusgroup_logo_plein.png");
+    background-image: url("/dofusgroup_logo_plein.webp");
     background-size: contain;
     background-position: center;
     background-repeat: no-repeat;
@@ -24,9 +25,9 @@ header {
     }
   }
 
-  nav {
+  &_nav {
     width: 82.5%;
-    padding: 1% 1% 1% 2%;
+    padding: 1% 2% 1% 2%;
     background-color: var(--secondary-bg);
     font-size: 1.2rem;
     font-weight: var(--semi-bold);
@@ -34,7 +35,7 @@ header {
     align-items: center;
     border-radius: 1.5rem 0rem 0rem 1.5rem;
 
-    ul {
+    &_list {
       width: 100%;
       margin: 0%;
       padding: 0;
@@ -45,7 +46,7 @@ header {
       list-style: none;
       gap: 2%;
 
-      li {
+      &_item {
         width: 25%;
         padding: 2% 1%;
         display: flex;
@@ -57,9 +58,9 @@ header {
           width: 80%;
         }
 
-        button {
-          width: 80%;
-          padding: 7.5% 12.5%;
+        .nav_button {
+          width: 90%;
+          padding: 7.5% 15%;
         }
       }
     }

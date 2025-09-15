@@ -3,7 +3,7 @@ import { render, screen, fireEvent } from "@testing-library/react";
 import { vi } from "vitest";
 import { MemoryRouter } from "react-router";
 
-import EventCard from "../EventCard";
+import ProfileEventCard from "../ProfileEventCard";
 
 // Mock useNavigate de react-router
 const mockNavigate = vi.fn();
@@ -19,6 +19,13 @@ vi.mock("react-router", async (importOriginal) => {
     useNavigate: () => mockNavigate,
   };
 });
+
+// Mock FontAwesomeIcon
+vi.mock("@fortawesome/react-fontawesome", () => ({
+  FontAwesomeIcon: (props: any) => (
+    <svg data-testid="mock-fa-icon" {...props} />
+  ),
+}));
 
 const mockEvent = {
   id: "e804f5c2-09af-4aac-ab05-8dc7743fcc2d",
@@ -52,52 +59,53 @@ const mockEvent = {
   ],
 };
 
-const renderEventCard = (event = mockEvent) =>
+const handleDelete = vi.fn();
+
+const renderProfileEventCard = (event = mockEvent) =>
   render(
     <MemoryRouter>
-      <EventCard event={event} />
+      <ProfileEventCard event={event} handleDelete={handleDelete} />
     </MemoryRouter>,
   );
 
-describe("EventCard", () => {
+describe("ProfileEventCard", () => {
   beforeEach(() => {
     mockNavigate.mockReset();
+    handleDelete.mockReset();
+    vi.spyOn(Date.prototype, "toLocaleString").mockReturnValue(
+      "17/08/2025 12:00",
+    );
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
   });
 
   it("Display event title", () => {
-    renderEventCard();
+    renderProfileEventCard();
     expect(screen.getByText("Event Test")).toBeInTheDocument();
   });
 
   it("Display tag title with his color", () => {
-    renderEventCard();
+    renderProfileEventCard();
     const tagElement = screen.getByText("PVM");
     expect(tagElement).toBeInTheDocument();
     expect(tagElement).toHaveStyle({ backgroundColor: "#ff0000" });
   });
 
-  it("Display server", () => {
-    renderEventCard();
-    expect(screen.getByText("Jiva")).toBeInTheDocument();
-  });
-
   it("Display date", () => {
-    renderEventCard();
-    expect(screen.getByText("17/08/2025 12:00:00")).toBeInTheDocument();
-  });
-
-  it("Display Duration", () => {
-    renderEventCard();
-    expect(screen.getByText("120 min")).toBeInTheDocument();
+    renderProfileEventCard();
+    expect(screen.getByText("17/08/2025 12:00")).toBeInTheDocument();
+    expect(Date.prototype.toLocaleString).toHaveBeenCalled();
   });
 
   it("Display current players", () => {
-    renderEventCard();
+    renderProfileEventCard();
     expect(screen.getByText("1/8")).toBeInTheDocument();
   });
 
   it("Navigate to details on button click", () => {
-    renderEventCard();
+    renderProfileEventCard();
     const button = screen.getByRole("button", { name: /détails/i });
     fireEvent.click(button);
     expect(mockNavigate).toHaveBeenCalledWith(

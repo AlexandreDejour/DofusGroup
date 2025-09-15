@@ -1,4 +1,4 @@
-import "./LoginForm.scss";
+import "../Form.scss";
 
 interface LoginFormProps {
   handleSubmit: (event: React.FormEvent<HTMLFormElement>) => void;
@@ -6,10 +6,10 @@ interface LoginFormProps {
 
 export default function LoginForm({ handleSubmit }: LoginFormProps) {
   return (
-    <div className="login_modal">
-      <h3 className="login_modal_title">Connexion</h3>
-      <form onSubmit={handleSubmit} className="login_modal_form" role="form">
-        <label htmlFor="username" className="login_modal_form_label">
+    <div className="content_modal">
+      <h3 className="content_modal_title">Connexion</h3>
+      <form onSubmit={handleSubmit} className="content_modal_form" role="form">
+        <label htmlFor="username" className="content_modal_form_label">
           <span>Pseudo:</span>
           <input
             type="text"
@@ -17,11 +17,11 @@ export default function LoginForm({ handleSubmit }: LoginFormProps) {
             id="username"
             required
             placeholder="Pseudo"
-            className="login_modal_form_label_input"
+            className="content_modal_form_label_input"
           />
         </label>
 
-        <label htmlFor="password" className="login_modal_form_label">
+        <label htmlFor="password" className="content_modal_form_label">
           <span>Mot de passe:</span>
           <input
             type="password"
@@ -29,14 +29,14 @@ export default function LoginForm({ handleSubmit }: LoginFormProps) {
             id="password"
             required
             placeholder="Mot de passe"
-            className="login_modal_form_label_input"
+            className="content_modal_form_label_input"
           />
         </label>
 
         <button
           type="submit"
           aria-label="Login"
-          className="login_modal_form_button button"
+          className="content_modal_form_button button"
         >
           Se connecter
         </button>

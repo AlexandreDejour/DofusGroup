@@ -1,0 +1,50 @@
+@use "../../assets/styles/variables";
+
+.event_card {
+  width: 100%;
+  margin: 2% 0%;
+  padding: 2%;
+  background-color: var(--secondary-bg);
+  font-size: 1.1rem;
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+  border-radius: 1rem;
+
+  &_title {
+    width: 30%;
+    font-size: 1.3rem;
+  }
+
+  &_tag {
+    width: 12.5%;
+    padding: 0.5% 0%;
+    border-radius: 0.5rem;
+  }
+
+  &_date {
+    width: 12.5%;
+  }
+
+  &_players {
+    width: 5%;
+  }
+
+  &_buttons {
+    width: 30%;
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+
+    &_details {
+      width: 50%;
+      margin: 2% 0%;
+      padding: 3% 1%;
+    }
+
+    &_delete {
+      width: 25%;
+      padding: 4.5% 1%;
+    }
+  }
+}

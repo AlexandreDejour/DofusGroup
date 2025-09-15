@@ -1,7 +1,8 @@
-import { Event } from "../../types/event";
 import "./EventCard.scss";
 
 import { useNavigate } from "react-router";
+
+import { Event } from "../../types/event";
 
 interface EventCardProps {
   event: Event;
@@ -12,7 +13,7 @@ export default function EventCard({ event }: EventCardProps) {
 
   return (
     <article className="event_card">
-      <h2 className="event_card_title">{event.title}</h2>
+      <h3 className="event_card_title">{event.title}</h3>
       <p
         className="event_card_tag"
         style={{ backgroundColor: event.tag.color }}
@@ -21,8 +22,9 @@ export default function EventCard({ event }: EventCardProps) {
       </p>
       <p className="event_card_server">{event.server.name}</p>
       <p className="event_card_date">
-        {new Date(event.date).toLocaleString("fr-FR", {
-          timeZone: "UTC",
+        {new Date(event.date).toLocaleString(undefined, {
+          dateStyle: "short",
+          timeStyle: "short",
         })}
       </p>
       <p className="event_card_duration">{event.duration} min</p>

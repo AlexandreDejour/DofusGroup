@@ -1,4 +1,4 @@
-.register_modal {
+.content_modal {
   width: 80%;
 
   &_title {
@@ -20,6 +20,11 @@
       flex-direction: column;
 
       &_input {
+        margin-top: 2%;
+        padding: 2% 3%;
+      }
+
+      select {
         margin-top: 2%;
         padding: 2% 3%;
       }

@@ -24,6 +24,7 @@ export default function Home() {
     const fetchEvents = async () => {
       try {
         const eventsData = await eventService.getEvents(10, currentPage);
+
         setEvents(eventsData.events);
         setTotalPages(eventsData.totalPages);
       } catch (error) {
@@ -71,9 +72,7 @@ export default function Home() {
             maxVisiblePages={10}
           />
         </div>
-      ) : (
-        ""
-      )}
+      ) : null}
     </main>
   );
 }

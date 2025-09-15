@@ -4,13 +4,17 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
 
 import { useModal } from "../../contexts/modalContext";
-import RegisterForm from "./RegisterForm/RegisterForm";
-import LoginForm from "./LoginForm/LoginForm";
+
+import LoginForm from "./Forms/LoginForm";
+import UpdateForm from "./Forms/UpdateForm";
+import RegisterForm from "./Forms/RegisterForm";
+import NewEventForm from "./Forms/NewEventForm";
+import NewCharacterForm from "./Forms/NewCharacterForm";
 
 export default function ModalsManager() {
   const { isOpen, modalType, handleSubmit, closeModal } = useModal();
 
-  if (!isOpen) return null;
+  if (!isOpen || !modalType) return null;
 
   return (
     <div className="modal" onClick={closeModal} role="dialog">
@@ -31,6 +35,18 @@ export default function ModalsManager() {
 
           {modalType === "login" && (
             <LoginForm handleSubmit={(event) => handleSubmit(event)} />
+          )}
+
+          {["mail", "password", "username"].includes(modalType) && (
+            <UpdateForm field={modalType} handleSubmit={handleSubmit} />
+          )}
+
+          {modalType === "newCharacter" && (
+            <NewCharacterForm handleSubmit={(event) => handleSubmit(event)} />
+          )}
+
+          {modalType === "newEvent" && (
+            <NewEventForm handleSubmit={(event) => handleSubmit(event)} />
           )}
         </div>
       </div>

@@ -1,10 +1,10 @@
-import { Area, Dungeon, SubArea } from "../../../types/dofusDB";
+import { Tag } from "../../../types/tag";
 import { Breed } from "../../../types/breed";
+import { Status } from "../../../types/status";
 import { Server } from "../../../types/server";
 import { Alignment } from "../../../types/alignment";
-import { Tag } from "../../../types/tag";
-import { Status } from "../../../types/status";
 import { Character } from "../../../types/character";
+import { Area, Dungeon, SubArea } from "../../../types/dofusDB";
 
 export type BaseOptions<ID extends string | number> = {
   id: ID;

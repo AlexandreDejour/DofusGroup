@@ -2,10 +2,11 @@ import { describe, it, beforeEach, expect, vi } from "vitest";
 
 import axios from "axios";
 
-import { ApiClient } from "../../client";
-import { EventService } from "../eventService";
 import { PaginatedEvents } from "../../../types/event";
 import { CreateEventForm } from "../../../types/form";
+
+import { ApiClient } from "../../client";
+import { EventService } from "../eventService";
 
 vi.mock("axios");
 

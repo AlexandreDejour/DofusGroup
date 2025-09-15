@@ -1,9 +1,12 @@
 import { describe, it, beforeEach, expect, vi } from "vitest";
+
 import axios from "axios";
-import { ApiClient } from "../../client";
-import { CharacterService } from "../characterService";
+
 import { Character } from "../../../types/character";
 import { CreateCharacterForm } from "../../../types/form";
+
+import { ApiClient } from "../../client";
+import { CharacterService } from "../characterService";
 
 vi.mock("axios");
 
@@ -23,7 +26,6 @@ describe("CharacterService", () => {
     vi.mocked(axios.isAxiosError).mockReturnValue(false); // Réinitialiser le mock
   });
 
-  // Tests for the getAllByUserId method
   describe("getAllByUserId", () => {
     it("should call axios.get with the correct URL", async () => {
       const mockCharacters: Character[] = [

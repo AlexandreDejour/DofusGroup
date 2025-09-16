@@ -1,4 +1,4 @@
-import { Navigate, useParams } from "react-router";
+import { Navigate, useNavigate, useParams } from "react-router";
 import "./CharacterDetails.scss";
 import { useEffect, useState } from "react";
 
@@ -15,6 +15,7 @@ const axios = new ApiClient(config.baseUrl);
 const characterService = new CharacterService(axios);
 
 export default function CharacterDetails() {
+  const navigate = useNavigate();
   const { id } = useParams();
   const { user } = useAuth();
   const { updateTarget, openModal, handleDelete } = useModal();
@@ -111,6 +112,13 @@ export default function CharacterDetails() {
       ) : (
         <p>Chargement en cours</p>
       )}
+      <button
+        type="button"
+        className="character_button button"
+        onClick={() => navigate("/profile")}
+      >
+        Retour
+      </button>
     </main>
   );
 }

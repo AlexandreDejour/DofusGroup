@@ -1,6 +1,6 @@
 import axios from "axios";
 import { ApiClient } from "../client";
-import { Character } from "../../types/character";
+import { Character, CharacterEnriched } from "../../types/character";
 import { CreateCharacterForm } from "../../types/form";
 
 export class CharacterService {
@@ -25,6 +25,23 @@ export class CharacterService {
           throw new Error(
             "Vous n'avez créé aucun personnage sur votre compte.",
           );
+        }
+      }
+      throw error;
+    }
+  }
+
+  public async getOneEnriched(characterId: string) {
+    try {
+      const response = await this.axios.get<CharacterEnriched>(
+        `/character/enriched/${characterId}`,
+      );
+
+      return response.data;
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        if (error.response?.status) {
+          throw new Error(error.message);
         }
       }
       throw error;

@@ -19,6 +19,7 @@ import { UserService } from "../services/api/userService";
 import { EventService } from "../services/api/eventService";
 import { CharacterService } from "../services/api/characterService";
 import isUpdateField from "../components/modals/utils/isUpdateField";
+import { CharacterEnriched } from "../types/character";
 
 const config = Config.getInstance();
 const axios = new ApiClient(config.baseUrl);
@@ -30,11 +31,15 @@ const characterService = new CharacterService(axios);
 export interface ModalContextType {
   isOpen: boolean;
   modalType: string | null; // ex: "register", "login", "newEvent", etc.
+  updateTarget: Event | CharacterEnriched | null;
   formData: FormData;
   resetForm: React.Dispatch<React.SetStateAction<FormData>>;
   handleSubmit: (event: React.FormEvent<HTMLFormElement>) => Promise<void>;
   handleDelete: (targetType: TargetType, targetId?: string) => Promise<void>;
-  openModal: (modalType: ModalType) => void;
+  openModal: (
+    modalType: ModalType,
+    updateTarget?: Event | CharacterEnriched,
+  ) => void;
   closeModal: () => void;
 }
 
@@ -60,20 +65,30 @@ const ModalContext = createContext<ModalContextType | null>(null);
 export default function ModalProvider({ children }: ModalProviderProps) {
   const { user, setUser } = useAuth();
   const { showSuccess, showError } = useNotification();
+
   const [isOpen, setIsOpen] = useState(false);
   const [modalType, setModalType] = useState<ModalType>(null);
   const [formData, setFormData] = useState<FormData>(new FormData());
+  const [updateTarget, setUpdateTarget] = useState<
+    Event | CharacterEnriched | null
+  >(null);
 
   const resetForm = () => setFormData(new FormData());
 
-  const openModal = useCallback((modalType: ModalType) => {
-    setModalType(modalType);
-    setIsOpen(true);
-  }, []);
+  const openModal = useCallback(
+    (modalType: ModalType, updateTarget?: Event | CharacterEnriched) => {
+      if (updateTarget) setUpdateTarget(updateTarget);
+
+      setModalType(modalType);
+      setIsOpen(true);
+    },
+    [],
+  );
 
   const closeModal = useCallback(() => {
     setIsOpen(false);
     setModalType(null);
+    setUpdateTarget(null);
     setFormData(new FormData());
   }, []);
 
@@ -259,6 +274,7 @@ export default function ModalProvider({ children }: ModalProviderProps) {
   const contextValues: ModalContextType = {
     isOpen,
     modalType,
+    updateTarget,
     formData,
     resetForm,
     openModal,

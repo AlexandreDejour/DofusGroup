@@ -17,7 +17,7 @@ const characterService = new CharacterService(axios);
 export default function CharacterDetails() {
   const { id } = useParams();
   const { user } = useAuth();
-  const { openModal, handleDelete } = useModal();
+  const { updateTarget, openModal, handleDelete } = useModal();
 
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [character, setCharacter] = useState<CharacterEnriched | null>(null);
@@ -41,7 +41,7 @@ export default function CharacterDetails() {
       }
     };
     fetchCharacter();
-  }, [id]);
+  }, [id, updateTarget]);
 
   if (!isLoading && character === null)
     return <Navigate to="/not-found" replace />;
@@ -101,7 +101,7 @@ export default function CharacterDetails() {
               <button
                 type="button"
                 className="button delete"
-                onClick={() => handleDelete("character", character.id)}
+                onClick={() => handleDelete("character_details", character.id)}
               >
                 Supprimer
               </button>

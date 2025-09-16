@@ -8,6 +8,7 @@ import { CharacterService } from "../../services/api/characterService";
 import { isAxiosError } from "axios";
 import { useAuth } from "../../contexts/authContext";
 import { CharacterEnriched } from "../../types/character";
+import { useModal } from "../../contexts/modalContext";
 
 const config = Config.getInstance();
 const axios = new ApiClient(config.baseUrl);
@@ -16,6 +17,7 @@ const characterService = new CharacterService(axios);
 export default function CharacterDetails() {
   const { id } = useParams();
   const { user } = useAuth();
+  const { openModal, handleDelete } = useModal();
 
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [character, setCharacter] = useState<CharacterEnriched | null>(null);
@@ -89,10 +91,18 @@ export default function CharacterDetails() {
 
           {character.user.id === user?.id ? (
             <div className="character_section_buttons">
-              <button type="button" className="button">
+              <button
+                type="button"
+                className="button"
+                onClick={() => openModal("updateCharacter")}
+              >
                 Modifier
               </button>
-              <button type="button" className="button delete">
+              <button
+                type="button"
+                className="button delete"
+                onClick={() => handleDelete("character", character.id)}
+              >
                 Supprimer
               </button>
             </div>

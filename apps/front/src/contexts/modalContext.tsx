@@ -33,6 +33,7 @@ export interface ModalContextType {
   formData: FormData;
   resetForm: React.Dispatch<React.SetStateAction<FormData>>;
   handleSubmit: (event: React.FormEvent<HTMLFormElement>) => Promise<void>;
+  handleDelete: (targetType: TargetType, targetId?: string) => Promise<void>;
   openModal: (modalType: ModalType) => void;
   closeModal: () => void;
 }
@@ -48,8 +49,11 @@ export type ModalType =
   | "password"
   | "username"
   | "newCharacter"
+  | "updateCharacter"
   | "newEvent"
   | null;
+
+export type TargetType = "user" | "event" | "character";
 
 const ModalContext = createContext<ModalContextType | null>(null);
 
@@ -217,6 +221,41 @@ export default function ModalProvider({ children }: ModalProviderProps) {
     [modalType, closeModal],
   );
 
+  const handleDelete = useCallback(
+    async (targetType: TargetType, targetId?: string) => {
+      if (!user) return;
+
+      try {
+        if (targetType === "event" && targetId) {
+          await eventService.delete(user.id, targetId);
+          const response = await userService.getOne(user.id);
+
+          setUser({ ...user, ...response });
+        }
+
+        if (targetType === "character" && targetId) {
+          await characterService.delete(user.id, targetId);
+          const response = await userService.getOne(user.id);
+
+          setUser({ ...user, ...response });
+        }
+
+        if (targetType === "user") {
+          await userService.delete(user.id);
+
+          setUser(null);
+        }
+      } catch (error) {
+        if (error instanceof Error) {
+          showError("Erreur", error.message);
+        } else {
+          showError("Erreur", "Une erreur est survenue");
+        }
+      }
+    },
+    [user, setUser],
+  );
+
   const contextValues: ModalContextType = {
     isOpen,
     modalType,
@@ -225,6 +264,7 @@ export default function ModalProvider({ children }: ModalProviderProps) {
     openModal,
     closeModal,
     handleSubmit,
+    handleDelete,
   };
 
   return (

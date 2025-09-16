@@ -6,10 +6,11 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
 
 import { Event } from "../../types/event";
+import { TargetType } from "../../contexts/modalContext";
 
 interface ProfileEventCardProps {
   event: Event;
-  handleDelete: (targetType: string, targetId: string) => Promise<void>;
+  handleDelete: (targetType: TargetType, targetId: string) => Promise<void>;
 }
 
 export default function ProfileEventCard({

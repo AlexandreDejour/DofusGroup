@@ -40,7 +40,7 @@ export default function CharacterCard({
       <div className="character_card_buttons">
         <button
           className="character_card_buttons_details button"
-          onClick={() => navigate(`/details/${character.id}`)}
+          onClick={() => navigate(`/character/${character.id}`)}
         >
           Détails
         </button>

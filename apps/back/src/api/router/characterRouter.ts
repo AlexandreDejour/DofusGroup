@@ -41,9 +41,6 @@ export function createCharacterRouter(
 
   router
     .route("/user/:userId/character/:characterId")
-    .get(validateUUID, (req, res, next) => {
-      controller.getOneByUserId(req, res, next);
-    })
     .patch(
       validateUUID,
       authService.checkPermission,
@@ -57,11 +54,15 @@ export function createCharacterRouter(
       controller.delete(req, res, next);
     });
 
+  router.get("/character/:characterId", validateUUID, (req, res, next) => {
+    controller.getOne(req, res, next);
+  });
+
   router.get(
-    "/user/:userId/character/enriched/:characterId",
+    "/character/enriched/:characterId",
     validateUUID,
     (req, res, next) => {
-      controller.getOneEnrichedByUserId(req, res, next);
+      controller.getOneEnriched(req, res, next);
     },
   );
 

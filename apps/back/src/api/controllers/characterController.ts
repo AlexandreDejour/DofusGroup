@@ -54,14 +54,12 @@ export class CharacterController {
     }
   }
 
-  public async getOneByUserId(req: Request, res: Response, next: NextFunction) {
-    const { userId, characterId } = req.params;
+  public async getOne(req: Request, res: Response, next: NextFunction) {
+    const { characterId } = req.params;
 
     try {
-      const character: Character | null = await this.repository.getOneByUserId(
-        userId,
-        characterId,
-      );
+      const character: Character | null =
+        await this.repository.getOne(characterId);
 
       if (!character) {
         res.status(status.NOT_FOUND).json({ error: "Character not found" });
@@ -74,16 +72,12 @@ export class CharacterController {
     }
   }
 
-  public async getOneEnrichedByUserId(
-    req: Request,
-    res: Response,
-    next: NextFunction,
-  ) {
-    const { userId, characterId } = req.params;
+  public async getOneEnriched(req: Request, res: Response, next: NextFunction) {
+    const { characterId } = req.params;
 
     try {
       const character: CharacterEnriched | null =
-        await this.repository.getOneEnrichedByUserId(userId, characterId);
+        await this.repository.getOneEnriched(characterId);
 
       if (!character) {
         res.status(status.NOT_FOUND).json({ error: "Character not found" });
@@ -109,8 +103,7 @@ export class CharacterController {
 
       const newCharacter = await this.repository.post(characterData);
 
-      const newCharacterEnriched = await this.repository.getOneEnrichedByUserId(
-        userId,
+      const newCharacterEnriched = await this.repository.getOneEnriched(
         newCharacter.id,
       );
 
@@ -141,11 +134,9 @@ export class CharacterController {
         return;
       }
 
-      const characterUpdatedEnriched =
-        await this.repository.getOneEnrichedByUserId(
-          userId,
-          characterUpdated.id,
-        );
+      const characterUpdatedEnriched = await this.repository.getOneEnriched(
+        characterUpdated.id,
+      );
 
       res.json(characterUpdatedEnriched);
     } catch (error) {

@@ -8,6 +8,7 @@ import Footer from "./Footer/Footer";
 import Profile from "../pages/Profile/Profile";
 import ModalsManager from "./modals/ModalsManager";
 import NotificationContainer from "./Notification/NotificationContainer";
+import CharacterDetails from "../pages/CharacterDetails/CharacterDetails";
 
 export default function App() {
   return (
@@ -17,6 +18,7 @@ export default function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/profile" element={<Profile />} />
+        <Route path="/character/:id" element={<CharacterDetails />} />
       </Routes>
       <NotificationContainer />
       <Footer />

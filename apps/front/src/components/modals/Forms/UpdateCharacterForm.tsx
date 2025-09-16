@@ -40,7 +40,9 @@ export default function UpdateCharacterForm({
 
   const [sex, setSex] = useState<string>(updateTarget.sex);
   const [name, setName] = useState<string>(updateTarget.name);
-  const [stuff, setStuff] = useState<string>(updateTarget.stuff);
+  const [stuff, setStuff] = useState<string>(
+    updateTarget.stuff ? updateTarget.stuff : "",
+  );
   const [level, setLevel] = useState<number>(updateTarget.level);
   const [breed, setBreed] = useState<string>(updateTarget.breed.id);
   const [server, setServer] = useState<string>(updateTarget.server.id);

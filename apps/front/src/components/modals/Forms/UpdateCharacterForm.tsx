@@ -5,6 +5,7 @@ import { isAxiosError } from "axios";
 
 import { Breed } from "../../../types/breed";
 import { Server } from "../../../types/server";
+import { CharacterEnriched } from "../../../types/character";
 
 import { useNotification } from "../../../contexts/notificationContext";
 
@@ -23,22 +24,27 @@ const axios = new ApiClient(config.baseUrl);
 const breedService = new BreedService(axios);
 const serverService = new ServerService(axios);
 
-interface NewCharacterFormProps {
+interface UpdateCharacterFormProps {
+  updateTarget: CharacterEnriched;
   handleSubmit: (event: React.FormEvent<HTMLFormElement>) => void;
 }
 
-export default function NewCharacterForm({
+export default function UpdateCharacterForm({
+  updateTarget,
   handleSubmit,
-}: NewCharacterFormProps) {
+}: UpdateCharacterFormProps) {
   const { showError } = useNotification();
 
   const [breeds, setBreeds] = useState<Breed[]>([]);
   const [servers, setServers] = useState<Server[]>([]);
 
-  const [sex, setSex] = useState<string>("M");
-  const [breed, setBreed] = useState<string>("");
-  const [server, setServer] = useState<string>("");
-  const [alignment, setAlignment] = useState<string>("");
+  const [sex, setSex] = useState<string>(updateTarget.sex);
+  const [name, setName] = useState<string>(updateTarget.name);
+  const [stuff, setStuff] = useState<string>(updateTarget.stuff);
+  const [level, setLevel] = useState<number>(updateTarget.level);
+  const [breed, setBreed] = useState<string>(updateTarget.breed.id);
+  const [server, setServer] = useState<string>(updateTarget.server.id);
+  const [alignment, setAlignment] = useState<string>(updateTarget.alignment);
 
   const alignments = [
     { id: 1, name: "Bonta" },
@@ -91,6 +97,8 @@ export default function NewCharacterForm({
             type="text"
             name="name"
             id="name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
             required
             placeholder="Nom"
             className="content_modal_form_label_input"
@@ -117,6 +125,8 @@ export default function NewCharacterForm({
             type="number"
             name="level"
             id="level"
+            value={level}
+            onChange={(e) => setLevel(e.target.valueAsNumber)}
             required
             placeholder="Niveau"
             className="content_modal_form_label_input"
@@ -147,6 +157,8 @@ export default function NewCharacterForm({
             type="text"
             name="stuff"
             id="stuff"
+            value={stuff}
+            onChange={(e) => setStuff(e.target.value)}
             placeholder="Lien DofusBook"
             className="content_modal_form_label_input"
           />
@@ -163,7 +175,7 @@ export default function NewCharacterForm({
         </label>
 
         <button type="submit" className="content_modal_form_button button">
-          Créer un personnage
+          Modifier mon personnage
         </button>
       </form>
     </div>

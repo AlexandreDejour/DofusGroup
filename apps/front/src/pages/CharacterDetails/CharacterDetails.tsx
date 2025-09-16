@@ -94,7 +94,7 @@ export default function CharacterDetails() {
               <button
                 type="button"
                 className="button"
-                onClick={() => openModal("updateCharacter")}
+                onClick={() => openModal("updateCharacter", character)}
               >
                 Modifier
               </button>

@@ -47,33 +47,48 @@ export default function CharacterDetails() {
   return (
     <main className="character">
       {character ? (
-        <section>
+        <section className="character_section">
+          <h2>
+            {character.name.charAt(0).toLocaleUpperCase() +
+              character.name.slice(1)}
+          </h2>
           {character.sex === "M" ? (
             <img
-              className="character_img"
+              className="character_section_img"
               src={`/characters/${character.breed.name.toLocaleLowerCase()}_male.webp`}
               alt={`Miniature de classe ${character.breed.name.toLocaleLowerCase()}`}
             />
           ) : (
             <img
-              className="character_img"
+              className="character_section_img"
               src={`/characters/${character.breed.name.toLocaleLowerCase()}_female.webp`}
               alt={`Miniature de classe ${character.breed.name.toLocaleLowerCase()}`}
             />
           )}
 
-          <div className="character_details">
-            <p>Pseudo: {character.name}</p>
-            <p>Classe: {character.breed.name}</p>
-            <p>Niveau: {character.level}</p>
-            <p>Serveur: {character.server.name}</p>
-            <p>Sexe: {character.sex}</p>
-            <p>Alignement: {character.alignment}</p>
-            <a href={character.stuff}>Stuff: {character.stuff}</a>
+          <div className="character_section_details">
+            <p>
+              <span>Classe:</span> {character.breed.name}
+            </p>
+            <p>
+              <span>Serveur:</span> {character.server.name}
+            </p>
+            <p>
+              <span>Niveau:</span> {character.level}
+            </p>
+            <p>
+              <span>Alignement:</span> {character.alignment}
+            </p>
+            <p>
+              <span>Sexe:</span> {character.sex}
+            </p>
+            <a href={character.stuff}>
+              <span>Stuff:</span> {character.stuff}
+            </a>
           </div>
 
           {character.user.id === user?.id ? (
-            <div className="character_buttons">
+            <div className="character_section_buttons">
               <button type="button" className="button">
                 Modifier
               </button>

@@ -1,0 +1,93 @@
+@use "../../assets/styles/variables";
+
+.event {
+  width: 85%;
+  margin: 5% auto 10% auto;
+  font-size: 1.3rem;
+  background-color: var(--secondary-bg);
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  border-radius: 1.5rem;
+
+  &_section {
+    width: 90%;
+    padding: 5% 0% 0% 0%;
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    justify-content: space-evenly;
+
+    &_title {
+      margin-bottom: 5%;
+
+      h2 {
+        font-size: 3rem;
+      }
+    }
+
+    &_details {
+      margin-bottom: 5%;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: auto;
+      row-gap: 1rem;
+
+      &_tag {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        &_text {
+          margin-left: 2.5%;
+          padding: 2% 5%;
+          border-radius: 0.5rem;
+        }
+      }
+
+      &_item {
+        margin: auto;
+      }
+    }
+
+    &_description {
+      margin-bottom: 5%;
+    }
+
+    &_characters {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+
+      &_list {
+        width: 100%;
+        padding: 0;
+        list-style: none;
+      }
+    }
+
+    &_buttons {
+      width: 60%;
+      margin: 5% auto;
+      display: flex;
+      justify-content: space-evenly;
+      align-items: center;
+
+      button {
+        padding: 5% 7.5%;
+      }
+    }
+
+    span {
+      font-weight: bold;
+    }
+  }
+
+  &_button {
+    margin-bottom: 5%;
+    padding: 1% 2%;
+  }
+}

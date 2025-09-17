@@ -1,0 +1,157 @@
+import "./EventDetails.scss";
+
+import { isAxiosError } from "axios";
+import { useEffect, useState } from "react";
+import { Navigate, useNavigate, useParams } from "react-router";
+
+import { EventEnriched } from "../../types/event";
+
+import { useAuth } from "../../contexts/authContext";
+import { useModal } from "../../contexts/modalContext";
+
+import { Config } from "../../config/config";
+import { ApiClient } from "../../services/client";
+import { EventService } from "../../services/api/eventService";
+import EventCharacterCard from "../../components/EventCharacterCard/EventCharacterCard";
+
+const config = Config.getInstance();
+const axios = new ApiClient(config.baseUrl);
+const eventService = new EventService(axios);
+
+export default function EventDetails() {
+  const navigate = useNavigate();
+  const { id } = useParams();
+  const { user } = useAuth();
+  const { updateTarget, openModal, handleDelete } = useModal();
+
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [event, setEvent] = useState<EventEnriched | null>(null);
+
+  if (!id) return <Navigate to="/not-found" replace />;
+
+  useEffect(() => {
+    const fetchEvent = async () => {
+      try {
+        const response = await eventService.getOneEnriched(id);
+
+        setEvent(response);
+      } catch (error) {
+        if (isAxiosError(error)) {
+          console.error("Axios error:", error.message);
+        } else if (error instanceof Error) {
+          console.error("General error:", error.message);
+        }
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchEvent();
+  }, [id, updateTarget]);
+
+  if (!isLoading && event === null) return <Navigate to="/not-found" replace />;
+
+  return (
+    <main className="event">
+      {event ? (
+        <section className="event_section">
+          <div className="event_section_title">
+            <h2>
+              {event.title.charAt(0).toLocaleUpperCase() + event.title.slice(1)}
+            </h2>
+            <p>Créé par {event.user.username}</p>
+          </div>
+
+          <div className="event_section_details">
+            <div className="event_section_details_tag">
+              <span>Tag:</span>
+              <p
+                className="event_section_details_tag_text"
+                style={{ backgroundColor: event.tag.color }}
+              >
+                {event.tag.name}
+              </p>
+            </div>
+            <p className="event_section_details_item">
+              <span>Serveur:</span> {event.server.name}
+            </p>
+            <p className="event_section_details_item">
+              <span>Date: </span>
+              {new Date(event.date).toLocaleString(undefined, {
+                dateStyle: "short",
+                timeStyle: "short",
+              })}
+            </p>
+            <p className="event_section_details_item">
+              <span>Durée:</span> {event.duration} minutes
+            </p>
+            <p className="event_section_details_item">
+              <span>Nombre de joueurs:</span> {event.characters.length}/
+              {event.max_players}
+            </p>
+            <p className="event_section_details_item">
+              <span>Statut:</span> {event.status}
+            </p>
+            {event.area && (
+              <p className="event_section_details_item">
+                <span>Zone:</span> {event.area}
+              </p>
+            )}
+            {event.sub_area && (
+              <p className="event_section_details_item">
+                <span>Sous-zone:</span> {event.sub_area}
+              </p>
+            )}
+          </div>
+
+          {event.description && (
+            <div className="event_section_description">
+              <span>Description:</span> <p>{event.description}</p>
+            </div>
+          )}
+
+          <div className="event_section_characters">
+            <span>Groupe: </span>
+            <ul className="event_section_characters_list">
+              {event.characters.map((character) => (
+                <li key={character.id}>
+                  <EventCharacterCard
+                    character={character}
+                    handleDelete={handleDelete}
+                  />
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {event.user.id === user?.id && (
+            <div className="event_section_buttons">
+              <button
+                type="button"
+                className="button"
+                onClick={() => openModal("updateEvent", event)}
+              >
+                Modifier
+              </button>
+              <button
+                type="button"
+                className="button delete"
+                onClick={() => handleDelete("event_details", event.id)}
+              >
+                Supprimer
+              </button>
+            </div>
+          )}
+        </section>
+      ) : (
+        <p>Chargement en cours</p>
+      )}
+      <button
+        type="button"
+        className="event_button button"
+        onClick={() => navigate(-1)}
+      >
+        Retour
+      </button>
+    </main>
+  );
+}

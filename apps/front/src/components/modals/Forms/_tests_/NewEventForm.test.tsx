@@ -1,21 +1,21 @@
 import { render, screen, waitFor, fireEvent } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
-// Importation du composant à tester
-import NewEventForm from "../Forms/NewEventForm";
+import { useAuth } from "../../../../contexts/authContext";
+import { useNotification } from "../../../../contexts/notificationContext";
 
-// Importation des dépendances et de leurs types
-import { useAuth } from "../../../contexts/authContext";
-import { useNotification } from "../../../contexts/notificationContext";
-import * as TagService from "../../../services/api/tagService";
-import * as ServerService from "../../../services/api/serverService";
-import * as DofusDBService from "../../../services/api/dofusDBService";
-import * as CharacterService from "../../../services/api/characterService";
-import { SelectOptionsProps } from "../FormComponents/Options/SelectOptions";
-import { CharactersOptionsProps } from "../FormComponents/Options/CharactersOptions";
-import formatDateToLocalInput from "../utils/formatDateToLocalInput";
+import * as TagService from "../../../../services/api/tagService";
+import formatDateToLocalInput from "../../utils/formatDateToLocalInput";
+import * as ServerService from "../../../../services/api/serverService";
+import * as DofusDBService from "../../../../services/api/dofusDBService";
+import * as CharacterService from "../../../../services/api/characterService";
+import { SelectOptionsProps } from "../../FormComponents/Options/SelectOptions";
+import { CharactersOptionsProps } from "../../FormComponents/Options/CharactersOptions";
 
-vi.mock("../../../config/config.ts", () => ({
+import NewEventForm from "../../Forms/NewEventForm";
+
+// Mock config
+vi.mock("../../../../config/config.ts", () => ({
   Config: {
     getInstance: () => ({
       baseUrl: "http://localhost",
@@ -23,22 +23,22 @@ vi.mock("../../../config/config.ts", () => ({
   },
 }));
 
-// Mocker les modules de services
-vi.mock("../../../services/api/tagService");
-vi.mock("../../../services/api/serverService");
-vi.mock("../../../services/api/dofusDBService");
-vi.mock("../../../services/api/characterService");
+// Mock services
+vi.mock("../../../../services/api/tagService");
+vi.mock("../../../../services/api/serverService");
+vi.mock("../../../../services/api/dofusDBService");
+vi.mock("../../../../services/api/characterService");
 
-// Mocker les hooks de contexte
-vi.mock("../../../contexts/authContext", () => ({
+// Mock context
+vi.mock("../../../../contexts/authContext", () => ({
   useAuth: vi.fn(),
 }));
-vi.mock("../../../contexts/notificationContext", () => ({
+vi.mock("../../../../contexts/notificationContext", () => ({
   useNotification: vi.fn(),
 }));
 
-// Mocker les composants enfants pour l'isolation et la simulation des interactions
-vi.mock("../FormComponents/Options/SelectOptions", () => ({
+// Mock child components
+vi.mock("../../FormComponents/Options/SelectOptions", () => ({
   default: ({ name, onChange, value, label }: SelectOptionsProps<any, any>) => (
     <div data-testid={`select-options-${name}`}>
       <label>{label}</label>
@@ -58,7 +58,7 @@ vi.mock("../FormComponents/Options/SelectOptions", () => ({
   ),
 }));
 
-vi.mock("../FormComponents/Options/CharactersOptions", () => ({
+vi.mock("../../FormComponents/Options/CharactersOptions", () => ({
   default: ({
     name,
     onChange,
@@ -79,8 +79,7 @@ vi.mock("../FormComponents/Options/CharactersOptions", () => ({
   ),
 }));
 
-// Mock du module d'utilitaire
-vi.mock("../utils/formatDateToLocalInput", () => ({
+vi.mock("../../utils/formatDateToLocalInput", () => ({
   default: vi.fn(),
 }));
 

@@ -248,6 +248,7 @@ export default function NewEventForm({ handleSubmit }: NewEventFormProps) {
             type="number"
             name="duration"
             id="duration"
+            required
             placeholder="Durée en minutes"
             className="content_modal_form_label_input"
           />

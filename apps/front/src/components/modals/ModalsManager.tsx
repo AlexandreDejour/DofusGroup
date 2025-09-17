@@ -5,14 +5,18 @@ import { faXmark } from "@fortawesome/free-solid-svg-icons";
 
 import { useModal } from "../../contexts/modalContext";
 
+import { typeGuard } from "./utils/typeGuard";
+
 import LoginForm from "./Forms/LoginForm";
 import UpdateForm from "./Forms/UpdateForm";
 import RegisterForm from "./Forms/RegisterForm";
 import NewEventForm from "./Forms/NewEventForm";
 import NewCharacterForm from "./Forms/NewCharacterForm";
+import UpdateCharacterForm from "./Forms/UpdateCharacterForm";
 
 export default function ModalsManager() {
-  const { isOpen, modalType, handleSubmit, closeModal } = useModal();
+  const { isOpen, modalType, updateTarget, handleSubmit, closeModal } =
+    useModal();
 
   if (!isOpen || !modalType) return null;
 
@@ -44,6 +48,14 @@ export default function ModalsManager() {
           {modalType === "newCharacter" && (
             <NewCharacterForm handleSubmit={(event) => handleSubmit(event)} />
           )}
+
+          {modalType === "updateCharacter" &&
+            typeGuard.characterEnriched(updateTarget) && (
+              <UpdateCharacterForm
+                updateTarget={updateTarget}
+                handleSubmit={(event) => handleSubmit(event)}
+              />
+            )}
 
           {modalType === "newEvent" && (
             <NewEventForm handleSubmit={(event) => handleSubmit(event)} />

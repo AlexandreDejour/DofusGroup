@@ -6,10 +6,11 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
 
 import { CharacterEnriched } from "../../types/character";
+import { TargetType } from "../../contexts/modalContext";
 
 interface CharacterCardProps {
   character: CharacterEnriched;
-  handleDelete: (targetType: string, targetId: string) => Promise<void>;
+  handleDelete: (targetType: TargetType, targetId: string) => Promise<void>;
 }
 
 export default function CharacterCard({
@@ -40,7 +41,7 @@ export default function CharacterCard({
       <div className="character_card_buttons">
         <button
           className="character_card_buttons_details button"
-          onClick={() => navigate(`/details/${character.id}`)}
+          onClick={() => navigate(`/character/${character.id}`)}
         >
           Détails
         </button>

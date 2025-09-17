@@ -26,7 +26,7 @@ export default function SelectOptions<T, ID extends string | number>({
       <span>{label}:</span>
       <select
         id={name}
-        name={`${name}_id`}
+        name={name === "alignment" ? name : `${name}_id`}
         value={value}
         onChange={(e) => onChange(e.target.value)}
       >

@@ -1,6 +1,6 @@
 import axios from "axios";
 import { ApiClient } from "../client";
-import { Character } from "../../types/character";
+import { Character, CharacterEnriched } from "../../types/character";
 import { CreateCharacterForm } from "../../types/form";
 
 export class CharacterService {
@@ -31,6 +31,23 @@ export class CharacterService {
     }
   }
 
+  public async getOneEnriched(characterId: string) {
+    try {
+      const response = await this.axios.get<CharacterEnriched>(
+        `/character/enriched/${characterId}`,
+      );
+
+      return response.data;
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        if (error.response?.status) {
+          throw new Error(error.message);
+        }
+      }
+      throw error;
+    }
+  }
+
   public async create(
     userId: string,
     data: CreateCharacterForm,
@@ -51,6 +68,54 @@ export class CharacterService {
         data,
         { withCredentials: true },
       );
+
+      return response.data;
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        if (error.response?.status === 400) {
+          throw new Error(
+            "Les informations transmises sont érronées ou incomplètes.",
+          );
+        }
+
+        if (error.response?.status === 401) {
+          throw new Error(
+            "Vous devez être connecter pour créer un personnage.",
+          );
+        }
+
+        if (error.response?.status === 403) {
+          throw new Error(
+            "La création de personnage est réservée à votre compte.",
+          );
+        }
+      }
+      throw error;
+    }
+  }
+
+  public async update(
+    userId: string,
+    characterId: string,
+    data: CreateCharacterForm,
+  ): Promise<CharacterEnriched> {
+    if (!(data.level >= 1 && data.level <= 200)) {
+      throw new Error(
+        "Le niveau de votre personnage doit être compris entre 1 et 200.",
+      );
+    }
+
+    if (data.stuff && !this.urlRegex.test(data.stuff)) {
+      throw new Error("Seules les URL provenant de DofusBook sont acceptées.");
+    }
+
+    try {
+      const response = await this.axios.patch<CharacterEnriched>(
+        `/user/${userId}/character/${characterId}`,
+        data,
+        { withCredentials: true },
+      );
+
       return response.data;
     } catch (error) {
       if (axios.isAxiosError(error)) {

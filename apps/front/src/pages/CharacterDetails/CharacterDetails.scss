@@ -1,0 +1,59 @@
+@use "../../assets/styles/variables";
+
+.character {
+  width: 80%;
+  margin: 5% auto 10% auto;
+  font-size: 1.3rem;
+  background-color: var(--secondary-bg);
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  border-radius: 1.5rem;
+
+  &_section {
+    width: 80%;
+    padding: 10% 0% 5% 0%;
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    justify-content: space-evenly;
+
+    h2 {
+      font-size: 3rem;
+    }
+
+    &_img {
+      width: 30%;
+      margin: auto;
+    }
+
+    &_details {
+      display: grid;
+      grid-template-columns: 0.75fr 1.25fr;
+      grid-template-rows: auto;
+      row-gap: 1rem;
+
+      span {
+        font-weight: bold;
+      }
+    }
+
+    &_buttons {
+      width: 60%;
+      margin: auto;
+      display: flex;
+      justify-content: space-evenly;
+      align-items: center;
+
+      button {
+        padding: 5% 7.5%;
+      }
+    }
+  }
+
+  &_button {
+    margin-bottom: 5%;
+    padding: 1% 2%;
+  }
+}

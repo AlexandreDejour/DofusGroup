@@ -2,7 +2,7 @@
 import "@testing-library/jest-dom";
 import { render, screen, fireEvent } from "@testing-library/react";
 
-import UpdateForm from "../Forms/UpdateForm";
+import UpdateForm from "../UpdateForm";
 
 describe("UpdateForm", () => {
   let handleSubmit: ReturnType<typeof vi.fn>;

@@ -1,17 +1,18 @@
 import { render, screen, waitFor, fireEvent } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
-import { useNotification } from "../../../contexts/notificationContext";
+import { useNotification } from "../../../../contexts/notificationContext";
 
-import { BreedRadioProps } from "../FormComponents/Radio/BreedRadio";
-import { GenderRadioProps } from "../FormComponents/Radio/GenderRadio";
-import { SelectOptionsProps } from "../FormComponents/Options/SelectOptions";
+import { BreedRadioProps } from "../../FormComponents/Radio/BreedRadio";
+import { GenderRadioProps } from "../../FormComponents/Radio/GenderRadio";
+import { SelectOptionsProps } from "../../FormComponents/Options/SelectOptions";
 
-import NewCharacterForm from "../Forms/NewCharacterForm";
-import * as BreedService from "../../../services/api/breedService";
-import * as ServerService from "../../../services/api/serverService";
+import UpdateCharacterForm from "../UpdateCharacterForm";
+import * as BreedService from "../../../../services/api/breedService";
+import * as ServerService from "../../../../services/api/serverService";
 
-vi.mock("../../../config/config.ts", () => ({
+// Mock config
+vi.mock("../../../../config/config.ts", () => ({
   Config: {
     getInstance: () => ({
       baseUrl: "http://localhost",
@@ -20,16 +21,16 @@ vi.mock("../../../config/config.ts", () => ({
 }));
 
 // 1. Mock services
-vi.mock("../../../services/api/breedService");
-vi.mock("../../../services/api/serverService");
+vi.mock("../../../../services/api/breedService");
+vi.mock("../../../../services/api/serverService");
 
 // 2. Mock context
-vi.mock("../../../contexts/notificationContext", () => ({
+vi.mock("../../../../contexts/notificationContext", () => ({
   useNotification: vi.fn(),
 }));
 
 // 3. Mock components
-vi.mock("../FormComponents/Radio/BreedRadio", () => ({
+vi.mock("../../FormComponents/Radio/BreedRadio", () => ({
   default: ({ onChange, breeds, value, sex }: BreedRadioProps) => (
     <div data-testid="breed-radio">
       <input
@@ -41,7 +42,7 @@ vi.mock("../FormComponents/Radio/BreedRadio", () => ({
   ),
 }));
 
-vi.mock("../FormComponents/Radio/GenderRadio", () => ({
+vi.mock("../../FormComponents/Radio/GenderRadio", () => ({
   default: ({ onChange, value }: GenderRadioProps) => (
     <div data-testid="gender-radio">
       <input
@@ -53,7 +54,7 @@ vi.mock("../FormComponents/Radio/GenderRadio", () => ({
   ),
 }));
 
-vi.mock("../FormComponents/Options/SelectOptions", () => ({
+vi.mock("../../FormComponents/Options/SelectOptions", () => ({
   default: ({ name, onChange, value, label }: SelectOptionsProps<any, any>) => (
     // Le data-testid est maintenant unique pour chaque SelectOptions
     <div data-testid={`select-options-${name}`}>
@@ -71,6 +72,29 @@ describe("NewCharacterForm", () => {
   const mockShowError = vi.fn();
   const mockHandleSubmit = vi.fn();
 
+  const mockUpdateTarget = {
+    id: "cfff40b3-9625-4f0a-854b-d8d6d6b4b667",
+    name: "Chronos",
+    sex: "M",
+    level: 50,
+    alignment: "Neutre",
+    stuff: "https://d-bk.net/fr/d/1QVjw",
+    default_character: false,
+    server: {
+      id: "de5a6c69-bc0b-496c-9b62-bd7ea076b8ed",
+      name: "Dakal",
+      mono_account: true,
+    },
+    breed: {
+      id: "d81c200e-831c-419a-948f-c45d1bbf6aac",
+      name: "Cra",
+    },
+    events: [],
+    user: {
+      id: "15ff46b5-60f3-4e86-98bc-da8fcaa3e29e",
+      username: "toto",
+    },
+  };
   const mockBreeds = [{ id: "123", name: "Iop" }];
   const mockServers = [{ id: "123", name: "Serveur Test", mono_account: true }];
 
@@ -94,10 +118,15 @@ describe("NewCharacterForm", () => {
       ServerService.ServerService.prototype.getServers,
     ).mockResolvedValue(mockServers);
 
-    render(<NewCharacterForm handleSubmit={mockHandleSubmit} />);
+    render(
+      <UpdateCharacterForm
+        updateTarget={mockUpdateTarget}
+        handleSubmit={mockHandleSubmit}
+      />,
+    );
 
     expect(
-      screen.getByRole("heading", { name: /Création de personnage/i }),
+      screen.getByRole("heading", { name: /Modification de personnage/i }),
     ).toBeInTheDocument();
     expect(screen.getByRole("form")).toBeInTheDocument();
 
@@ -130,7 +159,12 @@ describe("NewCharacterForm", () => {
       ServerService.ServerService.prototype.getServers,
     ).mockResolvedValue(mockServers);
 
-    render(<NewCharacterForm handleSubmit={mockHandleSubmit} />);
+    render(
+      <UpdateCharacterForm
+        updateTarget={mockUpdateTarget}
+        handleSubmit={mockHandleSubmit}
+      />,
+    );
 
     await waitFor(() => {
       expect(mockShowError).toHaveBeenCalledWith("Erreur", errorMessage);
@@ -149,7 +183,12 @@ describe("NewCharacterForm", () => {
       message: errorMessage,
     });
 
-    render(<NewCharacterForm handleSubmit={mockHandleSubmit} />);
+    render(
+      <UpdateCharacterForm
+        updateTarget={mockUpdateTarget}
+        handleSubmit={mockHandleSubmit}
+      />,
+    );
 
     await waitFor(() => {
       expect(mockShowError).toHaveBeenCalledWith("Erreur", errorMessage);
@@ -164,13 +203,16 @@ describe("NewCharacterForm", () => {
       ServerService.ServerService.prototype.getServers,
     ).mockResolvedValue(mockServers);
 
-    render(<NewCharacterForm handleSubmit={mockHandleSubmit} />);
+    render(
+      <UpdateCharacterForm
+        updateTarget={mockUpdateTarget}
+        handleSubmit={mockHandleSubmit}
+      />,
+    );
 
-    // Simuler la soumission du formulaire
     const form = screen.getByRole("form");
     fireEvent.submit(form);
 
-    // Vérifier que la fonction handleSubmit passée en prop a bien été appelée
     expect(mockHandleSubmit).toHaveBeenCalledTimes(1);
     expect(mockHandleSubmit).toHaveBeenCalledWith(
       expect.objectContaining({ type: "submit" }),

@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 
-import { generateOptions } from "../utils/generateOptions";
+import { generateOptions } from "../../utils/generateOptions";
 
 describe("generateOptions", () => {
   describe("servers", () => {

@@ -10,6 +10,8 @@ import {
   CreateCharacterForm,
   CreateEventForm,
 } from "../types/form";
+import { Event } from "../types/event";
+import { CharacterEnriched } from "../types/character";
 
 import { Config } from "../config/config";
 import { ApiClient } from "../services/client";
@@ -19,6 +21,7 @@ import { UserService } from "../services/api/userService";
 import { EventService } from "../services/api/eventService";
 import { CharacterService } from "../services/api/characterService";
 import isUpdateField from "../components/modals/utils/isUpdateField";
+import { useNavigate } from "react-router";
 
 const config = Config.getInstance();
 const axios = new ApiClient(config.baseUrl);
@@ -30,10 +33,15 @@ const characterService = new CharacterService(axios);
 export interface ModalContextType {
   isOpen: boolean;
   modalType: string | null; // ex: "register", "login", "newEvent", etc.
+  updateTarget: Event | CharacterEnriched | null;
   formData: FormData;
   resetForm: React.Dispatch<React.SetStateAction<FormData>>;
   handleSubmit: (event: React.FormEvent<HTMLFormElement>) => Promise<void>;
-  openModal: (modalType: ModalType) => void;
+  handleDelete: (targetType: TargetType, targetId?: string) => Promise<void>;
+  openModal: (
+    modalType: ModalType,
+    updateTarget?: Event | CharacterEnriched,
+  ) => void;
   closeModal: () => void;
 }
 
@@ -48,28 +56,43 @@ export type ModalType =
   | "password"
   | "username"
   | "newCharacter"
+  | "updateCharacter"
   | "newEvent"
   | null;
+
+export type TargetType = "user" | "event" | "character" | "character_details";
 
 const ModalContext = createContext<ModalContextType | null>(null);
 
 export default function ModalProvider({ children }: ModalProviderProps) {
+  const navigate = useNavigate();
+
   const { user, setUser } = useAuth();
   const { showSuccess, showError } = useNotification();
+
   const [isOpen, setIsOpen] = useState(false);
   const [modalType, setModalType] = useState<ModalType>(null);
   const [formData, setFormData] = useState<FormData>(new FormData());
+  const [updateTarget, setUpdateTarget] = useState<
+    Event | CharacterEnriched | null
+  >(null);
 
   const resetForm = () => setFormData(new FormData());
 
-  const openModal = useCallback((modalType: ModalType) => {
-    setModalType(modalType);
-    setIsOpen(true);
-  }, []);
+  const openModal = useCallback(
+    (modalType: ModalType, updateTarget?: Event | CharacterEnriched) => {
+      if (updateTarget) setUpdateTarget(updateTarget);
+
+      setModalType(modalType);
+      setIsOpen(true);
+    },
+    [],
+  );
 
   const closeModal = useCallback(() => {
     setIsOpen(false);
     setModalType(null);
+    setUpdateTarget(null);
     setFormData(new FormData());
   }, []);
 
@@ -163,6 +186,46 @@ export default function ModalProvider({ children }: ModalProviderProps) {
           );
         }
 
+        if (modalType === "updateCharacter") {
+          if (!user || !updateTarget) return;
+
+          const keys: (keyof CreateCharacterForm)[] = [
+            "name",
+            "sex",
+            "level",
+            "alignment",
+            "stuff",
+            "default_character",
+            "breed_id",
+            "server_id",
+          ];
+          const booleanKeys: (keyof CreateCharacterForm)[] = [
+            "default_character",
+          ];
+          const numberKeys: (keyof CreateCharacterForm)[] = ["level"];
+
+          const data = formDataToObject<CreateCharacterForm>(formData, {
+            keys,
+            booleanKeys,
+            numberKeys,
+          });
+
+          const characterData = await characterService.update(
+            user.id,
+            updateTarget.id,
+            data,
+          );
+          const userData = await userService.getOne(user.id);
+
+          setUpdateTarget(characterData);
+          setUser({ ...user, ...userData });
+
+          showSuccess(
+            "Mise à jour réussie !",
+            `Vous avez mis à jour votre personnage.`,
+          );
+        }
+
         if (modalType === "newEvent") {
           if (!user) return;
 
@@ -194,8 +257,7 @@ export default function ModalProvider({ children }: ModalProviderProps) {
             arrayKeys,
           });
 
-          await eventService.create(user.id, data);
-          const response = await userService.getOne(user.id);
+          const response = await eventService.create(user.id, data);
 
           setUser({ ...user, ...response });
 
@@ -217,14 +279,60 @@ export default function ModalProvider({ children }: ModalProviderProps) {
     [modalType, closeModal],
   );
 
+  const handleDelete = useCallback(
+    async (targetType: TargetType, targetId?: string) => {
+      if (!user) return;
+
+      try {
+        if (targetType === "event" && targetId) {
+          await eventService.delete(user.id, targetId);
+          const response = await userService.getOne(user.id);
+
+          setUser({ ...user, ...response });
+        }
+
+        if (targetType === "character" && targetId) {
+          await characterService.delete(user.id, targetId);
+          const response = await userService.getOne(user.id);
+
+          setUser({ ...user, ...response });
+        }
+
+        if (targetType === "character_details" && targetId) {
+          await characterService.delete(user.id, targetId);
+          const response = await userService.getOne(user.id);
+
+          setUser({ ...user, ...response });
+
+          navigate("/profile");
+        }
+
+        if (targetType === "user") {
+          await userService.delete(user.id);
+
+          setUser(null);
+        }
+      } catch (error) {
+        if (error instanceof Error) {
+          showError("Erreur", error.message);
+        } else {
+          showError("Erreur", "Une erreur est survenue");
+        }
+      }
+    },
+    [user, setUser],
+  );
+
   const contextValues: ModalContextType = {
     isOpen,
     modalType,
+    updateTarget,
     formData,
     resetForm,
     openModal,
     closeModal,
     handleSubmit,
+    handleDelete,
   };
 
   return (

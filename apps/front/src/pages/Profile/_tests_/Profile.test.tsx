@@ -24,7 +24,7 @@ vi.mock("../../../config/config.ts", () => ({
   },
 }));
 
-// Mock useAuth (méthode simplifiée)
+// Mock useAuth
 vi.mock("../../../contexts/authContext", () => ({
   __esModule: true,
   useAuth: () => ({
@@ -51,11 +51,13 @@ vi.mock("../../../contexts/authContext", () => ({
 
 // Mock useModal
 const openModal = vi.fn();
+const handleDelete = vi.fn();
 vi.mock("../../../contexts/modalContext", () => ({
   __esModule: true,
   default: ({ children }: { children: React.ReactNode }) => children,
   useModal: () => ({
     openModal,
+    handleDelete,
   }),
 }));
 
@@ -79,6 +81,7 @@ vi.mock("react-router", async (importOriginal) => {
   };
 });
 
+// Mock services
 vi.mock("../../../services/api/eventService", () => {
   return {
     EventService: vi.fn().mockImplementation(() => ({
@@ -243,13 +246,11 @@ describe("Profile Page", () => {
         },
       ],
     });
-    getOneMock = vi.fn().mockResolvedValue(mockUserAfterDelete);
-    deleteEventMock = vi.fn().mockResolvedValue({});
-    deleteCharacterMock = vi.fn().mockResolvedValue({});
-    deleteUserMock = vi.fn().mockResolvedValue({});
     showError.mockClear();
     openModal.mockClear();
+    handleDelete.mockClear();
     mockNavigate.mockClear();
+    getOneMock = vi.fn().mockResolvedValue(mockUserAfterDelete);
   });
 
   afterEach(() => {
@@ -326,9 +327,7 @@ describe("Profile Page", () => {
       fireEvent.click(deleteAccountButton);
     });
 
-    expect(deleteUserMock).toHaveBeenCalledWith(
-      "15ff46b5-60f3-4e86-98bc-da8fcaa3e29e",
-    );
+    expect(handleDelete).toHaveBeenCalledWith("user");
   });
 
   it("Display events list after API call", async () => {
@@ -362,8 +361,8 @@ describe("Profile Page", () => {
     });
 
     // Check delete service is call with valid arguments
-    expect(deleteEventMock).toHaveBeenCalledWith(
-      "15ff46b5-60f3-4e86-98bc-da8fcaa3e29e",
+    expect(handleDelete).toHaveBeenCalledWith(
+      "event",
       "ef9891a6-dcab-4846-8f9c-2044efe2096c",
     );
   });
@@ -394,8 +393,8 @@ describe("Profile Page", () => {
     });
 
     // Check delete service is call with valid arguments
-    expect(deleteCharacterMock).toHaveBeenCalledWith(
-      "15ff46b5-60f3-4e86-98bc-da8fcaa3e29e",
+    expect(handleDelete).toHaveBeenCalledWith(
+      "character",
       "9f0eaa8c-eec1-4e85-9365-7653c1330325",
     );
   });

@@ -49,13 +49,10 @@ export class CharacterRepository {
     }
   }
 
-  public async getOneByUserId(
-    userId: string,
-    characterId: string,
-  ): Promise<Character | null> {
+  public async getOne(characterId: string): Promise<Character | null> {
     try {
       const result: CharacterEntity | null = await CharacterEntity.findOne({
-        where: { id: characterId, user_id: userId },
+        where: { id: characterId },
       });
 
       if (!result) {
@@ -70,13 +67,12 @@ export class CharacterRepository {
     }
   }
 
-  public async getOneEnrichedByUserId(
-    userId: string,
+  public async getOneEnriched(
     characterId: string,
   ): Promise<CharacterEnriched | null> {
     try {
       const result: CharacterEntity | null = await CharacterEntity.findOne({
-        where: { id: characterId, user_id: userId },
+        where: { id: characterId },
         include: [
           "server",
           "breed",

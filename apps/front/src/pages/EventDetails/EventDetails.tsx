@@ -1,13 +1,14 @@
 import "./EventDetails.scss";
 
 import { isAxiosError } from "axios";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Navigate, useNavigate, useParams } from "react-router";
 
 import { EventEnriched } from "../../types/event";
 
 import { useAuth } from "../../contexts/authContext";
 import { useModal } from "../../contexts/modalContext";
+import { useNotification } from "../../contexts/notificationContext";
 
 import { Config } from "../../config/config";
 import { ApiClient } from "../../services/client";
@@ -20,12 +21,34 @@ const eventService = new EventService(axios);
 
 export default function EventDetails() {
   const navigate = useNavigate();
+
   const { id } = useParams();
   const { user } = useAuth();
+  const { showError } = useNotification();
   const { updateTarget, openModal, handleDelete } = useModal();
 
-  const [isLoading, setIsLoading] = useState<boolean>(true);
   const [event, setEvent] = useState<EventEnriched | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+
+  const removeCharacter = useCallback(
+    async (eventId: string, characterId: string) => {
+      try {
+        const response = await eventService.removeCharacter(
+          eventId,
+          characterId,
+        );
+
+        setEvent(response);
+      } catch (error) {
+        if (error instanceof Error) {
+          showError("Erreur", error.message);
+        } else {
+          showError("Erreur", "Une erreur est survenue");
+        }
+      }
+    },
+    [event],
+  );
 
   if (!id) return <Navigate to="/not-found" replace />;
 
@@ -115,7 +138,9 @@ export default function EventDetails() {
               {event.characters.map((character) => (
                 <li key={character.id}>
                   <EventCharacterCard
+                    event={event}
                     character={character}
+                    removeCharacter={removeCharacter}
                     handleDelete={handleDelete}
                   />
                 </li>

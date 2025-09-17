@@ -1,8 +1,9 @@
+import axios from "axios";
+
 import { ApiClient } from "../client";
 
-import { PaginatedEvents } from "../../types/event";
-import axios from "axios";
 import { CreateEventForm } from "../../types/form";
+import { EventEnriched, PaginatedEvents } from "../../types/event";
 
 export class EventService {
   private axios;
@@ -24,6 +25,23 @@ export class EventService {
       if (axios.isAxiosError(error)) {
         if (error.response?.status === 204) {
           throw new Error("Aucun évènement à venir.");
+        }
+      }
+      throw error;
+    }
+  }
+
+  public async getOneEnriched(eventId: string) {
+    try {
+      const response = await this.axios.get<EventEnriched>(
+        `/event/${eventId}/enriched`,
+      );
+
+      return response.data;
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        if (error.response?.status) {
+          throw new Error(error.message);
         }
       }
       throw error;

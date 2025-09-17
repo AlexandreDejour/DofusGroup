@@ -7,6 +7,7 @@ import Header from "./Header/Header";
 import Footer from "./Footer/Footer";
 import Profile from "../pages/Profile/Profile";
 import ModalsManager from "./modals/ModalsManager";
+import EventDetails from "../pages/EventDetails/EventDetails";
 import NotificationContainer from "./Notification/NotificationContainer";
 import CharacterDetails from "../pages/CharacterDetails/CharacterDetails";
 
@@ -19,6 +20,7 @@ export default function App() {
         <Route path="/" element={<Home />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/character/:id" element={<CharacterDetails />} />
+        <Route path="/event/:id" element={<EventDetails />} />
       </Routes>
       <NotificationContainer />
       <Footer />

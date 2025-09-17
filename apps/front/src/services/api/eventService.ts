@@ -100,10 +100,10 @@ export class EventService {
       return response.data;
     } catch (error) {
       if (axios.isAxiosError(error)) {
-        if ([400, 401, 403].includes(error.response?.status ?? 0)) {
-          throw new Error("Cette action n'est pas autorisée.");
-        } else if (error.response?.status === 404) {
+        if (error.response?.status === 404) {
           throw new Error("Cette évènement n'existe plus.");
+        } else if (error.response?.status === 500) {
+          throw new Error("Cette action est impossible.");
         }
       }
       throw error;

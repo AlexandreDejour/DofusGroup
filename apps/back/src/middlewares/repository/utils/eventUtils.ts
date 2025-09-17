@@ -17,7 +17,7 @@ export class EventUtils {
     }
   }
 
-  public checkTeamMinLength(eventEntity: EventEntity): void {
+  public checkTeamMinLength(eventEntity: EventEntity): number {
     const minLength = 1;
     const existingCount = eventEntity.characters?.length ?? 0;
     const totalCount = existingCount - 1;
@@ -25,6 +25,8 @@ export class EventUtils {
     if (totalCount < minLength) {
       throw new Error(`Event can't have any characters`);
     }
+
+    return totalCount;
   }
 
   public checkCharactersServer(

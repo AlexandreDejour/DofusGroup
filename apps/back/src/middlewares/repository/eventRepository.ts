@@ -174,10 +174,14 @@ export class EventRepository {
 
       const isInTeam = this.utils.isInTeam(event, character);
 
-      this.utils.checkTeamMinLength(event);
-
       if (!isInTeam) {
         throw new Error("Unavailable characters to remove");
+      }
+
+      const isMuchLonger = this.utils.checkTeamMinLength(event);
+
+      if (isMuchLonger < 1) {
+        throw new Error("Team can't be empty");
       }
 
       await event.removeCharacter(character.id);

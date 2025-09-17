@@ -181,8 +181,6 @@ export class EventController {
 
       const eventId: string = req.params.eventId;
       const characterId: string = req.body.character_id;
-      console.log(eventId);
-      console.log(characterId);
 
       const eventUpdated: Event | null =
         await this.repository.removeCharacterFromEvent(eventId, characterId);

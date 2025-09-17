@@ -23,7 +23,7 @@ export type CreateCharacterForm = {
 export type CreateEventForm = {
   title: string;
   date: Date;
-  duration?: number;
+  duration: number;
   area?: string;
   sub_area?: string;
   donjon_name?: string;

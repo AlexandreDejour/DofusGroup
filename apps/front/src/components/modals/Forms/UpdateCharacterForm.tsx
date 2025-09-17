@@ -91,7 +91,7 @@ export default function UpdateCharacterForm({
 
   return (
     <div className="content_modal" style={{ width: "100%" }}>
-      <h3 className="content_modal_title">Création de personnage</h3>
+      <h3 className="content_modal_title">Modification de personnage</h3>
       <form onSubmit={handleSubmit} className="content_modal_form" role="form">
         <label htmlFor="name" className="content_modal_form_label">
           <span>Nom:</span>

@@ -15,6 +15,7 @@ import { SelectOptionsProps } from "../FormComponents/Options/SelectOptions";
 import { CharactersOptionsProps } from "../FormComponents/Options/CharactersOptions";
 import formatDateToLocalInput from "../utils/formatDateToLocalInput";
 
+// Mock config
 vi.mock("../../../config/config.ts", () => ({
   Config: {
     getInstance: () => ({
@@ -23,13 +24,13 @@ vi.mock("../../../config/config.ts", () => ({
   },
 }));
 
-// Mocker les modules de services
+// Mock services
 vi.mock("../../../services/api/tagService");
 vi.mock("../../../services/api/serverService");
 vi.mock("../../../services/api/dofusDBService");
 vi.mock("../../../services/api/characterService");
 
-// Mocker les hooks de contexte
+// Mock context
 vi.mock("../../../contexts/authContext", () => ({
   useAuth: vi.fn(),
 }));
@@ -37,7 +38,7 @@ vi.mock("../../../contexts/notificationContext", () => ({
   useNotification: vi.fn(),
 }));
 
-// Mocker les composants enfants pour l'isolation et la simulation des interactions
+// Mock child components
 vi.mock("../FormComponents/Options/SelectOptions", () => ({
   default: ({ name, onChange, value, label }: SelectOptionsProps<any, any>) => (
     <div data-testid={`select-options-${name}`}>
@@ -79,7 +80,6 @@ vi.mock("../FormComponents/Options/CharactersOptions", () => ({
   ),
 }));
 
-// Mock du module d'utilitaire
 vi.mock("../utils/formatDateToLocalInput", () => ({
   default: vi.fn(),
 }));

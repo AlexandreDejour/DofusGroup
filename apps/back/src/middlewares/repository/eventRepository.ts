@@ -151,46 +151,38 @@ export class EventRepository {
     }
   }
 
-  public async removeCharactersFromEvent(
+  public async removeCharacterFromEvent(
     eventId: string,
-    charactersId: string[],
+    characterId: string,
   ): Promise<Event | null> {
     try {
-      const result: EventEntity | null = await EventEntity.findOne({
+      const event: EventEntity | null = await EventEntity.findOne({
         where: { id: eventId },
         include: ["characters"],
       });
 
-      if (!result) {
+      if (!event) {
         return null;
       }
 
-      let characters: CharacterEntity[] = await CharacterEntity.findAll({
-        where: {
-          id: {
-            [Op.in]: charactersId,
-          },
-        },
-      });
+      const character: CharacterEntity | null =
+        await CharacterEntity.findByPk(characterId);
 
-      if (!characters.length) {
-        throw new Error("Characters not found");
+      if (!character) {
+        throw new Error("Character not found");
       }
 
-      const validCharactersId = this.utils.exceptCharactersNotInTeam(
-        result,
-        characters,
-      );
+      const isInTeam = this.utils.isInTeam(event, character);
 
-      this.utils.checkTeamMinLength(result, validCharactersId);
+      this.utils.checkTeamMinLength(event);
 
-      if (!validCharactersId.length) {
+      if (!isInTeam) {
         throw new Error("Unavailable characters to remove");
       }
 
-      await result.removeCharacters(validCharactersId);
+      await event.removeCharacter(character.id);
 
-      return result;
+      return event;
     } catch (error) {
       throw error;
     }

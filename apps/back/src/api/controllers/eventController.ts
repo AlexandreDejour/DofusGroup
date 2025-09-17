@@ -168,7 +168,7 @@ export class EventController {
     }
   }
 
-  public async removeCharactersFromEvent(
+  public async removeCharacterFromEvent(
     req: Request,
     res: Response,
     next: NextFunction,
@@ -180,10 +180,12 @@ export class EventController {
       }
 
       const eventId: string = req.params.eventId;
-      const charactersId: string[] = req.body.characters_id;
+      const characterId: string = req.body.character_id;
+      console.log(eventId);
+      console.log(characterId);
 
       const eventUpdated: Event | null =
-        await this.repository.removeCharactersFromEvent(eventId, charactersId);
+        await this.repository.removeCharacterFromEvent(eventId, characterId);
 
       if (!eventUpdated) {
         res.status(status.NOT_FOUND).json({ error: "Event not found" });

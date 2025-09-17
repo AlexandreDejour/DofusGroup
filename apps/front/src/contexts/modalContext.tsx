@@ -58,9 +58,15 @@ export type ModalType =
   | "newCharacter"
   | "updateCharacter"
   | "newEvent"
+  | "updateEvent"
   | null;
 
-export type TargetType = "user" | "event" | "character" | "character_details";
+export type TargetType =
+  | "user"
+  | "event"
+  | "event_details"
+  | "character"
+  | "character_details";
 
 const ModalContext = createContext<ModalContextType | null>(null);
 

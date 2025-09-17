@@ -7,7 +7,7 @@ import { BreedRadioProps } from "../FormComponents/Radio/BreedRadio";
 import { GenderRadioProps } from "../FormComponents/Radio/GenderRadio";
 import { SelectOptionsProps } from "../FormComponents/Options/SelectOptions";
 
-import NewCharacterForm from "../Forms/NewCharacterForm";
+import UpdateCharacterForm from "../Forms/UpdateCharacterForm";
 import * as BreedService from "../../../services/api/breedService";
 import * as ServerService from "../../../services/api/serverService";
 
@@ -71,6 +71,29 @@ describe("NewCharacterForm", () => {
   const mockShowError = vi.fn();
   const mockHandleSubmit = vi.fn();
 
+  const mockUpdateTarget = {
+    id: "cfff40b3-9625-4f0a-854b-d8d6d6b4b667",
+    name: "Chronos",
+    sex: "M",
+    level: 50,
+    alignment: "Neutre",
+    stuff: "https://d-bk.net/fr/d/1QVjw",
+    default_character: false,
+    server: {
+      id: "de5a6c69-bc0b-496c-9b62-bd7ea076b8ed",
+      name: "Dakal",
+      mono_account: true,
+    },
+    breed: {
+      id: "d81c200e-831c-419a-948f-c45d1bbf6aac",
+      name: "Cra",
+    },
+    events: [],
+    user: {
+      id: "15ff46b5-60f3-4e86-98bc-da8fcaa3e29e",
+      username: "toto",
+    },
+  };
   const mockBreeds = [{ id: "123", name: "Iop" }];
   const mockServers = [{ id: "123", name: "Serveur Test", mono_account: true }];
 
@@ -94,10 +117,15 @@ describe("NewCharacterForm", () => {
       ServerService.ServerService.prototype.getServers,
     ).mockResolvedValue(mockServers);
 
-    render(<NewCharacterForm handleSubmit={mockHandleSubmit} />);
+    render(
+      <UpdateCharacterForm
+        updateTarget={mockUpdateTarget}
+        handleSubmit={mockHandleSubmit}
+      />,
+    );
 
     expect(
-      screen.getByRole("heading", { name: /Création de personnage/i }),
+      screen.getByRole("heading", { name: /Modification de personnage/i }),
     ).toBeInTheDocument();
     expect(screen.getByRole("form")).toBeInTheDocument();
 
@@ -130,7 +158,12 @@ describe("NewCharacterForm", () => {
       ServerService.ServerService.prototype.getServers,
     ).mockResolvedValue(mockServers);
 
-    render(<NewCharacterForm handleSubmit={mockHandleSubmit} />);
+    render(
+      <UpdateCharacterForm
+        updateTarget={mockUpdateTarget}
+        handleSubmit={mockHandleSubmit}
+      />,
+    );
 
     await waitFor(() => {
       expect(mockShowError).toHaveBeenCalledWith("Erreur", errorMessage);
@@ -149,7 +182,12 @@ describe("NewCharacterForm", () => {
       message: errorMessage,
     });
 
-    render(<NewCharacterForm handleSubmit={mockHandleSubmit} />);
+    render(
+      <UpdateCharacterForm
+        updateTarget={mockUpdateTarget}
+        handleSubmit={mockHandleSubmit}
+      />,
+    );
 
     await waitFor(() => {
       expect(mockShowError).toHaveBeenCalledWith("Erreur", errorMessage);
@@ -164,7 +202,12 @@ describe("NewCharacterForm", () => {
       ServerService.ServerService.prototype.getServers,
     ).mockResolvedValue(mockServers);
 
-    render(<NewCharacterForm handleSubmit={mockHandleSubmit} />);
+    render(
+      <UpdateCharacterForm
+        updateTarget={mockUpdateTarget}
+        handleSubmit={mockHandleSubmit}
+      />,
+    );
 
     const form = screen.getByRole("form");
     fireEvent.submit(form);

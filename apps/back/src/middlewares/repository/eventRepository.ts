@@ -76,7 +76,7 @@ export class EventRepository {
           "tag",
           "server",
           "comments",
-          { association: "characters", include: ["server", "breed"] },
+          { association: "characters", include: ["server", "breed", "user"] },
           {
             association: "user",
             attributes: { exclude: ["mail", "password"] },

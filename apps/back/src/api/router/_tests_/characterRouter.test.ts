@@ -128,12 +128,12 @@ describe("characterRouter", () => {
     });
   });
 
-  describe("GET /character/enriched/:characterId", () => {
+  describe("GET /character:characterId/enriched/", () => {
     it("Propagate request to characterController.getOneByUserIdEnriched", async () => {
       //GIVEN
       controller.getOneEnriched = setup.mockSucessCall(status.OK);
       //WHEN
-      const res = await request(app).get(`/character/enriched/${characterId}`);
+      const res = await request(app).get(`/character/${characterId}/enriched`);
       //THEN
       expect(controller.getOneEnriched).toHaveBeenCalled();
       expect(receivedReq?.params.characterId).toBe(characterId);
@@ -144,7 +144,7 @@ describe("characterRouter", () => {
     it("Next is called at end route.", async () => {
       controller.getOneEnriched = setup.mockNextCall();
 
-      const res = await request(app).get(`/character/enriched/${characterId}`);
+      const res = await request(app).get(`/character/${characterId}/enriched`);
 
       expect(controller.getOneEnriched).toHaveBeenCalled();
       expect(res.status).toBe(status.NOT_FOUND);
@@ -152,7 +152,7 @@ describe("characterRouter", () => {
     });
 
     it("Excluded bad request when id isn't a UUID.", async () => {
-      const res = await request(app).get("/character/enriched/toto");
+      const res = await request(app).get("/character/toto/enriched");
 
       expect(controller.getOneEnriched).not.toHaveBeenCalled();
       expect(res.status).toBe(status.BAD_REQUEST);

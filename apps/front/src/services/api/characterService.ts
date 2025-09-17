@@ -34,7 +34,7 @@ export class CharacterService {
   public async getOneEnriched(characterId: string) {
     try {
       const response = await this.axios.get<CharacterEnriched>(
-        `/character/enriched/${characterId}`,
+        `/character/${characterId}/enriched`,
       );
 
       return response.data;

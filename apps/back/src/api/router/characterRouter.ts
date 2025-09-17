@@ -59,7 +59,7 @@ export function createCharacterRouter(
   });
 
   router.get(
-    "/character/enriched/:characterId",
+    "/character/:characterId/enriched",
     validateUUID,
     (req, res, next) => {
       controller.getOneEnriched(req, res, next);

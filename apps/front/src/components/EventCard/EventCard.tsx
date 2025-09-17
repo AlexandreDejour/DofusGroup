@@ -33,7 +33,7 @@ export default function EventCard({ event }: EventCardProps) {
       </p>
       <button
         className="event_card_button button"
-        onClick={() => navigate(`/details/${event.id}`)}
+        onClick={() => navigate(`/event/${event.id}`)}
       >
         Détails
       </button>

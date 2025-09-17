@@ -18,14 +18,14 @@ describe("CharacterController", () => {
 
   vi.mock("../../../middlewares/repository/characterRepository.js");
   const mockGetAll = vi.spyOn(CharacterRepository.prototype, "getAllByUserId");
-  const mockGetOne = vi.spyOn(CharacterRepository.prototype, "getOneByUserId");
+  const mockGetOne = vi.spyOn(CharacterRepository.prototype, "getOne");
   const mockGetAllEnriched = vi.spyOn(
     CharacterRepository.prototype,
     "getAllEnrichedByUserId",
   );
   const mockGetOneEnriched = vi.spyOn(
     CharacterRepository.prototype,
-    "getOneEnrichedByUserId",
+    "getOneEnriched",
   );
   const mockPost = vi.spyOn(CharacterRepository.prototype, "post");
   const mockUpdate = vi.spyOn(CharacterRepository.prototype, "update");
@@ -111,14 +111,14 @@ describe("CharacterController", () => {
       };
 
       mockGetOne.mockResolvedValue(mockCharacter);
-      await underTest.getOneByUserId(req as Request, res as Response, next);
+      await underTest.getOne(req as Request, res as Response, next);
 
       expect(res.json).toHaveBeenCalledWith(mockCharacter);
     });
 
     it("Call next() if character doesn't exists.", async () => {
       mockGetOne.mockResolvedValue(null);
-      await underTest.getOneByUserId(req as Request, res as Response, next);
+      await underTest.getOne(req as Request, res as Response, next);
 
       expect(res.status).toHaveBeenCalledWith(status.NOT_FOUND);
       expect(res.json).toHaveBeenCalledWith({ error: "Character not found" });
@@ -128,7 +128,7 @@ describe("CharacterController", () => {
       const error = new Error();
 
       mockGetOne.mockRejectedValue(error);
-      await underTest.getOneByUserId(req as Request, res as Response, next);
+      await underTest.getOne(req as Request, res as Response, next);
 
       expect(next).toHaveBeenCalledWith(error);
     });
@@ -234,22 +234,14 @@ describe("CharacterController", () => {
       };
 
       mockGetOneEnriched.mockResolvedValue(mockCharacterEnriched);
-      await underTest.getOneEnrichedByUserId(
-        req as Request,
-        res as Response,
-        next,
-      );
+      await underTest.getOneEnriched(req as Request, res as Response, next);
 
       expect(res.json).toHaveBeenCalledWith(mockCharacterEnriched);
     });
 
     it("Call next() if character doesn't exists.", async () => {
       mockGetOneEnriched.mockResolvedValue(null);
-      await underTest.getOneEnrichedByUserId(
-        req as Request,
-        res as Response,
-        next,
-      );
+      await underTest.getOneEnriched(req as Request, res as Response, next);
 
       expect(res.status).toHaveBeenCalledWith(status.NOT_FOUND);
       expect(res.json).toHaveBeenCalledWith({ error: "Character not found" });
@@ -259,11 +251,7 @@ describe("CharacterController", () => {
       const error = new Error();
 
       mockGetOneEnriched.mockRejectedValue(error);
-      await underTest.getOneEnrichedByUserId(
-        req as Request,
-        res as Response,
-        next,
-      );
+      await underTest.getOneEnriched(req as Request, res as Response, next);
 
       expect(next).toHaveBeenCalledWith(error);
     });

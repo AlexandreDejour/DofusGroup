@@ -6,6 +6,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
 
 import { CharacterEnriched } from "../../types/character";
+
+import { useAuth } from "../../contexts/authContext";
 import { TargetType } from "../../contexts/modalContext";
 
 interface CharacterCardProps {
@@ -18,6 +20,8 @@ export default function EventCharacterCard({
   handleDelete,
 }: CharacterCardProps) {
   const navigate = useNavigate();
+
+  const { user } = useAuth();
 
   return (
     <article className="event_character_card">
@@ -38,21 +42,30 @@ export default function EventCharacterCard({
       <h3 className="event_character_card_title">{character.name}</h3>
       <p className="event_character_card_breed">{character.breed.name}</p>
       <p className="event_character_card_level">niveau: {character.level}</p>
-      <div className="event_character_card_buttons">
+      {user && character.user?.id === user.id ? (
+        <div className="event_character_card_buttons">
+          <button
+            className="event_character_card_buttons_details button"
+            onClick={() => navigate(`/character/${character.id}`)}
+          >
+            Détails
+          </button>
+          <button
+            className="event_character_card_buttons_delete button delete"
+            aria-label={`Delete event ${character.name}`}
+            onClick={() => handleDelete("character", character.id)}
+          >
+            <FontAwesomeIcon icon={faTrash} />
+          </button>
+        </div>
+      ) : (
         <button
-          className="event_character_card_buttons_details button"
+          className="event_character_card_details button"
           onClick={() => navigate(`/character/${character.id}`)}
         >
           Détails
         </button>
-        <button
-          className="event_character_card_buttons_delete button delete"
-          aria-label={`Delete event ${character.name}`}
-          onClick={() => handleDelete("character", character.id)}
-        >
-          <FontAwesomeIcon icon={faTrash} />
-        </button>
-      </div>
+      )}
     </article>
   );
 }

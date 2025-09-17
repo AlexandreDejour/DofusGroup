@@ -38,6 +38,11 @@ export class EventService {
     if (!(data.max_players >= 2 && data.max_players <= 8))
       throw new Error("Le nombre de joueurs doit être compris entre 2 et 8.");
 
+    if (data.max_players < data.characters_id.length)
+      throw new Error(
+        "Le nombre de personnages inscrit dépasse le nombre maximum de joueurs.",
+      );
+
     try {
       const response = await this.axios.post<Event>(
         `/user/${userId}/event`,

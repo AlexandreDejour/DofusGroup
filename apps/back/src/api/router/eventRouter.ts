@@ -53,11 +53,11 @@ export function createEventRouter(
   );
 
   router.post(
-    "/event/:eventId/removeCharacters",
+    "/event/:eventId/removeCharacter",
     validateUUID,
     htmlSanitizer,
     (req, res, next) => {
-      controller.removeCharactersFromEvent(req, res, next);
+      controller.removeCharacterFromEvent(req, res, next);
     },
   );
 

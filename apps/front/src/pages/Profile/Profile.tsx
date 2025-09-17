@@ -2,7 +2,7 @@ import "./Profile.scss";
 
 import { isAxiosError } from "axios";
 import { useNavigate } from "react-router";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 import { useAuth } from "../../contexts/authContext";
 import { useModal } from "../../contexts/modalContext";
@@ -13,22 +13,20 @@ import { UserEnriched } from "../../types/user";
 import { Config } from "../../config/config";
 import { ApiClient } from "../../services/client";
 import { UserService } from "../../services/api/userService";
-import { EventService } from "../../services/api/eventService";
-import { CharacterService } from "../../services/api/characterService";
 import CharacterCard from "../../components/CharacterCard/CharacterCard";
 import ProfileEventCard from "../../components/ProfileEventCard/ProfileEventCard";
 
 const config = Config.getInstance();
 const axios = new ApiClient(config.baseUrl);
 const userService = new UserService(axios);
-const eventService = new EventService(axios);
-const characterService = new CharacterService(axios);
 
 export default function Profile() {
   const navigate = useNavigate();
-  const { user, setUser, isAuthLoading } = useAuth();
-  const { openModal, handleDelete } = useModal();
+
   const { showError } = useNotification();
+  const { user, isAuthLoading } = useAuth();
+  const { openModal, handleDelete } = useModal();
+
   const [userEnriched, setUserEnriched] = useState<UserEnriched | null>(null);
 
   useEffect(() => {

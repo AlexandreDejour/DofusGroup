@@ -1,9 +1,9 @@
 // typeGuard.test.ts
 import { describe, it, expect } from "vitest";
 
-import { CharacterEnriched } from "../../../types/character";
+import { CharacterEnriched } from "../../../../types/character";
 
-import { typeGuard } from "../utils/typeGuard";
+import { typeGuard } from "../typeGuard";
 
 describe("typeGuard.characterEnriched", () => {
   const validCharacter: CharacterEnriched = {

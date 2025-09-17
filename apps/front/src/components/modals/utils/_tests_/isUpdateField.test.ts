@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import isUpdateField from "../utils/isUpdateField";
+import isUpdateField from "../../utils/isUpdateField";
 
 describe("isUpdateField", () => {
   it("Return true for 'mail'", () => {

@@ -1,17 +1,17 @@
 import { render, screen, waitFor, fireEvent } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
-import { useNotification } from "../../../contexts/notificationContext";
+import { useNotification } from "../../../../contexts/notificationContext";
 
-import { BreedRadioProps } from "../FormComponents/Radio/BreedRadio";
-import { GenderRadioProps } from "../FormComponents/Radio/GenderRadio";
-import { SelectOptionsProps } from "../FormComponents/Options/SelectOptions";
+import { BreedRadioProps } from "../../FormComponents/Radio/BreedRadio";
+import { GenderRadioProps } from "../../FormComponents/Radio/GenderRadio";
+import { SelectOptionsProps } from "../../FormComponents/Options/SelectOptions";
 
-import NewCharacterForm from "../Forms/NewCharacterForm";
-import * as BreedService from "../../../services/api/breedService";
-import * as ServerService from "../../../services/api/serverService";
+import NewCharacterForm from "../../Forms/NewCharacterForm";
+import * as BreedService from "../../../../services/api/breedService";
+import * as ServerService from "../../../../services/api/serverService";
 
-vi.mock("../../../config/config.ts", () => ({
+vi.mock("../../../../config/config.ts", () => ({
   Config: {
     getInstance: () => ({
       baseUrl: "http://localhost",
@@ -20,16 +20,16 @@ vi.mock("../../../config/config.ts", () => ({
 }));
 
 // 1. Mock services
-vi.mock("../../../services/api/breedService");
-vi.mock("../../../services/api/serverService");
+vi.mock("../../../../services/api/breedService");
+vi.mock("../../../../services/api/serverService");
 
 // 2. Mock context
-vi.mock("../../../contexts/notificationContext", () => ({
+vi.mock("../../../../contexts/notificationContext", () => ({
   useNotification: vi.fn(),
 }));
 
 // 3. Mock components
-vi.mock("../FormComponents/Radio/BreedRadio", () => ({
+vi.mock("../../FormComponents/Radio/BreedRadio", () => ({
   default: ({ onChange, breeds, value, sex }: BreedRadioProps) => (
     <div data-testid="breed-radio">
       <input
@@ -41,7 +41,7 @@ vi.mock("../FormComponents/Radio/BreedRadio", () => ({
   ),
 }));
 
-vi.mock("../FormComponents/Radio/GenderRadio", () => ({
+vi.mock("../../FormComponents/Radio/GenderRadio", () => ({
   default: ({ onChange, value }: GenderRadioProps) => (
     <div data-testid="gender-radio">
       <input
@@ -53,7 +53,7 @@ vi.mock("../FormComponents/Radio/GenderRadio", () => ({
   ),
 }));
 
-vi.mock("../FormComponents/Options/SelectOptions", () => ({
+vi.mock("../../FormComponents/Options/SelectOptions", () => ({
   default: ({ name, onChange, value, label }: SelectOptionsProps<any, any>) => (
     // Le data-testid est maintenant unique pour chaque SelectOptions
     <div data-testid={`select-options-${name}`}>

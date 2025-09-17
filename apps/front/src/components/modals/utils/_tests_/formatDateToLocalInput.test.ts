@@ -1,5 +1,6 @@
 import { describe, it, expect, vi } from "vitest";
-import formatDateToLocalInput from "../utils/formatDateToLocalInput";
+
+import formatDateToLocalInput from "../formatDateToLocalInput";
 
 describe("formatDateToLocalInput", () => {
   afterEach(() => {

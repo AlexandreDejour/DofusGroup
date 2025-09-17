@@ -90,6 +90,26 @@ export class EventService {
     }
   }
 
+  public async removeCharacter(eventId: string, characterId: string) {
+    try {
+      const response = await this.axios.post(
+        `/event/${eventId}/removeCharacter`,
+        { character_id: characterId },
+      );
+
+      return response.data;
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        if ([400, 401, 403].includes(error.response?.status ?? 0)) {
+          throw new Error("Cette action n'est pas autorisée.");
+        } else if (error.response?.status === 404) {
+          throw new Error("Cette évènement n'existe plus.");
+        }
+      }
+      throw error;
+    }
+  }
+
   public async delete(userId: string, eventId: string) {
     try {
       const response = await this.axios.delete(

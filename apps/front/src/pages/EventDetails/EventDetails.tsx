@@ -42,7 +42,7 @@ export default function EventDetails() {
 
         showSuccess(
           "Suppression réussi !",
-          "Ce personnage ne fait plus partie de votre groupe.",
+          "Ce personnage ne fait plus partie du groupe.",
         );
       } catch (error) {
         if (error instanceof Error) {

@@ -297,6 +297,12 @@ export default function ModalProvider({ children }: ModalProviderProps) {
           setUser({ ...user, ...response });
         }
 
+        if (targetType === "event_details" && targetId) {
+          await eventService.delete(user.id, targetId);
+
+          navigate("/profile");
+        }
+
         if (targetType === "character" && targetId) {
           await characterService.delete(user.id, targetId);
           const response = await userService.getOne(user.id);
@@ -306,9 +312,6 @@ export default function ModalProvider({ children }: ModalProviderProps) {
 
         if (targetType === "character_details" && targetId) {
           await characterService.delete(user.id, targetId);
-          const response = await userService.getOne(user.id);
-
-          setUser({ ...user, ...response });
 
           navigate("/profile");
         }

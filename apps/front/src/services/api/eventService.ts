@@ -91,6 +91,9 @@ export class EventService {
   }
 
   public async addCharacters(eventId: string, data: CreateEventForm) {
+    if (!data.characters_id.length)
+      throw new Error("Vous devez sélectionner au moins un personnage");
+
     try {
       const response = await this.axios.post(
         `/event/${eventId}/addCharacters`,

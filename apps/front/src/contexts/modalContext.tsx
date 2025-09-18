@@ -274,6 +274,38 @@ export default function ModalProvider({ children }: ModalProviderProps) {
           );
         }
 
+        if (modalType === "joinEvent") {
+          if (!user || !updateTarget) return;
+
+          const keys: (keyof CreateEventForm)[] = [
+            "title",
+            "date",
+            "duration",
+            "area",
+            "sub_area",
+            "donjon_name",
+            "description",
+            "max_players",
+            "status",
+            "tag_id",
+            "server_id",
+            "characters_id",
+          ];
+          const arrayKeys: (keyof CreateEventForm)[] = ["characters_id"];
+
+          const data = formDataToObject<CreateEventForm>(formData, {
+            keys,
+            arrayKeys,
+          });
+
+          await eventService.addCharacters(updateTarget.id, data);
+
+          showSuccess(
+            "Inscription réussie !",
+            `Vous avez rejoint l'évènement.`,
+          );
+        }
+
         closeModal();
       } catch (error) {
         if (error instanceof Error) {

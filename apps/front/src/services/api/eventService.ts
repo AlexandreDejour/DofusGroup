@@ -90,6 +90,28 @@ export class EventService {
     }
   }
 
+  public async addCharacters(eventId: string, data: CreateEventForm) {
+    try {
+      const response = await this.axios.post(
+        `/event/${eventId}/addCharacters`,
+        {
+          data,
+        },
+      );
+
+      return response.data;
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        if (error.response?.status === 404) {
+          throw new Error("Cette évènement n'existe plus.");
+        } else if (error.response?.status === 500) {
+          throw new Error("Cette action est impossible.");
+        }
+      }
+      throw error;
+    }
+  }
+
   public async removeCharacter(eventId: string, characterId: string) {
     try {
       const response = await this.axios.post(

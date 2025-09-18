@@ -142,9 +142,9 @@ export class EventController {
       }
 
       const eventId: string = req.params.eventId;
-      const charactersIds: string[] = req.body.characters_id;
+      const charactersIds: string[] = req.body.data.characters_id;
 
-      let eventUpdated: Event | null =
+      const eventUpdated: Event | null =
         await this.repository.addCharactersToEvent(eventId, charactersIds);
 
       if (!eventUpdated) {

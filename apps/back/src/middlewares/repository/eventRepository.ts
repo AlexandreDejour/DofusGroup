@@ -116,7 +116,9 @@ export class EventRepository {
     charactersId: string[],
   ): Promise<Event | null> {
     try {
-      const result: EventEntity | null = await EventEntity.findByPk(eventId);
+      const result: EventEntity | null = await EventEntity.findByPk(eventId, {
+        include: ["characters"],
+      });
 
       if (!result) {
         return null;
@@ -131,6 +133,8 @@ export class EventRepository {
           },
         },
       });
+
+      console.log(characters);
 
       if (!characters.length) {
         throw new Error("Characters not found");

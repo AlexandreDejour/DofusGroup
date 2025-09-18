@@ -9,20 +9,17 @@ import { EventEnriched } from "../../types/event";
 import { CharacterEnriched } from "../../types/character";
 
 import { useAuth } from "../../contexts/authContext";
-import { TargetType } from "../../contexts/modalContext";
 
 interface CharacterCardProps {
   event: EventEnriched;
   character: CharacterEnriched;
   removeCharacter: (eventId: string, characterId: string) => Promise<void>;
-  handleDelete: (targetType: TargetType, targetId: string) => Promise<void>;
 }
 
 export default function EventCharacterCard({
   event,
   character,
   removeCharacter,
-  handleDelete,
 }: CharacterCardProps) {
   const navigate = useNavigate();
 

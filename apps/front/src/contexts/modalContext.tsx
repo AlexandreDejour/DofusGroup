@@ -264,7 +264,8 @@ export default function ModalProvider({ children }: ModalProviderProps) {
             arrayKeys,
           });
 
-          const response = await eventService.create(user.id, data);
+          await eventService.create(user.id, data);
+          const response = await userService.getOne(user.id);
 
           setUser({ ...user, ...response });
 

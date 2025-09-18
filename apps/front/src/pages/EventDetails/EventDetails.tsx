@@ -24,7 +24,7 @@ export default function EventDetails() {
 
   const { id } = useParams();
   const { user } = useAuth();
-  const { showError } = useNotification();
+  const { showSuccess, showError } = useNotification();
   const { updateTarget, openModal, handleDelete } = useModal();
 
   const [event, setEvent] = useState<EventEnriched | null>(null);
@@ -39,6 +39,11 @@ export default function EventDetails() {
         );
 
         setEvent(response);
+
+        showSuccess(
+          "Suppression réussi !",
+          "Ce personnage ne fait plus partie de votre groupe.",
+        );
       } catch (error) {
         if (error instanceof Error) {
           showError("Erreur", error.message);

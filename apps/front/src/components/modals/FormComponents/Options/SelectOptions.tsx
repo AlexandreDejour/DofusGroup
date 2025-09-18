@@ -20,13 +20,14 @@ export default function SelectOptions<T, ID extends string | number>({
   onChange,
 }: SelectOptionsProps<T, ID>) {
   const options = generateOptions(items);
+  const stringValues = ["alignment", "donjon_name", "area", "sub_area"];
 
   return (
     <label htmlFor={name} className="content_modal_form_label">
       <span>{label}:</span>
       <select
         id={name}
-        name={name === "alignment" ? name : `${name}_id`}
+        name={stringValues.includes(name) ? name : `${name}_id`}
         value={value}
         onChange={(e) => onChange(e.target.value)}
       >

@@ -87,18 +87,15 @@ export default function EventDetails() {
               {event.title.charAt(0).toLocaleUpperCase() + event.title.slice(1)}
             </h2>
             <p>Créé par {event.user.username}</p>
+            <p
+              className="event_section_title_tag"
+              style={{ backgroundColor: event.tag.color }}
+            >
+              {event.tag.name}
+            </p>
           </div>
 
           <div className="event_section_details">
-            <div className="event_section_details_tag">
-              <span>Tag:</span>
-              <p
-                className="event_section_details_tag_text"
-                style={{ backgroundColor: event.tag.color }}
-              >
-                {event.tag.name}
-              </p>
-            </div>
             <p className="event_section_details_item">
               <span>Serveur:</span> {event.server.name}
             </p>
@@ -129,6 +126,11 @@ export default function EventDetails() {
                 <span>Sous-zone:</span> {event.sub_area}
               </p>
             )}
+            {event.donjon_name && (
+              <p className="event_section_details_item">
+                <span>Donjon:</span> {event.donjon_name}
+              </p>
+            )}
           </div>
 
           {event.description && (
@@ -146,31 +148,39 @@ export default function EventDetails() {
                     event={event}
                     character={character}
                     removeCharacter={removeCharacter}
-                    handleDelete={handleDelete}
                   />
                 </li>
               ))}
             </ul>
           </div>
 
-          {event.user.id === user?.id && (
-            <div className="event_section_buttons">
-              <button
-                type="button"
-                className="button"
-                onClick={() => openModal("updateEvent", event)}
-              >
-                Modifier
-              </button>
-              <button
-                type="button"
-                className="button delete"
-                onClick={() => handleDelete("event_details", event.id)}
-              >
-                Supprimer
-              </button>
-            </div>
-          )}
+          <div className="event_section_buttons">
+            <button
+              type="button"
+              className="button"
+              onClick={() => openModal("joinEvent", event)}
+            >
+              Rejoindre
+            </button>
+            {event.user.id === user?.id && (
+              <>
+                <button
+                  type="button"
+                  className="button"
+                  onClick={() => openModal("updateEvent", event)}
+                >
+                  Modifier
+                </button>
+                <button
+                  type="button"
+                  className="button delete"
+                  onClick={() => handleDelete("event_details", event.id)}
+                >
+                  Supprimer
+                </button>
+              </>
+            )}
+          </div>
         </section>
       ) : (
         <p>Chargement en cours</p>

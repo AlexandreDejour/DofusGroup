@@ -25,6 +25,13 @@
       h2 {
         font-size: 3rem;
       }
+
+      &_tag {
+        width: 20%;
+        margin: 2% auto 0%;
+        padding: 2% 0%;
+        border-radius: 0.5rem;
+      }
     }
 
     &_details {
@@ -70,14 +77,14 @@
     }
 
     &_buttons {
-      width: 60%;
+      width: 90%;
       margin: 5% auto;
       display: flex;
       justify-content: space-evenly;
       align-items: center;
 
       button {
-        padding: 5% 7.5%;
+        padding: 3% 5%;
       }
     }
 

@@ -13,6 +13,7 @@ import RegisterForm from "./Forms/RegisterForm";
 import NewEventForm from "./Forms/NewEventForm";
 import NewCharacterForm from "./Forms/NewCharacterForm";
 import UpdateCharacterForm from "./Forms/UpdateCharacterForm";
+import JoinEventForm from "./Forms/JoinEventForm";
 
 export default function ModalsManager() {
   const { isOpen, modalType, updateTarget, handleSubmit, closeModal } =
@@ -59,6 +60,10 @@ export default function ModalsManager() {
 
           {modalType === "newEvent" && (
             <NewEventForm handleSubmit={(event) => handleSubmit(event)} />
+          )}
+
+          {modalType === "joinEvent" && (
+            <JoinEventForm handleSubmit={(event) => handleSubmit(event)} />
           )}
         </div>
       </div>

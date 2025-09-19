@@ -10,37 +10,37 @@ export default function CharactersCheckbox({
   characters,
 }: CharacterCheckboxProps) {
   return (
-    <fieldset className="character">
+    <fieldset className="characters">
       <legend>Vos personnages:</legend>
-      <div className="character_choices">
+      <div className="characters_choices">
         {characters.map((character) => (
           <label
             key={character.id}
             htmlFor="characters_id"
             className="character_choices_label"
           >
-            <div className="character_choices_label_card">
+            <div className="characters_choices_label_card">
               {character.sex === "M" ? (
                 <img
-                  className="character_choices_label_card_img"
+                  className="characters_choices_label_card_img"
                   src={`/miniatures/${character.breed.name.toLocaleLowerCase()}_male.webp`}
                   alt={`Miniature de classe ${character.breed.name.toLocaleLowerCase()}`}
                 />
               ) : (
                 <img
-                  className="character_choices_label_card_img"
+                  className="characters_choices_label_card_img"
                   src={`/miniatures/${character.breed.name.toLocaleLowerCase()}_female.webp`}
                   alt={`Miniature de classe ${character.breed.name.toLocaleLowerCase()}`}
                 />
               )}
-              <div className="character_choices_label_card_details">
-                <h4 className="character_choices_label_card_details_title">
+              <div className="characters_choices_label_card_details">
+                <h4 className="characters_choices_label_card_details_title">
                   {character.name}
                 </h4>
-                <p className="character_choices_label_card_details_breed">
+                <p className="characters_choices_label_card_details_breed">
                   {character.breed.name}
                 </p>
-                <p className="character_choices_label_card_details_level">
+                <p className="characters_choices_label_card_details_level">
                   niveau: {character.level}
                 </p>
               </div>

@@ -14,11 +14,13 @@ export default function CharactersCheckbox({
       <legend>Vos personnages:</legend>
       <div className="characters_choices">
         {characters.map((character) => (
-          <label
-            key={character.id}
-            htmlFor="characters_id"
-            className="character_choices_label"
-          >
+          <label key={character.id} className="characters_choices_label">
+            <input
+              type="checkbox"
+              name="characters_id"
+              value={character.id}
+              className="sr-only"
+            />
             <div className="characters_choices_label_card">
               {character.sex === "M" ? (
                 <img
@@ -45,7 +47,6 @@ export default function CharactersCheckbox({
                 </p>
               </div>
             </div>
-            <input type="checkbox" name="characters_id" value={character.id} />
           </label>
         ))}
       </div>

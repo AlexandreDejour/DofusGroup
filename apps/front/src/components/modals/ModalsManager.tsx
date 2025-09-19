@@ -1,7 +1,7 @@
 import "./ModalsManager.scss";
 
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import { useModal } from "../../contexts/modalContext";
 
@@ -11,9 +11,10 @@ import LoginForm from "./Forms/LoginForm";
 import UpdateForm from "./Forms/UpdateForm";
 import RegisterForm from "./Forms/RegisterForm";
 import NewEventForm from "./Forms/NewEventForm";
+import JoinEventForm from "./Forms/JoinEventForm";
+import UpdateEventForm from "./Forms/UpdateEventForm";
 import NewCharacterForm from "./Forms/NewCharacterForm";
 import UpdateCharacterForm from "./Forms/UpdateCharacterForm";
-import JoinEventForm from "./Forms/JoinEventForm";
 
 export default function ModalsManager() {
   const { isOpen, modalType, updateTarget, handleSubmit, closeModal } =
@@ -61,6 +62,14 @@ export default function ModalsManager() {
           {modalType === "newEvent" && (
             <NewEventForm handleSubmit={(event) => handleSubmit(event)} />
           )}
+
+          {modalType === "updateEvent" &&
+            typeGuard.eventEnriched(updateTarget) && (
+              <UpdateEventForm
+                updateTarget={updateTarget}
+                handleSubmit={(event) => handleSubmit(event)}
+              />
+            )}
 
           {modalType === "joinEvent" && (
             <JoinEventForm handleSubmit={(event) => handleSubmit(event)} />

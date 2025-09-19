@@ -51,6 +51,9 @@ export default function NewEventForm({
   const [subArea, setSubArea] = useState<string>(
     updateTarget.sub_area ? updateTarget.sub_area : "",
   );
+  const [maxPlayers, setMaxPlayers] = useState<number>(
+    updateTarget.max_players,
+  );
   const [description, setDescription] = useState<string>(
     updateTarget.description ? updateTarget.description : "",
   );
@@ -62,12 +65,6 @@ export default function NewEventForm({
   const [duration, setDuration] = useState<number>(updateTarget.duration);
   const [date, setDate] = useState<string>(updateTarget.date.toISOString());
   const [server, setServer] = useState<string>(updateTarget.server.name);
-  const [registeredCharacters, setRegisteredCharacters] = useState<string[]>(
-    updateTarget.characters.map((c) => String(c.id)),
-  );
-  const [maxPlayers, setMaxPlayers] = useState<number>(
-    updateTarget.max_players,
-  );
 
   const [isDungeon, setIsDungeon] = useState(false);
 

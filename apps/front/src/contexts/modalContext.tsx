@@ -275,6 +275,53 @@ export default function ModalProvider({ children }: ModalProviderProps) {
           );
         }
 
+        if (modalType === "updateEvent") {
+          if (!user || !updateTarget) return;
+
+          const keys: (keyof CreateEventForm)[] = [
+            "title",
+            "date",
+            "duration",
+            "area",
+            "sub_area",
+            "donjon_name",
+            "description",
+            "max_players",
+            "status",
+            "tag_id",
+            "server_id",
+            "characters_id",
+          ];
+          const dateKeys: (keyof CreateEventForm)[] = ["date"];
+          const numberKeys: (keyof CreateEventForm)[] = [
+            "duration",
+            "max_players",
+          ];
+          const arrayKeys: (keyof CreateEventForm)[] = ["characters_id"];
+
+          const data = formDataToObject<CreateEventForm>(formData, {
+            keys,
+            dateKeys,
+            numberKeys,
+            arrayKeys,
+          });
+
+          const eventData = await eventService.update(
+            user.id,
+            updateTarget?.id,
+            data,
+          );
+          const userData = await userService.getOne(user.id);
+
+          setUpdateTarget(eventData);
+          setUser({ ...user, ...userData });
+
+          showSuccess(
+            "Mise à jour réussie !",
+            `Vous avez mis à jour votre évènement.`,
+          );
+        }
+
         if (modalType === "joinEvent") {
           if (!user || !updateTarget) return;
 

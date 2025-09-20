@@ -197,12 +197,13 @@ export class EventRepository {
   }
 
   public async update(
+    userId: string,
     eventId: string,
     eventData: Partial<EventBodyData>,
   ): Promise<EventEnriched | null> {
     try {
       const eventToUpdate: EventEntity | null = await EventEntity.findOne({
-        where: { id: eventId, user_id: eventData.user_id },
+        where: { id: eventId, user_id: userId },
         include: ["tag", "user", "server", "characters"],
       });
 

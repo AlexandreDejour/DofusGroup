@@ -207,16 +207,19 @@ export class EventController {
   }
 
   public async update(req: Request, res: Response, next: NextFunction) {
-    try {
-      if (!req.params.userId) {
-        res.status(status.BAD_REQUEST).json({ error: "User ID is required" });
-        return;
-      }
+    const userId = req.params.userId;
+    const eventId: string = req.params.eventId;
 
-      const eventId: string = req.params.eventId;
+    if (!userId) {
+      res.status(status.BAD_REQUEST).json({ error: "User ID is required" });
+      return;
+    }
+
+    try {
       const eventData: Partial<EventBodyData> = req.body;
 
       const eventUpdated: Event | null = await this.repository.update(
+        userId,
         eventId,
         eventData,
       );
@@ -230,7 +233,7 @@ export class EventController {
         eventUpdated.id,
       );
 
-      res.json(eventUpdated);
+      res.json(eventUpdatedEnriched);
     } catch (error) {
       next(error);
     }

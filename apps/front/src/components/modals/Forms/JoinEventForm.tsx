@@ -48,7 +48,7 @@ export default function JoinEventForm({ handleSubmit }: JoinEventFormProps) {
       }
     };
     fetchCharacters();
-  }, [user]);
+  }, [user, updateTarget]);
 
   return (
     <div className="content_modal">

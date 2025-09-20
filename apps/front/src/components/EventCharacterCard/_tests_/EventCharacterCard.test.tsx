@@ -165,7 +165,9 @@ describe("EventCharacterCard", () => {
     renderComponent();
     const button = screen.getByRole("button", { name: /détails/i });
     fireEvent.click(button);
-    expect(mockNavigate).toHaveBeenCalledWith("/character/char-123");
+    expect(mockNavigate).toHaveBeenCalledWith(
+      "/character/95a333b9-0228-47a7-abfb-e002d61fddde",
+    );
   });
 
   it("Call removeCharacter when click on delete", () => {
@@ -174,6 +176,9 @@ describe("EventCharacterCard", () => {
       name: /delete event night-hunter/i,
     });
     fireEvent.click(button);
-    expect(mockRemoveCharacter).toHaveBeenCalledWith("event-123", "char-123");
+    expect(mockRemoveCharacter).toHaveBeenCalledWith(
+      "dabcc767-1902-4e47-be77-d486c7b3af39",
+      "95a333b9-0228-47a7-abfb-e002d61fddde",
+    );
   });
 });

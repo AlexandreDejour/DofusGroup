@@ -4,6 +4,7 @@ import { describe, it, expect } from "vitest";
 import { CharacterEnriched } from "../../../../types/character";
 
 import { typeGuard } from "../typeGuard";
+import { EventEnriched } from "../../../../types/event";
 
 describe("typeGuard.characterEnriched", () => {
   const validCharacter: CharacterEnriched = {
@@ -81,5 +82,112 @@ describe("typeGuard.characterEnriched", () => {
 
     const noServer = { ...validCharacter, server: undefined };
     expect(typeGuard.characterEnriched(noServer)).toBe(false);
+  });
+});
+
+describe("typeGuard.eventEnriched", () => {
+  const validEvent = {
+    id: "05d29664-ca0e-4500-bf06-352384986d95",
+    title: "Passage korriandre",
+    date: "2025-09-20T09:50:00.000Z",
+    duration: 40,
+    area: "Île de Frigost",
+    sub_area: "Antre du Korriandre",
+    donjon_name: "Antre du Korriandre",
+    description: "Tu payes, je te fais passer en fast",
+    max_players: 8,
+    status: "public",
+    tag: {
+      id: "6f2cf523-18be-470e-99e1-3fea1d91ab4c",
+      name: "Donjon",
+      color: "#c0392b",
+    },
+    server: {
+      id: "3e354b84-1516-4160-b750-cbe798d7b11e",
+      name: "Salar",
+      mono_account: false,
+    },
+    comments: [],
+    characters: [
+      {
+        id: "a5c8f77a-2b7d-4a45-87e2-fae117936829",
+        name: "gniouf",
+        sex: "M",
+        level: 2,
+        alignment: "Neutre",
+        stuff: null,
+        default_character: false,
+        user: {
+          id: "3d2ebbe3-8193-448c-bec8-8993e7055240",
+          username: "totolebeau",
+        },
+        breed: {
+          id: "bd0783a6-8012-4724-8319-42e2349b88a4",
+          name: "Ecaflip",
+        },
+        server: {
+          id: "73b70f36-b546-4ee4-95ce-9bbc4adb67df",
+          name: "Brial",
+          mono_account: false,
+        },
+      },
+    ],
+    user: {
+      id: "3d2ebbe3-8193-448c-bec8-8993e7055240",
+      username: "totolebeau",
+    },
+  };
+
+  it("should return true for a valid EventEnriched object", () => {
+    expect(typeGuard.eventEnriched(validEvent)).toBe(true);
+  });
+
+  it("should return false if object is null or not an object", () => {
+    expect(typeGuard.eventEnriched(null)).toBe(false);
+    expect(typeGuard.eventEnriched("string")).toBe(false);
+  });
+
+  it("should return false if required string fields are missing", () => {
+    const invalid = { ...validEvent, id: null as any };
+    expect(typeGuard.eventEnriched(invalid)).toBe(false);
+
+    const invalid2 = { ...validEvent, title: null as any };
+    expect(typeGuard.eventEnriched(invalid2)).toBe(false);
+  });
+
+  it("should allow optional string fields to be null", () => {
+    const eventWithNulls = {
+      ...validEvent,
+      area: null,
+      sub_area: null,
+      donjon_name: null,
+      description: null,
+    };
+    expect(typeGuard.eventEnriched(eventWithNulls)).toBe(true);
+  });
+
+  it("should return false if max_players or duration are not numbers", () => {
+    const invalid = { ...validEvent, max_players: "8" as any };
+    expect(typeGuard.eventEnriched(invalid)).toBe(false);
+
+    const invalid2 = { ...validEvent, duration: "120" as any };
+    expect(typeGuard.eventEnriched(invalid2)).toBe(false);
+  });
+
+  it("should return false if enriched properties (tag, server, characters, comments, user) are missing", () => {
+    const noTag = { ...validEvent, tag: undefined };
+    expect(typeGuard.eventEnriched(noTag)).toBe(false);
+
+    const noServer = { ...validEvent, server: undefined };
+    expect(typeGuard.eventEnriched(noServer)).toBe(false);
+
+    const noCharacters = { ...validEvent, characters: undefined };
+    expect(typeGuard.eventEnriched(noCharacters)).toBe(false);
+
+    const noComments = { ...validEvent, comments: undefined };
+    expect(typeGuard.eventEnriched(noComments)).toBe(false);
+
+    const noUser = { ...validEvent, user: undefined };
+    expect(typeGuard.eventEnriched(noUser)).toBe(false);
   });
 });

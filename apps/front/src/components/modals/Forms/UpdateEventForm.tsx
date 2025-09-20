@@ -36,7 +36,6 @@ export default function NewEventForm({
   updateTarget,
   handleSubmit,
 }: NewEventFormProps) {
-  const { user } = useAuth();
   const { showError } = useNotification();
 
   const [tags, setTags] = useState<Tag[]>([]);
@@ -54,6 +53,11 @@ export default function NewEventForm({
   const [maxPlayers, setMaxPlayers] = useState<number>(
     updateTarget.max_players,
   );
+  const [date, setDate] = useState<string>(
+    updateTarget.date
+      ? formatDateToLocalInput(new Date(updateTarget.date))
+      : formatDateToLocalInput(new Date()),
+  );
   const [description, setDescription] = useState<string>(
     updateTarget.description ? updateTarget.description : "",
   );
@@ -61,9 +65,9 @@ export default function NewEventForm({
     updateTarget.donjon_name ? updateTarget.donjon_name : "",
   );
   const [tag, setTag] = useState<string>(updateTarget.tag.name);
+  const [title, setTitle] = useState<string>(updateTarget.title);
   const [status, setStatus] = useState<string>(updateTarget.status);
   const [duration, setDuration] = useState<number>(updateTarget.duration);
-  const [date, setDate] = useState<string>(updateTarget.date.toISOString());
   const [server, setServer] = useState<string>(updateTarget.server.name);
 
   const [isDungeon, setIsDungeon] = useState(false);
@@ -196,9 +200,11 @@ export default function NewEventForm({
             type="text"
             name="title"
             id="title"
+            value={title}
             required
             placeholder="Titre"
             className="content_modal_form_label_input"
+            onChange={(e) => setTitle(e.target.value)}
           />
         </label>
 

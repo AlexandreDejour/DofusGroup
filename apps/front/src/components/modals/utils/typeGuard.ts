@@ -25,21 +25,22 @@ export const typeGuard = {
     return (
       obj !== null &&
       typeof obj === "object" &&
+      // character properties
       typeof obj.id === "string" &&
       typeof obj.title === "string" &&
-      obj.date instanceof Date &&
+      typeof obj.date === "string" &&
       typeof obj.duration === "number" &&
-      (typeof obj.area === "string" || obj.area === undefined) &&
-      (typeof obj.sub_area === "string" || obj.sub_area === undefined) &&
-      (typeof obj.donjon_name === "string" || obj.donjon_name === undefined) &&
-      (typeof obj.description === "string" || obj.description === undefined) &&
+      (typeof obj.area === "string" || obj.area === null) &&
+      (typeof obj.sub_area === "string" || obj.sub_area === null) &&
+      (typeof obj.donjon_name === "string" || obj.donjon_name === null) &&
+      (typeof obj.description === "string" || obj.description === null) &&
       typeof obj.max_players === "number" &&
       typeof obj.status === "string" &&
+      // enriched properties
       obj.tag !== undefined &&
       obj.server !== undefined &&
-      Array.isArray(obj.characters) &&
-      obj.characters.every(typeGuard.characterEnriched) &&
-      Array.isArray(obj.comments) &&
+      obj.characters !== undefined &&
+      obj.comments !== undefined &&
       obj.user !== undefined
     );
   },

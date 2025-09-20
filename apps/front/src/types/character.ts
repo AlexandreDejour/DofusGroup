@@ -9,7 +9,7 @@ export type Character = {
   sex: string;
   level: number;
   alignment: string;
-  stuff: string;
+  stuff?: string | null;
   default_character: boolean;
 };
 

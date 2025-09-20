@@ -2,8 +2,8 @@ import { describe, it, beforeEach, expect, vi } from "vitest";
 
 import axios from "axios";
 
-import { Character, CharacterEnriched } from "../../../types/character";
 import { CreateCharacterForm } from "../../../types/form";
+import { Character, CharacterEnriched } from "../../../types/character";
 
 import { ApiClient } from "../../client";
 import { CharacterService } from "../characterService";

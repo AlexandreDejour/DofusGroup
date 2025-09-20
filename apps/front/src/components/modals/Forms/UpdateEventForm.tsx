@@ -8,7 +8,6 @@ import { Server } from "../../../types/server";
 import { EventEnriched } from "../../../types/event";
 import { Area, Dungeon, SubArea } from "../../../types/dofusDB";
 
-import { useAuth } from "../../../contexts/authContext";
 import { useNotification } from "../../../contexts/notificationContext";
 
 import { Config } from "../../../config/config";
@@ -116,16 +115,17 @@ export default function NewEventForm({
 
         if (area) {
           const fetchSubAreas = async () => {
-            const selectedArea = areas.find((a) => a.name.fr === area);
+            const selectedArea = response.find((a) => a.name.fr === area);
 
             if (!selectedArea) return;
 
             try {
-              const response = await dofusDBService.getSubAreas(
+              const subAreasResponse = await dofusDBService.getSubAreas(
                 selectedArea.id,
               );
+              setSubAreas(subAreasResponse);
 
-              setSubAreas(response);
+              setSubAreas(subAreasResponse);
             } catch (error) {
               throw error;
             }
@@ -192,7 +192,7 @@ export default function NewEventForm({
 
   return (
     <div className="content_modal">
-      <h3 className="content_modal_title">Création d'évènement</h3>
+      <h3 className="content_modal_title">Modification d'évènement</h3>
       <form onSubmit={handleSubmit} className="content_modal_form" role="form">
         <label htmlFor="title" className="content_modal_form_label">
           <span>Titre:</span>

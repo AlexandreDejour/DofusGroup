@@ -204,7 +204,7 @@ describe("CharacterDetails", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "Retour" }));
 
-    expect(navigateMock).toHaveBeenCalledWith("/profile");
+    expect(navigateMock).toHaveBeenCalledWith(-1);
   });
 
   it("logs axios error", async () => {

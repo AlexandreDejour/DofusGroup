@@ -25,10 +25,9 @@ describe("BreedService", () => {
 
   describe("getBreeds", () => {
     it("should call axios.get with the correct URL on success", async () => {
-      // Données de mock pour une réponse réussie
       const mockBreeds: Breed[] = [
-        { id: "123", name: "Iop" },
-        { id: "456", name: "Cra" },
+        { id: "6dd98471-3445-4e80-87ae-c82174fccfeb", name: "Iop" },
+        { id: "3606e7c7-035a-47e1-a662-cc0ee58ed621", name: "Cra" },
       ];
       apiClientMock.instance.get.mockResolvedValue({ data: mockBreeds });
 

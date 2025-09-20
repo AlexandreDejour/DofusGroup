@@ -207,7 +207,7 @@ export class EventController {
   }
 
   public async update(req: Request, res: Response, next: NextFunction) {
-    const userId = req.params.userId;
+    const userId: string = req.params.userId;
     const eventId: string = req.params.eventId;
 
     if (!userId) {

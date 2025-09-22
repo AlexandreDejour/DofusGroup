@@ -7,6 +7,6 @@ export type Comment = {
 };
 
 export type CommentEnriched = Comment & {
-  user?: User;
-  event?: Event;
+  user: User;
+  event: Event;
 };

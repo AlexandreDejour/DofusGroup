@@ -81,6 +81,11 @@
     &_comments {
       width: 100%;
       position: relative;
+
+      &_list {
+        margin: 1% 0%;
+        list-style: none;
+      }
     }
 
     &_buttons {
@@ -91,7 +96,7 @@
       align-items: center;
 
       button {
-        padding: 3% 5%;
+        padding: 2% 3%;
       }
     }
 

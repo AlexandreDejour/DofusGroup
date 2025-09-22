@@ -1,7 +1,7 @@
 import { Tag } from "./tag";
 import { User } from "./user";
 import { Server } from "./server";
-import { Comment } from "./comment";
+import { CommentEnriched } from "./comment";
 import { Character, CharacterEnriched } from "./character";
 
 export type Event = {
@@ -22,7 +22,7 @@ export type Event = {
 
 export type EventEnriched = Omit<Event, "characters"> & {
   characters: CharacterEnriched[];
-  comments: Comment[];
+  comments: CommentEnriched[];
   user: User;
 };
 

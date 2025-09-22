@@ -168,7 +168,13 @@ export default function ModalProvider({ children }: ModalProviderProps) {
         }
 
         if (modalType === "newCharacter") {
-          if (!user) return;
+          if (!user) {
+            showError(
+              "Connexion requise !",
+              "Cette action nécessite d'être connecté.",
+            );
+            return;
+          }
 
           const keys: (keyof CreateCharacterForm)[] = [
             "name",
@@ -203,7 +209,15 @@ export default function ModalProvider({ children }: ModalProviderProps) {
         }
 
         if (modalType === "updateCharacter") {
-          if (!user || !updateTarget) return;
+          if (!user) {
+            showError(
+              "Connexion requise !",
+              "Cette action nécessite d'être connecté.",
+            );
+            return;
+          }
+
+          if (!updateTarget) return;
 
           const keys: (keyof CreateCharacterForm)[] = [
             "name",
@@ -243,7 +257,13 @@ export default function ModalProvider({ children }: ModalProviderProps) {
         }
 
         if (modalType === "newEvent") {
-          if (!user) return;
+          if (!user) {
+            showError(
+              "Connexion requise !",
+              "Cette action nécessite d'être connecté.",
+            );
+            return;
+          }
 
           const keys: (keyof CreateEventForm)[] = [
             "title",
@@ -285,7 +305,15 @@ export default function ModalProvider({ children }: ModalProviderProps) {
         }
 
         if (modalType === "updateEvent") {
-          if (!user || !updateTarget) return;
+          if (!user) {
+            showError(
+              "Connexion requise !",
+              "Cette action nécessite d'être connecté.",
+            );
+            return;
+          }
+
+          if (!updateTarget) return;
 
           const keys: (keyof CreateEventForm)[] = [
             "title",
@@ -332,7 +360,15 @@ export default function ModalProvider({ children }: ModalProviderProps) {
         }
 
         if (modalType === "joinEvent") {
-          if (!user || !updateTarget) return;
+          if (!user) {
+            showError(
+              "Connexion requise !",
+              "Cette action nécessite d'être connecté.",
+            );
+            return;
+          }
+
+          if (!updateTarget) return;
 
           const keys: (keyof CreateEventForm)[] = [
             "title",
@@ -364,7 +400,15 @@ export default function ModalProvider({ children }: ModalProviderProps) {
         }
 
         if (modalType === "comment") {
-          if (!user || !updateTarget) return;
+          if (!user) {
+            showError(
+              "Connexion requise !",
+              "Cette action nécessite d'être connecté.",
+            );
+            return;
+          }
+
+          if (!updateTarget) return;
 
           const keys: (keyof CreateCommentForm)[] = ["content"];
 
@@ -381,7 +425,15 @@ export default function ModalProvider({ children }: ModalProviderProps) {
         }
 
         if (modalType === "updateComment") {
-          if (!user || !updateTarget) return;
+          if (!user) {
+            showError(
+              "Connexion requise !",
+              "Cette action nécessite d'être connecté.",
+            );
+            return;
+          }
+
+          if (!updateTarget) return;
 
           const keys: (keyof CreateCommentForm)[] = ["content"];
 

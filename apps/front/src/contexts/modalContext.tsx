@@ -380,6 +380,20 @@ export default function ModalProvider({ children }: ModalProviderProps) {
           );
         }
 
+        if (modalType === "updateComment") {
+          if (!user || !updateTarget) return;
+
+          const keys: (keyof CreateCommentForm)[] = ["content"];
+
+          const data = formDataToObject<CreateCommentForm>(formData, {
+            keys,
+          });
+
+          await commentService.update(user.id, updateTarget.id, data);
+
+          showSuccess("Mise à jour !", `Vous avez modifier votre commentaire.`);
+        }
+
         closeModal();
       } catch (error) {
         if (error instanceof Error) {

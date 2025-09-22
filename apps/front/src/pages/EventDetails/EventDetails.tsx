@@ -199,7 +199,19 @@ export default function EventDetails() {
                       <button
                         className="event_section_comments_list_item_buttons_delete button delete"
                         aria-label={`Delete comment ${comment.id}`}
-                        onClick={() => handleDelete("comment", comment.id)}
+                        onClick={() => {
+                          handleDelete("comment", comment.id);
+                          setEvent((prev) =>
+                            prev
+                              ? {
+                                  ...prev,
+                                  comments: prev.comments.filter(
+                                    (c) => c.id !== comment.id,
+                                  ),
+                                }
+                              : prev,
+                          );
+                        }}
                       >
                         <FontAwesomeIcon icon={faTrash} />
                       </button>

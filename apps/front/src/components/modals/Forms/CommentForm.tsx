@@ -51,11 +51,7 @@ export default function CommentForm({
           )}
         </label>
 
-        <button
-          type="submit"
-          aria-label="Comment"
-          className="content_modal_form_button button"
-        >
+        <button type="submit" className="content_modal_form_button button">
           Commenter
         </button>
       </form>

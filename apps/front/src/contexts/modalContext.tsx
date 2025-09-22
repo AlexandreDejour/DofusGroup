@@ -73,7 +73,8 @@ export type TargetType =
   | "event"
   | "event_details"
   | "character"
-  | "character_details";
+  | "character_details"
+  | "comment";
 
 const ModalContext = createContext<ModalContextType | null>(null);
 
@@ -460,12 +461,23 @@ export default function ModalProvider({ children }: ModalProviderProps) {
 
   const handleDelete = useCallback(
     async (targetType: TargetType, targetId?: string) => {
-      if (!user) return;
+      if (!user) {
+        showError(
+          "Connexion requise !",
+          "Cette action nécessite d'être connecté.",
+        );
+        return;
+      }
 
       try {
         if (targetType === "event" && targetId) {
           await eventService.delete(user.id, targetId);
           const response = await userService.getOne(user.id);
+
+          showSuccess(
+            "Supression de donnée !",
+            "Votre évènement a été supprimé avec succès",
+          );
 
           setUser({ ...user, ...response });
         }
@@ -473,12 +485,22 @@ export default function ModalProvider({ children }: ModalProviderProps) {
         if (targetType === "event_details" && targetId) {
           await eventService.delete(user.id, targetId);
 
-          navigate("/profile");
+          showSuccess(
+            "Supression de donnée !",
+            "Votre évènement a été supprimé avec succès",
+          );
+
+          navigate(-1);
         }
 
         if (targetType === "character" && targetId) {
           await characterService.delete(user.id, targetId);
           const response = await userService.getOne(user.id);
+
+          showSuccess(
+            "Supression de donnée !",
+            "Votre personnage a été supprimé avec succès",
+          );
 
           setUser({ ...user, ...response });
         }
@@ -486,11 +508,30 @@ export default function ModalProvider({ children }: ModalProviderProps) {
         if (targetType === "character_details" && targetId) {
           await characterService.delete(user.id, targetId);
 
-          navigate("/profile");
+          showSuccess(
+            "Supression de donnée !",
+            "Votre personnage a été supprimé avec succès",
+          );
+
+          navigate(-1);
+        }
+
+        if (targetType === "comment" && targetId) {
+          await commentService.delete(user.id, targetId);
+
+          showSuccess(
+            "Supression de donnée !",
+            "Votre commentaire a été supprimé avec succès",
+          );
         }
 
         if (targetType === "user") {
           await userService.delete(user.id);
+
+          showSuccess(
+            "Supression de donnée !",
+            "Votre compte a été supprimé avec succès",
+          );
 
           setUser(null);
         }

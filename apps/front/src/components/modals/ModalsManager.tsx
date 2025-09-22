@@ -83,7 +83,10 @@ export default function ModalsManager() {
 
           {modalType === "updateComment" &&
             typeGuard.commentEnriched(updateTarget) && (
-              <CommentForm handleSubmit={(event) => handleSubmit(event)} />
+              <CommentForm
+                updateTarget={updateTarget}
+                handleSubmit={(event) => handleSubmit(event)}
+              />
             )}
         </div>
       </div>

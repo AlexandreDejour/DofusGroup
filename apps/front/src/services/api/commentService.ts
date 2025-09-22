@@ -29,13 +29,13 @@ export class CommentService {
       if (axios.isAxiosError(error)) {
         if (error.response?.status === 401) {
           throw new Error(
-            "Vous devez être connecter pour créer un personnage.",
+            "Vous devez être connecter pour ajouter un commentaire.",
           );
         }
 
         if (error.response?.status === 403) {
           throw new Error(
-            "La création de personnage est réservée à votre compte.",
+            "L'ajout de commentaire est réservée à votre compte.",
           );
         }
       }
@@ -60,13 +60,13 @@ export class CommentService {
       if (axios.isAxiosError(error)) {
         if (error.response?.status === 401) {
           throw new Error(
-            "Vous devez être connecter pour créer un personnage.",
+            "Vous devez être connecter pour modifier un commentaire.",
           );
         }
 
         if (error.response?.status === 403) {
           throw new Error(
-            "La création de personnage est réservée à votre compte.",
+            "La modification de commentaire est réservée à votre compte.",
           );
         }
 
@@ -93,7 +93,7 @@ export class CommentService {
         if ([400, 401, 403].includes(error.response?.status ?? 0)) {
           throw new Error("Cette action n'est pas autorisée.");
         } else if (error.response?.status === 404) {
-          throw new Error("Ce personnage n'existe plus.");
+          throw new Error("Ce commentaire n'existe plus.");
         }
       }
       throw error;

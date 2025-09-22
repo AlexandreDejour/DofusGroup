@@ -141,6 +141,13 @@ export default function EventDetails() {
 
           <div className="event_section_characters">
             <span>Groupe: </span>
+            <button
+              type="button"
+              className="event_section_characters_join button"
+              onClick={() => openModal("joinEvent", event)}
+            >
+              Rejoindre
+            </button>
             <ul className="event_section_characters_list">
               {event.characters.map((character) => (
                 <li key={character.id}>

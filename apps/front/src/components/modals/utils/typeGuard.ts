@@ -1,4 +1,5 @@
 import { EventEnriched } from "../../../types/event";
+import { CommentEnriched } from "../../../types/comment";
 import { CharacterEnriched } from "../../../types/character";
 
 export const typeGuard = {
@@ -42,6 +43,19 @@ export const typeGuard = {
       obj.characters !== undefined &&
       obj.comments !== undefined &&
       obj.user !== undefined
+    );
+  },
+
+  commentEnriched: (obj: any): obj is CommentEnriched => {
+    return (
+      obj !== null &&
+      typeof obj === "object" &&
+      // comment properties
+      typeof obj.id === "string" &&
+      typeof obj.content === "string" &&
+      // enriched properties
+      obj.user !== undefined &&
+      obj.event !== undefined
     );
   },
 };

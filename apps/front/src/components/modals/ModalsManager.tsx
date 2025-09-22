@@ -72,11 +72,12 @@ export default function ModalsManager() {
               />
             )}
 
-          {modalType === "joinEvent" && (
-            <JoinEventForm handleSubmit={(event) => handleSubmit(event)} />
-          )}
+          {modalType === "joinEvent" &&
+            typeGuard.eventEnriched(updateTarget) && (
+              <JoinEventForm handleSubmit={(event) => handleSubmit(event)} />
+            )}
 
-          {modalType === "comment" && (
+          {modalType === "comment" && typeGuard.eventEnriched(updateTarget) && (
             <CommentForm handleSubmit={(event) => handleSubmit(event)} />
           )}
         </div>

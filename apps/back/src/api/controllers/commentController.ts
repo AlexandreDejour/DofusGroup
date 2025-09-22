@@ -102,8 +102,7 @@ export class CommentController {
         return;
       }
 
-      const userId: string = req.params.userId;
-      const commentData: CommentBodyData = { ...req.body, user_id: userId };
+      const commentData: CommentBodyData = req.body;
 
       const newComment: CommentEnriched =
         await this.repository.post(commentData);

@@ -3,7 +3,7 @@ import axios from "axios";
 import { Comment } from "../../types/comment";
 
 import { ApiClient } from "../client";
-import { createCommentForm } from "../../types/form";
+import { CreateCommentForm } from "../../types/form";
 
 export class CommentService {
   private axios;
@@ -15,12 +15,12 @@ export class CommentService {
   public async create(
     userId: string,
     eventId: string,
-    data: createCommentForm,
+    data: CreateCommentForm,
   ): Promise<Comment> {
     try {
       const response = await this.axios.post<Comment>(
         `/user/${userId}/comment`,
-        data,
+        { ...data, user_id: userId, event_id: eventId },
         { withCredentials: true },
       );
 

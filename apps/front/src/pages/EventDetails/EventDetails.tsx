@@ -13,11 +13,14 @@ import { useNotification } from "../../contexts/notificationContext";
 import { Config } from "../../config/config";
 import { ApiClient } from "../../services/client";
 import { EventService } from "../../services/api/eventService";
+import { CommentService } from "../../services/api/commentService";
+
 import EventCharacterCard from "../../components/EventCharacterCard/EventCharacterCard";
 
 const config = Config.getInstance();
 const axios = new ApiClient(config.baseUrl);
 const eventService = new EventService(axios);
+const commentService = new CommentService(axios);
 
 export default function EventDetails() {
   const navigate = useNavigate();
@@ -143,7 +146,7 @@ export default function EventDetails() {
             <span>Groupe: </span>
             <button
               type="button"
-              className="event_section_characters_join button"
+              className="quick button"
               onClick={() => openModal("joinEvent", event)}
             >
               Rejoindre
@@ -156,6 +159,24 @@ export default function EventDetails() {
                     character={character}
                     removeCharacter={removeCharacter}
                   />
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div className="event_section_comments">
+            <span>Discussion: </span>
+            <button
+              type="button"
+              className="quick button"
+              onClick={() => openModal("comment", event)}
+            >
+              Commenter
+            </button>
+            <ul className="event_section_comments_list">
+              {event.comments.map((comment) => (
+                <li key={comment.id}>
+                  <p>{comment.content}</p>
                 </li>
               ))}
             </ul>

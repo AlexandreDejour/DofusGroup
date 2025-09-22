@@ -8,13 +8,13 @@ export default function CommentForm({ handleSubmit }: CommentFormProps) {
   return (
     <div className="content_modal">
       <h3 className="content_modal_title">Ajouter un commentaire</h3>
-      <form onSubmit={handleSubmit}>
-        <label htmlFor="comment" className="content_modal_form_label">
+      <form onSubmit={handleSubmit} className="content_modal_form" role="form">
+        <label htmlFor="content" className="content_modal_form_label">
           <span>Commentaire: </span>
-          <input
-            type="text"
-            name="comment"
-            id="comment"
+          <textarea
+            name="content"
+            id="content"
+            rows={3}
             required
             placeholder="Commentaire"
             className="content_modal_form_label_input"

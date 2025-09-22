@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router";
 import React, { createContext, useCallback, useContext, useState } from "react";
 
 import { useAuth } from "./authContext";
@@ -9,6 +10,7 @@ import {
   UpdateForm,
   CreateCharacterForm,
   CreateEventForm,
+  CreateCommentForm,
 } from "../types/form";
 import { Event } from "../types/event";
 import { CharacterEnriched } from "../types/character";
@@ -19,15 +21,16 @@ import formDataToObject from "./utils/formDataToObject";
 import { AuthService } from "../services/api/authService";
 import { UserService } from "../services/api/userService";
 import { EventService } from "../services/api/eventService";
+import { CommentService } from "../services/api/commentService";
 import { CharacterService } from "../services/api/characterService";
 import isUpdateField from "../components/modals/utils/isUpdateField";
-import { useNavigate } from "react-router";
 
 const config = Config.getInstance();
 const axios = new ApiClient(config.baseUrl);
 const authService = new AuthService(axios);
 const userService = new UserService(axios);
 const eventService = new EventService(axios);
+const commentService = new CommentService(axios);
 const characterService = new CharacterService(axios);
 
 export interface ModalContextType {
@@ -60,6 +63,7 @@ export type ModalType =
   | "newEvent"
   | "updateEvent"
   | "joinEvent"
+  | "comment"
   | null;
 
 export type TargetType =
@@ -351,6 +355,23 @@ export default function ModalProvider({ children }: ModalProviderProps) {
           showSuccess(
             "Inscription réussie !",
             `Vous avez rejoint l'évènement.`,
+          );
+        }
+
+        if (modalType === "comment") {
+          if (!user || !updateTarget) return;
+
+          const keys: (keyof CreateCommentForm)[] = ["content"];
+
+          const data = formDataToObject<CreateCommentForm>(formData, {
+            keys,
+          });
+
+          await commentService.create(user.id, updateTarget.id, data);
+
+          showSuccess(
+            "Nouveau commentaire !",
+            `Vous avez ajouter un nouveau commentaire.`,
           );
         }
 

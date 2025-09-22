@@ -35,6 +35,6 @@ export type CreateEventForm = {
   characters_id: string[];
 };
 
-export type createCommentForm = {
+export type CreateCommentForm = {
   content: string;
 };

@@ -70,19 +70,17 @@
       align-items: center;
       position: relative;
 
-      &_join {
-        padding: 0.5% 1%;
-        position: absolute;
-        top: 0;
-        right: 0.5%;
-      }
-
       &_list {
         width: 100%;
-        margin-top: 1%;
+        margin: 1% 0%;
         padding: 0;
         list-style: none;
       }
+    }
+
+    &_comments {
+      width: 100%;
+      position: relative;
     }
 
     &_buttons {
@@ -99,6 +97,13 @@
 
     span {
       font-weight: bold;
+    }
+
+    .quick {
+      padding: 0.5% 1%;
+      position: absolute;
+      top: 0;
+      right: 0.5%;
     }
   }
 

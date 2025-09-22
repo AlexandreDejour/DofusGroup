@@ -54,8 +54,7 @@ export const typeGuard = {
       typeof obj.id === "string" &&
       typeof obj.content === "string" &&
       // enriched properties
-      obj.user !== undefined &&
-      obj.event !== undefined
+      obj.user !== undefined
     );
   },
 };

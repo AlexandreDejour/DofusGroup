@@ -192,7 +192,7 @@ export default function EventDetails() {
                       <button
                         className="event_section_comments_list_item_buttons_update button"
                         aria-label={`Update comment ${comment.id}`}
-                        onClick={() => openModal("updateComment", comment.id)}
+                        onClick={() => openModal("updateComment", comment)}
                       >
                         <FontAwesomeIcon icon={faPen} />
                       </button>

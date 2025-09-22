@@ -22,12 +22,4 @@ export const updateCommentSchema: Joi.ObjectSchema = Joi.object({
     "string.min": "Content must be at least 1 character long",
     "string.base": "Content must be a string",
   }),
-  user_id: Joi.string().guid({ version: "uuidv4" }).optional().messages({
-    "string.guid": "User ID must be a valid UUID v4",
-    "string.base": "User ID must be a string",
-  }),
-  event_id: Joi.string().guid({ version: "uuidv4" }).optional().messages({
-    "string.guid": "Event ID must be a valid UUID v4",
-    "string.base": "Event ID must be a string",
-  }),
 });

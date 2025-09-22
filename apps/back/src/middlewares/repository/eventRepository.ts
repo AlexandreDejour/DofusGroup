@@ -1,8 +1,11 @@
 import { Op } from "sequelize";
 
-import CharacterEntity from "../../database/models/Character.js";
-import EventEntity from "../../database/models/Event.js";
 import { Event, EventEnriched, EventBodyData } from "../../types/event.js";
+
+import EventEntity from "../../database/models/Event.js";
+import CommentEntity from "../../database/models/Comment.js";
+import CharacterEntity from "../../database/models/Character.js";
+
 import { EventUtils } from "./utils/eventUtils.js";
 
 export class EventRepository {
@@ -82,6 +85,7 @@ export class EventRepository {
             attributes: { exclude: ["mail", "password"] },
           },
         ],
+        order: [[{ model: CommentEntity, as: "comments" }, "createdAt", "ASC"]],
       });
 
       if (!result) {

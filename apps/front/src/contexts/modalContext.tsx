@@ -13,6 +13,7 @@ import {
   CreateCommentForm,
 } from "../types/form";
 import { Event } from "../types/event";
+import { CommentEnriched } from "../types/comment";
 import { CharacterEnriched } from "../types/character";
 
 import { Config } from "../config/config";
@@ -36,14 +37,14 @@ const characterService = new CharacterService(axios);
 export interface ModalContextType {
   isOpen: boolean;
   modalType: string | null; // ex: "register", "login", "newEvent", etc.
-  updateTarget: Event | CharacterEnriched | null;
+  updateTarget: Event | CharacterEnriched | CommentEnriched | null;
   formData: FormData;
   resetForm: React.Dispatch<React.SetStateAction<FormData>>;
   handleSubmit: (event: React.FormEvent<HTMLFormElement>) => Promise<void>;
   handleDelete: (targetType: TargetType, targetId?: string) => Promise<void>;
   openModal: (
     modalType: ModalType,
-    updateTarget?: Event | CharacterEnriched,
+    updateTarget?: Event | CharacterEnriched | CommentEnriched,
   ) => void;
   closeModal: () => void;
 }
@@ -64,6 +65,7 @@ export type ModalType =
   | "updateEvent"
   | "joinEvent"
   | "comment"
+  | "updateComment"
   | null;
 
 export type TargetType =
@@ -85,13 +87,16 @@ export default function ModalProvider({ children }: ModalProviderProps) {
   const [modalType, setModalType] = useState<ModalType>(null);
   const [formData, setFormData] = useState<FormData>(new FormData());
   const [updateTarget, setUpdateTarget] = useState<
-    Event | CharacterEnriched | null
+    Event | CharacterEnriched | CommentEnriched | null
   >(null);
 
   const resetForm = () => setFormData(new FormData());
 
   const openModal = useCallback(
-    (modalType: ModalType, updateTarget?: Event | CharacterEnriched) => {
+    (
+      modalType: ModalType,
+      updateTarget?: Event | CharacterEnriched | CommentEnriched,
+    ) => {
       if (updateTarget) setUpdateTarget(updateTarget);
 
       setModalType(modalType);

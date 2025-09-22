@@ -182,7 +182,8 @@ describe("EventDetails", () => {
 
     await waitFor(() => screen.getByText(/titre test/i));
 
-    fireEvent.click(screen.getByRole("button", { name: /rejoindre/i }));
+    const joinButtons = screen.getAllByRole("button", { name: /rejoindre/i });
+    fireEvent.click(joinButtons[0]);
     expect(openModal).toHaveBeenCalledWith("joinEvent", mockEvent);
   });
 
@@ -202,6 +203,135 @@ describe("EventDetails", () => {
 
     await waitFor(() => {
       expect(screen.queryByText(/titre test/i)).not.toBeInTheDocument();
+    });
+  });
+
+  it("renders comments with author and content", async () => {
+    const mockEventWithComments = {
+      ...mockEvent,
+      comments: [
+        {
+          id: "c1",
+          content: "Super event !",
+          user: {
+            id: "9c63878b-4763-4de7-ac1e-d1ada9fc0159",
+            username: "toto",
+          },
+        },
+      ],
+    };
+    getOneEnrichedMock = vi.fn().mockResolvedValue(mockEventWithComments);
+
+    renderWithRouter();
+
+    await waitFor(() => {
+      expect(screen.getByText(/super event/i)).toBeInTheDocument();
+      expect(screen.getByText(/auteur: toto/i)).toBeInTheDocument();
+    });
+  });
+
+  it("shows update and delete buttons only for user's own comment", async () => {
+    const mockEventWithComments = {
+      ...mockEvent,
+      comments: [
+        {
+          id: "7999dc4e-8760-47ab-92c9-dcde2a6a3e90",
+          content: "Super event !",
+          user: {
+            id: "9c63878b-4763-4de7-ac1e-d1ada9fc0159",
+            username: "toto",
+          },
+        },
+        {
+          id: "d4286ff2-1c7b-4dc4-a355-914173987045",
+          content: "Pas mal !",
+          user: { id: "other-user", username: "lulu" },
+        },
+      ],
+    };
+    getOneEnrichedMock = vi.fn().mockResolvedValue(mockEventWithComments);
+
+    renderWithRouter();
+
+    await waitFor(() => {
+      // Toto's comments display buttons
+      expect(
+        screen.getByRole("button", {
+          name: /update comment 7999dc4e-8760-47ab-92c9-dcde2a6a3e90/i,
+        }),
+      ).toBeInTheDocument();
+      expect(
+        screen.getByRole("button", {
+          name: /delete comment 7999dc4e-8760-47ab-92c9-dcde2a6a3e90/i,
+        }),
+      ).toBeInTheDocument();
+
+      // Lulu's comments doesn't display buttons
+      expect(
+        screen.queryByRole("button", {
+          name: /update comment d4286ff2-1c7b-4dc4-a355-914173987045/i,
+        }),
+      ).not.toBeInTheDocument();
+      expect(
+        screen.queryByRole("button", {
+          name: /delete comment d4286ff2-1c7b-4dc4-a355-914173987045/i,
+        }),
+      ).not.toBeInTheDocument();
+    });
+  });
+
+  it("calls openModal with updateComment when clicking modifier", async () => {
+    const comment = {
+      id: "7999dc4e-8760-47ab-92c9-dcde2a6a3e90",
+      content: "À modifier",
+      user: { id: "9c63878b-4763-4de7-ac1e-d1ada9fc0159", username: "toto" },
+    };
+    getOneEnrichedMock = vi.fn().mockResolvedValue({
+      ...mockEvent,
+      comments: [comment],
+    });
+
+    renderWithRouter();
+
+    await waitFor(() => screen.getByText(/à modifier/i));
+
+    fireEvent.click(
+      screen.getByRole("button", {
+        name: /update comment 7999dc4e-8760-47ab-92c9-dcde2a6a3e90/i,
+      }),
+    );
+    expect(openModal).toHaveBeenCalledWith("updateComment", comment);
+  });
+
+  it("calls handleDelete and removes comment when clicking supprimer", async () => {
+    const comment = {
+      id: "7999dc4e-8760-47ab-92c9-dcde2a6a3e90",
+      content: "À supprimer",
+      user: { id: "9c63878b-4763-4de7-ac1e-d1ada9fc0159", username: "toto" },
+    };
+    getOneEnrichedMock = vi.fn().mockResolvedValue({
+      ...mockEvent,
+      comments: [comment],
+    });
+
+    renderWithRouter();
+
+    await waitFor(() => screen.getByText(/à supprimer/i));
+
+    fireEvent.click(
+      screen.getByRole("button", {
+        name: /delete comment 7999dc4e-8760-47ab-92c9-dcde2a6a3e90/i,
+      }),
+    );
+
+    expect(handleDelete).toHaveBeenCalledWith(
+      "comment",
+      "7999dc4e-8760-47ab-92c9-dcde2a6a3e90",
+    );
+
+    // Le commentaire doit disparaître après suppression
+    await waitFor(() => {
+      expect(screen.queryByText(/à supprimer/i)).not.toBeInTheDocument();
     });
   });
 

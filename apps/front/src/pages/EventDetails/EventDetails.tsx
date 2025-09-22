@@ -4,6 +4,10 @@ import { isAxiosError } from "axios";
 import { useCallback, useEffect, useState } from "react";
 import { Navigate, useNavigate, useParams } from "react-router";
 
+import { faPen } from "@fortawesome/free-solid-svg-icons";
+import { faTrash } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+
 import { EventEnriched } from "../../types/event";
 
 import { useAuth } from "../../contexts/authContext";
@@ -173,9 +177,34 @@ export default function EventDetails() {
             </button>
             <ul className="event_section_comments_list">
               {event.comments.map((comment) => (
-                <li key={comment.id}>
-                  <p>{comment.user.username}</p>
-                  <p>{comment.content}</p>
+                <li
+                  key={comment.id}
+                  className="event_section_comments_list_item"
+                >
+                  <p className="event_section_comments_list_item_content">
+                    {comment.content}
+                  </p>
+                  <p className="event_section_comments_list_item_author">
+                    auteur: {comment.user.username}
+                  </p>
+                  {user?.id === comment.user.id && (
+                    <div className="event_section_comments_list_item_buttons">
+                      <button
+                        className="event_section_comments_list_item_buttons_update button"
+                        aria-label={`Update comment ${comment.id}`}
+                        onClick={() => openModal("updateComment", comment.id)}
+                      >
+                        <FontAwesomeIcon icon={faPen} />
+                      </button>
+                      <button
+                        className="event_section_comments_list_item_buttons_delete button delete"
+                        aria-label={`Delete comment ${comment.id}`}
+                        onClick={() => removeCharacter(event.id, comment.id)}
+                      >
+                        <FontAwesomeIcon icon={faTrash} />
+                      </button>
+                    </div>
+                  )}
                 </li>
               ))}
             </ul>

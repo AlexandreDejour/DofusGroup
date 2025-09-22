@@ -83,8 +83,56 @@
       position: relative;
 
       &_list {
-        margin: 1% 0%;
+        width: 100%;
+        margin: 4% 0%;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
         list-style: none;
+
+        &_item {
+          width: 70%;
+          background-color: var(--primary-bg);
+          margin: 1% 0%;
+          padding: 2% 3%;
+          position: relative;
+
+          &_content {
+            text-align: start;
+          }
+
+          &_author {
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 0.9rem;
+            font-style: italic;
+            text-align: end;
+          }
+
+          &_buttons {
+            width: 10%;
+            font-size: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: absolute;
+            top: 15%;
+            right: 3%;
+
+            button {
+              padding: 5%;
+            }
+          }
+        }
+
+        &_item:nth-child(odd) {
+          align-self: flex-start;
+          border-radius: 0rem 1rem 1rem 1rem;
+        }
+
+        &_item:nth-child(even) {
+          align-self: flex-end;
+          border-radius: 1rem 0rem 1rem 1rem;
+        }
       }
     }
 

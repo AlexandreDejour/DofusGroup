@@ -2,8 +2,8 @@ import "./EventCharacterCard.scss";
 
 import { useNavigate } from "react-router";
 
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import { EventEnriched } from "../../types/event";
 import { CharacterEnriched } from "../../types/character";

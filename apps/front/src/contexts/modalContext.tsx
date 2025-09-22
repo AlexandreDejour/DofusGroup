@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router";
 import React, { createContext, useCallback, useContext, useState } from "react";
 
 import { useAuth } from "./authContext";
@@ -9,8 +10,10 @@ import {
   UpdateForm,
   CreateCharacterForm,
   CreateEventForm,
+  CreateCommentForm,
 } from "../types/form";
 import { Event } from "../types/event";
+import { CommentEnriched } from "../types/comment";
 import { CharacterEnriched } from "../types/character";
 
 import { Config } from "../config/config";
@@ -19,28 +22,29 @@ import formDataToObject from "./utils/formDataToObject";
 import { AuthService } from "../services/api/authService";
 import { UserService } from "../services/api/userService";
 import { EventService } from "../services/api/eventService";
+import { CommentService } from "../services/api/commentService";
 import { CharacterService } from "../services/api/characterService";
 import isUpdateField from "../components/modals/utils/isUpdateField";
-import { useNavigate } from "react-router";
 
 const config = Config.getInstance();
 const axios = new ApiClient(config.baseUrl);
 const authService = new AuthService(axios);
 const userService = new UserService(axios);
 const eventService = new EventService(axios);
+const commentService = new CommentService(axios);
 const characterService = new CharacterService(axios);
 
 export interface ModalContextType {
   isOpen: boolean;
   modalType: string | null; // ex: "register", "login", "newEvent", etc.
-  updateTarget: Event | CharacterEnriched | null;
+  updateTarget: Event | CharacterEnriched | CommentEnriched | null;
   formData: FormData;
   resetForm: React.Dispatch<React.SetStateAction<FormData>>;
   handleSubmit: (event: React.FormEvent<HTMLFormElement>) => Promise<void>;
   handleDelete: (targetType: TargetType, targetId?: string) => Promise<void>;
   openModal: (
     modalType: ModalType,
-    updateTarget?: Event | CharacterEnriched,
+    updateTarget?: Event | CharacterEnriched | CommentEnriched,
   ) => void;
   closeModal: () => void;
 }
@@ -58,9 +62,19 @@ export type ModalType =
   | "newCharacter"
   | "updateCharacter"
   | "newEvent"
+  | "updateEvent"
+  | "joinEvent"
+  | "comment"
+  | "updateComment"
   | null;
 
-export type TargetType = "user" | "event" | "character" | "character_details";
+export type TargetType =
+  | "user"
+  | "event"
+  | "event_details"
+  | "character"
+  | "character_details"
+  | "comment";
 
 const ModalContext = createContext<ModalContextType | null>(null);
 
@@ -74,13 +88,16 @@ export default function ModalProvider({ children }: ModalProviderProps) {
   const [modalType, setModalType] = useState<ModalType>(null);
   const [formData, setFormData] = useState<FormData>(new FormData());
   const [updateTarget, setUpdateTarget] = useState<
-    Event | CharacterEnriched | null
+    Event | CharacterEnriched | CommentEnriched | null
   >(null);
 
   const resetForm = () => setFormData(new FormData());
 
   const openModal = useCallback(
-    (modalType: ModalType, updateTarget?: Event | CharacterEnriched) => {
+    (
+      modalType: ModalType,
+      updateTarget?: Event | CharacterEnriched | CommentEnriched,
+    ) => {
       if (updateTarget) setUpdateTarget(updateTarget);
 
       setModalType(modalType);
@@ -152,7 +169,13 @@ export default function ModalProvider({ children }: ModalProviderProps) {
         }
 
         if (modalType === "newCharacter") {
-          if (!user) return;
+          if (!user) {
+            showError(
+              "Connexion requise !",
+              "Cette action nécessite d'être connecté.",
+            );
+            return;
+          }
 
           const keys: (keyof CreateCharacterForm)[] = [
             "name",
@@ -187,7 +210,15 @@ export default function ModalProvider({ children }: ModalProviderProps) {
         }
 
         if (modalType === "updateCharacter") {
-          if (!user || !updateTarget) return;
+          if (!user) {
+            showError(
+              "Connexion requise !",
+              "Cette action nécessite d'être connecté.",
+            );
+            return;
+          }
+
+          if (!updateTarget) return;
 
           const keys: (keyof CreateCharacterForm)[] = [
             "name",
@@ -227,7 +258,13 @@ export default function ModalProvider({ children }: ModalProviderProps) {
         }
 
         if (modalType === "newEvent") {
-          if (!user) return;
+          if (!user) {
+            showError(
+              "Connexion requise !",
+              "Cette action nécessite d'être connecté.",
+            );
+            return;
+          }
 
           const keys: (keyof CreateEventForm)[] = [
             "title",
@@ -257,7 +294,8 @@ export default function ModalProvider({ children }: ModalProviderProps) {
             arrayKeys,
           });
 
-          const response = await eventService.create(user.id, data);
+          await eventService.create(user.id, data);
+          const response = await userService.getOne(user.id);
 
           setUser({ ...user, ...response });
 
@@ -265,6 +303,148 @@ export default function ModalProvider({ children }: ModalProviderProps) {
             "Création d'évènement réussie !",
             `Vous avez créer un nouvel évènement.`,
           );
+        }
+
+        if (modalType === "updateEvent") {
+          if (!user) {
+            showError(
+              "Connexion requise !",
+              "Cette action nécessite d'être connecté.",
+            );
+            return;
+          }
+
+          if (!updateTarget) return;
+
+          const keys: (keyof CreateEventForm)[] = [
+            "title",
+            "date",
+            "duration",
+            "area",
+            "sub_area",
+            "donjon_name",
+            "description",
+            "max_players",
+            "status",
+            "tag_id",
+            "server_id",
+            "characters_id",
+          ];
+          const dateKeys: (keyof CreateEventForm)[] = ["date"];
+          const numberKeys: (keyof CreateEventForm)[] = [
+            "duration",
+            "max_players",
+          ];
+          const arrayKeys: (keyof CreateEventForm)[] = ["characters_id"];
+
+          const data = formDataToObject<CreateEventForm>(formData, {
+            keys,
+            dateKeys,
+            numberKeys,
+            arrayKeys,
+          });
+
+          const eventData = await eventService.update(
+            user.id,
+            updateTarget?.id,
+            data,
+          );
+          const userData = await userService.getOne(user.id);
+
+          setUpdateTarget(eventData);
+          setUser({ ...user, ...userData });
+
+          showSuccess(
+            "Mise à jour réussie !",
+            `Vous avez mis à jour votre évènement.`,
+          );
+        }
+
+        if (modalType === "joinEvent") {
+          if (!user) {
+            showError(
+              "Connexion requise !",
+              "Cette action nécessite d'être connecté.",
+            );
+            return;
+          }
+
+          if (!updateTarget) return;
+
+          const keys: (keyof CreateEventForm)[] = [
+            "title",
+            "date",
+            "duration",
+            "area",
+            "sub_area",
+            "donjon_name",
+            "description",
+            "max_players",
+            "status",
+            "tag_id",
+            "server_id",
+            "characters_id",
+          ];
+          const arrayKeys: (keyof CreateEventForm)[] = ["characters_id"];
+
+          const data = formDataToObject<CreateEventForm>(formData, {
+            keys,
+            arrayKeys,
+          });
+
+          await eventService.addCharacters(updateTarget.id, data);
+
+          showSuccess(
+            "Inscription réussie !",
+            `Vous avez rejoint l'évènement.`,
+          );
+        }
+
+        if (modalType === "comment") {
+          if (!user) {
+            showError(
+              "Connexion requise !",
+              "Cette action nécessite d'être connecté.",
+            );
+            return;
+          }
+
+          if (!updateTarget) return;
+
+          const keys: (keyof CreateCommentForm)[] = ["content"];
+
+          const data = formDataToObject<CreateCommentForm>(formData, {
+            keys,
+          });
+
+          await commentService.create(user.id, updateTarget.id, data);
+
+          showSuccess(
+            "Nouveau commentaire !",
+            `Vous avez ajouter un nouveau commentaire.`,
+          );
+        }
+
+        if (modalType === "updateComment") {
+          if (!user) {
+            showError(
+              "Connexion requise !",
+              "Cette action nécessite d'être connecté.",
+            );
+            return;
+          }
+
+          if (!updateTarget) return;
+
+          const keys: (keyof CreateCommentForm)[] = ["content"];
+
+          const data = formDataToObject<CreateCommentForm>(formData, {
+            keys,
+          });
+
+          await commentService.update(user.id, updateTarget.id, data);
+
+          showSuccess("Mise à jour !", `Vous avez modifier votre commentaire.`);
         }
 
         closeModal();
@@ -281,34 +461,77 @@ export default function ModalProvider({ children }: ModalProviderProps) {
 
   const handleDelete = useCallback(
     async (targetType: TargetType, targetId?: string) => {
-      if (!user) return;
+      if (!user) {
+        showError(
+          "Connexion requise !",
+          "Cette action nécessite d'être connecté.",
+        );
+        return;
+      }
 
       try {
         if (targetType === "event" && targetId) {
           await eventService.delete(user.id, targetId);
           const response = await userService.getOne(user.id);
 
+          showSuccess(
+            "Supression de donnée !",
+            "Votre évènement a été supprimé avec succès",
+          );
+
           setUser({ ...user, ...response });
+        }
+
+        if (targetType === "event_details" && targetId) {
+          await eventService.delete(user.id, targetId);
+
+          showSuccess(
+            "Supression de donnée !",
+            "Votre évènement a été supprimé avec succès",
+          );
+
+          navigate(-1);
         }
 
         if (targetType === "character" && targetId) {
           await characterService.delete(user.id, targetId);
           const response = await userService.getOne(user.id);
 
+          showSuccess(
+            "Supression de donnée !",
+            "Votre personnage a été supprimé avec succès",
+          );
+
           setUser({ ...user, ...response });
         }
 
         if (targetType === "character_details" && targetId) {
           await characterService.delete(user.id, targetId);
-          const response = await userService.getOne(user.id);
 
-          setUser({ ...user, ...response });
+          showSuccess(
+            "Supression de donnée !",
+            "Votre personnage a été supprimé avec succès",
+          );
 
-          navigate("/profile");
+          navigate(-1);
+        }
+
+        if (targetType === "comment" && targetId) {
+          await commentService.delete(user.id, targetId);
+
+          showSuccess(
+            "Supression de donnée !",
+            "Votre commentaire a été supprimé avec succès",
+          );
         }
 
         if (targetType === "user") {
           await userService.delete(user.id);
+
+          showSuccess(
+            "Supression de donnée !",
+            "Votre compte a été supprimé avec succès",
+          );
 
           setUser(null);
         }

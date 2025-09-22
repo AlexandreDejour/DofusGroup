@@ -1,6 +1,8 @@
 import { Tag } from "./tag";
+import { User } from "./user";
 import { Server } from "./server";
-import { Character } from "./character";
+import { CommentEnriched } from "./comment";
+import { Character, CharacterEnriched } from "./character";
 
 export type Event = {
   id: string;
@@ -16,6 +18,12 @@ export type Event = {
   tag: Tag;
   server: Server;
   characters: Character[];
+};
+
+export type EventEnriched = Omit<Event, "characters"> & {
+  characters: CharacterEnriched[];
+  comments: CommentEnriched[];
+  user: User;
 };
 
 export type PaginatedEvents = {

@@ -56,7 +56,7 @@ vi.mock("../../../contexts/modalContext", () => ({
   }),
 }));
 
-const characterMock = {
+const mockCharacter = {
   id: "cfff40b3-9625-4f0a-854b-d8d6d6b4b667",
   name: "Chronos",
   sex: "M",
@@ -95,7 +95,7 @@ function renderWithRouter() {
 
 describe("CharacterDetails", () => {
   beforeEach(() => {
-    getOneEnrichedMock = vi.fn().mockResolvedValue(characterMock);
+    getOneEnrichedMock = vi.fn().mockResolvedValue(mockCharacter);
     openModal.mockClear();
     handleDelete.mockClear();
     navigateMock.mockClear();
@@ -181,7 +181,7 @@ describe("CharacterDetails", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "Modifier" }));
 
-    expect(openModal).toHaveBeenCalledWith("updateCharacter", characterMock);
+    expect(openModal).toHaveBeenCalledWith("updateCharacter", mockCharacter);
   });
 
   it("calls handleDelete when clicking Supprimer", async () => {
@@ -204,7 +204,7 @@ describe("CharacterDetails", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "Retour" }));
 
-    expect(navigateMock).toHaveBeenCalledWith("/profile");
+    expect(navigateMock).toHaveBeenCalledWith(-1);
   });
 
   it("logs axios error", async () => {

@@ -34,3 +34,7 @@ export type CreateEventForm = {
   server_id: string;
   characters_id: string[];
 };
+
+export type CreateCommentForm = {
+  content: string;
+};

@@ -31,10 +31,31 @@ export class CharacterService {
     }
   }
 
+  public async getAllEnrichedByUserId(
+    userId: string,
+  ): Promise<CharacterEnriched[]> {
+    try {
+      const response = await this.axios.get<CharacterEnriched[]>(
+        `/user/${userId}/characters/enriched`,
+      );
+
+      return response.data;
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        if (error.response?.status === 204) {
+          throw new Error(
+            "Vous n'avez créé aucun personnage sur votre compte.",
+          );
+        }
+      }
+      throw error;
+    }
+  }
+
   public async getOneEnriched(characterId: string) {
     try {
       const response = await this.axios.get<CharacterEnriched>(
-        `/character/enriched/${characterId}`,
+        `/character/${characterId}/enriched`,
       );
 
       return response.data;

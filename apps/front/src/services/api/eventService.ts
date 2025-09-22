@@ -1,8 +1,9 @@
+import axios from "axios";
+
 import { ApiClient } from "../client";
 
-import { PaginatedEvents } from "../../types/event";
-import axios from "axios";
 import { CreateEventForm } from "../../types/form";
+import { EventEnriched, PaginatedEvents } from "../../types/event";
 
 export class EventService {
   private axios;
@@ -24,6 +25,23 @@ export class EventService {
       if (axios.isAxiosError(error)) {
         if (error.response?.status === 204) {
           throw new Error("Aucun évènement à venir.");
+        }
+      }
+      throw error;
+    }
+  }
+
+  public async getOneEnriched(eventId: string) {
+    try {
+      const response = await this.axios.get<EventEnriched>(
+        `/event/${eventId}/enriched`,
+      );
+
+      return response.data;
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        if (error.response?.status) {
+          throw new Error(error.message);
         }
       }
       throw error;
@@ -66,6 +84,84 @@ export class EventService {
           throw new Error(
             "La création de personnage est réservée à votre compte.",
           );
+        }
+      }
+      throw error;
+    }
+  }
+
+  public async update(
+    userId: string,
+    eventId: string,
+    data: CreateEventForm,
+  ): Promise<EventEnriched> {
+    if (!(data.max_players >= 2 && data.max_players <= 8))
+      throw new Error("Le nombre de joueurs doit être compris entre 2 et 8.");
+
+    if (new Date(data.date) <= new Date())
+      throw new Error("La date doit être supérieur à maintenant");
+
+    try {
+      const response = await this.axios.patch<EventEnriched>(
+        `/user/${userId}/event/${eventId}`,
+        data,
+        { withCredentials: true },
+      );
+
+      return response.data;
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        if ([400, 401, 403].includes(error.response?.status ?? 0)) {
+          throw new Error("Cette action n'est pas autorisée.");
+        } else if (error.response?.status === 404) {
+          throw new Error("Cette évènement n'existe plus.");
+        } else if (error.response?.status === 500) {
+          throw new Error("Cette action est impossible.");
+        }
+      }
+      throw error;
+    }
+  }
+
+  public async addCharacters(eventId: string, data: CreateEventForm) {
+    if (!data.characters_id.length)
+      throw new Error("Vous devez sélectionner au moins un personnage");
+
+    try {
+      const response = await this.axios.post(
+        `/event/${eventId}/addCharacters`,
+        {
+          data,
+        },
+      );
+
+      return response.data;
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        if (error.response?.status === 404) {
+          throw new Error("Cette évènement n'existe plus.");
+        } else if (error.response?.status === 500) {
+          throw new Error("Cette action est impossible.");
+        }
+      }
+      throw error;
+    }
+  }
+
+  public async removeCharacter(eventId: string, characterId: string) {
+    try {
+      const response = await this.axios.post(
+        `/event/${eventId}/removeCharacter`,
+        { character_id: characterId },
+      );
+
+      return response.data;
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        if (error.response?.status === 404) {
+          throw new Error("Cette évènement n'existe plus.");
+        } else if (error.response?.status === 500) {
+          throw new Error("Cette action est impossible.");
         }
       }
       throw error;

@@ -118,7 +118,7 @@ export default function CharacterDetails() {
       <button
         type="button"
         className="character_button button"
-        onClick={() => navigate("/profile")}
+        onClick={() => navigate(-1)}
       >
         Retour
       </button>

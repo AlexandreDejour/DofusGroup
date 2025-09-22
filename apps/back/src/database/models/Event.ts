@@ -41,7 +41,7 @@ export default class EventEntity extends Model<
   declare public characters?: Character[];
 
   declare public addCharacters: (characterIds: string[]) => Promise<void>;
-  declare public removeCharacters: (characterIds: string[]) => Promise<void>;
+  declare public removeCharacter: (characterIds: string) => Promise<void>;
 
   public static associate(models: SequelizeModels) {
     EventEntity.belongsTo(Tag, {

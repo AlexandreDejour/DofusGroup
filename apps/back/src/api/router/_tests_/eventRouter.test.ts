@@ -1,9 +1,8 @@
 import request from "supertest";
 import { vi, describe, it, expect, beforeEach } from "vitest";
-import express from "express";
-import cookieParser from "cookie-parser";
-import status from "http-status";
+
 import jwt from "jsonwebtoken";
+import status from "http-status";
 
 import { Config } from "../../../config/config.js";
 import { setup, receivedReq } from "./mock-tools.js";
@@ -226,30 +225,30 @@ describe("eventRouter", () => {
   describe("POST /event/:eventId/removeCharacters", () => {
     it("Propagate request to eventController.removeCharactersFromEvent", async () => {
       //GIVEN
-      controller.removeCharactersFromEvent = setup.mockSucessCall(status.OK);
+      controller.removeCharacterFromEvent = setup.mockSucessCall(status.OK);
       //WHEN
-      const res = await request(app).post(`/event/${eventId}/removeCharacters`);
+      const res = await request(app).post(`/event/${eventId}/removeCharacter`);
       //THEN
-      expect(controller.removeCharactersFromEvent).toHaveBeenCalled();
+      expect(controller.removeCharacterFromEvent).toHaveBeenCalled();
       expect(receivedReq?.params.eventId).toBe(eventId);
       expect(res.status).toBe(status.OK);
       expect(res.body).toBe("Success!");
     });
 
     it("Next is called at end route.", async () => {
-      controller.removeCharactersFromEvent = setup.mockNextCall();
+      controller.removeCharacterFromEvent = setup.mockNextCall();
 
-      const res = await request(app).post(`/event/${eventId}/removeCharacters`);
+      const res = await request(app).post(`/event/${eventId}/removeCharacter`);
 
-      expect(controller.removeCharactersFromEvent).toHaveBeenCalled();
+      expect(controller.removeCharacterFromEvent).toHaveBeenCalled();
       expect(res.status).toBe(status.NOT_FOUND);
       expect(res.body).toEqual({ called: "next" });
     });
 
     it("Excluded bad request when id isn't a UUID.", async () => {
-      const res = await request(app).post("/event/1234/removeCharacters");
+      const res = await request(app).post("/event/1234/removeCharacter");
 
-      expect(controller.removeCharactersFromEvent).not.toHaveBeenCalled();
+      expect(controller.removeCharacterFromEvent).not.toHaveBeenCalled();
       expect(res.status).toBe(status.BAD_REQUEST);
     });
   });

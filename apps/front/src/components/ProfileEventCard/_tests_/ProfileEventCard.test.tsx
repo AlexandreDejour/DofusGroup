@@ -109,7 +109,7 @@ describe("ProfileEventCard", () => {
     const button = screen.getByRole("button", { name: /détails/i });
     fireEvent.click(button);
     expect(mockNavigate).toHaveBeenCalledWith(
-      "/details/e804f5c2-09af-4aac-ab05-8dc7743fcc2d",
+      "/event/e804f5c2-09af-4aac-ab05-8dc7743fcc2d",
     );
   });
 });

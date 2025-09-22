@@ -139,14 +139,14 @@ export const updateEventSchema: Joi.ObjectSchema = Joi.object({
     "any.required": "Server ID is required",
     "string.base": "Server ID must be a string",
   }),
-  character_id: Joi.array()
+  characters_id: Joi.array()
     .items(Joi.string().guid({ version: "uuidv4" }))
-    .min(1)
-    .max(8)
     .optional()
+    .min(0)
+    .max(8)
     .messages({
       "array.min": "Array must be least 1 character",
       "array.max": "Array must be at most 8 characters",
-      "array.includes": "Le tableau contient un élément invalide",
+      "array.includes": "Array contain invalid data",
     }),
 });

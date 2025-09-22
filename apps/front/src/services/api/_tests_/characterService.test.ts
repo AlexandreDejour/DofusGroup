@@ -2,8 +2,8 @@ import { describe, it, beforeEach, expect, vi } from "vitest";
 
 import axios from "axios";
 
-import { Character } from "../../../types/character";
 import { CreateCharacterForm } from "../../../types/form";
+import { Character, CharacterEnriched } from "../../../types/character";
 
 import { ApiClient } from "../../client";
 import { CharacterService } from "../characterService";
@@ -14,11 +14,46 @@ describe("CharacterService", () => {
   let apiClientMock: any;
   let characterService: CharacterService;
 
+  const mockCharacter: Character = {
+    id: "cfff40b3-9625-4f0a-854b-d8d6d6b4b667",
+    name: "Chronos",
+    sex: "M",
+    level: 50,
+    alignment: "Neutre",
+    stuff: "https://d-bk.net/fr/d/1QVjw",
+    default_character: false,
+  };
+
+  const mockCharacterEnriched: CharacterEnriched = {
+    id: "cfff40b3-9625-4f0a-854b-d8d6d6b4b667",
+    name: "Chronos",
+    sex: "M",
+    level: 50,
+    alignment: "Neutre",
+    stuff: "https://d-bk.net/fr/d/1QVjw",
+    default_character: false,
+    server: {
+      id: "de5a6c69-bc0b-496c-9b62-bd7ea076b8ed",
+      name: "Dakal",
+      mono_account: true,
+    },
+    breed: {
+      id: "d81c200e-831c-419a-948f-c45d1bbf6aac",
+      name: "Cra",
+    },
+    events: [],
+    user: {
+      id: "15ff46b5-60f3-4e86-98bc-da8fcaa3e29e",
+      username: "toto",
+    },
+  };
+
   beforeEach(() => {
     apiClientMock = {
       instance: {
         get: vi.fn(),
         post: vi.fn(),
+        patch: vi.fn(),
         delete: vi.fn(),
       },
     };
@@ -28,15 +63,15 @@ describe("CharacterService", () => {
 
   describe("getAllByUserId", () => {
     it("should call axios.get with the correct URL", async () => {
-      const mockCharacters: Character[] = [
-        { id: "1", name: "TestChar" } as Character,
-      ];
+      const mockCharacters: Character[] = [mockCharacter];
       apiClientMock.instance.get.mockResolvedValue({ data: mockCharacters });
 
-      const result = await characterService.getAllByUserId("user123");
+      const result = await characterService.getAllByUserId(
+        "fcdb0dd1-7f7e-44bd-9a9b-c4daf6cb1588",
+      );
 
       expect(apiClientMock.instance.get).toHaveBeenCalledWith(
-        "/user/user123/characters",
+        "/user/fcdb0dd1-7f7e-44bd-9a9b-c4daf6cb1588/characters",
       );
       expect(result).toEqual(mockCharacters);
     });
@@ -49,23 +84,82 @@ describe("CharacterService", () => {
       vi.mocked(axios.isAxiosError).mockReturnValue(true);
       apiClientMock.instance.get.mockRejectedValue(axiosError);
 
-      await expect(characterService.getAllByUserId("user123")).rejects.toThrow(
-        "Vous n'avez créé aucun personnage sur votre compte.",
-      );
+      await expect(
+        characterService.getAllByUserId("fcdb0dd1-7f7e-44bd-9a9b-c4daf6cb1588"),
+      ).rejects.toThrow("Vous n'avez créé aucun personnage sur votre compte.");
     });
 
     it("should rethrow a generic error if not an AxiosError", async () => {
       const genericError = new Error("Network error");
       apiClientMock.instance.get.mockRejectedValue(genericError);
 
-      await expect(characterService.getAllByUserId("user123")).rejects.toThrow(
-        "Network error",
+      await expect(
+        characterService.getAllByUserId("fcdb0dd1-7f7e-44bd-9a9b-c4daf6cb1588"),
+      ).rejects.toThrow("Network error");
+    });
+  });
+
+  describe("getAllEnrichedByUserId", () => {
+    it("should call axios.get with correct URL and return data", async () => {
+      const mockData: CharacterEnriched[] = [mockCharacterEnriched];
+      apiClientMock.instance.get.mockResolvedValue({ data: mockData });
+
+      const result = await characterService.getAllEnrichedByUserId(
+        "fcdb0dd1-7f7e-44bd-9a9b-c4daf6cb1588",
       );
+
+      expect(apiClientMock.instance.get).toHaveBeenCalledWith(
+        "/user/fcdb0dd1-7f7e-44bd-9a9b-c4daf6cb1588/characters/enriched",
+      );
+      expect(result).toEqual(mockData);
+    });
+
+    it("should throw specific error on 204", async () => {
+      const axiosError = { isAxiosError: true, response: { status: 204 } };
+      vi.mocked(axios.isAxiosError).mockReturnValue(true);
+      apiClientMock.instance.get.mockRejectedValue(axiosError);
+
+      await expect(
+        characterService.getAllEnrichedByUserId(
+          "fcdb0dd1-7f7e-44bd-9a9b-c4daf6cb1588",
+        ),
+      ).rejects.toThrow("Vous n'avez créé aucun personnage sur votre compte.");
+    });
+  });
+
+  describe("getOneEnriched", () => {
+    it("should call axios.get and return character", async () => {
+      apiClientMock.instance.get.mockResolvedValue({
+        data: mockCharacterEnriched,
+      });
+
+      const result = await characterService.getOneEnriched(
+        "cfff40b3-9625-4f0a-854b-d8d6d6b4b667",
+      );
+
+      expect(apiClientMock.instance.get).toHaveBeenCalledWith(
+        "/character/cfff40b3-9625-4f0a-854b-d8d6d6b4b667/enriched",
+      );
+      expect(result).toEqual(mockCharacterEnriched);
+    });
+
+    it("should throw error on axios error with response status", async () => {
+      const axiosError = {
+        isAxiosError: true,
+        response: { status: 404 },
+        message: "Not found",
+      };
+      vi.mocked(axios.isAxiosError).mockReturnValue(true);
+      apiClientMock.instance.get.mockRejectedValue(axiosError);
+
+      await expect(
+        characterService.getOneEnriched("cfff40b3-9625-4f0a-854b-d8d6d6b4b667"),
+      ).rejects.toThrow("Not found");
     });
   });
 
   describe("create", () => {
-    const userId = "user123";
+    const userId = "fcdb0dd1-7f7e-44bd-9a9b-c4daf6cb1588";
     const validData: CreateCharacterForm = {
       name: "ValidChar",
       level: 150,
@@ -78,7 +172,9 @@ describe("CharacterService", () => {
     };
 
     it("should call axios.post with correct params on success", async () => {
-      const mockResponse = { data: { id: "char456", ...validData } };
+      const mockResponse = {
+        data: { id: "cfff40b3-9625-4f0a-854b-d8d6d6b4b667", ...validData },
+      };
       apiClientMock.instance.post.mockResolvedValue(mockResponse);
 
       const result = await characterService.create(userId, validData);
@@ -124,7 +220,10 @@ describe("CharacterService", () => {
     it("should not throw an error if stuff is null", async () => {
       const validDataWithNullStuff = { ...validData, stuff: null } as any;
       apiClientMock.instance.post.mockResolvedValue({
-        data: { id: "char456", ...validDataWithNullStuff },
+        data: {
+          id: "cfff40b3-9625-4f0a-854b-d8d6d6b4b667",
+          ...validDataWithNullStuff,
+        },
       });
 
       await expect(
@@ -181,15 +280,65 @@ describe("CharacterService", () => {
     });
   });
 
+  describe("update", () => {
+    const userId = "15ff46b5-60f3-4e86-98bc-da8fcaa3e29e";
+    const charId = "cfff40b3-9625-4f0a-854b-d8d6d6b4b667";
+    const validData: CreateCharacterForm = {
+      name: "ValidChar",
+      level: 150,
+      sex: "F",
+      alignment: "Bonta",
+      stuff: "https://d-bk.net/fr/d/ABCDE",
+      default_character: false,
+      server_id: "server1",
+      breed_id: "breed1",
+    };
+
+    it("should call axios.patch with correct params and return data", async () => {
+      const mockResponse = { data: { id: charId, ...validData } };
+      apiClientMock.instance.patch.mockResolvedValue(mockResponse);
+
+      const result = await characterService.update(userId, charId, validData);
+
+      expect(apiClientMock.instance.patch).toHaveBeenCalledWith(
+        `/user/${userId}/character/${charId}`,
+        validData,
+        { withCredentials: true },
+      );
+      expect(result).toEqual(mockResponse.data);
+    });
+
+    it("should throw error for invalid level", async () => {
+      const invalidData = { ...validData, level: 0 } as any;
+      await expect(
+        characterService.update(userId, charId, invalidData),
+      ).rejects.toThrow(
+        "Le niveau de votre personnage doit être compris entre 1 et 200.",
+      );
+    });
+
+    it("should throw error for invalid stuff URL", async () => {
+      const invalidData = { ...validData, stuff: "https://invalid.com" } as any;
+      await expect(
+        characterService.update(userId, charId, invalidData),
+      ).rejects.toThrow(
+        "Seules les URL provenant de DofusBook sont acceptées.",
+      );
+    });
+  });
+
   describe("delete", () => {
     it("Call axios.delete with correct params", async () => {
       const mockResponse = { status: 200 };
       apiClientMock.instance.delete.mockResolvedValue(mockResponse);
 
-      const result = await characterService.delete("user123", "character456");
+      const result = await characterService.delete(
+        "fcdb0dd1-7f7e-44bd-9a9b-c4daf6cb1588",
+        "character456",
+      );
 
       expect(apiClientMock.instance.delete).toHaveBeenCalledWith(
-        "/user/user123/character/character456",
+        "/user/fcdb0dd1-7f7e-44bd-9a9b-c4daf6cb1588/character/character456",
         { withCredentials: true },
       );
       expect(result).toBe(mockResponse);
@@ -206,7 +355,10 @@ describe("CharacterService", () => {
         apiClientMock.instance.delete.mockRejectedValue(axiosError);
 
         await expect(
-          characterService.delete("user123", "character456"),
+          characterService.delete(
+            "fcdb0dd1-7f7e-44bd-9a9b-c4daf6cb1588",
+            "character456",
+          ),
         ).rejects.toThrow("Cette action n'est pas autorisée.");
       }
     });
@@ -220,7 +372,10 @@ describe("CharacterService", () => {
       apiClientMock.instance.delete.mockRejectedValue(axiosError);
 
       await expect(
-        characterService.delete("user123", "character456"),
+        characterService.delete(
+          "fcdb0dd1-7f7e-44bd-9a9b-c4daf6cb1588",
+          "character456",
+        ),
       ).rejects.toThrow("Ce personnage n'existe plus.");
     });
 
@@ -229,7 +384,10 @@ describe("CharacterService", () => {
       apiClientMock.instance.delete.mockRejectedValue(error);
 
       await expect(
-        characterService.delete("user123", "character456"),
+        characterService.delete(
+          "fcdb0dd1-7f7e-44bd-9a9b-c4daf6cb1588",
+          "character456",
+        ),
       ).rejects.toThrow("Unknown error");
     });
   });

@@ -40,7 +40,7 @@ export default function ProfileEventCard({
       <div className="profile_event_card_buttons">
         <button
           className="profile_event_card_buttons_details button"
-          onClick={() => navigate(`/details/${event.id}`)}
+          onClick={() => navigate(`/event/${event.id}`)}
         >
           Détails
         </button>

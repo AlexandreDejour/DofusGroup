@@ -142,9 +142,9 @@ export class EventController {
       }
 
       const eventId: string = req.params.eventId;
-      const charactersIds: string[] = req.body.characters_id;
+      const charactersIds: string[] = req.body.data.characters_id;
 
-      let eventUpdated: Event | null =
+      const eventUpdated: Event | null =
         await this.repository.addCharactersToEvent(eventId, charactersIds);
 
       if (!eventUpdated) {
@@ -168,7 +168,7 @@ export class EventController {
     }
   }
 
-  public async removeCharactersFromEvent(
+  public async removeCharacterFromEvent(
     req: Request,
     res: Response,
     next: NextFunction,
@@ -180,10 +180,10 @@ export class EventController {
       }
 
       const eventId: string = req.params.eventId;
-      const charactersId: string[] = req.body.characters_id;
+      const characterId: string = req.body.character_id;
 
       const eventUpdated: Event | null =
-        await this.repository.removeCharactersFromEvent(eventId, charactersId);
+        await this.repository.removeCharacterFromEvent(eventId, characterId);
 
       if (!eventUpdated) {
         res.status(status.NOT_FOUND).json({ error: "Event not found" });
@@ -207,16 +207,19 @@ export class EventController {
   }
 
   public async update(req: Request, res: Response, next: NextFunction) {
-    try {
-      if (!req.params.userId) {
-        res.status(status.BAD_REQUEST).json({ error: "User ID is required" });
-        return;
-      }
+    const userId: string = req.params.userId;
+    const eventId: string = req.params.eventId;
 
-      const eventId: string = req.params.eventId;
+    if (!userId) {
+      res.status(status.BAD_REQUEST).json({ error: "User ID is required" });
+      return;
+    }
+
+    try {
       const eventData: Partial<EventBodyData> = req.body;
 
       const eventUpdated: Event | null = await this.repository.update(
+        userId,
         eventId,
         eventData,
       );
@@ -230,7 +233,7 @@ export class EventController {
         eventUpdated.id,
       );
 
-      res.json(eventUpdated);
+      res.json(eventUpdatedEnriched);
     } catch (error) {
       next(error);
     }

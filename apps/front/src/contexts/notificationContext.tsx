@@ -56,23 +56,11 @@ export default function NotificationProvider({
     [],
   );
 
-  const removeNotification = useCallback(
-    (id: string) => {
-      setNotifications((prev) =>
-        prev.map((notif) =>
-          notif.id === id ? { ...notif, isClosing: true } : notif,
-        ),
-      );
-
-      const notif = notifications.find((n) => n.id === id);
-      const duration = notif?.duration ?? 5000;
-
-      setTimeout(() => {
-        setNotifications((prev) => prev.filter((notif) => notif.id !== id));
-      }, duration);
-    },
-    [notifications],
-  );
+  const removeNotification = useCallback((id: string) => {
+    setNotifications((prev) =>
+      prev.filter((notification) => notification.id !== id),
+    );
+  }, []);
 
   const showSuccess = useCallback(
     (title: string, message: string, duration?: number) => {

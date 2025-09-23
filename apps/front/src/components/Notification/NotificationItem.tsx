@@ -1,7 +1,7 @@
 import "./NotificationItem.scss";
 
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import type { Notification } from "../../types/notification";
 
@@ -19,7 +19,7 @@ export default function NotificationItem({
       case "success":
         return "✅";
       case "error":
-        return "❌";
+        return "⚠";
       case "info":
         return "ℹ️";
       default:

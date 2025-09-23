@@ -1,5 +1,7 @@
 import "./NotificationContainer.scss";
+
 import { useNotification } from "../../contexts/notificationContext";
+
 import NotificationItem from "./NotificationItem";
 
 export default function NotificationContainer() {

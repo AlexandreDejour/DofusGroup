@@ -29,7 +29,7 @@ describe("NotificationItem", () => {
         onClose={vi.fn()}
       />,
     );
-    expect(screen.getByText("❌")).toBeInTheDocument();
+    expect(screen.getByText("⚠")).toBeInTheDocument();
   });
 
   it("Display info icon in case of info notification type", () => {

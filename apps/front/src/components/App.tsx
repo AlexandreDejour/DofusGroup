@@ -11,6 +11,7 @@ import EventDetails from "../pages/EventDetails/EventDetails";
 import NotificationContainer from "./Notification/NotificationContainer";
 import CharacterDetails from "../pages/CharacterDetails/CharacterDetails";
 import PrivacyPolicy from "../pages/PrivacyPolicy/PrivacyPolicy";
+import GCU from "../pages/GCU/GCU";
 
 export default function App() {
   return (
@@ -23,6 +24,7 @@ export default function App() {
         <Route path="/event/:id" element={<EventDetails />} />
         <Route path="/character/:id" element={<CharacterDetails />} />
         <Route path="/privacy_policy" element={<PrivacyPolicy />} />
+        <Route path="/gcu" element={<GCU />} />
       </Routes>
       <NotificationContainer />
       <Footer />

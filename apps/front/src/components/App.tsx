@@ -10,6 +10,7 @@ import ModalsManager from "./modals/ModalsManager";
 import EventDetails from "../pages/EventDetails/EventDetails";
 import NotificationContainer from "./Notification/NotificationContainer";
 import CharacterDetails from "../pages/CharacterDetails/CharacterDetails";
+import PrivacyPolicy from "../pages/PrivacyPolicy/PrivacyPolicy";
 
 export default function App() {
   return (
@@ -19,8 +20,9 @@ export default function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/profile" element={<Profile />} />
-        <Route path="/character/:id" element={<CharacterDetails />} />
         <Route path="/event/:id" element={<EventDetails />} />
+        <Route path="/character/:id" element={<CharacterDetails />} />
+        <Route path="/privacy_policy" element={<PrivacyPolicy />} />
       </Routes>
       <NotificationContainer />
       <Footer />

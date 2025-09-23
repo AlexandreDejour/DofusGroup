@@ -86,17 +86,33 @@ describe("UserService", () => {
       expect(result).toEqual(mockData);
     });
 
-    it("Reject immediatly when password isn't valid", async () => {
-      const invalidForm: UpdateForm = { password: "abc" };
+    it("Reject immediately when password does not match regex", async () => {
+      const invalidForm: UpdateForm = {
+        password: "abc",
+        confirmPassword: "abc",
+      };
 
       await expect(userService.update("123", invalidForm)).rejects.toThrow(
-        "Email ou mot de passe érroné.",
+        "Le mot de passe ne respecte pas les conditions minimales de sécurité.",
       );
 
       expect(apiClientMock.instance.patch).not.toHaveBeenCalled();
     });
 
-    it("Throw specific error if response if 400/401/404", async () => {
+    it("Reject immediately when password and confirmPassword differ", async () => {
+      const invalidForm: UpdateForm = {
+        password: "Abc12345!",
+        confirmPassword: "Different123!",
+      };
+
+      await expect(userService.update("123", invalidForm)).rejects.toThrow(
+        "Le mot de passe et la confirmation doivent être identique.",
+      );
+
+      expect(apiClientMock.instance.patch).not.toHaveBeenCalled();
+    });
+
+    it("Throw specific error if response is 400/401/403/404", async () => {
       const axiosError = {
         isAxiosError: true,
         response: { status: 400 },

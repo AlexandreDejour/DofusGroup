@@ -31,7 +31,10 @@ export default function UpdateForm({ field, handleSubmit }: UpdateFormProps) {
         </label>
 
         {field === "password" && (
-          <label htmlFor={field} className="content_modal_form_label">
+          <label
+            htmlFor={`confirm${field.charAt(0).toUpperCase() + field.slice(1)}`}
+            className="content_modal_form_label"
+          >
             <span>Confirmation {label}</span>
             <input
               type={type}

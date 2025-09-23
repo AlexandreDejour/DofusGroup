@@ -4,16 +4,15 @@
   display: flex;
   align-items: flex-start;
   gap: 1rem;
-  padding: 1rem 1.25rem;
+  padding: 1rem;
   margin-bottom: 0.75rem;
   border-radius: 0.75rem;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   font-family: "Lexend", sans-serif;
   position: relative;
   overflow: hidden;
-  backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  animation: slideInBottom 0.5s forwards;
+  border: none;
+  animation: slideIn 0.5s ease-out;
 
   &::before {
     content: "";
@@ -25,44 +24,26 @@
   }
 
   &--success {
-    background: var(--notification-sucess-background);
-    border-left-color: var(--notification-success);
-    color: var(--notification-success);
+    background: var(--notification-success);
 
     &::before {
       background: var(--notification-success);
     }
-
-    .notification__title {
-      color: var(--notification-success);
-    }
   }
 
   &--error {
-    background: var(--notification-error-background);
-    border-left-color: var(--notification-error);
-    color: var(--notification-error);
+    background: var(--notification-error);
 
     &::before {
       background: var(--notification-error);
     }
-
-    .notification__title {
-      color: var(--notification-error);
-    }
   }
 
   &--info {
-    background: var(--notification-info-background);
-    border-left-color: var(--notification-info);
-    color: var(--notification-info);
+    background: var(--notification-info);
 
     &::before {
       background: var(--notification-info);
-    }
-
-    .notification__title {
-      color: var(--notification-info);
     }
   }
 
@@ -121,28 +102,24 @@
   }
 }
 
-.notification--closing {
-  animation: slideOutBottom 0.5s forwards;
-}
-
-@keyframes slideInBottom {
+@keyframes slideIn {
   from {
-    transform: translateY(100%); /* Positionnée en bas, en dehors de l’écran */
+    transform: translateX(100%);
     opacity: 0;
   }
   to {
-    transform: translateY(0); /* Position finale */
+    transform: translateX(0);
     opacity: 1;
   }
 }
 
-@keyframes slideOutBottom {
+@keyframes slideOut {
   from {
-    transform: translateY(0); // position normale
+    transform: translateX(0);
     opacity: 1;
   }
   to {
-    transform: translateY(100%); // disparaît vers le haut
+    transform: translateX(100%);
     opacity: 0;
   }
 }

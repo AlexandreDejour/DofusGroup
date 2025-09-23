@@ -1,6 +1,6 @@
 import Tag from "../models/Tag.js";
 import User from "../models/User.js";
-import Breed from "../models/Breeds.js";
+import Breed from "../models/Breed.js";
 import Event from "../models/Event.js";
 import Server from "../models/Server.js";
 import Comment from "../models/Comment.js";

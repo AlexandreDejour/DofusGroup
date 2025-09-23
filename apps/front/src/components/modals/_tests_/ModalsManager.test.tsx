@@ -180,7 +180,7 @@ describe("ModalsManager", () => {
         openModal: vi.fn(),
       });
 
-      const { container } = renderModalsManager();
+      renderModalsManager();
 
       expect(
         screen.getByRole("heading", {
@@ -189,17 +189,35 @@ describe("ModalsManager", () => {
         }),
       ).toBeInTheDocument();
 
-      expect(
-        screen.getByLabelText(new RegExp(expectedLabel, "i")),
-      ).toBeInTheDocument();
+      const mainPlaceholder =
+        expectedLabel.charAt(0).toUpperCase() + expectedLabel.slice(1);
 
-      const form = container.querySelector("form");
-      expect(form).not.toBeNull();
+      const mainInput = screen.getByPlaceholderText(
+        mainPlaceholder,
+      ) as HTMLInputElement;
+      expect(mainInput).toBeInTheDocument();
+      // vérifications supplémentaires optionnelles
+      expect(mainInput).toHaveAttribute("name", field);
+      expect(mainInput).toHaveAttribute("id", field);
 
-      if (form) {
-        fireEvent.submit(form);
-        expect(handleSubmit).toHaveBeenCalled();
+      if (field === "password") {
+        const confirmPlaceholder = `Confirmation ${expectedLabel}`;
+        const confirmInput = screen.getByPlaceholderText(
+          confirmPlaceholder,
+        ) as HTMLInputElement;
+        expect(confirmInput).toBeInTheDocument();
+        const expectedConfirmName = `confirm${
+          field.charAt(0).toUpperCase() + field.slice(1)
+        }`; // confirmPassword
+        expect(confirmInput).toHaveAttribute("name", expectedConfirmName);
+        expect(confirmInput).toHaveAttribute("id", expectedConfirmName);
       }
+
+      const form = screen.getByRole("form");
+      expect(form).toBeInTheDocument();
+      fireEvent.submit(form);
+
+      expect(handleSubmit).toHaveBeenCalled();
     },
   );
 
@@ -225,6 +243,7 @@ describe("ModalsManager", () => {
       alignment: "Neutre",
       stuff: "https://d-bk.net/fr/d/1QVjw",
       default_character: false,
+      server_id: "de5a6c69-bc0b-496c-9b62-bd7ea076b8ed",
       server: {
         id: "de5a6c69-bc0b-496c-9b62-bd7ea076b8ed",
         name: "Dakal",

@@ -14,7 +14,7 @@ export type Character = {
   server_id: string;
 };
 
-export type CharacterEnriched = Omit<Character, "server_id"> & {
+export type CharacterEnriched = Character & {
   user: User;
   breed: Breed;
   server: Server;

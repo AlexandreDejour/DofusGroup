@@ -58,6 +58,7 @@ export type ModalType =
   | "login"
   | "mail"
   | "password"
+  | "confirmPassword"
   | "username"
   | "newCharacter"
   | "updateCharacter"
@@ -121,7 +122,6 @@ export default function ModalProvider({ children }: ModalProviderProps) {
       const formData = new FormData(form);
 
       if (!modalType) return;
-
       try {
         if (modalType === "register") {
           const keys: (keyof RegisterForm)[] = [
@@ -157,6 +157,9 @@ export default function ModalProvider({ children }: ModalProviderProps) {
           if (!user) return;
 
           const keys: (keyof UpdateForm)[] = [modalType];
+          console.log(keys);
+
+          if (keys[0] === "password") keys.push("confirmPassword");
           const data = formDataToObject<UpdateForm>(formData, { keys });
           const response = await userService.update(user.id, data);
 

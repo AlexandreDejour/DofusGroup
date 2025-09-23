@@ -4,5 +4,10 @@ import { UpdateForm } from "../../../types/form";
 export default function isUpdateField(
   field: ModalType,
 ): field is keyof UpdateForm {
-  return field === "mail" || field === "password" || field === "username";
+  return (
+    field === "mail" ||
+    field === "password" ||
+    field === "confirmPassword" ||
+    field === "username"
+  );
 }

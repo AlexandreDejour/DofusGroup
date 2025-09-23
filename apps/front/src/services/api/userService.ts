@@ -49,7 +49,15 @@ export class UserService {
 
   public async update(userId: string, data: UpdateForm): Promise<AuthUser> {
     if (data.password && !this.passwordRegex.test(data.password)) {
-      throw new Error("Email ou mot de passe érroné.");
+      throw new Error(
+        "Le mot de passe ne respecte pas les conditions minimales de sécurité.",
+      );
+    }
+
+    if (data.password !== data.confirmPassword) {
+      throw new Error(
+        "Le mot de passe et la confirmation doivent être identique.",
+      );
     }
 
     try {

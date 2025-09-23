@@ -100,7 +100,13 @@ export default function NewEventForm({ handleSubmit }: NewEventFormProps) {
       try {
         const response = await characterService.getAllByUserId(user.id);
 
-        setCharacters(response);
+        if (server !== "") {
+          const characters = response.filter(
+            (character) => character.server_id === server,
+          );
+
+          setCharacters(characters);
+        } else setCharacters(response);
       } catch (error) {
         if (isAxiosError(error)) {
           showError("Erreur", error.message);
@@ -152,7 +158,7 @@ export default function NewEventForm({ handleSubmit }: NewEventFormProps) {
     fetchServers();
     fetchCharacters();
     fetchAreas();
-  }, [area]);
+  }, [area, server]);
 
   useEffect(() => {
     const fetchDungeons = async () => {
@@ -312,7 +318,7 @@ export default function NewEventForm({ handleSubmit }: NewEventFormProps) {
           value={registeredCharacters}
           items={characters}
           generateOptions={generateOptions.characters}
-          label="Vos personnages inscrits"
+          label="Sélection de personnage(s)"
           onChange={setRegisteredCharacters}
         />
 

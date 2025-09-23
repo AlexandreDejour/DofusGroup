@@ -11,6 +11,7 @@ export type Character = {
   alignment: string;
   stuff?: string | null;
   default_character: boolean;
+  server_id: string;
 };
 
 export type CharacterEnriched = Character & {

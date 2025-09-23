@@ -10,7 +10,6 @@ export default async function hashPassword(
 ) {
   if (req.body.password) {
     const password = req.body.password;
-
     try {
       const hash = await argon2.hash(password);
 

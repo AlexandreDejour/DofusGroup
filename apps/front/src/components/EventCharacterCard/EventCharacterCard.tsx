@@ -41,7 +41,7 @@ export default function EventCharacterCard({
         />
       )}
 
-      <h3 className="event_character_card_title">{character.name}</h3>
+      <h3 className="event_character_card_name">{character.name}</h3>
       <p className="event_character_card_breed">{character.breed.name}</p>
       <p className="event_character_card_level">niveau: {character.level}</p>
       {user && (event.user?.id === user.id || character.user.id === user.id) ? (

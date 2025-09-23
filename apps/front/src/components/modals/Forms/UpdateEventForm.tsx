@@ -52,11 +52,7 @@ export default function NewEventForm({
   const [maxPlayers, setMaxPlayers] = useState<number>(
     updateTarget.max_players,
   );
-  const [date, setDate] = useState<string>(
-    updateTarget.date
-      ? formatDateToLocalInput(new Date(updateTarget.date))
-      : formatDateToLocalInput(new Date()),
-  );
+  const [date, setDate] = useState<string>("");
   const [description, setDescription] = useState<string>(
     updateTarget.description ? updateTarget.description : "",
   );
@@ -189,6 +185,12 @@ export default function NewEventForm({
 
     fetchDungeons();
   }, [tag, subArea]);
+
+  useEffect(() => {
+    if (updateTarget.date) {
+      setDate(formatDateToLocalInput(new Date(updateTarget.date)));
+    }
+  }, [updateTarget.date]);
 
   return (
     <div className="content_modal">

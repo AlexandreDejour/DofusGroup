@@ -17,7 +17,7 @@ export default function UpdateForm({ field, handleSubmit }: UpdateFormProps) {
   return (
     <div className="content_modal">
       <h3 className="content_modal_title">Modifier {label}</h3>
-      <form onSubmit={handleSubmit} className="content_modal_form">
+      <form onSubmit={handleSubmit} className="content_modal_form" role="form">
         <label htmlFor={field} className="content_modal_form_label">
           <span>{label.charAt(0).toUpperCase() + label.slice(1)}</span>
           <input
@@ -29,6 +29,23 @@ export default function UpdateForm({ field, handleSubmit }: UpdateFormProps) {
             className="content_modal_form_label_input"
           />
         </label>
+
+        {field === "password" && (
+          <label
+            htmlFor={`confirm${field.charAt(0).toUpperCase() + field.slice(1)}`}
+            className="content_modal_form_label"
+          >
+            <span>Confirmation {label}</span>
+            <input
+              type={type}
+              name={`confirm${field.charAt(0).toUpperCase() + field.slice(1)}`}
+              id={`confirm${field.charAt(0).toUpperCase() + field.slice(1)}`}
+              required
+              placeholder={`Confirmation ${label}`}
+              className="content_modal_form_label_input"
+            />
+          </label>
+        )}
 
         <button
           type="submit"

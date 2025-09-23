@@ -25,6 +25,7 @@ describe("UpdateForm", () => {
     (field, { label, type }) => {
       render(<UpdateForm field={field} handleSubmit={handleSubmit} />);
 
+      // Heading
       expect(
         screen.getByRole("heading", {
           level: 3,
@@ -32,17 +33,30 @@ describe("UpdateForm", () => {
         }),
       ).toBeInTheDocument();
 
+      // Main input
       const input = screen.getByLabelText(
-        new RegExp(label, "i"),
+        new RegExp(`^${label}$`, "i"),
       ) as HTMLInputElement;
+
       expect(input).toBeInTheDocument();
       expect(input).toHaveAttribute("type", type);
       expect(input).toHaveAttribute("name", field);
       expect(input).toHaveAttribute("id", field);
       expect(input).toBeRequired();
 
+      // Submit button
       const submitButton = screen.getByRole("button", { name: /Update/i });
       expect(submitButton).toBeInTheDocument();
+
+      // Password field should render confirmation input
+      if (field === "password") {
+        const confirmInput = screen.getByLabelText(
+          /Confirmation/i,
+        ) as HTMLInputElement;
+        expect(confirmInput).toBeInTheDocument();
+        expect(confirmInput).toHaveAttribute("type", "password");
+        expect(confirmInput).toHaveAttribute("name", "confirmPassword");
+      }
     },
   );
 

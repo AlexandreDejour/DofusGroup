@@ -2,8 +2,8 @@ import { SequelizeModels } from "../types/sequelizeModels.js";
 
 import Tag from "./Tag.js";
 import User from "./User.js";
-import Breed from "./Breeds.js";
 import Event from "./Event.js";
+import Breed from "./Breed.js";
 import Server from "./Server.js";
 import Comment from "./Comment.js";
 import Character from "./Character.js";

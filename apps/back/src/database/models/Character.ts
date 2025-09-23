@@ -8,7 +8,7 @@ import {
 
 import User from "./User.js";
 import Event from "./Event.js";
-import Breed from "./Breeds.js";
+import Breed from "./Breed.js";
 import Server from "./Server.js";
 
 import client from "../client.js";

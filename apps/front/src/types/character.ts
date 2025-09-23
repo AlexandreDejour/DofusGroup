@@ -11,9 +11,10 @@ export type Character = {
   alignment: string;
   stuff?: string | null;
   default_character: boolean;
+  server_id: string;
 };
 
-export type CharacterEnriched = Character & {
+export type CharacterEnriched = Omit<Character, "server_id"> & {
   user: User;
   breed: Breed;
   server: Server;

@@ -30,6 +30,20 @@ export default function UpdateForm({ field, handleSubmit }: UpdateFormProps) {
           />
         </label>
 
+        {field === "password" && (
+          <label htmlFor={field} className="content_modal_form_label">
+            <span>Confirmation {label}</span>
+            <input
+              type={type}
+              name={`confirm${field.charAt(0).toUpperCase() + field.slice(1)}`}
+              id={`confirm${field.charAt(0).toUpperCase() + field.slice(1)}`}
+              required
+              placeholder={`Confirmation ${label}`}
+              className="content_modal_form_label_input"
+            />
+          </label>
+        )}
+
         <button
           type="submit"
           aria-label="Update"

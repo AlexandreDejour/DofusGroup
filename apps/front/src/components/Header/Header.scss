@@ -7,6 +7,14 @@
   display: flex;
   align-items: center;
 
+  @media (min-width: 1920px) {
+    height: 15vh;
+  }
+
+  @media (min-width: 2560px) {
+    height: 17.5vh;
+  }
+
   &_logo {
     width: 17.5%;
     height: 100%;
@@ -19,6 +27,16 @@
     display: flex;
     justify-content: center;
     align-items: center;
+
+    @media (min-width: 1920px) {
+      width: 20%;
+      font-size: 100%;
+    }
+
+    @media (min-width: 2560px) {
+      width: 22.5%;
+      font-size: 100%;
+    }
 
     h1 {
       background-color: var(--primary-bg);
@@ -34,6 +52,14 @@
     display: flex;
     align-items: center;
     border-radius: 1.5rem 0rem 0rem 1.5rem;
+
+    @media (min-width: 1920px) {
+      font-size: 1.4rem;
+    }
+
+    @media (min-width: 2560px) {
+      font-size: 1.6rem;
+    }
 
     &_list {
       width: 100%;

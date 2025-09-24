@@ -54,7 +54,7 @@ describe("Footer", () => {
       ).toHaveAttribute("href", "/gcu");
       expect(
         screen.getByRole("link", { name: "Politique de confidentialité" }),
-      ).toHaveAttribute("href", "/confidentiality");
+      ).toHaveAttribute("href", "/privacy_policy");
     });
 
     it("Display contact links", () => {

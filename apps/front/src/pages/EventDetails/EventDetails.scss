@@ -11,6 +11,16 @@
   align-items: center;
   border-radius: 1.5rem;
 
+  @media (min-width: 1920px) {
+    width: 75%;
+    font-size: 1.4rem;
+  }
+
+  @media (min-width: 2560px) {
+    width: 65%;
+    font-size: 1.6rem;
+  }
+
   &_section {
     width: 90%;
     padding: 5% 0% 0% 0%;

@@ -1,4 +1,5 @@
 import "../Form.scss";
+import "./NewCharacterForm.scss";
 
 import { useEffect, useState } from "react";
 import { isAxiosError } from "axios";
@@ -85,7 +86,7 @@ export default function NewCharacterForm({
     <div className="content_modal" style={{ width: "100%" }}>
       <h3 className="content_modal_title">Création de personnage</h3>
       <form onSubmit={handleSubmit} className="content_modal_form" role="form">
-        <label htmlFor="name" className="content_modal_form_label">
+        <label htmlFor="name" className="content_modal_form_label name">
           <span>Nom:</span>
           <input
             type="text"
@@ -109,8 +110,8 @@ export default function NewCharacterForm({
 
         <label
           htmlFor="level"
-          className="content_modal_form_label"
-          style={{ marginTop: "0" }}
+          className="content_modal_form_label level"
+          style={{ margin: "0 auto" }}
         >
           <span>Niveau:</span>
           <input
@@ -141,7 +142,7 @@ export default function NewCharacterForm({
           onChange={setAlignment}
         />
 
-        <label htmlFor="stuff" className="content_modal_form_label">
+        <label htmlFor="stuff" className="content_modal_form_label stuff">
           <span>Stuff:</span>
           <input
             type="text"
@@ -152,7 +153,10 @@ export default function NewCharacterForm({
           />
         </label>
 
-        <label htmlFor="default_character" className="content_modal_form_label">
+        <label
+          htmlFor="default_character"
+          className="content_modal_form_label default"
+        >
           <span>Personnage par défault:</span>
           <input
             type="checkbox"

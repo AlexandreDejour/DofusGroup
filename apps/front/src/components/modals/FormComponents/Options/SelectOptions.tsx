@@ -29,7 +29,7 @@ export default function SelectOptions<T, ID extends string | number>({
   ];
 
   return (
-    <label htmlFor={name} className="content_modal_form_label">
+    <label htmlFor={name} className={`content_modal_form_label ${name}`}>
       <span>{label}:</span>
       <select
         id={name}

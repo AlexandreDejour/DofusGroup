@@ -33,6 +33,11 @@
 
         &_img {
           width: 80%;
+          margin-bottom: 5%;
+
+          @media (min-width: 1920px) {
+            width: 75%;
+          }
         }
 
         &_details {

@@ -38,3 +38,9 @@ export type CreateEventForm = {
 export type CreateCommentForm = {
   content: string;
 };
+
+export type SearchForm = {
+  title: string;
+  tag_id: string;
+  server_id: string;
+};

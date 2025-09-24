@@ -60,71 +60,107 @@ describe("EventController", () => {
   );
   // --- GET ALL ---
   describe("getAll", () => {
-    it("Return events if exist", async () => {
-      // GIVEN
-      req.query = {
-        limit: "10",
-        page: "1",
-      };
+    const baseEvent: Event = {
+      id: "923a9fe0-1395-4f4e-8d18-4a9ac183b924",
+      title: "Donjon minotot",
+      date: new Date("2026-01-01"),
+      duration: 60,
+      area: "Amakna",
+      sub_area: "Ile des taures",
+      donjon_name: "Labyrinthe du minotoror",
+      description: "donjon full succès",
+      max_players: 8,
+      status: "public",
+      tag_id: "tag-1",
+      server_id: "server-1",
+    };
 
-      const mockEvents: Event[] = [
-        {
-          id: "923a9fe0-1395-4f4e-8d18-4a9ac183b924",
-          title: "Donjon minotot",
-          date: new Date("2026-01-01"),
-          duration: 60,
-          area: "Amakna",
-          sub_area: "Ile des taures",
-          donjon_name: "Labyrinthe du minotoror",
-          description: "donjon full succès",
-          max_players: 8,
-          status: "public",
-        },
-      ];
+    beforeEach(() => {
+      vi.clearAllMocks();
+    });
 
-      const mockPaginatedEvents: PaginatedEvents = {
-        events: [
-          {
-            id: "923a9fe0-1395-4f4e-8d18-4a9ac183b924",
-            title: "Donjon minotot",
-            date: new Date("2026-01-01"),
-            duration: 60,
-            area: "Amakna",
-            sub_area: "Ile des taures",
-            donjon_name: "Labyrinthe du minotoror",
-            description: "donjon full succès",
-            max_players: 8,
-            status: "public",
-          },
-        ],
+    it("Return events if exist without filters", async () => {
+      req.query = { limit: "10", page: "1" };
+      mockGetAll.mockResolvedValue([baseEvent]);
+
+      const expected: PaginatedEvents = {
+        events: [baseEvent],
         limit: 10,
         page: 1,
         total: 1,
         totalPages: 1,
       };
 
-      mockGetAll.mockResolvedValue(mockEvents);
-      // WHEN
       await underTest.getAll(req as Request, res as Response, next);
-      // THEN
+
       expect(mockGetAll).toHaveBeenCalled();
-      expect(res.json).toHaveBeenCalledWith(mockPaginatedEvents);
-      expect(res.status).not.toHaveBeenCalledWith(status.NOT_FOUND);
+      expect(res.json).toHaveBeenCalledWith(expected);
     });
 
-    it("Return 404 if any event found.", async () => {
-      const mockEvents: Event[] = [];
-
-      mockGetAll.mockResolvedValue(mockEvents);
+    it("Return 204 if no events", async () => {
+      mockGetAll.mockResolvedValue([]);
       await underTest.getAll(req as Request, res as Response, next);
 
       expect(res.status).toHaveBeenCalledWith(status.NO_CONTENT);
       expect(res.json).toHaveBeenCalledWith({ error: "Any event found" });
     });
 
-    it("Call next() in case of error.", async () => {
-      const error = new Error();
+    it("Filters by tagId if provided", async () => {
+      const otherEvent = { ...baseEvent, tag_id: "tag-2" };
+      mockGetAll.mockResolvedValue([baseEvent, otherEvent]);
+      req.query = { tag_id: "tag-1", limit: "10", page: "1" };
 
+      await underTest.getAll(req as Request, res as Response, next);
+
+      const expected: PaginatedEvents = {
+        events: [baseEvent],
+        limit: 10,
+        page: 1,
+        total: 1,
+        totalPages: 1,
+      };
+
+      expect(res.json).toHaveBeenCalledWith(expected);
+    });
+
+    it("Filters by serverId if provided", async () => {
+      const otherEvent = { ...baseEvent, server_id: "server-2" };
+      mockGetAll.mockResolvedValue([baseEvent, otherEvent]);
+      req.query = { server_id: "server-1", limit: "10", page: "1" };
+
+      await underTest.getAll(req as Request, res as Response, next);
+
+      const expected: PaginatedEvents = {
+        events: [baseEvent],
+        limit: 10,
+        page: 1,
+        total: 1,
+        totalPages: 1,
+      };
+
+      expect(res.json).toHaveBeenCalledWith(expected);
+    });
+
+    it("Filters by title if provided (case insensitive)", async () => {
+      const otherEvent = { ...baseEvent, title: "Autre donjon" };
+      mockGetAll.mockResolvedValue([baseEvent, otherEvent]);
+      req.query = { title: "donjon minotot", limit: "10", page: "1" };
+
+      await underTest.getAll(req as Request, res as Response, next);
+
+      const expected: PaginatedEvents = {
+        events: [baseEvent],
+        limit: 10,
+        page: 1,
+        total: 1,
+        totalPages: 1,
+      };
+
+      expect(res.json).toHaveBeenCalledWith(expected);
+    });
+
+    it("Call next() in case of error", async () => {
+      const error = new Error();
       mockGetAll.mockRejectedValue(error);
       await underTest.getAll(req as Request, res as Response, next);
 
@@ -150,6 +186,8 @@ describe("EventController", () => {
         description: "donjon full succès",
         max_players: 8,
         status: "public",
+        tag_id: "b8c145a0-c68a-4adb-a33b-ae6f0ec89ee1",
+        server_id: "5f076e0a-60a0-42d5-a18e-853a46ddc335",
       };
       mockGetOne.mockResolvedValue(mockEvent);
 
@@ -194,6 +232,8 @@ describe("EventController", () => {
           description: "donjon full succès",
           max_players: 8,
           status: "public",
+          tag_id: "f7a34554-d2d7-48d5-8bc2-1f7e4b06c8f8",
+          server_id: "6c19c76b-cbc1-4a58-bdeb-b336eaf6f51c",
           tag: {
             id: "f7a34554-d2d7-48d5-8bc2-1f7e4b06c8f8",
             name: "Donjon",
@@ -259,6 +299,8 @@ describe("EventController", () => {
         description: "donjon full succès",
         max_players: 8,
         status: "public",
+        tag_id: "f7a34554-d2d7-48d5-8bc2-1f7e4b06c8f8",
+        server_id: "6c19c76b-cbc1-4a58-bdeb-b336eaf6f51c",
         tag: {
           id: "f7a34554-d2d7-48d5-8bc2-1f7e4b06c8f8",
           name: "Donjon",
@@ -336,6 +378,8 @@ describe("EventController", () => {
         description: "donjon full succès",
         max_players: 8,
         status: "public",
+        tag_id: "f7a34554-d2d7-48d5-8bc2-1f7e4b06c8f8",
+        server_id: "6c19c76b-cbc1-4a58-bdeb-b336eaf6f51c",
       };
       const mockNewEventEnriched: EventEnriched = {
         id: "923a9fe0-1395-4f4e-8d18-4a9ac183b924",
@@ -348,6 +392,8 @@ describe("EventController", () => {
         description: "donjon full succès",
         max_players: 8,
         status: "public",
+        tag_id: "f7a34554-d2d7-48d5-8bc2-1f7e4b06c8f8",
+        server_id: "6c19c76b-cbc1-4a58-bdeb-b336eaf6f51c",
         tag: {
           id: "f7a34554-d2d7-48d5-8bc2-1f7e4b06c8f8",
           name: "Donjon",
@@ -401,6 +447,8 @@ describe("EventController", () => {
         description: "donjon full succès",
         max_players: 8,
         status: "public",
+        tag_id: "f7a34554-d2d7-48d5-8bc2-1f7e4b06c8f8",
+        server_id: "6c19c76b-cbc1-4a58-bdeb-b336eaf6f51c",
       };
 
       const mockEventEnriched: EventEnriched = {
@@ -517,6 +565,8 @@ describe("EventController", () => {
         description: "donjon full succès",
         max_players: 8,
         status: "public",
+        tag_id: "f7a34554-d2d7-48d5-8bc2-1f7e4b06c8f8",
+        server_id: "6c19c76b-cbc1-4a58-bdeb-b336eaf6f51c",
       };
 
       mockAddCharacters.mockResolvedValue(mockEvent);
@@ -577,6 +627,8 @@ describe("EventController", () => {
         description: "donjon full succès",
         max_players: 8,
         status: "public",
+        tag_id: "f7a34554-d2d7-48d5-8bc2-1f7e4b06c8f8",
+        server_id: "6c19c76b-cbc1-4a58-bdeb-b336eaf6f51c",
       };
 
       const mockEventUpdatedEnriched: EventEnriched = {
@@ -664,6 +716,8 @@ describe("EventController", () => {
         description: "donjon full succès",
         max_players: 8,
         status: "public",
+        tag_id: "f7a34554-d2d7-48d5-8bc2-1f7e4b06c8f8",
+        server_id: "6c19c76b-cbc1-4a58-bdeb-b336eaf6f51c",
       };
 
       mockRemoveCharacter.mockResolvedValue(mockEvent);
@@ -728,6 +782,8 @@ describe("EventController", () => {
         description: "donjon full succès",
         max_players: 8,
         status: "public",
+        tag_id: "f7a34554-d2d7-48d5-8bc2-1f7e4b06c8f8",
+        server_id: "6c19c76b-cbc1-4a58-bdeb-b336eaf6f51c",
       };
 
       const mockUpdatedEvent = { ...mockEventToUpdate, ...mockDatas };

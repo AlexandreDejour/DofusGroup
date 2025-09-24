@@ -1,24 +1,39 @@
 import "./Home.scss";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { isAxiosError } from "axios";
+
+import { Tag } from "../../types/tag";
+import { Event } from "../../types/event";
+import { Server } from "../../types/server";
+
+import { Config } from "../../config/config";
+import { ApiClient } from "../../services/client";
+import { TagService } from "../../services/api/tagService";
+import { EventService } from "../../services/api/eventService";
+import { ServerService } from "../../services/api/serverService";
 
 import EventCard from "../../components/EventCard/EventCard";
 import Pagination from "../../components/Pagination/Pagination";
-
-import { Event } from "../../types/event";
-import { Config } from "../../config/config";
-import { ApiClient } from "../../services/client";
-import { EventService } from "../../services/api/eventService";
+import EventFilter from "../../components/EventFilter/EventFilter";
 
 const config = Config.getInstance();
 const axios = new ApiClient(config.baseUrl);
+const tagService = new TagService(axios);
 const eventService = new EventService(axios);
+const serverService = new ServerService(axios);
 
 export default function Home() {
-  const [events, setEvents] = useState<Event[] | null>(null);
-  const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [currentPage, setCurrentPage] = useState(1);
+
+  const [tags, setTags] = useState<Tag[]>([]);
+  const [events, setEvents] = useState<Event[]>([]);
+  const [servers, setServers] = useState<Server[]>([]);
+
+  const [tag, setTag] = useState<string>("");
+  const [title, setTitle] = useState<string>("");
+  const [server, setServer] = useState<string>("");
 
   useEffect(() => {
     const fetchEvents = async () => {
@@ -36,8 +51,71 @@ export default function Home() {
       }
     };
 
+    const fetchTags = async () => {
+      try {
+        const tagsData = await tagService.getTags();
+
+        setTags(tagsData);
+      } catch (error) {
+        if (isAxiosError(error)) {
+          console.error("Axios error:", error.message);
+        } else if (error instanceof Error) {
+          console.error("General error:", error.message);
+        }
+      }
+    };
+
+    const fetchServers = async () => {
+      try {
+        const serversData = await serverService.getServers();
+
+        setServers(serversData);
+      } catch (error) {
+        if (isAxiosError(error)) {
+          console.error("Axios error:", error.message);
+        } else if (error instanceof Error) {
+          console.error("General error:", error.message);
+        }
+      }
+    };
+
+    fetchTags();
+    fetchServers();
     fetchEvents();
   }, [currentPage]);
+
+  const handleSearch = useCallback(
+    async (event: React.FormEvent<HTMLFormElement>) => {
+      event.preventDefault();
+
+      const form = event.currentTarget as HTMLFormElement;
+      const formData = new FormData(form);
+
+      try {
+        const filters = {
+          ...(tag && { tag_id: tag }),
+          ...(title && { title: title }),
+          ...(server && { server_id: server }),
+        };
+
+        const filteredEvents = await eventService.getEvents(
+          10,
+          currentPage,
+          filters,
+        );
+
+        setEvents(filteredEvents.events);
+        setTotalPages(filteredEvents.totalPages);
+      } catch (error) {
+        if (isAxiosError(error)) {
+          console.error("Axios error:", error.message);
+        } else if (error instanceof Error) {
+          console.error("General error:", error.message);
+        }
+      }
+    },
+    [],
+  );
 
   return (
     <main className="home">
@@ -50,6 +128,18 @@ export default function Home() {
         <p className="home_header_players">Joueurs</p>
         <p className="home_header_details"></p>
       </header>
+
+      <EventFilter
+        tag={tag}
+        server={server}
+        tags={tags}
+        title={title}
+        servers={servers}
+        setTag={setTag}
+        setTitle={setTitle}
+        setServer={setServer}
+        handleSearch={handleSearch}
+      />
 
       {events && events.length ? (
         <ul>

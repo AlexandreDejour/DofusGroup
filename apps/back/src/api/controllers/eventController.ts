@@ -13,8 +13,13 @@ export class EventController {
 
   public async getAll(req: Request, res: Response, next: NextFunction) {
     try {
-      const limitParam = parseInt(req.query.limit as string, 10);
+      const tagId = req.query.tag_id as string | undefined;
+      const title = req.query.title as string | undefined;
+      const serverId = req.query.server_id as string | undefined;
       const pageParam = parseInt(req.query.page as string, 10);
+      const limitParam = parseInt(req.query.limit as string, 10);
+
+      console.log(tagId, serverId, title);
 
       const limit = !isNaN(limitParam) && limitParam > 0 ? limitParam : 10;
       const page = !isNaN(pageParam) && pageParam > 0 ? pageParam : 1;
@@ -29,6 +34,22 @@ export class EventController {
       // Filter passed events
       const now = new Date();
       events = events.filter((event) => new Date(event.date) >= now);
+
+      // optionnal filters
+      if (tagId) {
+        events = events.filter((event) => event.tag_id === tagId);
+      }
+
+      if (serverId) {
+        events = events.filter((event) => event.server_id === serverId);
+      }
+
+      if (title) {
+        const lowered = title.toLowerCase();
+        events = events.filter((event) =>
+          event.title.toLowerCase().includes(lowered),
+        );
+      }
 
       // Filter by ascending date
       events.sort(

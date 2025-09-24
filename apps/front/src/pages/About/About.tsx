@@ -13,7 +13,7 @@ export default function About() {
       </header>
 
       <section>
-        <h3>Une plateforme pour mieux s’organiser</h3>
+        <h3>1. Une plateforme pour mieux s’organiser</h3>
         <p>
           L'application permet aux utilisateurs, une fois leur compte créé, de
           créer des événements afin de trouver des joueurs souhaitant se joindre
@@ -25,7 +25,7 @@ export default function About() {
       </section>
 
       <section>
-        <h3>Pourquoi DofusGroup ?</h3>
+        <h3>2. Pourquoi DofusGroup ?</h3>
         <p>
           Il n'existe actuellement pas d'outil performant répondant à ce besoin
           précis : planifier des sessions de jeu à l'avance et organiser des
@@ -37,7 +37,7 @@ export default function About() {
       </section>
 
       <section>
-        <h3>Public visé</h3>
+        <h3>3. Public visé</h3>
         <p>La plateforme s'adresse principalement aux :</p>
         <ul>
           <li>Joueurs monocomptes dépendants d'autres joueurs pour avancer.</li>
@@ -55,7 +55,7 @@ export default function About() {
       </section>
 
       <section>
-        <h3>Qui suis-je ?</h3>
+        <h3>4. Qui suis-je ?</h3>
         <p>
           Je suis <strong>développeur en reconversion</strong> et j'ai commencé
           le developpement de DofusGroup en parallèle de ma formation. Mon
@@ -77,7 +77,7 @@ export default function About() {
       </section>
 
       <section>
-        <h3>En résumé</h3>
+        <h3>5. En résumé</h3>
         <p>
           DofusGroup est né d'un mélange de passion, d'apprentissage et d'envie
           de partage. C'est un projet pensé pour les joueurs, mais qui met

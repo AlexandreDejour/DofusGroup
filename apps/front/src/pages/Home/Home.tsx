@@ -16,6 +16,8 @@ import { ServerService } from "../../services/api/serverService";
 import EventCard from "../../components/EventCard/EventCard";
 import Pagination from "../../components/Pagination/Pagination";
 import EventFilter from "../../components/EventFilter/EventFilter";
+import formDataToObject from "../../contexts/utils/formDataToObject";
+import { SearchForm } from "../../types/form";
 
 const config = Config.getInstance();
 const axios = new ApiClient(config.baseUrl);
@@ -80,8 +82,8 @@ export default function Home() {
     };
 
     fetchTags();
-    fetchServers();
     fetchEvents();
+    fetchServers();
   }, [currentPage]);
 
   const handleSearch = useCallback(
@@ -92,11 +94,10 @@ export default function Home() {
       const formData = new FormData(form);
 
       try {
-        const filters = {
-          ...(tag && { tag_id: tag }),
-          ...(title && { title: title }),
-          ...(server && { server_id: server }),
-        };
+        const keys: (keyof SearchForm)[] = ["title", "tag_id", "server_id"];
+        const filters = formDataToObject<SearchForm>(formData, { keys });
+
+        console.log(filters);
 
         const filteredEvents = await eventService.getEvents(
           10,
@@ -119,16 +120,6 @@ export default function Home() {
 
   return (
     <main className="home">
-      <header className="home_header">
-        <p className="home_header_title">Titre</p>
-        <p className="home_header_tag">Tag</p>
-        <p className="home_header_server">Serveur</p>
-        <p className="home_header_date">Date</p>
-        <p className="home_header_duration">Durée</p>
-        <p className="home_header_players">Joueurs</p>
-        <p className="home_header_details"></p>
-      </header>
-
       <EventFilter
         tag={tag}
         server={server}
@@ -140,6 +131,15 @@ export default function Home() {
         setServer={setServer}
         handleSearch={handleSearch}
       />
+      <header className="home_header">
+        <p className="home_header_title">Titre</p>
+        <p className="home_header_tag">Tag</p>
+        <p className="home_header_server">Serveur</p>
+        <p className="home_header_date">Date</p>
+        <p className="home_header_duration">Durée</p>
+        <p className="home_header_players">Joueurs</p>
+        <p className="home_header_details"></p>
+      </header>
 
       {events && events.length ? (
         <ul>
@@ -150,7 +150,7 @@ export default function Home() {
           ))}
         </ul>
       ) : (
-        <p>Chargement en cours</p>
+        <p className="fallback">Aucun évènement disponible</p>
       )}
 
       {totalPages ? (

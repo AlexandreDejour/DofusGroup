@@ -31,7 +31,7 @@ export default function EventFilter({
   handleSearch,
 }: EventFilterProps) {
   return (
-    <form onSubmit={handleSearch} className="filter">
+    <form onSubmit={handleSearch} className="filter" role="form">
       <div className="filter_item">
         <label htmlFor="title" className="filter_item_label">
           <span>Titre: </span>

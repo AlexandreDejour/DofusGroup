@@ -1,0 +1,38 @@
+@use "../../assets/styles/variables";
+
+.filter {
+  width: 100%;
+  padding: 0% 2% 2% 2%;
+  font-size: 1.1rem;
+  background-color: var(--secondary-bg);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-radius: 1rem;
+
+  &_item {
+    width: 27.5%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    &_label {
+      width: 85%;
+      margin-top: 5.5%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+
+      input {
+        margin-top: 2%;
+        padding: 1% 2%;
+      }
+    }
+  }
+
+  button {
+    margin: 2% 0% 0% 2%;
+    padding: 1%;
+  }
+}

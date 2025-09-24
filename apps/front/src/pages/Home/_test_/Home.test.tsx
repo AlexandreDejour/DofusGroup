@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { vi } from "vitest";
 import { MemoryRouter } from "react-router-dom";
 
@@ -118,9 +118,16 @@ describe("Home page", () => {
     vi.clearAllMocks();
   });
 
-  it("Display 'Chargement en cours' at initial renderer", () => {
+  it("renders filter inputs", async () => {
     renderHome();
-    expect(screen.getByText(/Chargement en cours/i)).toBeInTheDocument();
+    expect(await screen.findByLabelText(/Titre/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/Tag/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/Serveur/i)).toBeInTheDocument();
+  });
+
+  it("Display 'Aucun évènement disponible' at initial renderer", () => {
+    renderHome();
+    expect(screen.getByText(/Aucun évènement disponible/i)).toBeInTheDocument();
   });
 
   it("Display events list after API call", async () => {

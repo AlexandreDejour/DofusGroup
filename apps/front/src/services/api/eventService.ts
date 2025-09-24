@@ -15,10 +15,11 @@ export class EventService {
   public async getEvents(
     limit?: number,
     page?: number,
+    filters?: { tag_id?: string; title?: string; server_id?: string },
   ): Promise<PaginatedEvents> {
     try {
       const response = await this.axios.get<PaginatedEvents>("/events", {
-        params: { limit, page },
+        params: { limit, page, ...filters },
       });
       return response.data;
     } catch (error) {

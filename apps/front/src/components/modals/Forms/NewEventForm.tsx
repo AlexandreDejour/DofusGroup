@@ -25,9 +25,9 @@ import CharactersOptions from "../FormComponents/Options/CharactersOptions";
 
 const config = Config.getInstance();
 const axios = new ApiClient(config.baseUrl);
-const dofusDBService = new DofusDBService(axios);
 const tagService = new TagService(axios);
 const serverService = new ServerService(axios);
+const dofusDBService = new DofusDBService(axios);
 const characterService = new CharacterService(axios);
 
 interface NewEventFormProps {

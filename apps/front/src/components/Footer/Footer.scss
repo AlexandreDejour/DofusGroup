@@ -9,11 +9,27 @@
   justify-content: center;
   align-items: center;
 
+  @media (min-width: 1920px) {
+    font-size: 1.3rem;
+  }
+
+  @media (min-width: 2560px) {
+    font-size: 1.5rem;
+  }
+
   &_container {
     width: 100%;
     margin-bottom: 2%;
     display: flex;
     justify-content: space-evenly;
+
+    @media (min-width: 1920px) {
+      width: 95%;
+    }
+
+    @media (min-width: 2560px) {
+      width: 90%;
+    }
 
     &_list {
       width: 30%;

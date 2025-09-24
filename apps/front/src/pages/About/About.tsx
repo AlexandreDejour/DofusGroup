@@ -4,7 +4,7 @@ export default function About() {
   return (
     <main className="about">
       <header>
-        <h1>À propos de DofusGroup</h1>
+        <h2>À propos de DofusGroup</h2>
         <p className="lead">
           DofusGroup est une plateforme communautaire de création d'événements
           autour d'activités dans le MMORPG <strong>Dofus</strong>, permettant
@@ -13,7 +13,7 @@ export default function About() {
       </header>
 
       <section>
-        <h2>Une plateforme pour mieux s’organiser</h2>
+        <h3>Une plateforme pour mieux s’organiser</h3>
         <p>
           L'application permet aux utilisateurs, une fois leur compte créé, de
           créer des événements afin de trouver des joueurs souhaitant se joindre
@@ -25,7 +25,7 @@ export default function About() {
       </section>
 
       <section>
-        <h2>Pourquoi DofusGroup ?</h2>
+        <h3>Pourquoi DofusGroup ?</h3>
         <p>
           Il n'existe actuellement pas d'outil performant répondant à ce besoin
           précis : planifier des sessions de jeu à l'avance et organiser des
@@ -37,7 +37,7 @@ export default function About() {
       </section>
 
       <section>
-        <h2>Public visé</h2>
+        <h3>Public visé</h3>
         <p>La plateforme s'adresse principalement aux :</p>
         <ul>
           <li>Joueurs monocomptes dépendants d'autres joueurs pour avancer.</li>
@@ -55,7 +55,7 @@ export default function About() {
       </section>
 
       <section>
-        <h2>Qui suis-je ?</h2>
+        <h3>Qui suis-je ?</h3>
         <p>
           Je suis <strong>développeur en reconversion</strong> et j'ai commencé
           le developpement de DofusGroup en parallèle de ma formation. Mon
@@ -77,7 +77,7 @@ export default function About() {
       </section>
 
       <section>
-        <h2>En résumé</h2>
+        <h3>En résumé</h3>
         <p>
           DofusGroup est né d'un mélange de passion, d'apprentissage et d'envie
           de partage. C'est un projet pensé pour les joueurs, mais qui met

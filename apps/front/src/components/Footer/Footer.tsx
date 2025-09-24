@@ -12,16 +12,16 @@ export default function Footer() {
         <div className="footer_container_list">
           <h3>DofusGroup</h3>
           <ul>
-            <li className="link">
-              <Link to="/">Évènements</Link>
-            </li>
             {user ? (
-              <li className="link">
+              <li>
                 <Link to="/profile">Profil</Link>
               </li>
             ) : null}
-            <li className="link">
+            <li>
               <Link to="/about">À propos</Link>
+            </li>
+            <li>
+              <Link to="/">Évènements</Link>
             </li>
           </ul>
         </div>
@@ -29,16 +29,16 @@ export default function Footer() {
           <h3>Autres liens</h3>
           <ul>
             <li>
-              <Link to="/gcu">Conditions générales d'utilisation</Link>
-            </li>
-            <li>
-              <Link to="/privacy_policy">Politique de confidentialité</Link>
+              <a href="#">Signaler un bug</a>
             </li>
             <li>
               <a href="#">Nous contacter</a>
             </li>
             <li>
-              <a href="#">Signaler un bug</a>
+              <Link to="/privacy_policy">Politique de confidentialité</Link>
+            </li>
+            <li>
+              <Link to="/gcu">Conditions générales d'utilisation</Link>
             </li>
           </ul>
         </div>
@@ -55,17 +55,17 @@ export default function Footer() {
               </a>
             </li>
             <li>
+              <a href="https://dofusdb.fr/fr/" target="_blank" rel="noreferrer">
+                DofusDB
+              </a>
+            </li>
+            <li>
               <a
                 href="https://www.dofusbook.net/fr/"
                 target="_blank"
                 rel="noreferrer"
               >
                 DofusBook
-              </a>
-            </li>
-            <li>
-              <a href="https://dofusdb.fr/fr/" target="_blank" rel="noreferrer">
-                DofusDB
               </a>
             </li>
             <li>

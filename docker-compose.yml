@@ -16,7 +16,7 @@ services:
   back:
     build: ./apps/back
     env_file: .env
-    command: sh -c "npx sequelize-cli db:migrate && npx sequelize-cli db:seed:all && npm run start"
+    # command: sh -c "npx sequelize-cli db:migrate && npx sequelize-cli db:seed:all && npm run start"
     volumes:
       - ./apps/back:/app
     ports:

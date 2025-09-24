@@ -1,13 +1,13 @@
-import React, { createContext, useContext, useEffect, useState } from "react";
-import { useNavigate } from "react-router";
 import { isAxiosError } from "axios";
+import { useNavigate } from "react-router";
+import React, { createContext, useContext, useEffect, useState } from "react";
 
 import type { AuthUser } from "../types/user";
 
 import { Config } from "../config/config";
 import { ApiClient } from "../services/client";
-import { AuthService } from "../services/api/authService";
 import { useNotification } from "./notificationContext";
+import { AuthService } from "../services/api/authService";
 
 const config = Config.getInstance();
 const axios = new ApiClient(config.baseUrl);

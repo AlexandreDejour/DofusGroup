@@ -131,6 +131,7 @@ export default function Home() {
         setServer={setServer}
         handleSearch={handleSearch}
       />
+
       <header className="home_header">
         <p className="home_header_title">Titre</p>
         <p className="home_header_tag">Tag</p>

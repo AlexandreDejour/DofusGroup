@@ -11,6 +11,16 @@
   align-items: center;
   border-radius: 1.5rem;
 
+  @media (min-width: 1920px) {
+    width: 70%;
+    font-size: 1.5rem;
+  }
+
+  @media (min-width: 2560px) {
+    width: 60%;
+    font-size: 1.7rem;
+  }
+
   &_section {
     width: 80%;
     padding: 10% 0% 5% 0%;
@@ -19,13 +29,42 @@
     flex-direction: column;
     justify-content: space-evenly;
 
+    @media (min-width: 1920px) {
+      width: 70%;
+    }
+
+    @media (min-width: 2560px) {
+      width: 60%;
+    }
+
     h2 {
       font-size: 3rem;
+
+      @media (min-width: 1920px) {
+        font-size: 3.5rem;
+      }
+
+      @media (min-width: 2560px) {
+        font-size: 4rem;
+      }
     }
 
     &_img {
       width: 30%;
       margin: auto;
+
+      @media (min-width: 1080px) {
+        width: 35%;
+        margin: 10% auto;
+      }
+
+      @media (min-width: 1920px) {
+        width: 35%;
+      }
+
+      @media (min-width: 2560px) {
+        width: 40%;
+      }
     }
 
     &_details {

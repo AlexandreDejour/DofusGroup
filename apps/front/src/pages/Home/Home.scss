@@ -3,10 +3,21 @@
 .home {
   width: 95%;
   margin: auto;
+  font-size: 1rem;
   display: flex;
   flex: 1;
   flex-direction: column;
   align-items: center;
+
+  @media (min-width: 1920px) {
+    width: 75%;
+    font-size: 1.3rem;
+  }
+
+  @media (min-width: 2560px) {
+    width: 65%;
+    font-size: 1.5rem;
+  }
 
   &_header {
     width: 100%;
@@ -19,6 +30,14 @@
     justify-content: space-evenly;
     border-radius: 1rem;
     align-items: center;
+
+    @media (min-width: 1920px) {
+      font-size: 1.3rem;
+    }
+
+    @media (min-width: 2560px) {
+      font-size: 1.5rem;
+    }
 
     &_title {
       width: 30%;
@@ -66,5 +85,9 @@
   .fallback {
     margin-top: 2%;
     font-size: 1.3rem;
+
+    @media (min-width: 2560px) {
+      font-size: 1.5rem;
+    }
   }
 }

@@ -1,0 +1,29 @@
+.filter {
+  width: 100%;
+  padding-right: 2%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  &_item {
+    width: 25%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    &_label {
+      width: 85%;
+      margin-top: 5%;
+
+      input {
+        margin-top: 2%;
+        padding: 1% 2%;
+      }
+    }
+  }
+
+  button {
+    margin-top: 2.5%;
+    padding: 1%;
+  }
+}

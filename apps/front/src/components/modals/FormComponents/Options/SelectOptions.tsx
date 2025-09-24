@@ -37,7 +37,7 @@ export default function SelectOptions<T, ID extends string | number>({
         value={value}
         onChange={(e) => onChange(e.target.value)}
       >
-        <option value="" disabled>
+        <option value="">
           {placeholder ?? `Sélectionnez ${label.toLowerCase()}`}
         </option>
         {options.map((opt) => (

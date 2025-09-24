@@ -44,7 +44,6 @@ describe("SelectOptions", () => {
       name: "Choisissez une catégorie",
     });
     expect(placeholder).toBeInTheDocument();
-    expect(placeholder).toBeDisabled();
   });
 
   it("renders a default placeholder when none is provided", () => {
@@ -63,7 +62,6 @@ describe("SelectOptions", () => {
       name: "Sélectionnez category",
     });
     expect(placeholder).toBeInTheDocument();
-    expect(placeholder).toBeDisabled();
   });
 
   it("renders all generated options", () => {

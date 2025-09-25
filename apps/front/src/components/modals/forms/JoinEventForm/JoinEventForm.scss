@@ -1,4 +1,18 @@
-.content_modal {
+.joinEvent {
+  @media (min-width: 1280px) {
+    width: 45%;
+  }
+
+  @media (min-width: 1920px) {
+    width: 40%;
+  }
+
+  @media (min-width: 2560px) {
+    width: 35%;
+  }
+}
+
+.join_event {
   width: 100%;
 
   @media (min-width: 1920px) {

@@ -1,15 +1,19 @@
-import { useEffect, useState } from "react";
-import { useAuth } from "../../../contexts/authContext";
-import { useNotification } from "../../../contexts/notificationContext";
 import "./JoinEventForm.scss";
-import { isAxiosError } from "axios";
 
-import { Config } from "../../../config/config";
-import { ApiClient } from "../../../services/client";
-import { CharacterService } from "../../../services/api/characterService";
-import { CharacterEnriched } from "../../../types/character";
-import CharactersCheckbox from "../FormComponents/Checkbox/CharactersCheckbox";
-import { useModal } from "../../../contexts/modalContext";
+import { isAxiosError } from "axios";
+import { useEffect, useState } from "react";
+
+import { useAuth } from "../../../../contexts/authContext";
+import { useModal } from "../../../../contexts/modalContext";
+import { useNotification } from "../../../../contexts/notificationContext";
+
+import { Config } from "../../../../config/config";
+import { ApiClient } from "../../../../services/client";
+import { typeGuard } from "../../utils/typeGuard";
+import { CharacterService } from "../../../../services/api/characterService";
+import { CharacterEnriched } from "../../../../types/character";
+
+import CharactersCheckbox from "../../FormComponents/Checkbox/CharactersCheckbox";
 
 const config = Config.getInstance();
 const axios = new ApiClient(config.baseUrl);
@@ -33,11 +37,13 @@ export default function JoinEventForm({ handleSubmit }: JoinEventFormProps) {
       try {
         const response = await characterService.getAllEnrichedByUserId(user.id);
 
-        const availableCharacters = response.filter(
-          (character) => character.server.id === updateTarget.server.id,
-        );
+        if (typeGuard.eventEnriched(updateTarget)) {
+          const availableCharacters = response.filter(
+            (character) => character.server.id === updateTarget.server.id,
+          );
 
-        setCharacters(availableCharacters);
+          setCharacters(availableCharacters);
+        }
       } catch (error) {
         if (isAxiosError(error)) {
           showError("Erreur", error.message);
@@ -51,15 +57,15 @@ export default function JoinEventForm({ handleSubmit }: JoinEventFormProps) {
   }, [user, updateTarget]);
 
   return (
-    <div className="content_modal">
-      <h3 className="content_modal_title">Rejoindre l'évènement</h3>
-      <form onSubmit={handleSubmit} className="content_modal_form" role="form">
+    <div className="join_event">
+      <h3 className="join_event_title">Rejoindre l'évènement</h3>
+      <form onSubmit={handleSubmit} className="join_event_form" role="form">
         {characters.length ? (
           <CharactersCheckbox characters={characters} />
         ) : (
           <p>Aucun personnages disponible sur ce serveur</p>
         )}
-        <button type="submit" className="content_modal_form_button button">
+        <button type="submit" className="join_event_form_button button">
           Rejoindre
         </button>
       </form>

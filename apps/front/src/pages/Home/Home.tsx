@@ -97,8 +97,6 @@ export default function Home() {
         const keys: (keyof SearchForm)[] = ["title", "tag_id", "server_id"];
         const filters = formDataToObject<SearchForm>(formData, { keys });
 
-        console.log(filters);
-
         const filteredEvents = await eventService.getEvents(
           10,
           currentPage,

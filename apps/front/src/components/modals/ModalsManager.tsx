@@ -12,7 +12,7 @@ import UpdateForm from "./Forms/UpdateForm";
 import RegisterForm from "./Forms/RegisterForm";
 import NewEventForm from "./forms/NewEventForm/NewEventForm";
 import JoinEventForm from "./forms/JoinEventForm/JoinEventForm";
-import UpdateEventForm from "./Forms/UpdateEventForm";
+import UpdateEventForm from "./forms/UpdateEventForm/UpdateEventForm";
 import NewCharacterForm from "./forms/NewCharacterForm/NewCharacterForm";
 import UpdateCharacterForm from "./forms/UpdateCharacterForm/UpdateCharacterForm";
 import CommentForm from "./Forms/CommentForm";

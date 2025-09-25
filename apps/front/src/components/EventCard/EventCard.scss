@@ -11,6 +11,13 @@
   align-items: center;
   border-radius: 1rem;
 
+  @media (max-width: 1024px) {
+    width: 95%;
+    font-size: 1.3rem;
+    display: flex;
+    flex-direction: column;
+  }
+
   @media (min-width: 1920px) {
     font-size: 1.3rem;
   }
@@ -22,12 +29,23 @@
   &_title {
     width: 30%;
     font-size: 1.3rem;
+
+    @media (max-width: 1024px) {
+      width: 90%;
+      margin-bottom: 2%;
+      font-size: 1.5rem;
+    }
   }
 
   &_tag {
     width: 12.5%;
     padding: 0.5% 0%;
     border-radius: 0.5rem;
+
+    @media (max-width: 1024px) {
+      width: 50%;
+      margin-bottom: 2%;
+    }
   }
 
   &_server {
@@ -50,5 +68,20 @@
     width: 10%;
     margin-left: 2.5%;
     padding: 1% 2%;
+
+    @media (max-width: 1024px) {
+      width: 25%;
+    }
+  }
+
+  &_container {
+    width: 80%;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+
+    span {
+      font-weight: bold;
+    }
   }
 }

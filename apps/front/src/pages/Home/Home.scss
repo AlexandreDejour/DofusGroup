@@ -76,6 +76,16 @@
     width: 100%;
     padding: 0;
     list-style: none;
+
+    @media (max-width: 1024px) {
+      display: flex;
+    }
+
+    li {
+      @media (max-width: 1024px) {
+        margin: auto;
+      }
+    }
   }
 
   &_pagination {

@@ -1,17 +1,18 @@
-import { render, screen, waitFor, fireEvent } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
+import { render, screen, waitFor, fireEvent } from "@testing-library/react";
+
+import { EventEnriched } from "../../../../types/event";
 
 import { useAuth } from "../../../../contexts/authContext";
 import { useNotification } from "../../../../contexts/notificationContext";
 
 import * as TagService from "../../../../services/api/tagService";
-import formatDateToLocalInput from "../../utils/formatDateToLocalInput";
 import * as ServerService from "../../../../services/api/serverService";
 import * as DofusDBService from "../../../../services/api/dofusDBService";
-import { SelectOptionsProps } from "../../FormComponents/Options/SelectOptions";
+import formatDateToLocalInput from "../../utils/formatDateToLocalInput";
+import { SelectOptionsProps } from "../../formComponents/Options/SelectOptions";
 
-import UpdateEventForm from "../UpdateEventForm";
-import { EventEnriched } from "../../../../types/event";
+import UpdateEventForm from "../UpdateEventForm/UpdateEventForm";
 
 // Mock config
 vi.mock("../../../../config/config.ts", () => ({

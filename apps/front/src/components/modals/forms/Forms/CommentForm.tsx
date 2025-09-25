@@ -1,10 +1,10 @@
-import "../Form.scss";
+import "./Form.scss";
 
 import { useState } from "react";
 
-import { CommentEnriched } from "../../../types/comment";
+import { CommentEnriched } from "../../../../types/comment";
 
-import { typeGuard } from "../utils/typeGuard";
+import { typeGuard } from "../../utils/typeGuard";
 
 interface CommentFormProps {
   updateTarget?: CommentEnriched;

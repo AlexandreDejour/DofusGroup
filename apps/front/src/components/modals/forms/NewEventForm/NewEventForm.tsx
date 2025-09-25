@@ -20,8 +20,8 @@ import { DofusDBService } from "../../../../services/api/dofusDBService";
 import { CharacterService } from "../../../../services/api/characterService";
 import formatDateToLocalInput from "../../utils/formatDateToLocalInput";
 
-import SelectOptions from "../../FormComponents/Options/SelectOptions";
-import CharactersOptions from "../../FormComponents/Options/CharactersOptions";
+import SelectOptions from "../../formComponents/Options/SelectOptions";
+import CharactersOptions from "../../formComponents/Options/CharactersOptions";
 
 const config = Config.getInstance();
 const axios = new ApiClient(config.baseUrl);

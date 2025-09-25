@@ -3,7 +3,7 @@ import { render, screen, fireEvent } from "@testing-library/react";
 
 import { CommentEnriched } from "../../../../types/comment";
 
-import CommentForm from "../CommentForm";
+import CommentForm from "../Forms/CommentForm";
 
 describe("CommentForm", () => {
   const handleSubmitMock = vi.fn();
@@ -12,7 +12,7 @@ describe("CommentForm", () => {
     handleSubmitMock.mockClear();
   });
 
-  it("renders correctly in creation mode", () => {
+  it("Renders correctly in creation mode", () => {
     render(<CommentForm handleSubmit={handleSubmitMock} />);
 
     expect(screen.getByText(/ajouter un commentaire/i)).toBeInTheDocument();
@@ -24,7 +24,7 @@ describe("CommentForm", () => {
     ).toBeInTheDocument();
   });
 
-  it("renders correctly in update mode with pre-filled content", () => {
+  it("Renders correctly in update mode with pre-filled content", () => {
     const updateTarget: CommentEnriched = {
       id: "c1",
       content: "Contenu existant",
@@ -43,7 +43,7 @@ describe("CommentForm", () => {
     expect(textarea).toBeInTheDocument();
   });
 
-  it("updates the textarea value when typing", () => {
+  it("Updates the textarea value when typing", () => {
     render(<CommentForm handleSubmit={handleSubmitMock} />);
     const textarea = screen.getByPlaceholderText(/rédigez un commentaire/i);
 
@@ -51,7 +51,7 @@ describe("CommentForm", () => {
     expect(textarea).toHaveValue("Nouveau commentaire");
   });
 
-  it("calls handleSubmit when submitting the form", () => {
+  it("Calls handleSubmit when submitting the form", () => {
     render(<CommentForm handleSubmit={handleSubmitMock} />);
     const form = screen.getByRole("form");
 

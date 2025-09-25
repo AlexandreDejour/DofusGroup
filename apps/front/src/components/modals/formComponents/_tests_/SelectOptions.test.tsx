@@ -1,7 +1,7 @@
 import { describe, it, expect, vi } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 
-import SelectOptions from "../../FormComponents/Options/SelectOptions";
+import SelectOptions from "../Options/SelectOptions";
 
 describe("SelectOptions", () => {
   const mockItems = [

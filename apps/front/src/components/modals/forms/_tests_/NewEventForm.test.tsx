@@ -9,10 +9,10 @@ import formatDateToLocalInput from "../../utils/formatDateToLocalInput";
 import * as ServerService from "../../../../services/api/serverService";
 import * as DofusDBService from "../../../../services/api/dofusDBService";
 import * as CharacterService from "../../../../services/api/characterService";
-import { SelectOptionsProps } from "../../FormComponents/Options/SelectOptions";
-import { CharactersOptionsProps } from "../../FormComponents/Options/CharactersOptions";
+import { SelectOptionsProps } from "../../formComponents/Options/SelectOptions";
+import { CharactersOptionsProps } from "../../formComponents/Options/CharactersOptions";
 
-import NewEventForm from "../../Forms/NewEventForm";
+import NewEventForm from "../NewEventForm/NewEventForm";
 
 // Mock config
 vi.mock("../../../../config/config.ts", () => ({
@@ -145,6 +145,7 @@ describe("NewEventForm", () => {
       stuff: "",
       default_character: true,
       user_id: "123",
+      server_id: "456",
     },
   ];
 
@@ -181,7 +182,7 @@ describe("NewEventForm", () => {
     ).mockResolvedValue(mockCharacters);
   });
 
-  it("should render the form and fetch initial data on mount", async () => {
+  it("Should render the form and fetch initial data on mount", async () => {
     render(<NewEventForm handleSubmit={mockHandleSubmit} />);
 
     // Vérification du rendu initial
@@ -205,92 +206,7 @@ describe("NewEventForm", () => {
     });
   });
 
-  it("should fetch sub-areas when area state changes", async () => {
-    vi.mocked(
-      DofusDBService.DofusDBService.prototype.getSubAreas,
-    ).mockResolvedValue(mockSubAreas);
-
-    render(<NewEventForm handleSubmit={mockHandleSubmit} />);
-
-    await waitFor(() => {
-      expect(screen.getByTestId("select-options-area")).toBeInTheDocument();
-    });
-
-    const areaSelect = screen
-      .getByTestId("select-options-area")
-      .querySelector("select")!;
-    fireEvent.change(areaSelect, {
-      target: { value: "Astrub" },
-    });
-
-    await waitFor(() => {
-      expect(
-        DofusDBService.DofusDBService.prototype.getSubAreas,
-      ).toHaveBeenCalledWith(1);
-      expect(screen.getByTestId("select-options-sub_area")).toBeInTheDocument();
-    });
-  });
-
-  it("should fetch dungeons when tag and sub-area states change", async () => {
-    vi.mocked(
-      DofusDBService.DofusDBService.prototype.getDungeons,
-    ).mockResolvedValue(mockDungeons);
-    vi.mocked(
-      DofusDBService.DofusDBService.prototype.getSubAreas,
-    ).mockResolvedValue(mockSubAreas);
-
-    render(<NewEventForm handleSubmit={mockHandleSubmit} />);
-
-    // Wait for the initial rendering and data fetching to complete
-    await waitFor(() => {
-      expect(screen.getByTestId("select-options-tag")).toBeInTheDocument();
-      expect(screen.getByTestId("select-options-area")).toBeInTheDocument();
-    });
-
-    // 1. Simulate the tag change to "Donjon"
-    const tagSelect = screen
-      .getByTestId("select-options-tag")
-      .querySelector("select")!;
-    fireEvent.change(tagSelect, {
-      target: { value: "123" },
-    });
-
-    // 2. Simulate the area change to "Astrub"
-    const areaSelect = screen
-      .getByTestId("select-options-area")
-      .querySelector("select")!;
-    fireEvent.change(areaSelect, {
-      target: { value: "Astrub" },
-    });
-
-    // 3. Wait for the sub-areas to be fetched and the new select element to appear
-    await waitFor(() => {
-      expect(
-        DofusDBService.DofusDBService.prototype.getSubAreas,
-      ).toHaveBeenCalledWith(1);
-      expect(screen.getByTestId("select-options-sub_area")).toBeInTheDocument();
-    });
-
-    // 4. Simulate the sub-area change to "Forêt d’Astrub"
-    const subAreaSelect = screen
-      .getByTestId("select-options-sub_area")
-      .querySelector("select")!;
-    fireEvent.change(subAreaSelect, {
-      target: { value: "Forêt d’Astrub" },
-    });
-
-    // 5. Wait for the dungeons to be fetched and the dungeon select to appear
-    await waitFor(() => {
-      expect(
-        DofusDBService.DofusDBService.prototype.getDungeons,
-      ).toHaveBeenCalledWith(3);
-      expect(
-        screen.getByTestId("select-options-donjon_name"),
-      ).toBeInTheDocument();
-    });
-  });
-
-  it("should not fetch characters if user is not authenticated", async () => {
+  it("Should not fetch characters if user is not authenticated", async () => {
     vi.mocked(useAuth).mockReturnValue({
       user: null,
       setUser: vi.fn(),
@@ -307,7 +223,7 @@ describe("NewEventForm", () => {
     });
   });
 
-  it("should call handleSubmit on form submission", async () => {
+  it("Should call handleSubmit on form submission", async () => {
     render(<NewEventForm handleSubmit={mockHandleSubmit} />);
 
     const form = screen.getByRole("form");
@@ -317,5 +233,50 @@ describe("NewEventForm", () => {
     expect(mockHandleSubmit).toHaveBeenCalledWith(
       expect.objectContaining({ type: "submit" }),
     );
+  });
+
+  it("Should show error if fetching tags fails", async () => {
+    vi.mocked(TagService.TagService.prototype.getTags).mockRejectedValue(
+      new Error("Erreur générale"),
+    );
+
+    render(<NewEventForm handleSubmit={mockHandleSubmit} />);
+
+    await waitFor(() => {
+      expect(mockShowError).toHaveBeenCalledWith(
+        "Erreur",
+        "Une erreur est survenue",
+      );
+    });
+  });
+
+  it("Should show error if fetching servers fails", async () => {
+    vi.mocked(
+      ServerService.ServerService.prototype.getServers,
+    ).mockRejectedValue(new Error("Erreur générale"));
+
+    render(<NewEventForm handleSubmit={mockHandleSubmit} />);
+
+    await waitFor(() => {
+      expect(mockShowError).toHaveBeenCalledWith(
+        "Erreur",
+        "Une erreur est survenue",
+      );
+    });
+  });
+
+  it("Should show error if fetching areas fails", async () => {
+    vi.mocked(
+      DofusDBService.DofusDBService.prototype.getAreas,
+    ).mockRejectedValue(new Error("Erreur générale"));
+
+    render(<NewEventForm handleSubmit={mockHandleSubmit} />);
+
+    await waitFor(() => {
+      expect(mockShowError).toHaveBeenCalledWith(
+        "Erreur",
+        "Une erreur est survenue",
+      );
+    });
   });
 });

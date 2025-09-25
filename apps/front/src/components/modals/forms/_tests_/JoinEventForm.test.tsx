@@ -1,6 +1,5 @@
 import { render, screen, waitFor } from "@testing-library/react";
 import { describe, it, vi, beforeEach } from "vitest";
-import JoinEventForm from "../JoinEventForm";
 
 // Mock config
 vi.mock("../../../../config/config.ts", () => ({
@@ -55,8 +54,14 @@ vi.mock("../../../../services/api/characterService", () => ({
   })),
 }));
 
+vi.mock("../../utils/typeGuard", () => ({
+  typeGuard: {
+    eventEnriched: () => true, // Toujours vrai pour les tests
+  },
+}));
+
 // Mock CharactersCheckbox
-vi.mock("../../FormComponents/Checkbox/CharactersCheckbox", () => ({
+vi.mock("../../formComponents/Checkbox/CharactersCheckbox", () => ({
   __esModule: true,
   default: ({ characters }: any) => (
     <div data-testid="characters-checkbox">
@@ -67,22 +72,26 @@ vi.mock("../../FormComponents/Checkbox/CharactersCheckbox", () => ({
   ),
 }));
 
+import JoinEventForm from "../JoinEventForm/JoinEventForm";
+
 describe("JoinEventForm", () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
-  it("affiche la liste des personnages si disponibles", async () => {
+  it("Displays the list of characters if available", async () => {
     mockGetAllEnrichedByUserId.mockResolvedValueOnce([
       {
         id: "char-d078b475-42cd-4008-9ba7-750d251e9b76",
         name: "Night-Hunter",
         server: serverObj,
+        breed: { name: "Sram" },
       },
       {
         id: "char-f8027c6b-8574-4abe-af03-8459868c19ab",
         name: "Chronos",
         server: serverObj,
+        breed: { name: "Xélor" },
       },
     ]);
 
@@ -93,7 +102,7 @@ describe("JoinEventForm", () => {
     expect(screen.getByText("Chronos")).toBeInTheDocument();
   });
 
-  it("affiche le message si aucun personnage n'est disponible", async () => {
+  it("Display this message if no character is available", async () => {
     mockGetAllEnrichedByUserId.mockResolvedValueOnce([]);
     render(<JoinEventForm handleSubmit={vi.fn()} />);
     await waitFor(() => {
@@ -103,17 +112,19 @@ describe("JoinEventForm", () => {
     });
   });
 
-  it("filtre les personnages sur le bon serveur", async () => {
+  it("Filter characters on the correct server", async () => {
     mockGetAllEnrichedByUserId.mockResolvedValueOnce([
       {
         id: "char-d078b475-42cd-4008-9ba7-750d251e9b76",
         name: "Night-Hunter",
         server: serverObj,
+        breed: { name: "Sram" },
       },
       {
         id: "char-f8027c6b-8574-4abe-af03-8459868c19ab",
         name: "Chronos",
         server: { id: "server-2", name: "Autre", mono_account: false },
+        breed: { name: "Xélor" },
       },
     ]);
     render(<JoinEventForm handleSubmit={vi.fn()} />);
@@ -123,7 +134,7 @@ describe("JoinEventForm", () => {
     expect(screen.queryByText("Chronos")).not.toBeInTheDocument();
   });
 
-  it("affiche une erreur axios", async () => {
+  it("Displays an axios error", async () => {
     mockGetAllEnrichedByUserId.mockRejectedValueOnce({
       isAxiosError: true,
       message: "Erreur axios",
@@ -134,7 +145,7 @@ describe("JoinEventForm", () => {
     });
   });
 
-  it("affiche une erreur générale", async () => {
+  it("Displays a general error", async () => {
     mockGetAllEnrichedByUserId.mockRejectedValueOnce(
       new Error("Erreur générale"),
     );

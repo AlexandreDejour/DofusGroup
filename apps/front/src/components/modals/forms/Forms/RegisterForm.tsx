@@ -1,4 +1,4 @@
-import "../Form.scss";
+import "./Form.scss";
 
 interface RegisterFormProps {
   handleSubmit: (event: React.FormEvent<HTMLFormElement>) => void;

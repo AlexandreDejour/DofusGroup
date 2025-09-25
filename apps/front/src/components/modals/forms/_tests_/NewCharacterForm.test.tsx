@@ -3,15 +3,10 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 
 import { useNotification } from "../../../../contexts/notificationContext";
 
-import { BreedRadioProps } from "../../FormComponents/Radio/BreedRadio";
-import { GenderRadioProps } from "../../FormComponents/Radio/GenderRadio";
-import { SelectOptionsProps } from "../../FormComponents/Options/SelectOptions";
-
-import UpdateCharacterForm from "../../forms/UpdateCharacterForm/UpdateCharacterForm";
+import NewCharacterForm from "../NewCharacterForm/NewCharacterForm";
 import * as BreedService from "../../../../services/api/breedService";
 import * as ServerService from "../../../../services/api/serverService";
 
-// Mock config
 vi.mock("../../../../config/config.ts", () => ({
   Config: {
     getInstance: () => ({
@@ -30,40 +25,37 @@ vi.mock("../../../../contexts/notificationContext", () => ({
 }));
 
 // 3. Mock components
-vi.mock("../../FormComponents/Radio/BreedRadio", () => ({
-  default: ({ onChange, breeds, value, sex }: BreedRadioProps) => (
+vi.mock("../../formComponents/Radio/BreedRadio", () => ({
+  default: (props: any) => (
     <div data-testid="breed-radio">
-      <input
-        data-testid="breed-radio-input"
-        onChange={(e) => onChange(e.target.value)}
-        value={value}
-      />
+      <button onClick={() => props.onChange("breed-2")}>Select Iop</button>
     </div>
   ),
 }));
 
-vi.mock("../../FormComponents/Radio/GenderRadio", () => ({
-  default: ({ onChange, value }: GenderRadioProps) => (
+vi.mock("../../formComponents/Radio/GenderRadio", () => ({
+  default: (props: any) => (
     <div data-testid="gender-radio">
-      <input
-        data-testid="gender-radio-input"
-        onChange={(e) => onChange(e.target.value)}
-        value={value}
-      />
+      <button onClick={() => props.onChange("F")}>Select Female</button>
     </div>
   ),
 }));
 
-vi.mock("../../FormComponents/Options/SelectOptions", () => ({
-  default: ({ name, onChange, value, label }: SelectOptionsProps<any, any>) => (
-    // Le data-testid est maintenant unique pour chaque SelectOptions
-    <div data-testid={`select-options-${name}`}>
-      <label>{label}</label>
+vi.mock("../../formComponents/Options/SelectOptions", () => ({
+  default: (props: any) => (
+    <div data-testid={`select-options-${props.name}`}>
+      <label>{props.label}</label>
       <select
-        name={name}
-        onChange={(e) => onChange(e.target.value)}
-        value={value}
-      />
+        value={props.value}
+        onChange={(e) => props.onChange(e.target.value)}
+      >
+        <option value="">Sélectionner...</option>
+        {props.items.map((item: any) => (
+          <option key={item.id} value={item.id}>
+            {item.name || item.label || item}
+          </option>
+        ))}
+      </select>
     </div>
   ),
 }));
@@ -72,29 +64,6 @@ describe("NewCharacterForm", () => {
   const mockShowError = vi.fn();
   const mockHandleSubmit = vi.fn();
 
-  const mockUpdateTarget = {
-    id: "cfff40b3-9625-4f0a-854b-d8d6d6b4b667",
-    name: "Chronos",
-    sex: "M",
-    level: 50,
-    alignment: "Neutre",
-    stuff: "https://d-bk.net/fr/d/1QVjw",
-    default_character: false,
-    server: {
-      id: "de5a6c69-bc0b-496c-9b62-bd7ea076b8ed",
-      name: "Dakal",
-      mono_account: true,
-    },
-    breed: {
-      id: "d81c200e-831c-419a-948f-c45d1bbf6aac",
-      name: "Cra",
-    },
-    events: [],
-    user: {
-      id: "15ff46b5-60f3-4e86-98bc-da8fcaa3e29e",
-      username: "toto",
-    },
-  };
   const mockBreeds = [{ id: "123", name: "Iop" }];
   const mockServers = [{ id: "123", name: "Serveur Test", mono_account: true }];
 
@@ -110,7 +79,7 @@ describe("NewCharacterForm", () => {
     });
   });
 
-  it("should render the form and fetch data on mount", async () => {
+  it("Should render the form and fetch data on mount", async () => {
     vi.mocked(BreedService.BreedService.prototype.getBreeds).mockResolvedValue(
       mockBreeds,
     );
@@ -118,15 +87,10 @@ describe("NewCharacterForm", () => {
       ServerService.ServerService.prototype.getServers,
     ).mockResolvedValue(mockServers);
 
-    render(
-      <UpdateCharacterForm
-        updateTarget={mockUpdateTarget}
-        handleSubmit={mockHandleSubmit}
-      />,
-    );
+    render(<NewCharacterForm handleSubmit={mockHandleSubmit} />);
 
     expect(
-      screen.getByRole("heading", { name: /Modification de personnage/i }),
+      screen.getByRole("heading", { name: /Création de personnage/i }),
     ).toBeInTheDocument();
     expect(screen.getByRole("form")).toBeInTheDocument();
 
@@ -147,7 +111,7 @@ describe("NewCharacterForm", () => {
     });
   });
 
-  it("should call showError when fetching breeds fails", async () => {
+  it("Should call showError when fetching breeds fails", async () => {
     const errorMessage = "Erreur de connexion aux races";
     vi.mocked(
       BreedService.BreedService.prototype.getBreeds,
@@ -159,19 +123,14 @@ describe("NewCharacterForm", () => {
       ServerService.ServerService.prototype.getServers,
     ).mockResolvedValue(mockServers);
 
-    render(
-      <UpdateCharacterForm
-        updateTarget={mockUpdateTarget}
-        handleSubmit={mockHandleSubmit}
-      />,
-    );
+    render(<NewCharacterForm handleSubmit={mockHandleSubmit} />);
 
     await waitFor(() => {
       expect(mockShowError).toHaveBeenCalledWith("Erreur", errorMessage);
     });
   });
 
-  it("should call showError when fetching servers fails", async () => {
+  it("Should call showError when fetching servers fails", async () => {
     const errorMessage = "Erreur de connexion aux serveurs";
     vi.mocked(BreedService.BreedService.prototype.getBreeds).mockResolvedValue(
       mockBreeds,
@@ -183,19 +142,14 @@ describe("NewCharacterForm", () => {
       message: errorMessage,
     });
 
-    render(
-      <UpdateCharacterForm
-        updateTarget={mockUpdateTarget}
-        handleSubmit={mockHandleSubmit}
-      />,
-    );
+    render(<NewCharacterForm handleSubmit={mockHandleSubmit} />);
 
     await waitFor(() => {
       expect(mockShowError).toHaveBeenCalledWith("Erreur", errorMessage);
     });
   });
 
-  it("should call handleSubmit on form submission", async () => {
+  it("Should call handleSubmit on form submission", async () => {
     vi.mocked(BreedService.BreedService.prototype.getBreeds).mockResolvedValue(
       mockBreeds,
     );
@@ -203,12 +157,7 @@ describe("NewCharacterForm", () => {
       ServerService.ServerService.prototype.getServers,
     ).mockResolvedValue(mockServers);
 
-    render(
-      <UpdateCharacterForm
-        updateTarget={mockUpdateTarget}
-        handleSubmit={mockHandleSubmit}
-      />,
-    );
+    render(<NewCharacterForm handleSubmit={mockHandleSubmit} />);
 
     const form = screen.getByRole("form");
     fireEvent.submit(form);

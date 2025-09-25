@@ -13,7 +13,7 @@ import { typeGuard } from "../../utils/typeGuard";
 import { CharacterService } from "../../../../services/api/characterService";
 import { CharacterEnriched } from "../../../../types/character";
 
-import CharactersCheckbox from "../../FormComponents/Checkbox/CharactersCheckbox";
+import CharactersCheckbox from "../../formComponents/Checkbox/CharactersCheckbox";
 
 const config = Config.getInstance();
 const axios = new ApiClient(config.baseUrl);
@@ -37,13 +37,15 @@ export default function JoinEventForm({ handleSubmit }: JoinEventFormProps) {
       try {
         const response = await characterService.getAllEnrichedByUserId(user.id);
 
-        if (typeGuard.eventEnriched(updateTarget)) {
-          const availableCharacters = response.filter(
-            (character) => character.server.id === updateTarget.server.id,
-          );
-
-          setCharacters(availableCharacters);
+        if (!typeGuard.eventEnriched(updateTarget)) {
+          return;
         }
+
+        const availableCharacters = response.filter(
+          (character) => character.server.id === updateTarget.server.id,
+        );
+
+        setCharacters(availableCharacters);
       } catch (error) {
         if (isAxiosError(error)) {
           showError("Erreur", error.message);

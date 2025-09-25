@@ -7,15 +7,15 @@ import { useModal } from "../../contexts/modalContext";
 
 import { typeGuard } from "./utils/typeGuard";
 
-import LoginForm from "./Forms/LoginForm";
-import UpdateForm from "./Forms/UpdateForm";
-import RegisterForm from "./Forms/RegisterForm";
+import LoginForm from "./forms/Forms/LoginForm";
+import UpdateForm from "./forms/Forms/UpdateForm";
+import RegisterForm from "./forms/Forms/RegisterForm";
 import NewEventForm from "./forms/NewEventForm/NewEventForm";
 import JoinEventForm from "./forms/JoinEventForm/JoinEventForm";
 import UpdateEventForm from "./forms/UpdateEventForm/UpdateEventForm";
 import NewCharacterForm from "./forms/NewCharacterForm/NewCharacterForm";
 import UpdateCharacterForm from "./forms/UpdateCharacterForm/UpdateCharacterForm";
-import CommentForm from "./Forms/CommentForm";
+import CommentForm from "./forms/Forms/CommentForm";
 
 export default function ModalsManager() {
   const { isOpen, modalType, updateTarget, handleSubmit, closeModal } =

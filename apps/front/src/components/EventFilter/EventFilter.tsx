@@ -5,7 +5,7 @@ import { Server } from "../../types/server";
 
 import { generateOptions } from "../modals/utils/generateOptions";
 
-import SelectOptions from "../modals/FormComponents/Options/SelectOptions";
+import SelectOptions from "../modals/formComponents/Options/SelectOptions";
 
 interface EventFilterProps {
   tags: Tag[];

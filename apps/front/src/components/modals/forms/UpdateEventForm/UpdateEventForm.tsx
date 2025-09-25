@@ -18,7 +18,7 @@ import { ServerService } from "../../../../services/api/serverService";
 import { DofusDBService } from "../../../../services/api/dofusDBService";
 import formatDateToLocalInput from "../../utils/formatDateToLocalInput";
 
-import SelectOptions from "../../FormComponents/Options/SelectOptions";
+import SelectOptions from "../../formComponents/Options/SelectOptions";
 
 const config = Config.getInstance();
 const axios = new ApiClient(config.baseUrl);

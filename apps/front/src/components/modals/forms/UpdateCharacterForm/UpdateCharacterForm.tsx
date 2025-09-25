@@ -15,9 +15,9 @@ import { generateOptions } from "../../utils/generateOptions";
 import { BreedService } from "../../../../services/api/breedService";
 import { ServerService } from "../../../../services/api/serverService";
 
-import BreedRadio from "../../FormComponents/Radio/BreedRadio";
-import GenderRadio from "../../FormComponents/Radio/GenderRadio";
-import SelectOptions from "../../FormComponents/Options/SelectOptions";
+import BreedRadio from "../../formComponents/Radio/BreedRadio";
+import GenderRadio from "../../formComponents/Radio/GenderRadio";
+import SelectOptions from "../../formComponents/Options/SelectOptions";
 
 const config = Config.getInstance();
 const axios = new ApiClient(config.baseUrl);

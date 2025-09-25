@@ -1,4 +1,4 @@
-import "../Form.scss";
+import "./Form.scss";
 
 interface UpdateFormProps {
   field: string;

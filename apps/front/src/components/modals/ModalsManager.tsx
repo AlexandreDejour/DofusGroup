@@ -14,7 +14,7 @@ import NewEventForm from "./forms/NewEventForm/NewEventForm";
 import JoinEventForm from "./forms/JoinEventForm/JoinEventForm";
 import UpdateEventForm from "./Forms/UpdateEventForm";
 import NewCharacterForm from "./forms/NewCharacterForm/NewCharacterForm";
-import UpdateCharacterForm from "./Forms/UpdateCharacterForm";
+import UpdateCharacterForm from "./forms/UpdateCharacterForm/UpdateCharacterForm";
 import CommentForm from "./Forms/CommentForm";
 
 export default function ModalsManager() {

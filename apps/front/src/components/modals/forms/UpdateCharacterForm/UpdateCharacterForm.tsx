@@ -1,23 +1,23 @@
-import "../Form.scss";
+import "./UpdateCharacterForm.scss";
 
 import { useEffect, useState } from "react";
 import { isAxiosError } from "axios";
 
-import { Breed } from "../../../types/breed";
-import { Server } from "../../../types/server";
-import { CharacterEnriched } from "../../../types/character";
+import { Breed } from "../../../../types/breed";
+import { Server } from "../../../../types/server";
+import { CharacterEnriched } from "../../../../types/character";
 
-import { useNotification } from "../../../contexts/notificationContext";
+import { useNotification } from "../../../../contexts/notificationContext";
 
-import { Config } from "../../../config/config";
-import { ApiClient } from "../../../services/client";
-import { generateOptions } from "../utils/generateOptions";
-import { BreedService } from "../../../services/api/breedService";
-import { ServerService } from "../../../services/api/serverService";
+import { Config } from "../../../../config/config";
+import { ApiClient } from "../../../../services/client";
+import { generateOptions } from "../../utils/generateOptions";
+import { BreedService } from "../../../../services/api/breedService";
+import { ServerService } from "../../../../services/api/serverService";
 
-import BreedRadio from "../FormComponents/Radio/BreedRadio";
-import GenderRadio from "../FormComponents/Radio/GenderRadio";
-import SelectOptions from "../FormComponents/Options/SelectOptions";
+import BreedRadio from "../../FormComponents/Radio/BreedRadio";
+import GenderRadio from "../../FormComponents/Radio/GenderRadio";
+import SelectOptions from "../../FormComponents/Options/SelectOptions";
 
 const config = Config.getInstance();
 const axios = new ApiClient(config.baseUrl);
@@ -90,10 +90,14 @@ export default function UpdateCharacterForm({
   }, []);
 
   return (
-    <div className="content_modal" style={{ width: "100%" }}>
-      <h3 className="content_modal_title">Modification de personnage</h3>
-      <form onSubmit={handleSubmit} className="content_modal_form" role="form">
-        <label htmlFor="name" className="content_modal_form_label">
+    <div className="update_character">
+      <h3 className="update_character_title">Modification de personnage</h3>
+      <form
+        onSubmit={handleSubmit}
+        className="update_character_form"
+        role="form"
+      >
+        <label htmlFor="name" className="update_character_form_label name">
           <span>Nom:</span>
           <input
             type="text"
@@ -103,7 +107,7 @@ export default function UpdateCharacterForm({
             onChange={(e) => setName(e.target.value)}
             required
             placeholder="Nom"
-            className="content_modal_form_label_input"
+            className="update_character_form_label_input"
           />
         </label>
 
@@ -119,7 +123,7 @@ export default function UpdateCharacterForm({
 
         <label
           htmlFor="level"
-          className="content_modal_form_label"
+          className="update_character_form_label level"
           style={{ marginTop: "0" }}
         >
           <span>Niveau:</span>
@@ -131,7 +135,7 @@ export default function UpdateCharacterForm({
             onChange={(e) => setLevel(e.target.valueAsNumber)}
             required
             placeholder="Niveau"
-            className="content_modal_form_label_input"
+            className="update_character_form_label_input"
           />
         </label>
 
@@ -153,7 +157,7 @@ export default function UpdateCharacterForm({
           onChange={setAlignment}
         />
 
-        <label htmlFor="stuff" className="content_modal_form_label">
+        <label htmlFor="stuff" className="update_character_form_label stuff">
           <span>Stuff:</span>
           <input
             type="text"
@@ -162,21 +166,24 @@ export default function UpdateCharacterForm({
             value={stuff}
             onChange={(e) => setStuff(e.target.value)}
             placeholder="Lien DofusBook"
-            className="content_modal_form_label_input"
+            className="update_character_form_label_input"
           />
         </label>
 
-        <label htmlFor="default_character" className="content_modal_form_label">
+        <label
+          htmlFor="default_character"
+          className="update_character_form_label default"
+        >
           <span>Personnage par défault:</span>
           <input
             type="checkbox"
             name="default_character"
             id="default_character"
-            className="content_modal_form_label_input"
+            className="update_character_form_label_input"
           />
         </label>
 
-        <button type="submit" className="content_modal_form_button button">
+        <button type="submit" className="update_character_form_button button">
           Modifier mon personnage
         </button>
       </form>

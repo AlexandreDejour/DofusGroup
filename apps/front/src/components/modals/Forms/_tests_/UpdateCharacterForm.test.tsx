@@ -7,7 +7,7 @@ import { BreedRadioProps } from "../../FormComponents/Radio/BreedRadio";
 import { GenderRadioProps } from "../../FormComponents/Radio/GenderRadio";
 import { SelectOptionsProps } from "../../FormComponents/Options/SelectOptions";
 
-import UpdateCharacterForm from "../UpdateCharacterForm";
+import UpdateCharacterForm from "../../forms/UpdateCharacterForm/UpdateCharacterForm";
 import * as BreedService from "../../../../services/api/breedService";
 import * as ServerService from "../../../../services/api/serverService";
 

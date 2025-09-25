@@ -13,7 +13,7 @@ import RegisterForm from "./Forms/RegisterForm";
 import NewEventForm from "./Forms/NewEventForm";
 import JoinEventForm from "./Forms/JoinEventForm";
 import UpdateEventForm from "./Forms/UpdateEventForm";
-import NewCharacterForm from "./Forms/NewCharacterForm";
+import NewCharacterForm from "./forms/NewCharacterForm/NewCharacterForm";
 import UpdateCharacterForm from "./Forms/UpdateCharacterForm";
 import CommentForm from "./Forms/CommentForm";
 
@@ -25,7 +25,10 @@ export default function ModalsManager() {
 
   return (
     <div className="modal" onClick={closeModal} role="dialog">
-      <div className="modal_content" onClick={(e) => e.stopPropagation()}>
+      <div
+        className={`modal_content ${modalType}`}
+        onClick={(e) => e.stopPropagation()}
+      >
         <button
           type="button"
           aria-label="Close modal"

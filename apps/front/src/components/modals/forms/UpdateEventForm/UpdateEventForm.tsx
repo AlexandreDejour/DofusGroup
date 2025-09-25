@@ -1,24 +1,24 @@
-import "../Form.scss";
+import "./UpdateEventForm.scss";
 
 import { useEffect, useState } from "react";
 import { isAxiosError } from "axios";
 
-import { Tag } from "../../../types/tag";
-import { Server } from "../../../types/server";
-import { EventEnriched } from "../../../types/event";
-import { Area, Dungeon, SubArea } from "../../../types/dofusDB";
+import { Tag } from "../../../../types/tag";
+import { Server } from "../../../../types/server";
+import { EventEnriched } from "../../../../types/event";
+import { Area, Dungeon, SubArea } from "../../../../types/dofusDB";
 
-import { useNotification } from "../../../contexts/notificationContext";
+import { useNotification } from "../../../../contexts/notificationContext";
 
-import { Config } from "../../../config/config";
-import { ApiClient } from "../../../services/client";
-import { generateOptions } from "../utils/generateOptions";
-import { TagService } from "../../../services/api/tagService";
-import { ServerService } from "../../../services/api/serverService";
-import { DofusDBService } from "../../../services/api/dofusDBService";
-import formatDateToLocalInput from "../utils/formatDateToLocalInput";
+import { Config } from "../../../../config/config";
+import { ApiClient } from "../../../../services/client";
+import { generateOptions } from "../../utils/generateOptions";
+import { TagService } from "../../../../services/api/tagService";
+import { ServerService } from "../../../../services/api/serverService";
+import { DofusDBService } from "../../../../services/api/dofusDBService";
+import formatDateToLocalInput from "../../utils/formatDateToLocalInput";
 
-import SelectOptions from "../FormComponents/Options/SelectOptions";
+import SelectOptions from "../../FormComponents/Options/SelectOptions";
 
 const config = Config.getInstance();
 const axios = new ApiClient(config.baseUrl);
@@ -59,11 +59,11 @@ export default function NewEventForm({
   const [dungeon, setDungeon] = useState<string>(
     updateTarget.donjon_name ? updateTarget.donjon_name : "",
   );
-  const [tag, setTag] = useState<string>(updateTarget.tag.name);
+  const [tag, setTag] = useState<string>(updateTarget.tag.id);
   const [title, setTitle] = useState<string>(updateTarget.title);
   const [status, setStatus] = useState<string>(updateTarget.status);
+  const [server, setServer] = useState<string>(updateTarget.server.id);
   const [duration, setDuration] = useState<number>(updateTarget.duration);
-  const [server, setServer] = useState<string>(updateTarget.server.name);
 
   const [isDungeon, setIsDungeon] = useState(false);
 
@@ -193,10 +193,10 @@ export default function NewEventForm({
   }, [updateTarget.date]);
 
   return (
-    <div className="content_modal">
-      <h3 className="content_modal_title">Modification d'évènement</h3>
-      <form onSubmit={handleSubmit} className="content_modal_form" role="form">
-        <label htmlFor="title" className="content_modal_form_label">
+    <div className="update_event">
+      <h3 className="update_event_title">Modification d'évènement</h3>
+      <form onSubmit={handleSubmit} className="update_event_form" role="form">
+        <label htmlFor="title" className="update_event_form_label title">
           <span>Titre:</span>
           <input
             type="text"
@@ -205,7 +205,7 @@ export default function NewEventForm({
             value={title}
             required
             placeholder="Titre"
-            className="content_modal_form_label_input"
+            className="update_event_form_label_input"
             onChange={(e) => setTitle(e.target.value)}
           />
         </label>
@@ -228,7 +228,7 @@ export default function NewEventForm({
           onChange={setServer}
         />
 
-        <label htmlFor="date" className="content_modal_form_label">
+        <label htmlFor="date" className="update_event_form_label date">
           <span>Date:</span>
           <input
             type="datetime-local"
@@ -237,12 +237,12 @@ export default function NewEventForm({
             value={date}
             min={formatDateToLocalInput(new Date())}
             required
-            className="content_modal_form_label_input"
+            className="update_event_form_label_input"
             onChange={(e) => setDate(e.target.value)}
           />
         </label>
 
-        <label htmlFor="duration" className="content_modal_form_label">
+        <label htmlFor="duration" className="update_event_form_label duration">
           <span>Durée:</span>
           <input
             type="number"
@@ -252,7 +252,7 @@ export default function NewEventForm({
             onChange={(e) => setDuration(Number(e.target.value))}
             required
             placeholder="Durée en minutes"
-            className="content_modal_form_label_input"
+            className="update_event_form_label_input"
           />
         </label>
 
@@ -287,7 +287,10 @@ export default function NewEventForm({
           />
         ) : null}
 
-        <label htmlFor="max_players" className="content_modal_form_label">
+        <label
+          htmlFor="max_players"
+          className="update_event_form_label max_players"
+        >
           <span>Joueurs maximum:</span>
           <input
             type="number"
@@ -296,11 +299,14 @@ export default function NewEventForm({
             onChange={(e) => setMaxPlayers(Number(e.target.value))}
             id="max_players"
             placeholder="Joueurs maximum"
-            className="content_modal_form_label_input"
+            className="update_event_form_label_input"
           />
         </label>
 
-        <label htmlFor="description" className="content_modal_form_label">
+        <label
+          htmlFor="description"
+          className="update_event_form_label description"
+        >
           <span>Description:</span>
           <textarea
             name="description"
@@ -309,7 +315,7 @@ export default function NewEventForm({
             onChange={(e) => setDescription(e.target.value)}
             rows={3}
             placeholder="Description"
-            className="content_modal_form_label_input"
+            className="update_event_form_label_input"
           />
         </label>
 
@@ -322,7 +328,7 @@ export default function NewEventForm({
           onChange={setStatus}
         />
 
-        <button type="submit" className="content_modal_form_button button">
+        <button type="submit" className="update_event_form_button button">
           Modifier mon évènement
         </button>
       </form>

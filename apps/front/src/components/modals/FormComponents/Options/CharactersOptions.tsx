@@ -20,7 +20,7 @@ export default function CharactersOptions<T, ID extends string | number>({
   const options = generateOptions(items);
 
   return (
-    <label htmlFor={name} className="content_modal_form_label">
+    <label htmlFor={name} className={`new_character_form_label ${name}_choice`}>
       <span>{label}:</span>
       <select
         id={name}

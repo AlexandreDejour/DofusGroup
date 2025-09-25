@@ -1,27 +1,27 @@
-import "../Form.scss";
+import "./NewEventForm.scss";
 
 import { useEffect, useState } from "react";
 import { isAxiosError } from "axios";
 
-import { Tag } from "../../../types/tag";
-import { Server } from "../../../types/server";
-import { Character } from "../../../types/character";
-import { Area, Dungeon, SubArea } from "../../../types/dofusDB";
+import { Tag } from "../../../../types/tag";
+import { Server } from "../../../../types/server";
+import { Character } from "../../../../types/character";
+import { Area, Dungeon, SubArea } from "../../../../types/dofusDB";
 
-import { useAuth } from "../../../contexts/authContext";
-import { useNotification } from "../../../contexts/notificationContext";
+import { useAuth } from "../../../../contexts/authContext";
+import { useNotification } from "../../../../contexts/notificationContext";
 
-import { Config } from "../../../config/config";
-import { ApiClient } from "../../../services/client";
-import { generateOptions } from "../utils/generateOptions";
-import { TagService } from "../../../services/api/tagService";
-import { ServerService } from "../../../services/api/serverService";
-import { DofusDBService } from "../../../services/api/dofusDBService";
-import { CharacterService } from "../../../services/api/characterService";
-import formatDateToLocalInput from "../utils/formatDateToLocalInput";
+import { Config } from "../../../../config/config";
+import { ApiClient } from "../../../../services/client";
+import { generateOptions } from "../../utils/generateOptions";
+import { TagService } from "../../../../services/api/tagService";
+import { ServerService } from "../../../../services/api/serverService";
+import { DofusDBService } from "../../../../services/api/dofusDBService";
+import { CharacterService } from "../../../../services/api/characterService";
+import formatDateToLocalInput from "../../utils/formatDateToLocalInput";
 
-import SelectOptions from "../FormComponents/Options/SelectOptions";
-import CharactersOptions from "../FormComponents/Options/CharactersOptions";
+import SelectOptions from "../../FormComponents/Options/SelectOptions";
+import CharactersOptions from "../../FormComponents/Options/CharactersOptions";
 
 const config = Config.getInstance();
 const axios = new ApiClient(config.baseUrl);
@@ -201,10 +201,10 @@ export default function NewEventForm({ handleSubmit }: NewEventFormProps) {
   }, [tag, subArea]);
 
   return (
-    <div className="content_modal">
-      <h3 className="content_modal_title">Création d'évènement</h3>
-      <form onSubmit={handleSubmit} className="content_modal_form" role="form">
-        <label htmlFor="title" className="content_modal_form_label">
+    <div className="new_event">
+      <h3 className="new_event_title">Création d'évènement</h3>
+      <form onSubmit={handleSubmit} className="new_event_form" role="form">
+        <label htmlFor="title" className="new_event_form_label title">
           <span>Titre:</span>
           <input
             type="text"
@@ -212,7 +212,7 @@ export default function NewEventForm({ handleSubmit }: NewEventFormProps) {
             id="title"
             required
             placeholder="Titre"
-            className="content_modal_form_label_input"
+            className="new_event_form_label_input"
           />
         </label>
 
@@ -234,7 +234,7 @@ export default function NewEventForm({ handleSubmit }: NewEventFormProps) {
           onChange={setServer}
         />
 
-        <label htmlFor="date" className="content_modal_form_label">
+        <label htmlFor="date" className="new_event_form_label date">
           <span>Date:</span>
           <input
             type="datetime-local"
@@ -243,12 +243,12 @@ export default function NewEventForm({ handleSubmit }: NewEventFormProps) {
             value={date}
             min={formatDateToLocalInput(new Date())}
             required
-            className="content_modal_form_label_input"
+            className="new_event_form_label_input"
             onChange={(e) => setDate(e.target.value)}
           />
         </label>
 
-        <label htmlFor="duration" className="content_modal_form_label">
+        <label htmlFor="duration" className="new_event_form_label duration">
           <span>Durée:</span>
           <input
             type="number"
@@ -256,7 +256,7 @@ export default function NewEventForm({ handleSubmit }: NewEventFormProps) {
             id="duration"
             required
             placeholder="Durée en minutes"
-            className="content_modal_form_label_input"
+            className="new_event_form_label_input"
           />
         </label>
 
@@ -291,25 +291,31 @@ export default function NewEventForm({ handleSubmit }: NewEventFormProps) {
           />
         ) : null}
 
-        <label htmlFor="max_players" className="content_modal_form_label">
+        <label
+          htmlFor="max_players"
+          className="new_event_form_label max_players"
+        >
           <span>Joueurs maximum:</span>
           <input
             type="number"
             name="max_players"
             id="max_players"
             placeholder="Joueurs maximum"
-            className="content_modal_form_label_input"
+            className="new_event_form_label_input"
           />
         </label>
 
-        <label htmlFor="description" className="content_modal_form_label">
+        <label
+          htmlFor="description"
+          className="new_event_form_label description"
+        >
           <span>Description:</span>
           <textarea
             name="description"
             id="description"
-            rows={3}
+            rows={4}
             placeholder="Description"
-            className="content_modal_form_label_input"
+            className="new_event_form_label_input"
           />
         </label>
 
@@ -331,7 +337,7 @@ export default function NewEventForm({ handleSubmit }: NewEventFormProps) {
           onChange={setStatus}
         />
 
-        <button type="submit" className="content_modal_form_button button">
+        <button type="submit" className="new_event_form_button button">
           Créer un évènement
         </button>
       </form>

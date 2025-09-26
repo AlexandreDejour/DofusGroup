@@ -14,7 +14,7 @@
 
   @media (max-width: 600px) {
     width: 100%;
-    height: 10vh;
+    height: 175px;
   }
 
   @media (min-width: 1920px) {
@@ -72,6 +72,11 @@
       border-radius: 0rem;
     }
 
+    @media (max-width: 600px) {
+      height: 50%;
+      font-size: 1rem;
+    }
+
     @media (min-width: 1920px) {
       font-size: 1.4rem;
     }
@@ -125,6 +130,7 @@
 
     @media (max-width: 600px) {
       width: 100%;
+      height: 50%;
     }
 
     &_logo {

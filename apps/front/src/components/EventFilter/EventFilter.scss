@@ -55,12 +55,13 @@
     margin: 2% 0% 0% 2%;
     padding: 1%;
 
-    @media (max-width: 600px) {
-      margin: 5% 0%;
-    }
-
     @media (max-width: 1023px) {
       width: 30%;
+    }
+
+    @media (max-width: 600px) {
+      margin: 5% 0%;
+      width: 50%;
     }
 
     @media (min-width: 1920px) {

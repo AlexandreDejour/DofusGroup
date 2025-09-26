@@ -88,6 +88,11 @@
     grid-template-rows: 1fr 1fr;
     row-gap: 5%;
 
+    @media (max-width: 600px) {
+      display: flex;
+      flex-direction: column;
+    }
+
     &_server {
       grid-column: 1/2;
       grid-row: 1/2;

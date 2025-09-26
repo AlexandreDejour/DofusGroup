@@ -55,6 +55,10 @@
     margin: 2% 0% 0% 2%;
     padding: 1%;
 
+    @media (max-width: 600px) {
+      margin: 5% 0%;
+    }
+
     @media (max-width: 1023px) {
       width: 30%;
     }
@@ -70,11 +74,19 @@
     justify-content: space-between;
     align-items: center;
 
+    @media (max-width: 600px) {
+      flex-direction: column;
+    }
+
     &_item {
       width: 33%;
       display: flex;
       justify-content: center;
       align-items: center;
+
+      @media (max-width: 600px) {
+        width: 90%;
+      }
 
       &_label {
         width: 85%;

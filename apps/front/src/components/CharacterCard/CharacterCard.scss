@@ -12,9 +12,15 @@
   @media (max-width: 1023px) {
     height: 100%;
     padding: 3% 1% 6% 1%;
-    font-size: 1.3rem;
+    font-size: 1rem;
     display: flex;
     flex-direction: column;
+  }
+
+  @media (max-width: 600px) {
+    width: 90%;
+    margin: 2% auto;
+    font-size: 0.8rem;
   }
 
   @media (min-width: 1920px) {
@@ -38,8 +44,16 @@
     width: 20%;
     font-size: 1.3rem;
 
+    @media (max-width: 1023px) {
+      font-size: 1.2rem;
+    }
+
+    @media (max-width: 600px) {
+      font-size: 1rem;
+    }
+
     @media (min-width: 1920px) {
-      font-size: 1.3rem;
+      font-size: 1.4rem;
     }
 
     @media (min-width: 2560px) {
@@ -82,7 +96,7 @@
 
       @media (max-width: 1023px) {
         width: 30%;
-        padding: 6% 1%;
+        padding: 5% 1%;
       }
     }
   }

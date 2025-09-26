@@ -14,7 +14,7 @@
   @media (max-width: 1023px) {
     height: 100%;
     padding: 3% 1% 6% 1%;
-    font-size: 1.3rem;
+    font-size: 1rem;
     display: flex;
     flex-direction: column;
   }
@@ -22,6 +22,7 @@
   @media (max-width: 600px) {
     width: 95%;
     margin: 1% auto;
+    font-size: 0.8rem;
   }
 
   @media (min-width: 1920px) {
@@ -39,7 +40,10 @@
     @media (max-width: 1023px) {
       width: 95%;
       margin-bottom: 5%;
-      font-size: 1.5rem;
+    }
+
+    @media (max-width: 600px) {
+      font-size: 1rem;
     }
   }
 
@@ -51,6 +55,10 @@
     @media (max-width: 1023px) {
       width: 30%;
       margin-bottom: 5%;
+    }
+
+    @media (max-width: 600px) {
+      padding: 1% 0%;
     }
   }
 

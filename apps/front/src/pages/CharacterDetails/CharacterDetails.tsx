@@ -58,39 +58,40 @@ export default function CharacterDetails() {
             {character.name.charAt(0).toLocaleUpperCase() +
               character.name.slice(1)}
           </h2>
-          {character.sex === "M" ? (
-            <img
-              className="character_section_img"
-              src={`/characters/${character.breed.name.toLocaleLowerCase()}_male.webp`}
-              alt={`Miniature de classe ${character.breed.name.toLocaleLowerCase()}`}
-            />
-          ) : (
-            <img
-              className="character_section_img"
-              src={`/characters/${character.breed.name.toLocaleLowerCase()}_female.webp`}
-              alt={`Miniature de classe ${character.breed.name.toLocaleLowerCase()}`}
-            />
-          )}
-
           <div className="character_section_details">
-            <p>
-              <span>Classe:</span> {character.breed.name}
-            </p>
-            <p>
-              <span>Serveur:</span> {character.server.name}
-            </p>
-            <p>
-              <span>Niveau:</span> {character.level}
-            </p>
-            <p>
-              <span>Alignement:</span> {character.alignment}
-            </p>
-            <p>
-              <span>Sexe:</span> {character.sex}
-            </p>
-            <a href={character.stuff}>
-              <span>Stuff:</span> {character.stuff}
-            </a>
+            {character.sex === "M" ? (
+              <img
+                className="character_section_details_img"
+                src={`/characters/${character.breed.name.toLocaleLowerCase()}_male.webp`}
+                alt={`Miniature de classe ${character.breed.name.toLocaleLowerCase()}`}
+              />
+            ) : (
+              <img
+                className="character_section_details_img"
+                src={`/characters/${character.breed.name.toLocaleLowerCase()}_female.webp`}
+                alt={`Miniature de classe ${character.breed.name.toLocaleLowerCase()}`}
+              />
+            )}
+            <div className="character_section_details_infos">
+              <p>
+                <span>Classe:</span> {character.breed.name}
+              </p>
+              <p>
+                <span>Serveur:</span> {character.server.name}
+              </p>
+              <p>
+                <span>Niveau:</span> {character.level}
+              </p>
+              <p>
+                <span>Alignement:</span> {character.alignment}
+              </p>
+              <p>
+                <span>Sexe:</span> {character.sex}
+              </p>
+              <a href={character.stuff ? character.stuff : ""}>
+                <span>Stuff:</span> {character.stuff}
+              </a>
+            </div>
           </div>
 
           {character.user.id === user?.id ? (

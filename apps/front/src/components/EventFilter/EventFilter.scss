@@ -11,13 +11,14 @@
   border-radius: 1rem;
 
   @media (max-width: 1023px) {
-    font-size: 1.3rem;
+    font-size: 1rem;
     flex-direction: column;
   }
 
   @media (max-width: 600px) {
     width: 95%;
     margin: 0% auto 1% auto;
+    font-size: 0.8rem;
   }
 
   @media (min-width: 1920px) {

@@ -2,8 +2,8 @@
 
 .character {
   width: 80%;
-  margin: 5% auto 10% auto;
-  font-size: 1.3rem;
+  margin: 5% auto;
+  font-size: 1.2rem;
   background-color: var(--secondary-bg);
   display: flex;
   flex: 1;
@@ -11,19 +11,29 @@
   align-items: center;
   border-radius: 1.5rem;
 
+  @media (max-width: 1023px) {
+    width: 90%;
+    font-size: 1rem;
+  }
+
+  @media (max-width: 600px) {
+    width: 95%;
+    font-size: 0.8rem;
+  }
+
   @media (min-width: 1920px) {
     width: 70%;
-    font-size: 1.5rem;
+    font-size: 1.4rem;
   }
 
   @media (min-width: 2560px) {
     width: 60%;
-    font-size: 1.7rem;
+    font-size: 1.5rem;
   }
 
   &_section {
     width: 80%;
-    padding: 10% 0% 5% 0%;
+    padding: 5% 0%;
     display: flex;
     flex: 1;
     flex-direction: column;
@@ -40,6 +50,14 @@
     h2 {
       font-size: 3rem;
 
+      @media (max-width: 1023px) {
+        font-size: 2.5rem;
+      }
+
+      @media (max-width: 600px) {
+        font-size: 2rem;
+      }
+
       @media (min-width: 1920px) {
         font-size: 3.5rem;
       }
@@ -49,32 +67,37 @@
       }
     }
 
-    &_img {
-      width: 30%;
-      margin: auto;
-
-      @media (min-width: 1080px) {
-        width: 35%;
-        margin: 10% auto;
-      }
-
-      @media (min-width: 1920px) {
-        width: 35%;
-      }
-
-      @media (min-width: 2560px) {
-        width: 40%;
-      }
-    }
-
     &_details {
-      display: grid;
-      grid-template-columns: 0.75fr 1.25fr;
-      grid-template-rows: auto;
-      row-gap: 1rem;
+      margin: 5% 0% 0% 0%;
+      display: flex;
+      justify-content: space-evenly;
+      align-items: center;
 
-      span {
-        font-weight: bold;
+      @media (max-width: 600px) {
+        flex-direction: column;
+      }
+
+      &_img {
+        width: 25%;
+        margin: auto;
+      }
+
+      &_infos {
+        width: 70%;
+        display: grid;
+        grid-template-columns: 0.75fr 1.25fr;
+        grid-template-rows: auto;
+        row-gap: 1rem;
+
+        @media (max-width: 600px) {
+          width: 90%;
+          margin-top: 5%;
+          grid-template-columns: 0.5fr 0.5fr;
+        }
+
+        span {
+          font-weight: bold;
+        }
       }
     }
 
@@ -85,8 +108,16 @@
       justify-content: space-evenly;
       align-items: center;
 
+      @media (max-width: 1023px) {
+        width: 80%;
+      }
+
       button {
         padding: 5% 7.5%;
+
+        @media (max-width: 1023px) {
+          padding: 2.5% 4%;
+        }
       }
     }
   }
@@ -94,5 +125,10 @@
   &_button {
     margin-bottom: 5%;
     padding: 1% 2%;
+
+    @media (max-width: 1023px) {
+      padding: 0.5% 1%;
+      border-radius: 0.25rem;
+    }
   }
 }

@@ -12,6 +12,7 @@
   @media (max-width: 600px) {
     width: 100%;
     padding: 5%;
+    font-size: 0.8rem;
   }
 
   @media (min-width: 1920px) {
@@ -44,7 +45,8 @@
       width: 30%;
 
       @media (max-width: 600px) {
-        width: 90%;
+        width: 45%;
+        margin-bottom: 2%;
       }
 
       h3 {

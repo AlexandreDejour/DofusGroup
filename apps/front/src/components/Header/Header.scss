@@ -8,6 +8,7 @@
   align-items: center;
 
   @media (max-width: 1023px) {
+    height: 200px;
     margin: 1% 0% 2% 0%;
     flex-direction: column;
   }
@@ -37,10 +38,6 @@
     display: flex;
     justify-content: center;
     align-items: center;
-
-    @media (max-width: 1023px) {
-      width: 20%;
-    }
 
     @media (min-width: 1920px) {
       width: 20%;
@@ -124,17 +121,18 @@
   &_container {
     width: 50%;
     height: 100%;
+    margin-bottom: 2%;
     display: flex;
     justify-content: center;
     align-items: center;
 
     @media (max-width: 600px) {
-      width: 100%;
+      width: 80%;
       height: 50%;
     }
 
     &_logo {
-      width: 30%;
+      width: 40%;
       height: 100%;
       background-image: url("/dofusgroup_logo_plein.webp");
       background-size: contain;

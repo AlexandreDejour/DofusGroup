@@ -8,10 +8,6 @@
   align-items: stretch;
   overflow: visible;
 
-  @media (max-width: 1023px) {
-    margin: 2% auto 5% auto;
-  }
-
   @media (min-width: 1920px) {
     width: 75%;
     font-size: 1.3rem;
@@ -35,6 +31,14 @@
       background-color: var(--secondary-bg);
       font-size: 1.5rem;
       border-radius: 0.5rem;
+
+      @media (max-width: 1023px) {
+        font-size: 1.4rem;
+      }
+
+      @media (max-width: 600px) {
+        font-size: 1.3rem;
+      }
     }
 
     &_details {
@@ -50,6 +54,7 @@
       }
 
       @media (max-width: 600px) {
+        font-size: 0.8rem;
         display: flex;
         flex-wrap: wrap;
       }

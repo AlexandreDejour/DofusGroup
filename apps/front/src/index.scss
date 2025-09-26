@@ -6,11 +6,13 @@ html {
 
 body {
   width: 100vw;
+  min-height: 100vh;
+  margin: 0;
   font-family: "Lexend", sans-serif;
   color: var(--primary-text);
   background-color: var(--primary-bg);
   display: flex;
-  justify-content: center;
+  flex-direction: column;
 
   @media (max-width: 600px) {
     width: 100%;

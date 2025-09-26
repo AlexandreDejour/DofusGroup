@@ -2,10 +2,12 @@ import "./ProfileEventCard.scss";
 
 import { useNavigate } from "react-router";
 
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import { Event } from "../../types/event";
+
+import { useScreen } from "../../contexts/screenContext";
 import { TargetType } from "../../contexts/modalContext";
 
 interface ProfileEventCardProps {
@@ -18,6 +20,7 @@ export default function ProfileEventCard({
   handleDelete,
 }: ProfileEventCardProps) {
   const navigate = useNavigate();
+  const { isDesktop } = useScreen();
 
   return (
     <article className="profile_event_card">
@@ -28,15 +31,34 @@ export default function ProfileEventCard({
       >
         {event.tag.name}
       </p>
-      <p className="profile_event_card_date">
-        {new Date(event.date).toLocaleString(undefined, {
-          dateStyle: "short",
-          timeStyle: "short",
-        })}
-      </p>
-      <p className="profile_event_card_players">
-        {event.characters ? event.characters.length : 0}/{event.max_players}
-      </p>
+      {isDesktop ? (
+        <>
+          <p className="profile_event_card_date">
+            {new Date(event.date).toLocaleString(undefined, {
+              dateStyle: "short",
+              timeStyle: "short",
+            })}
+          </p>
+          <p className="profile_event_card_players">
+            {event.characters ? event.characters.length : 0}/{event.max_players}
+          </p>
+        </>
+      ) : (
+        <div className="profile_event_card_container">
+          <p className="profile_event_card_container_date">
+            <span>Date:</span>{" "}
+            {new Date(event.date).toLocaleString(undefined, {
+              dateStyle: "short",
+              timeStyle: "short",
+            })}
+          </p>
+          <p className="profile_event_card_container_players">
+            <span>Joueurs:</span>{" "}
+            {event.characters ? event.characters.length : 0}/{event.max_players}
+          </p>
+        </div>
+      )}
+
       <div className="profile_event_card_buttons">
         <button
           className="profile_event_card_buttons_details button"

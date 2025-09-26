@@ -1,11 +1,16 @@
 .profile {
   width: 95%;
   margin: auto;
+  min-height: auto;
   font-size: 1.1rem;
   display: flex;
-  flex: 1;
   flex-direction: column;
-  align-items: center;
+  align-items: stretch;
+  overflow: visible;
+
+  @media (max-width: 1023px) {
+    margin: 2% auto 5% auto;
+  }
 
   @media (min-width: 1920px) {
     width: 75%;
@@ -19,6 +24,10 @@
 
   &_section {
     width: 100%;
+
+    @media (max-width: 1023px) {
+      margin-bottom: 2%;
+    }
 
     &_title {
       width: 100%;
@@ -36,8 +45,21 @@
       justify-content: space-evenly;
       align-items: center;
 
+      @media (max-width: 1023px) {
+        font-size: 1rem;
+      }
+
+      @media (max-width: 600px) {
+        display: flex;
+        flex-wrap: wrap;
+      }
+
       &_info {
         width: 30%;
+
+        @media (max-width: 600px) {
+          width: 45%;
+        }
       }
     }
 
@@ -48,10 +70,18 @@
       justify-content: space-between;
       align-items: center;
 
+      @media (max-width: 1023px) {
+        font-size: 0.8rem;
+      }
+
       &_button {
         width: 30%;
         margin: 1%;
         padding: 2% 0%;
+
+        @media (max-width: 600px) {
+          width: 45%;
+        }
       }
     }
 
@@ -60,6 +90,21 @@
       margin: 0;
       padding: 0;
       list-style: none;
+
+      @media (max-width: 1023px) {
+        margin-top: 1%;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        grid-auto-rows: 1fr;
+        gap: 2%;
+        row-gap: 1%;
+      }
+
+      @media (max-width: 600px) {
+        display: flex;
+        flex-direction: column;
+        margin-bottom: 2%;
+      }
     }
   }
 }

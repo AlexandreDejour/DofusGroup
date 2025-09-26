@@ -72,24 +72,32 @@
     }
   }
 
-  ul {
+  &_events {
     width: 100%;
     padding: 0;
     list-style: none;
 
-    @media (max-width: 1024px) {
-      display: flex;
+    @media (max-width: 1023px) {
+      margin-top: 1%;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-auto-rows: 1fr;
+      gap: 2%;
+      row-gap: 1%;
     }
 
-    li {
-      @media (max-width: 1024px) {
-        margin: auto;
-      }
+    @media (max-width: 600px) {
+      display: flex;
+      flex-direction: column;
     }
   }
 
   &_pagination {
     width: 50%;
+
+    @media (max-width: 600px) {
+      width: 90%;
+    }
   }
 
   .fallback {

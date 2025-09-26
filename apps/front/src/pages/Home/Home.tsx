@@ -147,7 +147,7 @@ export default function Home() {
       )}
 
       {events && events.length ? (
-        <ul>
+        <ul className="home_events">
           {events.map((event) => (
             <li key={event.id}>
               <EventCard event={event} />

@@ -56,8 +56,7 @@ export default function EventCard({ event }: EventCardProps) {
             <span>Durée:</span> {event.duration} min
           </p>
           <p className="event_card_container_players">
-            <span>Nombre de joueurs:</span> {event.characters.length}/
-            {event.max_players}
+            <span>Joueurs:</span> {event.characters.length}/{event.max_players}
           </p>
         </div>
       )}

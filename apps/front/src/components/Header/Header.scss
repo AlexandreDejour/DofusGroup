@@ -7,6 +7,15 @@
   display: flex;
   align-items: center;
 
+  @media (max-width: 1023px) {
+    margin: 1% 0% 2% 0%;
+    flex-direction: column;
+  }
+
+  @media (max-width: 600px) {
+    height: 10vh;
+  }
+
   @media (min-width: 1920px) {
     height: 15vh;
   }
@@ -27,6 +36,10 @@
     display: flex;
     justify-content: center;
     align-items: center;
+
+    @media (max-width: 1023px) {
+      width: 20%;
+    }
 
     @media (min-width: 1920px) {
       width: 20%;
@@ -52,6 +65,11 @@
     display: flex;
     align-items: center;
     border-radius: 1.5rem 0rem 0rem 1.5rem;
+
+    @media (max-width: 1023px) {
+      width: 100%;
+      border-radius: 0rem;
+    }
 
     @media (min-width: 1920px) {
       font-size: 1.4rem;
@@ -81,6 +99,10 @@
         align-items: center;
         border-radius: 1rem;
 
+        @media (max-width: 600px) {
+          width: 33%;
+        }
+
         .nav_link {
           width: 80%;
         }
@@ -90,6 +112,27 @@
           padding: 7.5% 15%;
         }
       }
+    }
+  }
+
+  &_container {
+    width: 50%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    @media (max-width: 600px) {
+      width: 100%;
+    }
+
+    &_logo {
+      width: 30%;
+      height: 100%;
+      background-image: url("/dofusgroup_logo_plein.webp");
+      background-size: contain;
+      background-position: center;
+      background-repeat: no-repeat;
     }
   }
 }

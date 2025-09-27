@@ -109,24 +109,6 @@
       flex-direction: column;
     }
 
-    &_date {
-      @media (max-width: 600px) {
-        margin: 1% 2%;
-        flex-direction: row;
-        justify-content: center;
-        align-items: center;
-      }
-    }
-
-    &_players {
-      @media (max-width: 600px) {
-        margin: 1% 0%;
-        flex-direction: row;
-        justify-content: center;
-        align-items: center;
-      }
-    }
-
     span {
       font-weight: bold;
 

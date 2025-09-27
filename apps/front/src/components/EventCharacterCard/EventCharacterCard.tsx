@@ -9,6 +9,7 @@ import { EventEnriched } from "../../types/event";
 import { CharacterEnriched } from "../../types/character";
 
 import { useAuth } from "../../contexts/authContext";
+import { useScreen } from "../../contexts/screenContext";
 
 interface CharacterCardProps {
   event: EventEnriched;
@@ -24,6 +25,7 @@ export default function EventCharacterCard({
   const navigate = useNavigate();
 
   const { user } = useAuth();
+  const { isDesktop } = useScreen();
 
   return (
     <article className="event_character_card">
@@ -41,9 +43,28 @@ export default function EventCharacterCard({
         />
       )}
 
-      <h3 className="event_character_card_name">{character.name}</h3>
-      <p className="event_character_card_breed">{character.breed.name}</p>
-      <p className="event_character_card_level">niveau: {character.level}</p>
+      {isDesktop ? (
+        <>
+          <h3 className="event_character_card_name">{character.name}</h3>
+          <p className="event_character_card_breed">{character.breed.name}</p>
+          <p className="event_character_card_level">
+            niveau: {character.level}
+          </p>
+        </>
+      ) : (
+        <div className="event_character_card_container">
+          <h3 className="event_character_card_container_name">
+            {character.name}
+          </h3>
+          <p className="event_character_card_container_breed">
+            {character.breed.name}
+          </p>
+          <p className="event_character_card_container_level">
+            niveau: {character.level}
+          </p>
+        </div>
+      )}
+
       {user && (event.user?.id === user.id || character.user.id === user.id) ? (
         <div className="event_character_card_buttons">
           <button

@@ -26,6 +26,14 @@
   &_title {
     font-size: 1.5rem;
 
+    @media (max-width: 1023px) {
+      font-size: 1.3rem !important;
+    }
+
+    @media (max-width: 600px) {
+      font-size: 1.1rem !important;
+    }
+
     @media (min-width: 1920px) {
       font-size: 1.6rem;
     }

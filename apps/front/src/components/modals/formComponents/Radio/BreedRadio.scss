@@ -5,7 +5,8 @@
   margin-top: 4%;
   border: none;
 
-  @media (min-width: 1280px) {
+  @media (min-width: 1024px) {
+    margin-top: 0%;
     grid-column: 1/2;
     grid-row: 1/6;
   }
@@ -13,6 +14,14 @@
   &_legend {
     margin-bottom: 1%;
     font-size: 1.2rem;
+
+    @media (min-width: 1920px) {
+      font-size: 1.4rem;
+    }
+
+    @media (min-width: 2560px) {
+      font-size: 1.6rem;
+    }
   }
 
   &_choices {
@@ -27,7 +36,7 @@
       margin: 1%;
       border-radius: 0.5rem;
 
-      @media (min-width: 1280px) {
+      @media (min-width: 1024px) {
         width: 21.5%;
         margin: 1.5%;
       }

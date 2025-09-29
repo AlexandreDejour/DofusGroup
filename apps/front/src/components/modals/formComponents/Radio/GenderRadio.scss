@@ -2,11 +2,11 @@
 
 .gender {
   width: 50%;
-  margin-top: 2%;
+  margin: 2% auto 0% auto;
   border: none;
 
-  @media (min-width: 1280px) {
-    width: 70%;
+  @media (min-width: 1024px) {
+    width: 100%;
     margin: auto;
     grid-column: 1/2;
     grid-row: 6/7;
@@ -27,6 +27,7 @@
 
   &_choices {
     width: 100%;
+    margin: 0% auto;
     display: flex;
     flex-wrap: wrap;
     justify-content: space-evenly;
@@ -42,8 +43,8 @@
         padding: 20%;
         border-radius: 0.5rem;
 
-        @media (min-width: 1280px) {
-          font-size: 2.5rem;
+        @media (min-width: 1024px) {
+          padding: 20% 40%;
         }
 
         @media (min-width: 2560px) {

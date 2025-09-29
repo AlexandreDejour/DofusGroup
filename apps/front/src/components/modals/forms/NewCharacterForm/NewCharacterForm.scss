@@ -1,6 +1,12 @@
 .newCharacter {
+  width: 80%;
+
+  @media (max-width: 600px) {
+    width: 90%;
+  }
+
   @media (min-width: 1280px) {
-    width: 80%;
+    width: 75%;
   }
 
   @media (min-width: 1920px) {
@@ -8,21 +14,27 @@
   }
 
   @media (min-width: 2560px) {
-    width: 60%;
+    width: 65%;
   }
 }
 
 .new_character {
-  width: 100%;
+  width: 85%;
 
   @media (min-width: 1280px) {
-    .modal_content {
-      width: 80%;
-    }
+    width: 90%;
   }
 
   &_title {
     font-size: 1.5rem;
+
+    @media (max-width: 1023px) {
+      font-size: 1.3rem !important;
+    }
+
+    @media (max-width: 600px) {
+      font-size: 1.1rem !important;
+    }
 
     @media (min-width: 1920px) {
       font-size: 1.7rem !important;
@@ -41,45 +53,109 @@
     justify-content: center;
     align-items: center;
 
-    @media (min-width: 1280px) {
+    @media (max-width: 1023px) {
+      font-size: 1rem !important;
+    }
+
+    @media (max-width: 600px) {
+      font-size: 0.8rem !important;
+    }
+
+    @media (min-width: 1024px) {
+      margin: 2% 0% 0% 0%;
       display: grid;
-      grid-template-columns: 0.5fr 1fr;
+      grid-template-columns: 1fr 1fr;
       grid-template-rows: repeat(7, 0.25fr);
+      column-gap: 5%;
 
       .name {
+        width: 95%;
         margin: 1% auto;
         grid-column: 2/3;
         grid-row: 1/2;
+
+        @media (min-width: 1920px) {
+          width: 85%;
+        }
+
+        @media (min-width: 2560px) {
+          width: 80%;
+        }
       }
 
       .server {
+        width: 95%;
         margin: 1% auto;
         grid-column: 2/3;
         grid-row: 2/3;
+
+        @media (min-width: 1920px) {
+          width: 85%;
+        }
+
+        @media (min-width: 2560px) {
+          width: 80%;
+        }
       }
 
       .level {
+        width: 95%;
         margin: 1% auto !important;
         grid-column: 2/3;
         grid-row: 3/4;
+
+        @media (min-width: 1920px) {
+          width: 85%;
+        }
+
+        @media (min-width: 2560px) {
+          width: 80%;
+        }
       }
 
       .alignment {
+        width: 95%;
         margin: 1% auto;
         grid-column: 2/3;
         grid-row: 4/5;
+
+        @media (min-width: 1920px) {
+          width: 85%;
+        }
+
+        @media (min-width: 2560px) {
+          width: 80%;
+        }
       }
 
       .stuff {
+        width: 95%;
         margin: 1% auto;
         grid-column: 2/3;
         grid-row: 5/6;
+
+        @media (min-width: 1920px) {
+          width: 85%;
+        }
+
+        @media (min-width: 2560px) {
+          width: 80%;
+        }
       }
 
       .default {
+        width: 95%;
         margin: 1% auto;
         grid-column: 2/3;
         grid-row: 6/7;
+
+        @media (min-width: 1920px) {
+          width: 85%;
+        }
+
+        @media (min-width: 2560px) {
+          width: 80%;
+        }
       }
     }
 
@@ -92,10 +168,14 @@
     }
 
     &_label {
-      width: 85%;
-      margin-top: 5%;
+      width: 95%;
+      margin: 5% auto 0% auto;
       display: flex;
       flex-direction: column;
+
+      @media (max-width: 600px) {
+        width: 100%;
+      }
 
       &_input {
         margin-top: 2%;
@@ -109,15 +189,23 @@
     }
 
     &_button {
-      margin-top: 7.5%;
+      margin: 7.5% 0% 0% 0%;
       padding: 2% 4%;
       font-size: 1.2rem;
 
-      @media (min-width: 1280px) {
-        width: 30%;
-        margin: 1% auto;
+      @media (min-width: 1024px) {
+        width: 50%;
+        margin: 5% auto 0% auto;
         grid-column: 1/3;
         grid-row: 7/8;
+      }
+
+      @media (max-width: 1023px) {
+        font-size: 1rem;
+      }
+
+      @media (max-width: 600px) {
+        font-size: 0.8rem;
       }
 
       @media (min-width: 1920px) {

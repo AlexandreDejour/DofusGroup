@@ -69,14 +69,6 @@
       grid-template-rows: repeat(7, 0.25fr);
       column-gap: 5%;
 
-      @media (min-width: 1920px) {
-        width: 85%;
-      }
-
-      @media (min-width: 2560px) {
-        width: 80%;
-      }
-
       .title {
         width: 95%;
         margin: 1% auto;

@@ -7,7 +7,7 @@
 
   @media (min-width: 1024px) {
     width: 100%;
-    margin: auto;
+    margin: 0% auto;
     grid-column: 1/2;
     grid-row: 6/7;
   }
@@ -42,10 +42,6 @@
         font-size: 2rem;
         padding: 20%;
         border-radius: 0.5rem;
-
-        @media (min-width: 1024px) {
-          padding: 20% 40%;
-        }
 
         @media (min-width: 2560px) {
           font-size: 3rem;

@@ -1,7 +1,8 @@
 import "./Home.scss";
 
-import { useCallback, useEffect, useState } from "react";
 import { isAxiosError } from "axios";
+import { useTranslation } from "react-i18next";
+import { useCallback, useEffect, useState } from "react";
 
 import { Tag } from "../../types/tag";
 import { Event } from "../../types/event";
@@ -28,6 +29,7 @@ const eventService = new EventService(axios);
 const serverService = new ServerService(axios);
 
 export default function Home() {
+  const { t } = useTranslation();
   const { isDesktop } = useScreen();
 
   const [totalPages, setTotalPages] = useState(1);
@@ -136,12 +138,12 @@ export default function Home() {
 
       {isDesktop && (
         <header className="home_header">
-          <p className="home_header_title">Titre</p>
-          <p className="home_header_tag">Tag</p>
-          <p className="home_header_server">Serveur</p>
-          <p className="home_header_date">Date</p>
-          <p className="home_header_duration">Durée</p>
-          <p className="home_header_players">Joueurs</p>
+          <p className="home_header_title">{t("title")}</p>
+          <p className="home_header_tag">{t("tag")}</p>
+          <p className="home_header_server">{t("server")}</p>
+          <p className="home_header_date">{t("date")}</p>
+          <p className="home_header_duration">{t("duration")}</p>
+          <p className="home_header_players">{t("players")}</p>
           <p className="home_header_details"></p>
         </header>
       )}
@@ -155,7 +157,7 @@ export default function Home() {
           ))}
         </ul>
       ) : (
-        <p className="fallback">Aucun évènement disponible</p>
+        <p className="fallback">{t("anyEventFound")}</p>
       )}
 
       {totalPages ? (

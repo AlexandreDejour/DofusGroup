@@ -1,0 +1,39 @@
+{
+  "header": {
+    "title": "About DofusGroup",
+    "lead": "DofusGroup is a community platform for creating events around activities in the MMORPG Dofus, allowing players to easily organize themselves into groups."
+  },
+  "sections": {
+    "1": {
+      "title": "1. A platform to organize better",
+      "p1": "The application allows users, once their account is created, to create events to find players who want to join them.",
+      "p2": "Each user can add multiple characters in their profile (representing their in-game avatars) and register them for events available on the platform.",
+      "p3": "A comment system attached to each event allows participants to communicate with each other."
+    },
+    "2": {
+      "title": "2. Why DofusGroup?",
+      "p1": "Currently, there is no efficient tool addressing this specific need: planning gaming sessions in advance and organizing groups clearly.",
+      "p2": "DofusGroup is not designed to instantly find a group, but rather to provide a way to schedule an activity at a given date and time, register in advance, and form a stable group before the gaming session."
+    },
+    "3": {
+      "title": "3. Target audience",
+      "p1": "The platform is mainly intended for:",
+      "li": [
+        "Single-account players dependent on other players to progress.",
+        "Guilds wishing to schedule sessions among their members."
+      ],
+      "p2": "Events can be made private: they are then accessible only via the event's URL.",
+      "p3": "The main benefit for the user is better organization and optimization of gaming sessions, without relying on the game's recruitment channel, which is often hard to read."
+    },
+    "4": {
+      "title": "4. Who am I?",
+      "p1": "I am a <strong>career-changing developer</strong> and started developing DofusGroup alongside my training. My experience is web-oriented. Much of my learning is self-taught, which allows me to be technically curious and learn new tools quickly.",
+      "p2": "I chose Dofus as a starting point because I have been passionate about this universe for nearly 20 years. The project continues the tradition of fan-sites and community tools developed by players over the years.",
+      "p3": "What I enjoy most in development: turning a concrete need into a technical solution, working on ergonomics and design, and seeing a project take shape over time."
+    },
+    "5": {
+      "title": "5. In summary",
+      "p1": "DofusGroup was born from a mix of passion, learning, and the desire to share. It is a project designed for players, but also highlights my approach as a developer: creating concrete, useful, and accessible tools to improve the user experience."
+    }
+  }
+}

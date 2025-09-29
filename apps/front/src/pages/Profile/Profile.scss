@@ -5,8 +5,11 @@
   font-size: 1.1rem;
   display: flex;
   flex-direction: column;
-  align-items: stretch;
-  overflow: visible;
+  justify-content: center;
+
+  @media (max-width: 600px) {
+    margin: auto;
+  }
 
   @media (min-width: 1920px) {
     width: 75%;
@@ -88,6 +91,7 @@
 
         @media (max-width: 600px) {
           width: 45%;
+          font-size: 0.8rem;
         }
       }
     }

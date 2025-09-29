@@ -77,7 +77,7 @@ export default function EventFilter({
       ) : (
         <div className="filter_items">
           <div className="filter_items_item">
-            <label htmlFor="title" className="filter_items_item_label">
+            <label htmlFor="title" className="filter_items_item_label title">
               <span>Titre: </span>
               <input
                 type="text"

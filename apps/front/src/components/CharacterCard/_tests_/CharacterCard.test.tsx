@@ -1,9 +1,16 @@
+import { vi } from "vitest";
 import "@testing-library/jest-dom";
 import { render, screen, fireEvent } from "@testing-library/react";
-import { vi } from "vitest";
+
 import { MemoryRouter } from "react-router";
 
+import { useScreen } from "../../../contexts/screenContext";
 import CharacterCard from "../CharacterCard";
+
+// Mock context
+vi.mock("../../../contexts/screenContext", () => ({
+  useScreen: vi.fn(),
+}));
 
 // Mock useNavigate de react-router
 const mockNavigate = vi.fn();
@@ -66,6 +73,11 @@ const renderCharacterCard = (character = mockCharacter) =>
 
 describe("CharacterCard", () => {
   beforeEach(() => {
+    vi.mocked(useScreen).mockReturnValue({
+      isDesktop: true,
+      isTablet: false,
+      isMobile: false,
+    });
     mockNavigate.mockReset();
     handleDelete.mockReset();
   });

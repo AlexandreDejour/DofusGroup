@@ -1,9 +1,17 @@
+import { vi } from "vitest";
 import "@testing-library/jest-dom";
 import { render, screen, fireEvent } from "@testing-library/react";
-import { vi } from "vitest";
+
 import { MemoryRouter } from "react-router";
 
+import { useScreen } from "../../../contexts/screenContext";
+
 import EventCard from "../EventCard";
+
+// Mock context
+vi.mock("../../../contexts/screenContext", () => ({
+  useScreen: vi.fn(),
+}));
 
 // Mock useNavigate de react-router
 const mockNavigate = vi.fn();
@@ -48,6 +56,7 @@ const mockEvent = {
       alignment: "Bonta",
       stuff: "https://d-bk.net/fr/d/1EFhw",
       default_character: true,
+      server_id: "0508669a-d352-4145-89b4-87b481d44938",
     },
   ],
 };
@@ -61,6 +70,11 @@ const renderEventCard = (event = mockEvent) =>
 
 describe("EventCard", () => {
   beforeEach(() => {
+    vi.mocked(useScreen).mockReturnValue({
+      isDesktop: true,
+      isTablet: false,
+      isMobile: false,
+    });
     mockNavigate.mockReset();
     vi.spyOn(Date.prototype, "toLocaleString").mockReturnValue(
       "17/08/2025 12:00",

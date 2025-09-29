@@ -1,8 +1,13 @@
+import { vi } from "vitest";
 import "@testing-library/jest-dom";
 import { render, screen, fireEvent } from "@testing-library/react";
+
 import { MemoryRouter } from "react-router-dom";
 
-// Mock context before import component
+import { useScreen } from "../../../contexts/screenContext";
+
+import Header from "../Header";
+
 let mockUseModal: () => any = () => ({
   openModal: vi.fn(),
 });
@@ -19,6 +24,7 @@ vi.mock("../../../config/config.ts", () => ({
   },
 }));
 
+// Mock context
 vi.mock("../../../contexts/modalContext", () => ({
   __esModule: true,
   default: ({ children }: { children: React.ReactNode }) => children,
@@ -31,7 +37,9 @@ vi.mock("../../../contexts/authContext", () => ({
   useAuth: () => mockUseAuth(),
 }));
 
-import Header from "../Header";
+vi.mock("../../../contexts/screenContext", () => ({
+  useScreen: vi.fn(),
+}));
 
 describe("Header", () => {
   let openModal: ReturnType<typeof vi.fn>;
@@ -43,6 +51,11 @@ describe("Header", () => {
       logout = vi.fn();
       mockUseModal = () => ({ openModal });
       mockUseAuth = () => ({ user: null, logout });
+      vi.mocked(useScreen).mockReturnValue({
+        isDesktop: true,
+        isTablet: false,
+        isMobile: false,
+      });
 
       render(
         <MemoryRouter>

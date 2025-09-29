@@ -1,6 +1,10 @@
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { vi } from "vitest";
+import "@testing-library/jest-dom";
+import { render, screen, waitFor } from "@testing-library/react";
+
 import { MemoryRouter } from "react-router-dom";
+
+import { useScreen } from "../../../contexts/screenContext";
 
 import Home from "../Home";
 
@@ -10,6 +14,11 @@ vi.mock("../../../config/config.ts", () => ({
       baseUrl: "http://localhost",
     }),
   },
+}));
+
+// Mock context
+vi.mock("../../../contexts/screenContext", () => ({
+  useScreen: vi.fn(),
 }));
 
 vi.mock("../../../components/EventCard/EventCard", () => ({
@@ -80,6 +89,12 @@ const renderHome = () => {
 
 describe("Home page", () => {
   beforeEach(() => {
+    vi.mocked(useScreen).mockReturnValue({
+      isDesktop: true,
+      isTablet: false,
+      isMobile: false,
+    });
+
     mockGetEvents = vi
       .fn()
       .mockResolvedValueOnce({

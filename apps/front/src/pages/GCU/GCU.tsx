@@ -4,149 +4,84 @@ import "./GCU.scss";
 export default function GCU() {
   const { t } = useTranslation("gcu");
 
+  const sectionKeys = [
+    "1",
+    "2",
+    "3",
+    "5",
+    "6",
+    "7",
+    "8",
+    "9",
+    "10",
+    "11",
+    "12",
+    "13",
+    "14",
+  ];
+
   return (
     <div className="gcu">
       <header>
         <h2>{t("header.title")}</h2>
         <p>
-          {t("header.lastUpdate", {
-            date: new Date().toLocaleDateString(),
-          })}
+          {t("header.lastUpdate", { date: new Date().toLocaleDateString() })}
         </p>
       </header>
 
-      <section>
-        <h3>{t("sections.1.title")}</h3>
-        <p>{t("sections.1.p1", { site: "https://www.dofusgroup.net" })}</p>
-        <p>{t("sections.1.p2")}</p>
-        <p>{t("sections.1.p3")}</p>
-      </section>
+      {/* Simple sections */}
+      {sectionKeys.map((key) => {
+        const section = t(`sections.${key}`, { returnObjects: true }) as {
+          title: string;
+          p1?: string;
+          p2?: string;
+          p3?: string;
+          li?: string[];
+        };
 
-      <section>
-        <h3>{t("sections.2.title")}</h3>
-        <p>{t("sections.2.p1")}</p>
-        <p>{t("sections.2.p2")}</p>
-      </section>
+        return (
+          <section key={key}>
+            <h3>{section.title}</h3>
+            {section.p1 && <p>{section.p1}</p>}
+            {section.p2 && <p>{section.p2}</p>}
+            {section.p3 && <p>{section.p3}</p>}
+            {section.li && (
+              <ul>
+                {section.li.map((item, idx) => (
+                  <li key={idx}>{item}</li>
+                ))}
+              </ul>
+            )}
+          </section>
+        );
+      })}
 
-      <section>
-        <h3>{t("sections.3.title")}</h3>
-        <p>{t("sections.3.p1")}</p>
-        <p>{t("sections.3.p2")}</p>
-      </section>
-
+      {/* Specific management for section 4 */}
       <section>
         <h3>{t("sections.4.title")}</h3>
+        {["4.1", "4.2", "4.3"].map((subKey) => {
+          const subsection = t(`sections.4.subsections.${subKey}`, {
+            returnObjects: true,
+          }) as {
+            title?: string;
+            p?: string;
+            li?: string[];
+          };
 
-        <h4>{t("sections.4.subsections.4.1.title")}</h4>
-        <ul>
-          {(
-            t("sections.4.subsections.4.1.li", {
-              returnObjects: true,
-            }) as string[]
-          ).map((item: string, idx: number) => (
-            <li key={idx}>{item}</li>
-          ))}
-        </ul>
-
-        <h4>{t("sections.4.subsections.4.2.title")}</h4>
-        <ul>
-          {(
-            t("sections.4.subsections.4.2.li", {
-              returnObjects: true,
-            }) as string[]
-          ).map((item: string, idx: number) => (
-            <li key={idx}>{item}</li>
-          ))}
-        </ul>
-
-        <h4>{t("sections.4.subsections.4.3.title")}</h4>
-        <p>{t("sections.4.subsections.4.3.p")}</p>
-      </section>
-
-      <section>
-        <h3>{t("sections.5.title")}</h3>
-        <ul>
-          {(t("sections.5.li", { returnObjects: true }) as string[]).map(
-            (item: string, idx: number) => (
-              <li key={idx}>{item}</li>
-            ),
-          )}
-        </ul>
-        <p>{t("sections.5.p")}</p>
-      </section>
-
-      <section>
-        <h3>{t("sections.6.title")}</h3>
-        <ul>
-          {(t("sections.6.li", { returnObjects: true }) as string[]).map(
-            (item: string, idx: number) => (
-              <li key={idx}>{item}</li>
-            ),
-          )}
-        </ul>
-      </section>
-
-      <section>
-        <h3>{t("sections.7.title")}</h3>
-        <p>{t("sections.7.p1")}</p>
-        <p>{t("sections.7.p2")}</p>
-        <p>{t("sections.7.p3")}</p>
-        <p>{t("sections.7.p4")}</p>
-      </section>
-
-      <section>
-        <h3>{t("sections.8.title")}</h3>
-        <ul>
-          {(t("sections.8.li", { returnObjects: true }) as string[]).map(
-            (item: string, idx: number) => (
-              <li key={idx}>{item}</li>
-            ),
-          )}
-        </ul>
-      </section>
-
-      <section>
-        <h3>{t("sections.9.title")}</h3>
-        <p>{t("sections.9.p1")}</p>
-        <ul>
-          {(t("sections.9.li", { returnObjects: true }) as string[]).map(
-            (item: string, idx: number) => (
-              <li key={idx}>{item}</li>
-            ),
-          )}
-        </ul>
-        <p>{t("sections.9.p2")}</p>
-      </section>
-
-      <section>
-        <h3>{t("sections.10.title")}</h3>
-        <ul>
-          {(t("sections.10.li", { returnObjects: true }) as string[]).map(
-            (item: string, idx: number) => (
-              <li key={idx}>{item}</li>
-            ),
-          )}
-        </ul>
-      </section>
-
-      <section>
-        <h3>{t("sections.11.title")}</h3>
-        <p>{t("sections.11.p")}</p>
-      </section>
-
-      <section>
-        <h3>{t("sections.12.title")}</h3>
-        <p>{t("sections.12.p")}</p>
-      </section>
-
-      <section>
-        <h3>{t("sections.13.title")}</h3>
-        <p>{t("sections.13.p")}</p>
-      </section>
-
-      <section>
-        <h3>{t("sections.14.title")}</h3>
-        <p>{t("sections.14.p")}</p>
+          return (
+            <div key={subKey}>
+              {subsection.title && <h4>{subsection.title}</h4>}
+              {subsection.p && <p>{subsection.p}</p>}
+              {subsection.li && (
+                <ul>
+                  {subsection.li.map((item, idx) => (
+                    <li key={idx}>{item}</li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          );
+        })}
       </section>
     </div>
   );

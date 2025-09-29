@@ -1,0 +1,118 @@
+{
+  "header": {
+    "title": "Conditions Générales d’Utilisation de DofusGroup",
+    "lastUpdate": "Dernière mise à jour : {{date}}"
+  },
+  "sections": {
+    "1": {
+      "title": "1. Présentation",
+      "p1": "1.1 DofusGroup est un fan-site accessible à l’adresse {{site}} (le « Site »), basé sur l’univers du jeu DOFUS (le « Jeu »), propriété d’Ankama Games.",
+      "p2": "1.2 DofusGroup fournit des services permettant aux utilisateurs de créer des événements, de s’organiser en groupe et d’interagir avec d’autres joueurs (le « Service »).",
+      "p3": "1.3 Les présentes conditions générales d’utilisation (les « CGU ») régissent l’accès et l’utilisation du Site et de ses services. Tout utilisateur (ci-après « vous ») s’engage à les respecter."
+    },
+    "2": {
+      "title": "2. Acceptation des CGU",
+      "p1": "2.1 En utilisant DofusGroup, vous acceptez ces CGU dans leur intégralité.",
+      "p2": "2.2 Toute utilisation du Site non conforme aux CGU est strictement interdite."
+    },
+    "3": {
+      "title": "3. Accès au Site",
+      "p1": "3.1 Le Site est accessible gratuitement à toute personne disposant d’une connexion Internet. Les coûts d’accès et de connexion sont à votre charge.",
+      "p2": "3.2 DofusGroup vous accorde une licence limitée, non exclusive et non transférable pour accéder et utiliser le Site, sous réserve du respect des présentes CGU."
+    },
+    "4": {
+      "title": "4. Création et gestion de compte",
+      "subsections": {
+        "4.1": {
+          "title": "4.1 Conditions d’inscription",
+          "li": [
+            "Pour créer un compte, vous devez être une personne physique majeure ou avoir l’accord d’un représentant légal si vous êtes mineur.",
+            "Les informations requises sont : pseudo, adresse email et mot de passe."
+          ]
+        },
+        "4.2": {
+          "title": "4.2 Sécurité et responsabilité",
+          "li": [
+            "Vous êtes responsable de la confidentialité de vos identifiants.",
+            "Le partage, la vente ou le prêt de compte est interdit.",
+            "DofusGroup n’est pas responsable des dommages résultant d’un accès non autorisé à votre compte."
+          ]
+        },
+        "4.3": {
+          "title": "4.3 Modification et suppression",
+          "p": "Vous pouvez modifier vos informations personnelles et supprimer votre compte depuis votre profil. La suppression de votre compte entraîne la suppression définitive de toutes vos données."
+        }
+      }
+    },
+    "5": {
+      "title": "5. Règles de conduite",
+      "li": [
+        "Respecter les autres utilisateurs et les collaborateurs de DofusGroup.",
+        "Ne pas tenir de propos offensants, discriminatoires, racistes ou vulgaires.",
+        "Ne pas poster de contenu à caractère sexuel ou pornographique.",
+        "Ne pas diffuser de spam ou tenter de collecter les informations des autres utilisateurs."
+      ],
+      "p": "Les contenus publiés par les utilisateurs sont sous leur entière responsabilité. DofusGroup peut supprimer tout contenu enfreignant les règles."
+    },
+    "6": {
+      "title": "6. Limites d’utilisation du service",
+      "li": [
+        "Utiliser des logiciels, scripts ou hacks pour accéder ou perturber le Site.",
+        "Participer à des attaques contre les serveurs du Site.",
+        "Exploiter des bugs ou failles de sécurité pour obtenir un avantage ou des informations confidentielles."
+      ]
+    },
+    "7": {
+      "title": "7. Propriété intellectuelle",
+      "p1": "Tous les éléments du jeu DOFUS appartiennent à Ankama Games.",
+      "p2": "Les contenus créés pour DofusGroup (logos, images, charte graphique) appartiennent à DofusGroup et sont protégés par le droit d’auteur.",
+      "p3": "L’utilisation des visuels ou marques Dofus se fait à titre informatif et non commercial, et ne doit pas enfreindre les droits d’Ankama.",
+      "p4": "Vous ne pouvez pas copier, modifier, reproduire ou distribuer le contenu du Site sans autorisation écrite préalable."
+    },
+    "8": {
+      "title": "8. Protection des données personnelles",
+      "li": [
+        "DofusGroup ne collecte que les informations nécessaires à la création et à l’utilisation de votre compte : pseudo, email et mot de passe.",
+        "Vos mots de passe sont hashés et vos emails sont chiffrés. Les cookies ne stockent que votre jeton d’authentification (JWT).",
+        "DofusGroup ne partage pas vos informations personnelles avec des tiers.",
+        "Vous pouvez accéder, modifier ou supprimer vos données personnelles à tout moment depuis votre profil.",
+        "Pour plus de détails, consultez notre Politique de confidentialité."
+      ]
+    },
+    "9": {
+      "title": "9. Sanctions",
+      "p1": "Toute violation des CGU peut entraîner :",
+      "li": [
+        "Avertissement",
+        "Suspension temporaire ou définitive du compte",
+        "Actions civiles ou pénales si nécessaire"
+      ],
+      "p2": "Les décisions de DofusGroup concernant l’application des sanctions sont sans appel."
+    },
+    "10": {
+      "title": "10. Responsabilité et garantie",
+      "li": [
+        "Le Site et ses services sont fournis « en l’état ».",
+        "DofusGroup ne garantit pas la disponibilité continue du service.",
+        "DofusGroup n’est pas responsable des dommages indirects, pertes de données ou profits liés à l’utilisation du Site.",
+        "Les liens vers des sites tiers sont fournis à titre informatif et DofusGroup ne garantit pas leur contenu."
+      ]
+    },
+    "11": {
+      "title": "11. Modification des CGU",
+      "p": "DofusGroup se réserve le droit de modifier les CGU à tout moment. Vous serez informé des changements via un bandeau sur le Site ou par email pour les modifications importantes."
+    },
+    "12": {
+      "title": "12. Résiliation",
+      "p": "Vous pouvez résilier votre compte et ces CGU à tout moment en demandant la suppression de votre compte via votre profil. DofusGroup peut également résilier votre accès en cas de violation des CGU."
+    },
+    "13": {
+      "title": "13. Support",
+      "p": "Le support est accessible via le Discord officiel de DofusGroup. En cas de problème de sécurité ou de bug, vous devez contacter DofusGroup immédiatement via le support."
+    },
+    "14": {
+      "title": "14. Loi applicable",
+      "p": "Les CGU sont régies par le droit français. Si une disposition est jugée invalide, les autres dispositions restent applicables."
+    }
+  }
+}

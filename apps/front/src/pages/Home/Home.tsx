@@ -29,7 +29,7 @@ const eventService = new EventService(axios);
 const serverService = new ServerService(axios);
 
 export default function Home() {
-  const { t } = useTranslation();
+  const { t } = useTranslation("translation");
   const { isDesktop } = useScreen();
 
   const [totalPages, setTotalPages] = useState(1);

@@ -20,7 +20,7 @@ const characterService = new CharacterService(axios);
 
 export default function CharacterDetails() {
   const navigate = useNavigate();
-  const { t } = useTranslation();
+  const { t } = useTranslation("translation");
 
   const { id } = useParams();
   const { user } = useAuth();

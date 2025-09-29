@@ -22,7 +22,7 @@ export default function CharacterCard({
 }: CharacterCardProps) {
   const navigate = useNavigate();
   const { isDesktop } = useScreen();
-  const { t } = useTranslation();
+  const { t } = useTranslation("translation");
 
   return (
     <article className="character_card">

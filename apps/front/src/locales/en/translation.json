@@ -3,5 +3,7 @@
   "events": "Events",
   "logout": "Log out",
   "profile": "Profile",
+  "select": "Select",
+  "server": "Server",
   "welcome": "Welcome"
 }

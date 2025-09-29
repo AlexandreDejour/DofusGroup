@@ -27,7 +27,7 @@ const eventService = new EventService(axios);
 
 export default function EventDetails() {
   const navigate = useNavigate();
-  const { t } = useTranslation();
+  const { t } = useTranslation("translation");
 
   const { id } = useParams();
   const { user } = useAuth();

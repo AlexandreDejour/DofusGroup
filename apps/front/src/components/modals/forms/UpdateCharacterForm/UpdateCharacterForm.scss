@@ -46,11 +46,28 @@
   }
 
   &_form {
-    margin: 2% 0% 0% 0%;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    grid-template-rows: repeat(7, 0.25fr);
-    column-gap: 5%;
+    margin: 2% 0% 5% 0%;
+    font-size: 1.2rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    @media (max-width: 1023px) {
+      font-size: 1rem !important;
+    }
+
+    @media (max-width: 600px) {
+      font-size: 0.8rem !important;
+    }
+
+    @media (min-width: 1024px) {
+      margin: 2% 0% 0% 0%;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: repeat(7, 0.25fr);
+      column-gap: 5%;
+    }
 
     .name {
       width: 95%;

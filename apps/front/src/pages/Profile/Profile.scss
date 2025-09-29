@@ -1,6 +1,6 @@
 .profile {
   width: 95%;
-  margin: auto;
+  margin: 1% auto 3% auto;
   min-height: auto;
   font-size: 1.1rem;
   display: flex;
@@ -70,6 +70,7 @@
 
     &_actions {
       width: 100%;
+      font-size: 1rem;
       display: flex;
       flex-wrap: wrap;
       justify-content: space-between;
@@ -83,6 +84,7 @@
         width: 30%;
         margin: 1%;
         padding: 2% 0%;
+        font-size: 1rem;
 
         @media (max-width: 600px) {
           width: 45%;

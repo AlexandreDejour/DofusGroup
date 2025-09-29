@@ -19,7 +19,7 @@
 }
 
 .new_event {
-  width: 80%;
+  width: 85%;
 
   @media (min-width: 1280px) {
     width: 90%;
@@ -67,6 +67,7 @@
       display: grid;
       grid-template-columns: 1fr 1fr;
       grid-template-rows: repeat(7, 0.25fr);
+      column-gap: 5%;
 
       .title {
         width: 95%;

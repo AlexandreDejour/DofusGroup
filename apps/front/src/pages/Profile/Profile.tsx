@@ -3,6 +3,7 @@ import "./Profile.scss";
 import { isAxiosError } from "axios";
 import { useNavigate } from "react-router";
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 import { useAuth } from "../../contexts/authContext";
 import { useModal } from "../../contexts/modalContext";
@@ -22,6 +23,7 @@ const userService = new UserService(axios);
 
 export default function Profile() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const { showError } = useNotification();
   const { user, isAuthLoading } = useAuth();
@@ -64,13 +66,13 @@ export default function Profile() {
 
             <div className="profile_section_details">
               <p className="profile_section_details_info">
-                Pseudo: {user.username}
+                {t("username")}: {user.username}
               </p>
               <p className="profile_section_details_info">
-                Évènements: {userEnriched.events?.length}
+                {t("events")}: {userEnriched.events?.length}
               </p>
               <p className="profile_section_details_info">
-                Personnages: {userEnriched.characters?.length}
+                {t("characters")}: {userEnriched.characters?.length}
               </p>
             </div>
 
@@ -80,42 +82,42 @@ export default function Profile() {
                 className="profile_section_actions_button button"
                 onClick={() => openModal("username")}
               >
-                Modifier le pseudo
+                {t("changeUsername")}
               </button>
               <button
                 type="button"
                 className="profile_section_actions_button button"
                 onClick={() => openModal("password")}
               >
-                Modifier le mot de passe
+                {t("changePassword")}
               </button>
               <button
                 type="button"
                 className="profile_section_actions_button button"
                 onClick={() => openModal("mail")}
               >
-                Modifier l'email
+                {t("changeEmail")}
               </button>
               <button
                 type="button"
                 className="profile_section_actions_button button delete"
                 onClick={() => handleDelete("user")}
               >
-                Supprimer mon compte
+                {t("deleteAccount")}
               </button>
               <button
                 type="button"
                 className="profile_section_actions_button button"
                 onClick={() => openModal("newEvent")}
               >
-                Créer un évènement
+                {t("createEvent")}
               </button>
               <button
                 type="button"
                 className="profile_section_actions_button button"
                 onClick={() => openModal("newCharacter")}
               >
-                Créer un personnage
+                {t("createCharacter")}
               </button>
             </div>
           </section>
@@ -134,7 +136,7 @@ export default function Profile() {
                 ))}
               </ul>
             ) : (
-              <p>Aucun évènement</p>
+              <p>{t("anyEvent")}</p>
             )}
           </section>
 
@@ -152,7 +154,7 @@ export default function Profile() {
                 ))}
               </ul>
             ) : (
-              <p>Aucun personnage</p>
+              <p>{t("anyCharacter")}</p>
             )}
           </section>
         </main>

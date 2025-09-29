@@ -1,6 +1,7 @@
 import "./EventDetails.scss";
 
 import { isAxiosError } from "axios";
+import { useTranslation } from "react-i18next";
 import { useCallback, useEffect, useState } from "react";
 import { Navigate, useNavigate, useParams } from "react-router";
 
@@ -26,6 +27,7 @@ const eventService = new EventService(axios);
 
 export default function EventDetails() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const { id } = useParams();
   const { user } = useAuth();
@@ -46,8 +48,8 @@ export default function EventDetails() {
         setEvent(response);
 
         showSuccess(
-          "Suppression réussi !",
-          "Ce personnage ne fait plus partie du groupe.",
+          `${t("successDeletion")} !`,
+          `${t("characterOutOfEvent")}.`,
         );
       } catch (error) {
         if (error instanceof Error) {
@@ -91,7 +93,9 @@ export default function EventDetails() {
             <h2>
               {event.title.charAt(0).toLocaleUpperCase() + event.title.slice(1)}
             </h2>
-            <p>Créé par {event.user.username}</p>
+            <p>
+              {t("createdBy")} {event.user.username}
+            </p>
             <p
               className="event_section_title_tag"
               style={{ backgroundColor: event.tag.color }}
@@ -102,56 +106,56 @@ export default function EventDetails() {
 
           <div className="event_section_details">
             <p className="event_section_details_item">
-              <span>Serveur:</span> {event.server.name}
+              <span>{t("server")}:</span> {event.server.name}
             </p>
             <p className="event_section_details_item">
-              <span>Date: </span>
+              <span>{t("date")}: </span>
               {new Date(event.date).toLocaleString(undefined, {
                 dateStyle: "short",
                 timeStyle: "short",
               })}
             </p>
             <p className="event_section_details_item">
-              <span>Durée:</span> {event.duration} minutes
+              <span>{t("duration")}:</span> {event.duration} minutes
             </p>
             <p className="event_section_details_item">
-              <span>Nombre de joueurs:</span> {event.characters.length}/
+              <span>{t("playerNumber")}:</span> {event.characters.length}/
               {event.max_players}
             </p>
             <p className="event_section_details_item">
-              <span>Statut:</span> {event.status}
+              <span>{t("status")}:</span> {event.status}
             </p>
             {event.area && (
               <p className="event_section_details_item">
-                <span>Zone:</span> {event.area}
+                <span>{t("area")}:</span> {event.area}
               </p>
             )}
             {event.sub_area && (
               <p className="event_section_details_item">
-                <span>Sous-zone:</span> {event.sub_area}
+                <span>{t("subArea")}:</span> {event.sub_area}
               </p>
             )}
             {event.donjon_name && (
               <p className="event_section_details_item">
-                <span>Donjon:</span> {event.donjon_name}
+                <span>{t("dungeon")}:</span> {event.donjon_name}
               </p>
             )}
           </div>
 
           {event.description && (
             <div className="event_section_description">
-              <span>Description:</span> <p>{event.description}</p>
+              <span>{t("description")}:</span> <p>{event.description}</p>
             </div>
           )}
 
           <div className="event_section_characters">
-            <span>Groupe: </span>
+            <span>{t("group")}: </span>
             <button
               type="button"
               className="quick button"
               onClick={() => openModal("joinEvent", event)}
             >
-              Rejoindre
+              {t("join")}
             </button>
             <ul className="event_section_characters_list">
               {event.characters.map((character) => (
@@ -167,13 +171,13 @@ export default function EventDetails() {
           </div>
 
           <div className="event_section_comments">
-            <span>Discussion: </span>
+            <span>{t("discussion")}: </span>
             <button
               type="button"
               className="quick button"
               onClick={() => openModal("comment", event)}
             >
-              Commenter
+              {t("comment")}
             </button>
             <ul className="event_section_comments_list">
               {event.comments.map((comment) => (
@@ -185,7 +189,7 @@ export default function EventDetails() {
                     {comment.content}
                   </p>
                   <p className="event_section_comments_list_item_author">
-                    auteur: {comment.user.username}
+                    {t("author")}: {comment.user.username}
                   </p>
                   {user?.id === comment.user.id && (
                     <div className="event_section_comments_list_item_buttons">
@@ -228,7 +232,7 @@ export default function EventDetails() {
               className="button"
               onClick={() => openModal("joinEvent", event)}
             >
-              Rejoindre
+              {t("join")}
             </button>
 
             <button
@@ -236,7 +240,7 @@ export default function EventDetails() {
               className="button"
               onClick={() => openModal("comment", event)}
             >
-              Commenter
+              {t("comment")}
             </button>
             {event.user.id === user?.id && (
               <>
@@ -245,28 +249,28 @@ export default function EventDetails() {
                   className="button"
                   onClick={() => openModal("updateEvent", event)}
                 >
-                  Modifier
+                  {t("change")}
                 </button>
                 <button
                   type="button"
                   className="button delete"
                   onClick={() => handleDelete("event_details", event.id)}
                 >
-                  Supprimer
+                  {t("delete")}
                 </button>
               </>
             )}
           </div>
         </section>
       ) : (
-        <p>Chargement en cours</p>
+        <p>{t("loading")}</p>
       )}
       <button
         type="button"
         className="event_button button"
         onClick={() => navigate(-1)}
       >
-        Retour
+        {t("return")}
       </button>
     </main>
   );

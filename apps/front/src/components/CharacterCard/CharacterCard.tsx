@@ -2,10 +2,12 @@ import "./CharacterCard.scss";
 
 import { useNavigate } from "react-router";
 
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import { CharacterEnriched } from "../../types/character";
+
+import { useScreen } from "../../contexts/screenContext";
 import { TargetType } from "../../contexts/modalContext";
 
 interface CharacterCardProps {
@@ -18,6 +20,7 @@ export default function CharacterCard({
   handleDelete,
 }: CharacterCardProps) {
   const navigate = useNavigate();
+  const { isDesktop } = useScreen();
 
   return (
     <article className="character_card">
@@ -35,9 +38,24 @@ export default function CharacterCard({
         />
       )}
 
-      <h3 className="character_card_title">{character.name}</h3>
-      <p className="character_card_breed">{character.breed.name}</p>
-      <p className="character_card_level">niveau: {character.level}</p>
+      {isDesktop ? (
+        <>
+          <h3 className="character_card_name">{character.name}</h3>
+          <p className="character_card_breed">{character.breed.name}</p>
+          <p className="character_card_level">niveau: {character.level}</p>
+        </>
+      ) : (
+        <div className="character_card_container">
+          <h3 className="character_card_container_name">{character.name}</h3>
+          <p className="character_card_container_breed">
+            {character.breed.name}
+          </p>
+          <p className="character_card_container_level">
+            niveau: {character.level}
+          </p>
+        </div>
+      )}
+
       <div className="character_card_buttons">
         <button
           className="character_card_buttons_details button"

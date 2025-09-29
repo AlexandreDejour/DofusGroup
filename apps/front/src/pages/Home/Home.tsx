@@ -7,6 +7,8 @@ import { Tag } from "../../types/tag";
 import { Event } from "../../types/event";
 import { Server } from "../../types/server";
 
+import { useScreen } from "../../contexts/screenContext";
+
 import { Config } from "../../config/config";
 import { ApiClient } from "../../services/client";
 import { TagService } from "../../services/api/tagService";
@@ -26,6 +28,8 @@ const eventService = new EventService(axios);
 const serverService = new ServerService(axios);
 
 export default function Home() {
+  const { isDesktop } = useScreen();
+
   const [totalPages, setTotalPages] = useState(1);
   const [currentPage, setCurrentPage] = useState(1);
 
@@ -97,8 +101,6 @@ export default function Home() {
         const keys: (keyof SearchForm)[] = ["title", "tag_id", "server_id"];
         const filters = formDataToObject<SearchForm>(formData, { keys });
 
-        console.log(filters);
-
         const filteredEvents = await eventService.getEvents(
           10,
           currentPage,
@@ -132,18 +134,20 @@ export default function Home() {
         handleSearch={handleSearch}
       />
 
-      <header className="home_header">
-        <p className="home_header_title">Titre</p>
-        <p className="home_header_tag">Tag</p>
-        <p className="home_header_server">Serveur</p>
-        <p className="home_header_date">Date</p>
-        <p className="home_header_duration">Durée</p>
-        <p className="home_header_players">Joueurs</p>
-        <p className="home_header_details"></p>
-      </header>
+      {isDesktop && (
+        <header className="home_header">
+          <p className="home_header_title">Titre</p>
+          <p className="home_header_tag">Tag</p>
+          <p className="home_header_server">Serveur</p>
+          <p className="home_header_date">Date</p>
+          <p className="home_header_duration">Durée</p>
+          <p className="home_header_players">Joueurs</p>
+          <p className="home_header_details"></p>
+        </header>
+      )}
 
       {events && events.length ? (
-        <ul>
+        <ul className="home_events">
           {events.map((event) => (
             <li key={event.id}>
               <EventCard event={event} />

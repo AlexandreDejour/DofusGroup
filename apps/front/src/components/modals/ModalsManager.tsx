@@ -7,15 +7,15 @@ import { useModal } from "../../contexts/modalContext";
 
 import { typeGuard } from "./utils/typeGuard";
 
-import LoginForm from "./Forms/LoginForm";
-import UpdateForm from "./Forms/UpdateForm";
-import RegisterForm from "./Forms/RegisterForm";
-import NewEventForm from "./Forms/NewEventForm";
-import JoinEventForm from "./Forms/JoinEventForm";
-import UpdateEventForm from "./Forms/UpdateEventForm";
-import NewCharacterForm from "./Forms/NewCharacterForm";
-import UpdateCharacterForm from "./Forms/UpdateCharacterForm";
-import CommentForm from "./Forms/CommentForm";
+import LoginForm from "./forms/Forms/LoginForm";
+import UpdateForm from "./forms/Forms/UpdateForm";
+import RegisterForm from "./forms/Forms/RegisterForm";
+import NewEventForm from "./forms/NewEventForm/NewEventForm";
+import JoinEventForm from "./forms/JoinEventForm/JoinEventForm";
+import UpdateEventForm from "./forms/UpdateEventForm/UpdateEventForm";
+import NewCharacterForm from "./forms/NewCharacterForm/NewCharacterForm";
+import UpdateCharacterForm from "./forms/UpdateCharacterForm/UpdateCharacterForm";
+import CommentForm from "./forms/Forms/CommentForm";
 
 export default function ModalsManager() {
   const { isOpen, modalType, updateTarget, handleSubmit, closeModal } =
@@ -25,7 +25,10 @@ export default function ModalsManager() {
 
   return (
     <div className="modal" onClick={closeModal} role="dialog">
-      <div className="modal_content" onClick={(e) => e.stopPropagation()}>
+      <div
+        className={`modal_content ${modalType}`}
+        onClick={(e) => e.stopPropagation()}
+      >
         <button
           type="button"
           aria-label="Close modal"

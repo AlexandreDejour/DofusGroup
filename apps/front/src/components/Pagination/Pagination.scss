@@ -1,8 +1,13 @@
 @use "../../assets/styles/variables";
 
 .pagination_list {
+  padding: 0;
   display: flex;
   justify-content: space-evenly;
+
+  @media (max-width: 1023px) {
+    margin-top: 2%;
+  }
 
   &_item {
     all: unset;

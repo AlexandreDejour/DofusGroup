@@ -1,7 +1,15 @@
 import { vi } from "vitest";
+import "@testing-library/jest-dom";
 import { render, screen, fireEvent } from "@testing-library/react";
 
+import { useScreen } from "../../../contexts/screenContext";
+
 import EventFilter from "../EventFilter";
+
+// Mock context
+vi.mock("../../../contexts/screenContext", () => ({
+  useScreen: vi.fn(),
+}));
 
 const mockTags = [
   { id: "e70d01fa-6074-44cc-b804-a430f4162eb5", name: "PvP", color: "#ffff" },
@@ -21,6 +29,11 @@ describe("EventFilter component", () => {
   let handleSearch: ReturnType<typeof vi.fn>;
 
   beforeEach(() => {
+    vi.mocked(useScreen).mockReturnValue({
+      isDesktop: true,
+      isTablet: false,
+      isMobile: false,
+    });
     setTag = vi.fn();
     setTitle = vi.fn();
     setServer = vi.fn();

@@ -1,11 +1,15 @@
+import { vi } from "vitest";
 import "@testing-library/jest-dom";
 import { render, screen, fireEvent } from "@testing-library/react";
-import { vi } from "vitest";
-import { MemoryRouter } from "react-router";
 
-import EventCharacterCard from "../EventCharacterCard";
+import { MemoryRouter } from "react-router-dom";
+
+import { useScreen } from "../../../contexts/screenContext";
+
 import { EventEnriched } from "../../../types/event";
 import { CharacterEnriched } from "../../../types/character";
+
+import EventCharacterCard from "../EventCharacterCard";
 
 // Mock config
 vi.mock("../../../config/config.ts", () => ({
@@ -43,6 +47,11 @@ vi.mock("../../../contexts/modalContext", () => ({
     openModal,
     handleDelete,
   }),
+}));
+
+// Mock useScreen
+vi.mock("../../../contexts/screenContext", () => ({
+  useScreen: vi.fn(),
 }));
 
 // Mock useNotification
@@ -89,6 +98,7 @@ const mockCharacter: CharacterEnriched = {
   alignment: "Bonta",
   stuff: "https://d-bk.net/fr/d/1EFhw",
   default_character: true,
+  server_id: "dabcc767-1902-4e47-be77-d486c7b3af39",
   breed: { id: "313ba421-abb0-4beb-b4ed-4e2e5a3a72c2", name: "Iop" },
   server: {
     id: "dabcc767-1902-4e47-be77-d486c7b3af39",
@@ -111,6 +121,11 @@ const renderComponent = (event = mockEvent, character = mockCharacter) =>
 
 describe("EventCharacterCard", () => {
   beforeEach(() => {
+    vi.mocked(useScreen).mockReturnValue({
+      isDesktop: true,
+      isTablet: false,
+      isMobile: false,
+    });
     mockNavigate.mockReset();
     mockRemoveCharacter.mockReset();
   });

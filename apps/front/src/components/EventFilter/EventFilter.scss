@@ -10,6 +10,25 @@
   align-items: center;
   border-radius: 1rem;
 
+  @media (max-width: 1023px) {
+    font-size: 1rem;
+    flex-direction: column;
+  }
+
+  @media (max-width: 600px) {
+    width: 95%;
+    margin: 0% auto 1% auto;
+    font-size: 0.8rem;
+  }
+
+  @media (min-width: 1920px) {
+    font-size: 1.3rem;
+  }
+
+  @media (min-width: 2560px) {
+    font-size: 1.5rem;
+  }
+
   &_item {
     width: 27.5%;
     display: flex;
@@ -25,6 +44,7 @@
       align-items: center;
 
       input {
+        width: 100%;
         margin-top: 2%;
         padding: 1% 2%;
       }
@@ -32,7 +52,62 @@
   }
 
   button {
+    width: 12%;
     margin: 2% 0% 0% 2%;
     padding: 1%;
+
+    @media (max-width: 1023px) {
+      width: 30%;
+    }
+
+    @media (max-width: 600px) {
+      margin: 5% 0%;
+      width: 50%;
+    }
+
+    @media (min-width: 1920px) {
+      width: 10%;
+    }
+  }
+
+  &_items {
+    width: 85%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    @media (max-width: 600px) {
+      flex-direction: column;
+    }
+
+    &_item {
+      width: 33%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+
+      @media (max-width: 600px) {
+        width: 90%;
+      }
+
+      &_label {
+        width: 85%;
+        margin-top: 5.5%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+
+        input {
+          width: 100%;
+          margin-top: 2%;
+          padding: 1% 2%;
+        }
+      }
+
+      .title {
+        width: 100%;
+      }
+    }
   }
 }

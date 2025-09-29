@@ -1,0 +1,77 @@
+{
+  "header": {
+    "title": "Privacy Policy",
+    "lastUpdate": "Last updated: {{date}}"
+  },
+  "sections": {
+    "1": {
+      "title": "1. Introduction",
+      "p1": "This privacy policy explains how the community site DofusGroup works, intended for players of the game Dofus (hereinafter “we”, “our” or “the site”). We are committed to handling your personal data confidentially and in accordance with the General Data Protection Regulation (GDPR) and applicable French law."
+    },
+    "2": {
+      "title": "2. Data Collected",
+      "p1": "When creating an account, we collect only the following information:",
+      "li": [
+        "username",
+        "email address",
+        "password (stored as a hash, never in plain text)"
+      ],
+      "p2": "No other personal data is automatically collected by the site."
+    },
+    "3": {
+      "title": "3. Purpose of Processing",
+      "p1": "The collected data is used only to:",
+      "li": [
+        "allow user registration and authentication",
+        "identify the user within the community area and when creating events",
+        "secure account access and prevent fraudulent use",
+        "allow the user to manage their account (update, deletion)"
+      ],
+      "p2": "We do not use your data for advertising or profiling purposes."
+    },
+    "4": {
+      "title": "4. Cookies",
+      "p1": "The site only uses technical cookies necessary for its operation: notably to store the JSON Web Token (JWT) to maintain the session and authenticate the user. We do not use advertising or third-party tracking cookies."
+    },
+    "5": {
+      "title": "5. Data Sharing",
+      "p1": "We do not sell or exchange your personal information. Data may only be accessible to authorized personnel (technical team / administrators) for maintenance and support purposes.",
+      "p2": "Only public APIs necessary for site functionality (e.g., font loading) may be called from the front-end; these calls do not share personal data by default."
+    },
+    "6": {
+      "title": "6. Security",
+      "p1": "We implement technical and organizational measures to protect your data:",
+      "li": [
+        "secure password hashing",
+        "email encryption",
+        "restricted access to production servers",
+        "use of secure connections (HTTPS/TLS)"
+      ],
+      "p2": "In production, only necessary services will have access to the server. In the event of a serious incident involving personal data, we will take appropriate measures and inform the affected individuals in accordance with regulations."
+    },
+    "7": {
+      "title": "7. Data Retention and Deletion",
+      "p1": "Your data is retained as long as your account is active. If you delete your account from your profile page, all your personal data is permanently deleted and not retained."
+    },
+    "8": {
+      "title": "8. User Rights",
+      "p1": "Under the GDPR, you have the following rights:",
+      "li": [
+        "right of access: obtain a copy of the personal data we hold",
+        "right of rectification: correct or update your information",
+        "right to erasure: delete your account and your data",
+        "right to data portability: request export of your data in a reusable format",
+        "right to object and withdraw consent when processing is based on consent"
+      ],
+      "p2": "You can exercise these rights directly from your profile. You can also contact us by email at: {{email}}."
+    },
+    "9": {
+      "title": "9. Contact Details",
+      "p1": "For any questions regarding this policy or to exercise your rights, please write to: {{email}}."
+    },
+    "10": {
+      "title": "10. Policy Updates",
+      "p1": "We reserve the right to update this privacy policy. In case of significant changes, we will indicate the update date at the top of this page and, if necessary, inform logged-in users."
+    }
+  }
+}

@@ -1,4 +1,7 @@
 {
-  "welcome": "Welcome",
-  "logout": "Log out"
+  "about": "About",
+  "events": "Events",
+  "logout": "Log out",
+  "profile": "Profile",
+  "welcome": "Welcome"
 }

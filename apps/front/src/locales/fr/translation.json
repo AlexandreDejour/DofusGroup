@@ -1,4 +1,18 @@
 {
-  "welcome": "Bienvenue",
-  "logout": "Se déconnecter"
+  "about": "À propos",
+  "allRightsReserved": "Tous droits réservés",
+  "changeLanguage": "Changer de langue : {{language}}",
+  "contactUs": "Nous contacter",
+  "english": "anglais",
+  "events": "Évènements",
+  "french": "français",
+  "gcu": "Conditions générales d'utilisation",
+  "login": "Connexion",
+  "logout": "Déconnexion",
+  "otherLinks": "Autres liens",
+  "profile": "Profil",
+  "privacyPolicy": "Politique de confidentialité",
+  "register": "Inscription",
+  "reportBug": "Reporter un bug",
+  "welcome": "Bienvenue"
 }

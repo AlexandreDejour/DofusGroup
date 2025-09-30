@@ -1,5 +1,5 @@
 import axios from "axios";
-import { t } from "i18next";
+import { t } from "../../i18n/i18n-helper";
 
 import { ApiClient } from "../client";
 
@@ -25,7 +25,7 @@ export class CharacterService {
     } catch (error) {
       if (axios.isAxiosError(error)) {
         if (error.response?.status === 204) {
-          throw new Error(`${t("anyCharacterOnThisAccount")}.`);
+          throw new Error(t("character.error.noneOnAccount"));
         }
       }
       throw error;
@@ -44,7 +44,7 @@ export class CharacterService {
     } catch (error) {
       if (axios.isAxiosError(error)) {
         if (error.response?.status === 204) {
-          throw new Error(`${t("anyCharacterOnThisAccount")}.`);
+          throw new Error(t("character.error.noneOnAccount"));
         }
       }
       throw error;
@@ -73,11 +73,11 @@ export class CharacterService {
     data: CreateCharacterForm,
   ): Promise<Character> {
     if (!(data.level >= 1 && data.level <= 200)) {
-      throw new Error(`${t("levelRules")}.`);
+      throw new Error(t("validation.level.rules"));
     }
 
     if (data.stuff && !this.urlRegex.test(data.stuff)) {
-      throw new Error(`${t("urlRules")}.`);
+      throw new Error(t("validation.url.rules"));
     }
 
     try {
@@ -91,15 +91,15 @@ export class CharacterService {
     } catch (error) {
       if (axios.isAxiosError(error)) {
         if (error.response?.status === 400) {
-          throw new Error(`${t("uncompleteData")}.`);
+          throw new Error(t("auth.error.data.incomplete"));
         }
 
         if (error.response?.status === 401) {
-          throw new Error(`${t("characterCreationNeedLogin")}.`);
+          throw new Error(t("character.error.loginRequired"));
         }
 
         if (error.response?.status === 403) {
-          throw new Error(`${t("forbiddenAction")}.`);
+          throw new Error(t("system.error.forbidden"));
         }
       }
       throw error;
@@ -112,11 +112,11 @@ export class CharacterService {
     data: CreateCharacterForm,
   ): Promise<CharacterEnriched> {
     if (!(data.level >= 1 && data.level <= 200)) {
-      throw new Error(`${t("levelRules")}.`);
+      throw new Error(t("validation.level.rules"));
     }
 
     if (data.stuff && !this.urlRegex.test(data.stuff)) {
-      throw new Error(`${t("urlRules")}.`);
+      throw new Error(t("validation.url.rules"));
     }
 
     try {
@@ -130,15 +130,15 @@ export class CharacterService {
     } catch (error) {
       if (axios.isAxiosError(error)) {
         if (error.response?.status === 400) {
-          throw new Error(`${t("uncompleteData")}.`);
+          throw new Error(t("auth.error.data.incomplete"));
         }
 
         if (error.response?.status === 401) {
-          throw new Error(`${t("characterCreationNeedLogin")}.`);
+          throw new Error(t("character.error.loginRequired"));
         }
 
         if (error.response?.status === 403) {
-          throw new Error(`${t("forbiddenAction")}.`);
+          throw new Error(t("system.error.forbidden"));
         }
       }
       throw error;
@@ -156,9 +156,9 @@ export class CharacterService {
     } catch (error) {
       if (axios.isAxiosError(error)) {
         if ([400, 401, 403].includes(error.response?.status ?? 0)) {
-          throw new Error(`${t("forbiddenAction")}.`);
+          throw new Error(t("system.error.forbidden"));
         } else if (error.response?.status === 404) {
-          throw new Error(`${t("characterNotFound")}.`);
+          throw new Error(t("character.error.notFound"));
         }
       }
       throw error;

@@ -1,5 +1,5 @@
 import axios from "axios";
-import { t } from "i18next";
+import { t } from "../../i18n/i18n-helper";
 
 import { ApiClient } from "../client";
 
@@ -42,7 +42,7 @@ export class DofusDBService {
       return allAreas;
     } catch (error) {
       if (axios.isAxiosError(error)) {
-        throw new Error(`${t("failedRecovery")}.`);
+        throw new Error(t("system.error.recoveryFailed"));
       }
       throw error;
     }
@@ -69,7 +69,7 @@ export class DofusDBService {
       return subAreas;
     } catch (error) {
       if (axios.isAxiosError(error)) {
-        throw new Error(`${t("failedRecovery")}.`);
+        throw new Error(t("system.error.recoveryFailed"));
       }
       throw error;
     }
@@ -126,7 +126,7 @@ export class DofusDBService {
       return allDungeons;
     } catch (error) {
       if (axios.isAxiosError(error)) {
-        throw new Error(`${t("failedRecovery")}.`);
+        throw new Error(t("system.error.recoveryFailed"));
       }
       throw error;
     }

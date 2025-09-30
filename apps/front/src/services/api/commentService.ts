@@ -1,5 +1,5 @@
 import axios from "axios";
-import { t } from "i18next";
+import { t } from "../../i18n/i18n-helper";
 
 import { Comment } from "../../types/comment";
 
@@ -29,11 +29,11 @@ export class CommentService {
     } catch (error) {
       if (axios.isAxiosError(error)) {
         if (error.response?.status === 401) {
-          throw new Error(`${t("commentNeedLogin")}.`);
+          throw new Error(t("comment.error.loginRequired"));
         }
 
         if (error.response?.status === 403) {
-          throw new Error(`${t("forbiddenAction")}.`);
+          throw new Error(t("system.error.forbidden"));
         }
       }
       throw error;
@@ -56,15 +56,15 @@ export class CommentService {
     } catch (error) {
       if (axios.isAxiosError(error)) {
         if (error.response?.status === 401) {
-          throw new Error(`${t("actionNeedLogin")}.`);
+          throw new Error(t("common.action.needLogin"));
         }
 
         if (error.response?.status === 403) {
-          throw new Error(`${t("forbiddenAction")}.`);
+          throw new Error(t("system.error.forbidden"));
         }
 
         if (error.response?.status === 404) {
-          throw new Error(`${t("commentNotFound")}`);
+          throw new Error(t("comment.error.notFound"));
         }
       }
       throw error;
@@ -84,9 +84,9 @@ export class CommentService {
     } catch (error) {
       if (axios.isAxiosError(error)) {
         if ([400, 401, 403].includes(error.response?.status ?? 0)) {
-          throw new Error(`${t("forbiddenAction")}.`);
+          throw new Error(t("system.error.forbidden"));
         } else if (error.response?.status === 404) {
-          throw new Error(`${t("commentNotFound")}.`);
+          throw new Error(t("comment.error.notFound"));
         }
       }
       throw error;

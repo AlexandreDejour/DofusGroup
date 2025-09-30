@@ -30,7 +30,7 @@ i18n
         privacyPolicy: privacyPolicyFR,
       },
     },
-    fallbackLng: "fr", // default language
+    fallbackLng: "en", // default language
     interpolation: {
       escapeValue: false,
     },

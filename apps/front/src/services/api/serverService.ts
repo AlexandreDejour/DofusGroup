@@ -1,5 +1,5 @@
 import axios from "axios";
-import { t } from "i18next";
+import { t } from "../../i18n/i18n-helper";
 
 import { Server } from "../../types/server";
 
@@ -20,7 +20,7 @@ export class ServerService {
     } catch (error) {
       if (axios.isAxiosError(error)) {
         if (error.response?.status === 204) {
-          throw new Error(`${t("anyServer")}.`);
+          throw new Error(t("server.error.notFound"));
         }
       }
       throw error;

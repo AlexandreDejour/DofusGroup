@@ -1,18 +1,23 @@
-// i18n-helper.ts
-import { t } from "i18next";
-import type fr from "./locales/fr/translation.json";
+import translation from "./locales/en/translation.json";
+import i18n from "./i18n";
 
-type NestedKeyOf<ObjectType extends object> = {
-  [Key in keyof ObjectType & string]: ObjectType[Key] extends object
-    ? `${Key}.${NestedKeyOf<ObjectType[Key]>}`
-    : Key;
-}[keyof ObjectType & string];
+// Type utilitaire pour générer toutes les clés profondes du JSON
+type DotPrefix<T extends string> = T extends "" ? "" : `.${T}`;
+type DeepKeys<T> = T extends object
+  ? {
+      [K in keyof T & (string | number)]: K extends string
+        ? T[K] extends object
+          ? K | `${K}${DotPrefix<DeepKeys<T[K]>>}`
+          : K
+        : never;
+    }[keyof T & (string | number)]
+  : "";
 
-export type TranslationKeys = NestedKeyOf<typeof fr>;
+export type TranslationKeys = DeepKeys<typeof translation>;
 
-/**
- * ✅ Typed translation helper
- */
-export function typedT(key: TranslationKeys, options?: Record<string, any>) {
-  return t(key, options);
+export function t(
+  key: TranslationKeys,
+  options?: Record<string, unknown>,
+): string {
+  return i18n.t(key, options);
 }

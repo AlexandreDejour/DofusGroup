@@ -1,5 +1,5 @@
 import axios from "axios";
-import { t } from "i18next";
+import { t } from "../../i18n/i18n-helper";
 
 import { ApiClient } from "../client";
 
@@ -19,11 +19,11 @@ export class AuthService {
 
   public async register(data: RegisterForm): Promise<AuthUser> {
     if (!this.passwordRegex.test(data.password)) {
-      throw new Error(`${t("minimumPasswordRules")}.`);
+      throw new Error(t("auth.password.error.rules"));
     }
 
     if (data.password !== data.confirmPassword) {
-      throw new Error(`${t("passwordAndConfirm")}.`);
+      throw new Error(t("auth.password.error.mismatch"));
     }
 
     try {
@@ -32,7 +32,7 @@ export class AuthService {
     } catch (error) {
       if (axios.isAxiosError(error)) {
         if (error.response?.status === 409) {
-          throw new Error(`${t("credentialsNotAvailable")}.`);
+          throw new Error(t("auth.error.credentials.unavailable"));
         }
       }
       throw error;
@@ -41,7 +41,7 @@ export class AuthService {
 
   public async login(data: LoginForm): Promise<AuthUser> {
     if (!this.passwordRegex.test(data.password)) {
-      throw new Error(`${t("credentialsNotAvailable")}.`);
+      throw new Error(t("auth.error.credentials.unavailable"));
     }
 
     try {
@@ -52,7 +52,7 @@ export class AuthService {
     } catch (error) {
       if (axios.isAxiosError(error)) {
         if (error.response?.status === 401) {
-          throw new Error(`${t("wrongCredentials")}.`);
+          throw new Error(t("auth.error.credentials.invalid"));
         }
       }
       throw error;
@@ -69,7 +69,7 @@ export class AuthService {
     } catch (error) {
       if (axios.isAxiosError(error)) {
         if ([400, 401, 403, 404].includes(error.response?.status ?? 0)) {
-          throw new Error(`${t("unknownUser")}`);
+          throw new Error(t("auth.error.user.notFound"));
         }
       }
       throw error;

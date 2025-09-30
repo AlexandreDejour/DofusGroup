@@ -1,5 +1,5 @@
 import axios from "axios";
-import { t } from "i18next";
+import { t } from "../../i18n/i18n-helper";
 
 import { ApiClient } from "../client";
 
@@ -25,7 +25,7 @@ export class UserService {
     } catch (error) {
       if (axios.isAxiosError(error)) {
         if (error.response?.status === 404) {
-          throw new Error(`${t("userNotFound")}.`);
+          throw new Error(t("auth.error.user.notFound"));
         }
       }
       throw error;
@@ -42,7 +42,7 @@ export class UserService {
     } catch (error) {
       if (axios.isAxiosError(error)) {
         if (error.response?.status === 404) {
-          throw new Error(`${t("userNotFound")}.`);
+          throw new Error(t("auth.error.user.notFound"));
         }
       }
       throw error;
@@ -51,11 +51,11 @@ export class UserService {
 
   public async update(userId: string, data: UpdateForm): Promise<AuthUser> {
     if (data.password && !this.passwordRegex.test(data.password)) {
-      throw new Error(`${t("passwordRules")}.`);
+      throw new Error(t("auth.password.error.rules"));
     }
 
     if (data.password !== data.confirmPassword) {
-      throw new Error(`${t("passwordAndConfirm")}.`);
+      throw new Error(t("auth.password.error.mismatch"));
     }
 
     try {
@@ -69,7 +69,7 @@ export class UserService {
     } catch (error) {
       if (axios.isAxiosError(error)) {
         if ([400, 401, 403, 404].includes(error.response?.status ?? 0)) {
-          throw new Error(`${t("userNotFound")}.`);
+          throw new Error(t("auth.error.user.notFound"));
         }
       }
       throw error;
@@ -86,9 +86,9 @@ export class UserService {
     } catch (error) {
       if (axios.isAxiosError(error)) {
         if ([400, 401, 403].includes(error.response?.status ?? 0)) {
-          throw new Error(`${t("forbiddenAction")}.`);
+          throw new Error(t("system.error.forbidden"));
         } else if (error.response?.status === 404) {
-          throw new Error(`${t("userNotFound")}.`);
+          throw new Error(t("auth.error.user.notFound"));
         }
       }
       throw error;

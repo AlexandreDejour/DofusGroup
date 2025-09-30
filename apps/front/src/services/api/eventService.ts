@@ -1,5 +1,5 @@
 import axios from "axios";
-import { t } from "i18next";
+import { t } from "../../i18n/i18n-helper";
 
 import { ApiClient } from "../client";
 
@@ -26,7 +26,7 @@ export class EventService {
     } catch (error) {
       if (axios.isAxiosError(error)) {
         if (error.response?.status === 204) {
-          throw new Error(`${t("anyEventComing")}.`);
+          throw new Error(t("event.error.noneUpcoming"));
         }
       }
       throw error;
@@ -51,15 +51,15 @@ export class EventService {
   }
 
   public async create(userId: string, data: CreateEventForm): Promise<Event> {
-    if (!data.server_id) throw new Error(`${t("serverRequired")}.`);
+    if (!data.server_id) throw new Error(t("validation.server.required"));
 
-    if (!data.tag_id) throw new Error(`${t("tagRequired")}.`);
+    if (!data.tag_id) throw new Error(t("validation.tag.required"));
 
     if (!(data.max_players >= 2 && data.max_players <= 8))
-      throw new Error(`${t("payerNumberRequired")}.`);
+      throw new Error(t("validation.playerNumber"));
 
     if (data.max_players < data.characters_id.length)
-      throw new Error(`${t("maxPayersLimit")}.`);
+      throw new Error(t("validation.playerNumber.limit"));
 
     try {
       const response = await this.axios.post<Event>(
@@ -71,15 +71,15 @@ export class EventService {
     } catch (error) {
       if (axios.isAxiosError(error)) {
         if (error.response?.status === 400) {
-          throw new Error(`${t("uncompleteData")}.`);
+          throw new Error(t("auth.error.data.incomplete"));
         }
 
         if (error.response?.status === 401) {
-          throw new Error(`${t("eventNeedLogin")}.`);
+          throw new Error(t("event.prompt.loginRequired"));
         }
 
         if (error.response?.status === 403) {
-          throw new Error(`${t("forbiddenAction")}.`);
+          throw new Error(t("system.error.forbidden"));
         }
       }
       throw error;
@@ -92,10 +92,10 @@ export class EventService {
     data: CreateEventForm,
   ): Promise<EventEnriched> {
     if (!(data.max_players >= 2 && data.max_players <= 8))
-      throw new Error(`${t("playerNumberRequired")}.`);
+      throw new Error(t("validation.playerNumber"));
 
     if (new Date(data.date) <= new Date())
-      throw new Error(`${t("dateSupNow")}.`);
+      throw new Error(t("validation.date.future"));
 
     try {
       const response = await this.axios.patch<EventEnriched>(
@@ -108,11 +108,11 @@ export class EventService {
     } catch (error) {
       if (axios.isAxiosError(error)) {
         if ([400, 401, 403].includes(error.response?.status ?? 0)) {
-          throw new Error(`${t("forbiddenAction")}.`);
+          throw new Error(t("system.error.forbidden"));
         } else if (error.response?.status === 404) {
-          throw new Error(`${t("eventNotFound")}.`);
+          throw new Error(t("event.error.noneFound"));
         } else if (error.response?.status === 500) {
-          throw new Error(`${t("impossibleAction")}.`);
+          throw new Error(t("system.error.impossible"));
         }
       }
       throw error;
@@ -121,7 +121,7 @@ export class EventService {
 
   public async addCharacters(eventId: string, data: CreateEventForm) {
     if (!data.characters_id.length)
-      throw new Error(`${t("minPlayerSelected")}.`);
+      throw new Error(t("validation.playerNumber.min"));
 
     try {
       const response = await this.axios.post(
@@ -135,9 +135,9 @@ export class EventService {
     } catch (error) {
       if (axios.isAxiosError(error)) {
         if (error.response?.status === 404) {
-          throw new Error(`${t("eventNotFound")}.`);
+          throw new Error(t("event.error.noneFound"));
         } else if (error.response?.status === 500) {
-          throw new Error(`${t("impossibleAction")}.`);
+          throw new Error(t("system.error.impossible"));
         }
       }
       throw error;
@@ -155,9 +155,9 @@ export class EventService {
     } catch (error) {
       if (axios.isAxiosError(error)) {
         if (error.response?.status === 404) {
-          throw new Error(`${t("eventNotFound")}.`);
+          throw new Error(t("event.error.noneFound"));
         } else if (error.response?.status === 500) {
-          throw new Error(`${t("impossibleAction")}.`);
+          throw new Error(t("system.error.impossible"));
         }
       }
       throw error;
@@ -174,9 +174,9 @@ export class EventService {
     } catch (error) {
       if (axios.isAxiosError(error)) {
         if ([400, 401, 403].includes(error.response?.status ?? 0)) {
-          throw new Error(`${t("forbiddenAction")}.`);
+          throw new Error(t("system.error.forbidden"));
         } else if (error.response?.status === 404) {
-          throw new Error(`${t("eventNotFound")}.`);
+          throw new Error(t("event.error.noneFound"));
         }
       }
       throw error;

@@ -2,7 +2,7 @@ import "./NewEventForm.scss";
 
 import { isAxiosError } from "axios";
 import { useEffect, useState } from "react";
-import { useTranslation } from "react-i18next";
+import { t } from "../../../../i18n/i18n-helper";
 
 import { Tag } from "../../../../types/tag";
 import { Server } from "../../../../types/server";
@@ -36,8 +36,6 @@ interface NewEventFormProps {
 }
 
 export default function NewEventForm({ handleSubmit }: NewEventFormProps) {
-  const { t } = useTranslation("translation");
-
   const { user } = useAuth();
   const { showError } = useNotification();
 
@@ -62,8 +60,8 @@ export default function NewEventForm({ handleSubmit }: NewEventFormProps) {
   const [isDungeon, setIsDungeon] = useState(false);
 
   const statutes = [
-    { id: 1, label: `${t("private")}`, value: "private" },
-    { id: 2, label: `${t("public")}`, value: "public" },
+    { id: 1, label: `${t("common.private")}`, value: "private" },
+    { id: 2, label: `${t("common.public")}`, value: "public" },
   ];
 
   useEffect(() => {
@@ -74,9 +72,9 @@ export default function NewEventForm({ handleSubmit }: NewEventFormProps) {
         setTags(response);
       } catch (error) {
         if (isAxiosError(error)) {
-          showError(`${t("error")}`, error.message);
+          showError(t("common.error"), error.message);
         } else if (error instanceof Error) {
-          showError(`${t("error")}`, `${t("errorOccurred")}`);
+          showError(t("common.error"), t("system.error.occurred"));
           console.error("General error:", error.message);
         }
       }
@@ -89,9 +87,9 @@ export default function NewEventForm({ handleSubmit }: NewEventFormProps) {
         setServers(response);
       } catch (error) {
         if (isAxiosError(error)) {
-          showError(`${t("error")}`, error.message);
+          showError(t("common.error"), error.message);
         } else if (error instanceof Error) {
-          showError(`${t("error")}`, "Une erreur est survenue");
+          showError(t("common.error"), t("system.error.occurred"));
           console.error("General error:", error.message);
         }
       }
@@ -112,9 +110,9 @@ export default function NewEventForm({ handleSubmit }: NewEventFormProps) {
         } else setCharacters(response);
       } catch (error) {
         if (isAxiosError(error)) {
-          showError(`${t("error")}`, error.message);
+          showError(t("common.error"), error.message);
         } else if (error instanceof Error) {
-          showError(`${t("error")}`, `${t("errorOccurred")}`);
+          showError(t("common.error"), t("system.error.occurred"));
           console.error("General error:", error.message);
         }
       }
@@ -147,9 +145,9 @@ export default function NewEventForm({ handleSubmit }: NewEventFormProps) {
         }
       } catch (error) {
         if (isAxiosError(error)) {
-          showError(`${t("error")}`, error.message);
+          showError(t("common.error"), error.message);
         } else if (error instanceof Error) {
-          showError(`${t("error")}`, `${t("errorOccurred")}`);
+          showError(t("common.error"), t("system.error.occurred"));
           console.error("General error:", error.message);
         }
       }
@@ -167,7 +165,7 @@ export default function NewEventForm({ handleSubmit }: NewEventFormProps) {
     const fetchDungeons = async () => {
       const selectedTag = tags.find((t) => t.id === tag);
 
-      if (!selectedTag || selectedTag.name !== `${t("dungeon")}`) {
+      if (!selectedTag || selectedTag.name !== t("common.dungeon")) {
         setIsDungeon(false);
         return;
       }
@@ -192,9 +190,9 @@ export default function NewEventForm({ handleSubmit }: NewEventFormProps) {
         }
       } catch (error) {
         if (isAxiosError(error)) {
-          showError(`${t("error")}`, error.message);
+          showError(t("common.error"), error.message);
         } else if (error instanceof Error) {
-          showError(`${t("error")}`, `${t("errorOccurred")}`);
+          showError(t("common.error"), t("system.error.occurred"));
           console.error("General error:", error.message);
         }
       }
@@ -205,16 +203,16 @@ export default function NewEventForm({ handleSubmit }: NewEventFormProps) {
 
   return (
     <div className="new_event">
-      <h3 className="new_event_title">{t("createEvent")}</h3>
+      <h3 className="new_event_title">{t("event.create")}</h3>
       <form onSubmit={handleSubmit} className="new_event_form" role="form">
         <label htmlFor="title" className="new_event_form_label title">
-          <span>{t("title")}:</span>
+          <span>{t("common.title")}:</span>
           <input
             type="text"
             name="title"
             id="title"
             required
-            placeholder={t("title")}
+            placeholder={t("common.title")}
             className="new_event_form_label_input"
           />
         </label>
@@ -224,7 +222,7 @@ export default function NewEventForm({ handleSubmit }: NewEventFormProps) {
           value={tag}
           items={tags}
           generateOptions={generateOptions.tags}
-          label={t("tag")}
+          label={t("tag.default")}
           onChange={setTag}
         />
 
@@ -233,12 +231,12 @@ export default function NewEventForm({ handleSubmit }: NewEventFormProps) {
           value={server}
           items={servers}
           generateOptions={generateOptions.servers}
-          label={t("server")}
+          label={t("server.default")}
           onChange={setServer}
         />
 
         <label htmlFor="date" className="new_event_form_label date">
-          <span>{t("date")}:</span>
+          <span>{t("common.date")}:</span>
           <input
             type="datetime-local"
             name="date"
@@ -252,13 +250,13 @@ export default function NewEventForm({ handleSubmit }: NewEventFormProps) {
         </label>
 
         <label htmlFor="duration" className="new_event_form_label duration">
-          <span>{t("duration")}:</span>
+          <span>{t("common.duration")}:</span>
           <input
             type="number"
             name="duration"
             id="duration"
             required
-            placeholder={t("durationInMinutes")}
+            placeholder={t("common.durationInMin")}
             className="new_event_form_label_input"
           />
         </label>
@@ -268,7 +266,7 @@ export default function NewEventForm({ handleSubmit }: NewEventFormProps) {
           value={area}
           items={areas}
           generateOptions={generateOptions.areas}
-          label={t("area")}
+          label={t("common.area")}
           onChange={setArea}
         />
 
@@ -278,7 +276,7 @@ export default function NewEventForm({ handleSubmit }: NewEventFormProps) {
             value={subArea}
             items={subAreas}
             generateOptions={generateOptions.subAreas}
-            label={t("subArea")}
+            label={t("common.subArea")}
             onChange={setSubArea}
           />
         ) : null}
@@ -289,7 +287,7 @@ export default function NewEventForm({ handleSubmit }: NewEventFormProps) {
             value={dungeon}
             items={dungeons}
             generateOptions={generateOptions.dungeons}
-            label={t("dungeon")}
+            label={t("common.dungeon")}
             onChange={setDungeon}
           />
         ) : null}
@@ -298,12 +296,12 @@ export default function NewEventForm({ handleSubmit }: NewEventFormProps) {
           htmlFor="max_players"
           className="new_event_form_label max_players"
         >
-          <span>{t("maxPlayers")}:</span>
+          <span>{t("common.maxPlayers")}:</span>
           <input
             type="number"
             name="max_players"
             id="max_players"
-            placeholder={t("maxPayers")}
+            placeholder={t("common.maxPlayers")}
             className="new_event_form_label_input"
           />
         </label>
@@ -312,12 +310,12 @@ export default function NewEventForm({ handleSubmit }: NewEventFormProps) {
           htmlFor="description"
           className="new_event_form_label description"
         >
-          <span>{t("description")}:</span>
+          <span>{t("common.description")}:</span>
           <textarea
             name="description"
             id="description"
             rows={4}
-            placeholder={t("description")}
+            placeholder={t("common.description")}
             className="new_event_form_label_input"
           />
         </label>
@@ -327,7 +325,7 @@ export default function NewEventForm({ handleSubmit }: NewEventFormProps) {
           value={registeredCharacters}
           items={characters}
           generateOptions={generateOptions.characters}
-          label={t("characterSelection")}
+          label={t("character.selection")}
           onChange={setRegisteredCharacters}
         />
 
@@ -336,12 +334,12 @@ export default function NewEventForm({ handleSubmit }: NewEventFormProps) {
           value={status}
           items={statutes}
           generateOptions={generateOptions.statutes}
-          label={t("visibility")}
+          label={t("common.visibility")}
           onChange={setStatus}
         />
 
         <button type="submit" className="new_event_form_button button">
-          {t("createEvent")}
+          {t("event.create")}
         </button>
       </form>
     </div>

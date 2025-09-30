@@ -2,7 +2,7 @@ import "./UpdateEventForm.scss";
 
 import { isAxiosError } from "axios";
 import { useEffect, useState } from "react";
-import { useTranslation } from "react-i18next";
+import { t } from "../../../../i18n/i18n-helper";
 
 import { Tag } from "../../../../types/tag";
 import { Server } from "../../../../types/server";
@@ -36,8 +36,6 @@ export default function NewEventForm({
   updateTarget,
   handleSubmit,
 }: NewEventFormProps) {
-  const { t } = useTranslation("translation");
-
   const { showError } = useNotification();
 
   const [tags, setTags] = useState<Tag[]>([]);
@@ -71,8 +69,8 @@ export default function NewEventForm({
   const [isDungeon, setIsDungeon] = useState(false);
 
   const statutes = [
-    { id: 1, label: `${t("private")}`, value: "private" },
-    { id: 2, label: `${t("public")}`, value: "public" },
+    { id: 1, label: t("common.private"), value: "private" },
+    { id: 2, label: t("common.public"), value: "public" },
   ];
 
   useEffect(() => {
@@ -83,9 +81,9 @@ export default function NewEventForm({
         setTags(response);
       } catch (error) {
         if (isAxiosError(error)) {
-          showError(`${t("error")}`, error.message);
+          showError(t("common.error"), error.message);
         } else if (error instanceof Error) {
-          showError(`${t("error")}`, `${t("errorOccurred")}`);
+          showError(t("common.error"), t("system.error.occurred"));
           console.error("General error:", error.message);
         }
       }
@@ -98,9 +96,9 @@ export default function NewEventForm({
         setServers(response);
       } catch (error) {
         if (isAxiosError(error)) {
-          showError(`${t("error")}`, error.message);
+          showError(t("common.error"), error.message);
         } else if (error instanceof Error) {
-          showError(`${t("error")}`, `${t("errorOccurred")}`);
+          showError(t("common.error"), t("system.error.occurred"));
           console.error("General error:", error.message);
         }
       }
@@ -134,9 +132,9 @@ export default function NewEventForm({
         }
       } catch (error) {
         if (isAxiosError(error)) {
-          showError(`${t("error")}`, error.message);
+          showError(t("common.error"), error.message);
         } else if (error instanceof Error) {
-          showError(`${t("error")}`, `${t("errorOccurred")}`);
+          showError(t("common.error"), t("system.error.occurred"));
           console.error("General error:", error.message);
         }
       }
@@ -153,7 +151,7 @@ export default function NewEventForm({
     const fetchDungeons = async () => {
       const selectedTag = tags.find((t) => t.id === tag);
 
-      if (!selectedTag || selectedTag.name !== "Donjon") {
+      if (!selectedTag || selectedTag.name !== t("common.dungeon")) {
         setIsDungeon(false);
         return;
       }
@@ -178,9 +176,9 @@ export default function NewEventForm({
         }
       } catch (error) {
         if (isAxiosError(error)) {
-          showError(`${t("error")}`, error.message);
+          showError(t("common.error"), error.message);
         } else if (error instanceof Error) {
-          showError(`${t("error")}`, `${t("errorOccurred")}`);
+          showError(t("common.error"), t("system.error.occurred"));
           console.error("General error:", error.message);
         }
       }
@@ -200,14 +198,14 @@ export default function NewEventForm({
       <h3 className="update_event_title">Modification d'évènement</h3>
       <form onSubmit={handleSubmit} className="update_event_form" role="form">
         <label htmlFor="title" className="update_event_form_label title">
-          <span>{t("title")}:</span>
+          <span>{t("common.title")}:</span>
           <input
             type="text"
             name="title"
             id="title"
             value={title}
             required
-            placeholder={t("title")}
+            placeholder={t("common.title")}
             className="update_event_form_label_input"
             onChange={(e) => setTitle(e.target.value)}
           />
@@ -218,7 +216,7 @@ export default function NewEventForm({
           value={tag}
           items={tags}
           generateOptions={generateOptions.tags}
-          label={t("tag")}
+          label={t("tag.default")}
           onChange={setTag}
         />
 
@@ -227,12 +225,12 @@ export default function NewEventForm({
           value={server}
           items={servers}
           generateOptions={generateOptions.servers}
-          label={t("server")}
+          label={t("server.default")}
           onChange={setServer}
         />
 
         <label htmlFor="date" className="update_event_form_label date">
-          <span>{t("date")}:</span>
+          <span>{t("common.date")}:</span>
           <input
             type="datetime-local"
             name="date"
@@ -246,7 +244,7 @@ export default function NewEventForm({
         </label>
 
         <label htmlFor="duration" className="update_event_form_label duration">
-          <span>{t("duration")}:</span>
+          <span>{t("common.duration")}:</span>
           <input
             type="number"
             name="duration"
@@ -254,7 +252,7 @@ export default function NewEventForm({
             value={duration}
             onChange={(e) => setDuration(Number(e.target.value))}
             required
-            placeholder={t("durationInMinutes")}
+            placeholder={t("common.durationInMin")}
             className="update_event_form_label_input"
           />
         </label>
@@ -264,7 +262,7 @@ export default function NewEventForm({
           value={area}
           items={areas}
           generateOptions={generateOptions.areas}
-          label={t("area")}
+          label={t("common.area")}
           onChange={setArea}
         />
 
@@ -274,7 +272,7 @@ export default function NewEventForm({
             value={subArea}
             items={subAreas}
             generateOptions={generateOptions.subAreas}
-            label={t("subArea")}
+            label={t("common.subArea")}
             onChange={setSubArea}
           />
         ) : null}
@@ -285,7 +283,7 @@ export default function NewEventForm({
             value={dungeon}
             items={dungeons}
             generateOptions={generateOptions.dungeons}
-            label={t("dungeon")}
+            label={t("common.dungeon")}
             onChange={setDungeon}
           />
         ) : null}
@@ -294,14 +292,14 @@ export default function NewEventForm({
           htmlFor="max_players"
           className="update_event_form_label max_players"
         >
-          <span>{t("maxPlayers")}:</span>
+          <span>{t("common.maxPlayers")}:</span>
           <input
             type="number"
             name="max_players"
             value={maxPlayers}
             onChange={(e) => setMaxPlayers(Number(e.target.value))}
             id="max_players"
-            placeholder={t("maxPlayers")}
+            placeholder={t("common.maxPlayers")}
             className="update_event_form_label_input"
           />
         </label>
@@ -310,14 +308,14 @@ export default function NewEventForm({
           htmlFor="description"
           className="update_event_form_label description"
         >
-          <span>{t("description")}:</span>
+          <span>{t("common.description")}:</span>
           <textarea
             name="description"
             id="description"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             rows={3}
-            placeholder={t("description")}
+            placeholder={t("common.description")}
             className="update_event_form_label_input"
           />
         </label>
@@ -327,12 +325,12 @@ export default function NewEventForm({
           value={status}
           items={statutes}
           generateOptions={generateOptions.statutes}
-          label={t("visibility")}
+          label={t("common.visibility")}
           onChange={setStatus}
         />
 
         <button type="submit" className="update_event_form_button button">
-          {t("changeMyEvent")}
+          {t("event.modification")}
         </button>
       </form>
     </div>

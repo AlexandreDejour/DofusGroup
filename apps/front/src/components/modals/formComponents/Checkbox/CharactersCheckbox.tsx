@@ -1,7 +1,8 @@
 import "./CharactersCheckbox.scss";
 
+import { t } from "../../../../i18n/i18n-helper";
+
 import { CharacterEnriched } from "../../../../types/character";
-import { useTranslation } from "react-i18next";
 
 interface CharacterCheckboxProps {
   characters: CharacterEnriched[];
@@ -10,10 +11,9 @@ interface CharacterCheckboxProps {
 export default function CharactersCheckbox({
   characters,
 }: CharacterCheckboxProps) {
-  const { t } = useTranslation("translation");
   return (
     <fieldset className="characters">
-      <legend>{t("ourCharacters")}:</legend>
+      <legend>{t("character.your")}:</legend>
       <div className="characters_choices">
         {characters.map((character) => (
           <label key={character.id} className="characters_choices_label">
@@ -29,7 +29,7 @@ export default function CharactersCheckbox({
                   className="characters_choices_label_card_img"
                   src={`/miniatures/${character.breed.name.toLocaleLowerCase()}_male.webp`}
                   alt={`${t(
-                    "classThumbnail",
+                    "common.classThumbnail",
                   )} ${character.breed.name.toLocaleLowerCase()}`}
                 />
               ) : (
@@ -37,7 +37,7 @@ export default function CharactersCheckbox({
                   className="characters_choices_label_card_img"
                   src={`/miniatures/${character.breed.name.toLocaleLowerCase()}_female.webp`}
                   alt={`${t(
-                    "classThumbnail",
+                    "common.classThumbnail",
                   )} ${character.breed.name.toLocaleLowerCase()}`}
                 />
               )}
@@ -49,7 +49,7 @@ export default function CharactersCheckbox({
                   {character.breed.name}
                 </p>
                 <p className="characters_choices_label_card_details_level">
-                  {t("level")}: {character.level}
+                  {t("common.level")}: {character.level}
                 </p>
               </div>
             </div>

@@ -2,7 +2,7 @@ import "./JoinEventForm.scss";
 
 import { isAxiosError } from "axios";
 import { useEffect, useState } from "react";
-import { useTranslation } from "react-i18next";
+import { t } from "../../../../i18n/i18n-helper";
 
 import { useAuth } from "../../../../contexts/authContext";
 import { useModal } from "../../../../contexts/modalContext";
@@ -25,8 +25,6 @@ interface JoinEventFormProps {
 }
 
 export default function JoinEventForm({ handleSubmit }: JoinEventFormProps) {
-  const { t } = useTranslation("translation");
-
   const { user } = useAuth();
   const { updateTarget } = useModal();
   const { showError } = useNotification();
@@ -63,15 +61,15 @@ export default function JoinEventForm({ handleSubmit }: JoinEventFormProps) {
 
   return (
     <div className="join_event">
-      <h3 className="join_event_title">{t("joinEvent")}</h3>
+      <h3 className="join_event_title">{t("event.join")}</h3>
       <form onSubmit={handleSubmit} className="join_event_form" role="form">
         {characters.length ? (
           <CharactersCheckbox characters={characters} />
         ) : (
-          <p>{t("anyCharacterOnThisServer")}</p>
+          <p>{t("character.error.noneOnServer")}</p>
         )}
         <button type="submit" className="join_event_form_button button">
-          {t("join")}
+          {t("common.join")}
         </button>
       </form>
     </div>

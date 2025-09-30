@@ -1,38 +1,36 @@
 import "./Form.scss";
 
-import { useTranslation } from "react-i18next";
+import { t } from "../../../../i18n/i18n-helper";
 
 interface LoginFormProps {
   handleSubmit: (event: React.FormEvent<HTMLFormElement>) => void;
 }
 
 export default function LoginForm({ handleSubmit }: LoginFormProps) {
-  const { t } = useTranslation("translation");
-
   return (
     <div className="content_modal">
-      <h3 className="content_modal_title">{t("login")}</h3>
+      <h3 className="content_modal_title">{t("auth.login")}</h3>
       <form onSubmit={handleSubmit} className="content_modal_form" role="form">
         <label htmlFor="username" className="content_modal_form_label">
-          <span>{t("username")}:</span>
+          <span>{t("auth.username")}:</span>
           <input
             type="text"
             name="username"
             id="username"
             required
-            placeholder={t("username")}
+            placeholder={t("auth.username")}
             className="content_modal_form_label_input"
           />
         </label>
 
         <label htmlFor="password" className="content_modal_form_label">
-          <span>{t("password")}:</span>
+          <span>{t("auth.password.default")}:</span>
           <input
             type="password"
             name="password"
             id="password"
             required
-            placeholder={t("password")}
+            placeholder={t("auth.password")}
             className="content_modal_form_label_input"
           />
         </label>
@@ -42,7 +40,7 @@ export default function LoginForm({ handleSubmit }: LoginFormProps) {
           aria-label="Login"
           className="content_modal_form_button button"
         >
-          {t("toConnect")}
+          {t("auth.login")}
         </button>
       </form>
     </div>

@@ -4,7 +4,7 @@ import { useState } from "react";
 
 import { CommentEnriched } from "../../../../types/comment";
 
-import { useTranslation } from "react-i18next";
+import { t } from "../../../../i18n/i18n-helper";
 import { typeGuard } from "../../utils/typeGuard";
 
 interface CommentFormProps {
@@ -16,15 +16,14 @@ export default function CommentForm({
   updateTarget,
   handleSubmit,
 }: CommentFormProps) {
-  const { t } = useTranslation("translation");
   const [content, setContent] = useState<string>(updateTarget?.content ?? "");
 
   return (
     <div className="content_modal">
       {typeGuard.commentEnriched(updateTarget) ? (
-        <h3 className="content_modal_title">{t("changeComment")}</h3>
+        <h3 className="content_modal_title">{t("comment.change")}</h3>
       ) : (
-        <h3 className="content_modal_title">{t("addComment")}</h3>
+        <h3 className="content_modal_title">{t("comment.add")}</h3>
       )}
 
       <form onSubmit={handleSubmit} className="content_modal_form" role="form">
@@ -38,7 +37,7 @@ export default function CommentForm({
               value={content}
               onChange={(e) => setContent(e.target.value)}
               required
-              placeholder={t("writeComment")}
+              placeholder={t("comment.write")}
               className="content_modal_form_label_input"
             ></textarea>
           ) : (
@@ -47,14 +46,14 @@ export default function CommentForm({
               id="content"
               rows={3}
               required
-              placeholder={t("writeComment")}
+              placeholder={t("comment.write")}
               className="content_modal_form_label_input"
             />
           )}
         </label>
 
         <button type="submit" className="content_modal_form_button button">
-          {t("toComment")}
+          {t("comment.single")}
         </button>
       </form>
     </div>

@@ -4,6 +4,7 @@ import { useState } from "react";
 
 import { CommentEnriched } from "../../../../types/comment";
 
+import { useTranslation } from "react-i18next";
 import { typeGuard } from "../../utils/typeGuard";
 
 interface CommentFormProps {
@@ -15,19 +16,20 @@ export default function CommentForm({
   updateTarget,
   handleSubmit,
 }: CommentFormProps) {
+  const { t } = useTranslation("translation");
   const [content, setContent] = useState<string>(updateTarget?.content ?? "");
 
   return (
     <div className="content_modal">
       {typeGuard.commentEnriched(updateTarget) ? (
-        <h3 className="content_modal_title">Modifier un commentaire</h3>
+        <h3 className="content_modal_title">{t("changeComment")}</h3>
       ) : (
-        <h3 className="content_modal_title">Ajouter un commentaire</h3>
+        <h3 className="content_modal_title">{t("addComment")}</h3>
       )}
 
       <form onSubmit={handleSubmit} className="content_modal_form" role="form">
         <label htmlFor="content" className="content_modal_form_label">
-          <span>Commentaire: </span>
+          <span>{t("comment")}: </span>
           {typeGuard.commentEnriched(updateTarget) ? (
             <textarea
               name="content"
@@ -36,7 +38,7 @@ export default function CommentForm({
               value={content}
               onChange={(e) => setContent(e.target.value)}
               required
-              placeholder="Rédigez un commentaire"
+              placeholder={t("writeComment")}
               className="content_modal_form_label_input"
             ></textarea>
           ) : (
@@ -45,14 +47,14 @@ export default function CommentForm({
               id="content"
               rows={3}
               required
-              placeholder="Rédigez un commentaire"
+              placeholder={t("writeComment")}
               className="content_modal_form_label_input"
             />
           )}
         </label>
 
         <button type="submit" className="content_modal_form_button button">
-          Commenter
+          {t("toComment")}
         </button>
       </form>
     </div>

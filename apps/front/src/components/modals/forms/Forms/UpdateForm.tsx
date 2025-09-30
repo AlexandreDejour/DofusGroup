@@ -1,11 +1,15 @@
 import "./Form.scss";
 
+import { useTranslation } from "react-i18next";
+
 interface UpdateFormProps {
   field: string;
   handleSubmit: (event: React.FormEvent<HTMLFormElement>) => void;
 }
 
 export default function UpdateForm({ field, handleSubmit }: UpdateFormProps) {
+  const { t } = useTranslation("translation");
+
   const FIELD_MAP: Record<string, { label: string; type: string }> = {
     mail: { label: "email", type: "email" },
     password: { label: "mot de passe", type: "password" },
@@ -16,7 +20,9 @@ export default function UpdateForm({ field, handleSubmit }: UpdateFormProps) {
 
   return (
     <div className="content_modal">
-      <h3 className="content_modal_title">Modifier {label}</h3>
+      <h3 className="content_modal_title">
+        {t("change")} {label}
+      </h3>
       <form onSubmit={handleSubmit} className="content_modal_form" role="form">
         <label htmlFor={field} className="content_modal_form_label">
           <span>{label.charAt(0).toUpperCase() + label.slice(1)}</span>
@@ -35,13 +41,15 @@ export default function UpdateForm({ field, handleSubmit }: UpdateFormProps) {
             htmlFor={`confirm${field.charAt(0).toUpperCase() + field.slice(1)}`}
             className="content_modal_form_label"
           >
-            <span>Confirmation {label}</span>
+            <span>
+              {t("confirm")} {label}
+            </span>
             <input
               type={type}
               name={`confirm${field.charAt(0).toUpperCase() + field.slice(1)}`}
               id={`confirm${field.charAt(0).toUpperCase() + field.slice(1)}`}
               required
-              placeholder={`Confirmation ${label}`}
+              placeholder={`${t("confirm")} ${label}`}
               className="content_modal_form_label_input"
             />
           </label>
@@ -52,7 +60,7 @@ export default function UpdateForm({ field, handleSubmit }: UpdateFormProps) {
           aria-label="Update"
           className="content_modal_form_button button"
         >
-          Modifier
+          {t("change")}
         </button>
       </form>
     </div>

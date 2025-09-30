@@ -1,7 +1,8 @@
 import "./NewEventForm.scss";
 
-import { useEffect, useState } from "react";
 import { isAxiosError } from "axios";
+import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 import { Tag } from "../../../../types/tag";
 import { Server } from "../../../../types/server";
@@ -35,6 +36,8 @@ interface NewEventFormProps {
 }
 
 export default function NewEventForm({ handleSubmit }: NewEventFormProps) {
+  const { t } = useTranslation("translation");
+
   const { user } = useAuth();
   const { showError } = useNotification();
 
@@ -59,8 +62,8 @@ export default function NewEventForm({ handleSubmit }: NewEventFormProps) {
   const [isDungeon, setIsDungeon] = useState(false);
 
   const statutes = [
-    { id: 1, label: "Privé", value: "private" },
-    { id: 2, label: "Public", value: "public" },
+    { id: 1, label: `${t("private")}`, value: "private" },
+    { id: 2, label: `${t("public")}`, value: "public" },
   ];
 
   useEffect(() => {
@@ -71,9 +74,9 @@ export default function NewEventForm({ handleSubmit }: NewEventFormProps) {
         setTags(response);
       } catch (error) {
         if (isAxiosError(error)) {
-          showError("Erreur", error.message);
+          showError(`${t("error")}`, error.message);
         } else if (error instanceof Error) {
-          showError("Erreur", "Une erreur est survenue");
+          showError(`${t("error")}`, `${t("errorOccurred")}`);
           console.error("General error:", error.message);
         }
       }
@@ -86,9 +89,9 @@ export default function NewEventForm({ handleSubmit }: NewEventFormProps) {
         setServers(response);
       } catch (error) {
         if (isAxiosError(error)) {
-          showError("Erreur", error.message);
+          showError(`${t("error")}`, error.message);
         } else if (error instanceof Error) {
-          showError("Erreur", "Une erreur est survenue");
+          showError(`${t("error")}`, "Une erreur est survenue");
           console.error("General error:", error.message);
         }
       }
@@ -109,9 +112,9 @@ export default function NewEventForm({ handleSubmit }: NewEventFormProps) {
         } else setCharacters(response);
       } catch (error) {
         if (isAxiosError(error)) {
-          showError("Erreur", error.message);
+          showError(`${t("error")}`, error.message);
         } else if (error instanceof Error) {
-          showError("Erreur", "Une erreur est survenue");
+          showError(`${t("error")}`, `${t("errorOccurred")}`);
           console.error("General error:", error.message);
         }
       }
@@ -144,9 +147,9 @@ export default function NewEventForm({ handleSubmit }: NewEventFormProps) {
         }
       } catch (error) {
         if (isAxiosError(error)) {
-          showError("Erreur", error.message);
+          showError(`${t("error")}`, error.message);
         } else if (error instanceof Error) {
-          showError("Erreur", "Une erreur est survenue");
+          showError(`${t("error")}`, `${t("errorOccurred")}`);
           console.error("General error:", error.message);
         }
       }
@@ -164,7 +167,7 @@ export default function NewEventForm({ handleSubmit }: NewEventFormProps) {
     const fetchDungeons = async () => {
       const selectedTag = tags.find((t) => t.id === tag);
 
-      if (!selectedTag || selectedTag.name !== "Donjon") {
+      if (!selectedTag || selectedTag.name !== `${t("dungeon")}`) {
         setIsDungeon(false);
         return;
       }
@@ -189,9 +192,9 @@ export default function NewEventForm({ handleSubmit }: NewEventFormProps) {
         }
       } catch (error) {
         if (isAxiosError(error)) {
-          showError("Erreur", error.message);
+          showError(`${t("error")}`, error.message);
         } else if (error instanceof Error) {
-          showError("Erreur", "Une erreur est survenue");
+          showError(`${t("error")}`, `${t("errorOccurred")}`);
           console.error("General error:", error.message);
         }
       }
@@ -202,16 +205,16 @@ export default function NewEventForm({ handleSubmit }: NewEventFormProps) {
 
   return (
     <div className="new_event">
-      <h3 className="new_event_title">Création d'évènement</h3>
+      <h3 className="new_event_title">{t("createEvent")}</h3>
       <form onSubmit={handleSubmit} className="new_event_form" role="form">
         <label htmlFor="title" className="new_event_form_label title">
-          <span>Titre:</span>
+          <span>{t("title")}:</span>
           <input
             type="text"
             name="title"
             id="title"
             required
-            placeholder="Titre"
+            placeholder={t("title")}
             className="new_event_form_label_input"
           />
         </label>
@@ -221,7 +224,7 @@ export default function NewEventForm({ handleSubmit }: NewEventFormProps) {
           value={tag}
           items={tags}
           generateOptions={generateOptions.tags}
-          label="Tag"
+          label={t("tag")}
           onChange={setTag}
         />
 
@@ -230,12 +233,12 @@ export default function NewEventForm({ handleSubmit }: NewEventFormProps) {
           value={server}
           items={servers}
           generateOptions={generateOptions.servers}
-          label="Serveur"
+          label={t("server")}
           onChange={setServer}
         />
 
         <label htmlFor="date" className="new_event_form_label date">
-          <span>Date:</span>
+          <span>{t("date")}:</span>
           <input
             type="datetime-local"
             name="date"
@@ -249,13 +252,13 @@ export default function NewEventForm({ handleSubmit }: NewEventFormProps) {
         </label>
 
         <label htmlFor="duration" className="new_event_form_label duration">
-          <span>Durée:</span>
+          <span>{t("duration")}:</span>
           <input
             type="number"
             name="duration"
             id="duration"
             required
-            placeholder="Durée en minutes"
+            placeholder={t("durationInMinutes")}
             className="new_event_form_label_input"
           />
         </label>
@@ -265,7 +268,7 @@ export default function NewEventForm({ handleSubmit }: NewEventFormProps) {
           value={area}
           items={areas}
           generateOptions={generateOptions.areas}
-          label="Zone"
+          label={t("area")}
           onChange={setArea}
         />
 
@@ -275,7 +278,7 @@ export default function NewEventForm({ handleSubmit }: NewEventFormProps) {
             value={subArea}
             items={subAreas}
             generateOptions={generateOptions.subAreas}
-            label="Sous-zone"
+            label={t("subArea")}
             onChange={setSubArea}
           />
         ) : null}
@@ -286,7 +289,7 @@ export default function NewEventForm({ handleSubmit }: NewEventFormProps) {
             value={dungeon}
             items={dungeons}
             generateOptions={generateOptions.dungeons}
-            label="Donjon"
+            label={t("dungeon")}
             onChange={setDungeon}
           />
         ) : null}
@@ -295,12 +298,12 @@ export default function NewEventForm({ handleSubmit }: NewEventFormProps) {
           htmlFor="max_players"
           className="new_event_form_label max_players"
         >
-          <span>Joueurs maximum:</span>
+          <span>{t("maxPlayers")}:</span>
           <input
             type="number"
             name="max_players"
             id="max_players"
-            placeholder="Joueurs maximum"
+            placeholder={t("maxPayers")}
             className="new_event_form_label_input"
           />
         </label>
@@ -309,12 +312,12 @@ export default function NewEventForm({ handleSubmit }: NewEventFormProps) {
           htmlFor="description"
           className="new_event_form_label description"
         >
-          <span>Description:</span>
+          <span>{t("description")}:</span>
           <textarea
             name="description"
             id="description"
             rows={4}
-            placeholder="Description"
+            placeholder={t("description")}
             className="new_event_form_label_input"
           />
         </label>
@@ -324,7 +327,7 @@ export default function NewEventForm({ handleSubmit }: NewEventFormProps) {
           value={registeredCharacters}
           items={characters}
           generateOptions={generateOptions.characters}
-          label="Sélection de personnage(s)"
+          label={t("characterSelection")}
           onChange={setRegisteredCharacters}
         />
 
@@ -333,12 +336,12 @@ export default function NewEventForm({ handleSubmit }: NewEventFormProps) {
           value={status}
           items={statutes}
           generateOptions={generateOptions.statutes}
-          label="Visibilité"
+          label={t("visibility")}
           onChange={setStatus}
         />
 
         <button type="submit" className="new_event_form_button button">
-          Créer un évènement
+          {t("createEvent")}
         </button>
       </form>
     </div>

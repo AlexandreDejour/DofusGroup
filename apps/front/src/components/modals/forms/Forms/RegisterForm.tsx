@@ -1,69 +1,73 @@
 import "./Form.scss";
 
+import { useTranslation } from "react-i18next";
+
 interface RegisterFormProps {
   handleSubmit: (event: React.FormEvent<HTMLFormElement>) => void;
 }
 
 export default function RegisterForm({ handleSubmit }: RegisterFormProps) {
+  const { t } = useTranslation("translation");
+
   return (
     <div className="content_modal">
-      <h3 className="content_modal_title">Inscription</h3>
+      <h3 className="content_modal_title">{t("register")}</h3>
       <form onSubmit={handleSubmit} className="content_modal_form" role="form">
         <label htmlFor="username" className="content_modal_form_label">
-          <span>Pseudo:</span>
+          <span>{t("username")}:</span>
           <input
             type="text"
             name="username"
             id="username"
             required
-            placeholder="Pseudo"
+            placeholder={t("username")}
             className="content_modal_form_label_input"
           />
         </label>
 
         <label htmlFor="mail" className="content_modal_form_label">
-          <span>Email:</span>
+          <span>{t("email")}:</span>
           <input
             type="email"
             name="mail"
             id="mail"
             required
-            placeholder="Email"
+            placeholder={t("email")}
             className="content_modal_form_label_input"
           />
         </label>
 
         <label htmlFor="password" className="content_modal_form_label">
-          <span>Mot de passe:</span>
+          <span>{t("password")}:</span>
           <input
             type="password"
             name="password"
             id="password"
             required
-            title="Le mot de passe ne respecte pas les conditions minimales de sécurité"
-            placeholder="Mot de passe"
+            title={t("minimumPasswordRules")}
+            placeholder={t("password")}
             className="content_modal_form_label_input"
           />
         </label>
 
         <label htmlFor="confirmPassword" className="content_modal_form_label">
-          <span>Confirmation mot de passe:</span>
+          <span>{t("confirmPassword")}:</span>
           <input
             type="password"
             name="confirmPassword"
             id="confirmPassword"
             required
-            placeholder="Confirmation mot de passe"
+            placeholder={t("confirmPassword")}
             className="content_modal_form_label_input"
           />
         </label>
 
         <button
           type="submit"
-          aria-label="Register"
+          aia-label="Register"
           className="content_modal_form_button button"
         >
-          S'incrire
+          {t("register")}
         </button>
       </form>
     </div>

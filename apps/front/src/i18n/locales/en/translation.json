@@ -1,0 +1,144 @@
+{
+  "common": {
+    "about": "About",
+    "action.needLogin": "This action requires you to be logged in.",
+    "add": "Add",
+    "author": "Author",
+    "back": "Back",
+    "change": "Edit",
+    "confirm": "Confirmation",
+    "create": "Create",
+    "delete": "Delete",
+    "description": "Description",
+    "details": "Details",
+    "error": "Error",
+    "error.occurred": "An error occurred.",
+    "loading": "Loading...",
+    "name": "Name",
+    "ok": "OK",
+    "public": "Public",
+    "private": "Private",
+    "search": "Search",
+    "select": "Select",
+    "status": "Status",
+    "title": "Title",
+    "welcome": "Welcome.",
+    "allRightsReserved": "All rights reserved.",
+    "goodbye": "See you soon."
+  },
+
+  "auth": {
+    "login": "Login",
+    "logout": "Logout",
+    "register": "Register",
+    "username": "Username",
+    "password": "Password",
+    "password.confirm": "Confirm password",
+    "email.change": "Change email",
+    "password.change": "Change password",
+    "username.change": "Change username",
+
+    "error.password.rules": "The password does not meet the minimum security requirements.",
+    "error.password.mismatch": "Password and confirmation must match.",
+    "error.credentials.invalid": "Incorrect email or password.",
+    "error.credentials.unavailable": "This username or email is not available.",
+    "error.user.unknown": "Unknown user.",
+    "error.user.notFound": "User not found.",
+    "error.data.incomplete": "The information provided is incorrect or incomplete.",
+
+    "success.login": "Login successful.",
+    "success.register": "Registration successful.",
+    "success.accountDeleted": "Your account has been successfully deleted.",
+    "success.connected": "Hello ${response.username}! You are now logged in.",
+
+    "prompt.connect": "Your account has been successfully created. Please log in.",
+    "prompt.loginRequired": "Login required."
+  },
+
+  "character": {
+    "list": "Characters",
+    "create": "Create a character",
+    "creation": "Character creation",
+    "modification": "Character modification",
+    "selection": "Character selection",
+    "default": "Default character",
+
+    "error.none": "No character.",
+    "error.noneOnAccount": "You have not created any character on your account.",
+    "error.noneOnServer": "No character available on this server.",
+    "error.notFound": "This character no longer exists.",
+
+    "success.created": "You have created a new character.",
+    "success.updated": "You have updated your character.",
+    "success.deleted": "Your character has been successfully deleted.",
+    "success.creation": "Character creation successful."
+  },
+
+  "event": {
+    "list": "Events",
+    "create": "Create an event",
+    "join": "Join the event",
+    "discussion": "Discussion",
+
+    "error.none": "No event.",
+    "error.noneUpcoming": "No upcoming event.",
+    "error.noneFound": "No event found.",
+    "error.characterOut": "This character is no longer part of the event.",
+
+    "success.created": "You have created a new event.",
+    "success.updated": "You have updated your event.",
+    "success.deleted": "Your event has been successfully deleted.",
+    "success.creation": "Event creation successful.",
+
+    "prompt.loginRequired": "You must be logged in to create an event.",
+    "prompt.joined": "You have joined the event."
+  },
+
+  "comment": {
+    "single": "Comment",
+    "add": "Add a comment",
+    "new": "New comment",
+    "change": "Edit a comment",
+    "write": "Write a comment",
+
+    "error.notFound": "This comment no longer exists.",
+    "error.loginRequired": "You must be logged in to add a comment.",
+
+    "success.added": "You have added a new comment.",
+    "success.updated": "You have updated your comment.",
+    "success.deleted": "Your comment has been successfully deleted."
+  },
+
+  "validation": {
+    "date.future": "The date must be in the future.",
+    "level.rules": "Your character's level must be between 1 and 200.",
+    "playerNumber.range": "The number of players must be between 2 and 8.",
+    "server.required": "You must specify a server.",
+    "tag.required": "You must specify a tag.",
+    "url.rules": "Only URLs from DofusBook are accepted."
+  },
+
+  "system": {
+    "error.occurred": "An error occurred.",
+    "error.recoveryFailed": "Data recovery failed.",
+    "error.forbidden": "Action forbidden.",
+    "error.impossible": "Action impossible.",
+
+    "success.disconnected": "You have been successfully logged out.",
+    "success.updated": "Your information has been successfully updated.",
+    "success.deleted": "Deletion successful.",
+    "success.dataUpdated": "Update successful.",
+
+    "data.deletion": "Data deletion."
+  },
+
+  "settings": {
+    "language.change": "Change language: {{language}}",
+    "language.english": "English",
+    "language.french": "French",
+    "gcu": "Terms of Use",
+    "privacyPolicy": "Privacy Policy",
+    "contact": "Contact us",
+    "reportBug": "Report a bug"
+  }
+}

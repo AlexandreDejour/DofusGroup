@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import translation from "./locales/en/translation.json";
 import i18n from "./i18n";
 
@@ -15,9 +16,12 @@ type DeepKeys<T> = T extends object
 
 export type TranslationKeys = DeepKeys<typeof translation>;
 
-export function t(
-  key: TranslationKeys,
-  options?: Record<string, unknown>,
-): string {
+export function t(key: TranslationKeys, options?: Record<string, unknown>) {
   return i18n.t(key, options);
+}
+
+export function useTypedTranslation() {
+  const { t } = useTranslation();
+  return (key: TranslationKeys, options?: Record<string, any>) =>
+    t(key, options);
 }

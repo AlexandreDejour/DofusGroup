@@ -2,7 +2,7 @@ import "./Footer.scss";
 
 import i18n from "../../i18n/i18n";
 import { Link } from "react-router";
-import { t } from "../../i18n/i18n-helper";
+import { useTypedTranslation } from "../../i18n/i18n-helper";
 import ReactCountryFlag from "react-country-flag";
 
 import { useAuth } from "../../contexts/authContext";
@@ -11,6 +11,7 @@ export default function Footer() {
   const changeLanguage = (lng: string) => {
     i18n.changeLanguage(lng);
   };
+  const t = useTypedTranslation();
 
   const { user } = useAuth();
 

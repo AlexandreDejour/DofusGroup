@@ -1,13 +1,15 @@
 import "./Header.scss";
 
 import { Link } from "react-router-dom";
-import { t } from "../../i18n/i18n-helper";
+import { useTypedTranslation } from "../../i18n/i18n-helper";
 
 import { useAuth } from "../../contexts/authContext";
 import { useModal } from "../../contexts/modalContext";
 import { useScreen } from "../../contexts/screenContext";
 
 export default function Header() {
+  const t = useTypedTranslation();
+
   const { isDesktop } = useScreen();
   const { openModal } = useModal();
   const { user, logout } = useAuth();

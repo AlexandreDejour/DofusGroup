@@ -1,9 +1,9 @@
 import "./Profile.scss";
 
 import { isAxiosError } from "axios";
+import { t } from "../../i18n/i18n-helper";
 import { useNavigate } from "react-router";
 import { useEffect, useState } from "react";
-import { useTranslation } from "react-i18next";
 
 import { useAuth } from "../../contexts/authContext";
 import { useModal } from "../../contexts/modalContext";
@@ -23,7 +23,6 @@ const userService = new UserService(axios);
 
 export default function Profile() {
   const navigate = useNavigate();
-  const { t } = useTranslation();
 
   const { showError } = useNotification();
   const { user, isAuthLoading } = useAuth();
@@ -46,9 +45,9 @@ export default function Profile() {
         setUserEnriched(response);
       } catch (error) {
         if (isAxiosError(error)) {
-          showError("Erreur", error.message);
+          showError(t("common.error.default"), error.message);
         } else if (error instanceof Error) {
-          showError("Erreur", "Une erreur est survenue");
+          showError(t("common.error.default"), t("common.error.occurred"));
           console.error("General error:", error.message);
         }
       }
@@ -62,17 +61,17 @@ export default function Profile() {
       {user && userEnriched ? (
         <main className="profile">
           <section className="profile_section">
-            <h2 className="profile_section_title">Profil</h2>
+            <h2 className="profile_section_title">{t("common.profile")}</h2>
 
             <div className="profile_section_details">
               <p className="profile_section_details_info">
-                {t("username")}: {user.username}
+                {t("auth.username")}: {user.username}
               </p>
               <p className="profile_section_details_info">
-                {t("events")}: {userEnriched.events?.length}
+                {t("event.list")}: {userEnriched.events?.length}
               </p>
               <p className="profile_section_details_info">
-                {t("characters")}: {userEnriched.characters?.length}
+                {t("character.list")}: {userEnriched.characters?.length}
               </p>
             </div>
 
@@ -82,48 +81,48 @@ export default function Profile() {
                 className="profile_section_actions_button button"
                 onClick={() => openModal("username")}
               >
-                {t("changeUsername")}
+                {t("auth.usernameChange")}
               </button>
               <button
                 type="button"
                 className="profile_section_actions_button button"
                 onClick={() => openModal("password")}
               >
-                {t("changePassword")}
+                {t("auth.password.change")}
               </button>
               <button
                 type="button"
                 className="profile_section_actions_button button"
                 onClick={() => openModal("mail")}
               >
-                {t("changeEmail")}
+                {t("auth.email.change")}
               </button>
               <button
                 type="button"
                 className="profile_section_actions_button button delete"
                 onClick={() => handleDelete("user")}
               >
-                {t("deleteAccount")}
+                {t("common.delete.account")}
               </button>
               <button
                 type="button"
                 className="profile_section_actions_button button"
                 onClick={() => openModal("newEvent")}
               >
-                {t("createEvent")}
+                {t("event.create")}
               </button>
               <button
                 type="button"
                 className="profile_section_actions_button button"
                 onClick={() => openModal("newCharacter")}
               >
-                {t("createCharacter")}
+                {t("character.create")}
               </button>
             </div>
           </section>
 
           <section className="profile_section">
-            <h2 className="profile_section_title">Évènements</h2>
+            <h2 className="profile_section_title">{t("event.list")}</h2>
             {userEnriched.events && userEnriched.events.length ? (
               <ul className="profile_section_list">
                 {userEnriched.events.map((event) => (
@@ -136,7 +135,7 @@ export default function Profile() {
                 ))}
               </ul>
             ) : (
-              <p>{t("anyEvent")}</p>
+              <p>{t("event.noEvent")}</p>
             )}
           </section>
 
@@ -154,7 +153,7 @@ export default function Profile() {
                 ))}
               </ul>
             ) : (
-              <p>{t("anyCharacter")}</p>
+              <p>{t("character.noCharacter")}</p>
             )}
           </section>
         </main>

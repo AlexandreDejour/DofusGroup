@@ -1,7 +1,7 @@
 import "./Home.scss";
 
 import { isAxiosError } from "axios";
-import { useTranslation } from "react-i18next";
+import { t } from "../../i18n/i18n-helper";
 import { useCallback, useEffect, useState } from "react";
 
 import { Tag } from "../../types/tag";
@@ -29,7 +29,6 @@ const eventService = new EventService(axios);
 const serverService = new ServerService(axios);
 
 export default function Home() {
-  const { t } = useTranslation("translation");
   const { isDesktop } = useScreen();
 
   const [totalPages, setTotalPages] = useState(1);
@@ -138,12 +137,12 @@ export default function Home() {
 
       {isDesktop && (
         <header className="home_header">
-          <p className="home_header_title">{t("title")}</p>
-          <p className="home_header_tag">{t("tag")}</p>
-          <p className="home_header_server">{t("server")}</p>
-          <p className="home_header_date">{t("date")}</p>
-          <p className="home_header_duration">{t("duration")}</p>
-          <p className="home_header_players">{t("players")}</p>
+          <p className="home_header_title">{t("common.title")}</p>
+          <p className="home_header_tag">{t("tag.upperCase")}</p>
+          <p className="home_header_server">{t("server.upperCase")}</p>
+          <p className="home_header_date">{t("common.date")}</p>
+          <p className="home_header_duration">{t("common.duration")}</p>
+          <p className="home_header_players">{t("common.players")}</p>
           <p className="home_header_details"></p>
         </header>
       )}
@@ -157,7 +156,7 @@ export default function Home() {
           ))}
         </ul>
       ) : (
-        <p className="fallback">{t("anyEventFound")}</p>
+        <p className="fallback">{t("event.error.none")}</p>
       )}
 
       {totalPages ? (

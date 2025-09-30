@@ -5,26 +5,47 @@
       "needLogin": "This action requires you to be logged in."
     },
     "add": "Add",
+    "alignment": "Alignment",
+    "area": "Area",
     "author": "Author",
     "back": "Back",
     "change": "Edit",
+    "classThumbnail": "Class thumbnail",
     "confirm": "Confirmation",
     "create": "Create",
-    "delete": "Delete",
+    "createdBy": "created by",
+    "date": "Date",
+    "delete": {
+      "default": "Delete",
+      "account": "Delete account"
+    },
     "description": "Description",
     "details": "Details",
+    "dungeon": "Dungeon",
+    "duration": "Duration",
+    "discussion": "Discussion",
     "error": {
       "default": "Error",
       "occurred": "An error occurred."
     },
+    "join": "Rejoindre",
+    "level": "Level",
     "loading": "Loading...",
     "name": "Name",
     "ok": "OK",
+    "players": "Joueurs",
+    "playerNumber": "Number of players",
     "public": "Public",
     "private": "Private",
+    "profile": "Profile",
+    "return": "Return",
     "search": "Search",
     "select": "Select",
+    "sex": "Sex",
     "status": "Status",
+    "stuff": "Stuff",
+    "subArea": "Sub-area",
+    "team": "Team",
     "title": "Title",
     "welcome": "Welcome.",
     "allRightsReserved": "All rights reserved.",
@@ -78,6 +99,8 @@
   },
 
   "breed": {
+    "default": "class",
+    "upperCase": "Class",
     "error": {
       "notFound": "Breeds found."
     }
@@ -90,6 +113,7 @@
     "modification": "Character modification",
     "selection": "Character selection",
     "default": "Default character",
+    "noCharacter": "No character",
 
     "error": {
       "none": "No character.",
@@ -115,6 +139,7 @@
     "write": "Write a comment",
 
     "error": {
+      "none": "No comment.",
       "notFound": "This comment no longer exists.",
       "loginRequired": "You must be logged in to add a comment."
     },
@@ -131,6 +156,7 @@
     "create": "Create an event",
     "join": "Join the event",
     "discussion": "Discussion",
+    "noEvent": "No event.",
 
     "error": {
       "none": "No event.",
@@ -196,6 +222,8 @@
   },
 
   "server": {
+    "default": "serveur",
+    "upperCase": "Serveur",
     "error": {
       "notFound": "Servers found."
     }
@@ -214,6 +242,8 @@
   },
 
   "tag": {
+    "default": "tag",
+    "upperCase": "Tag",
     "error": {
       "notFound": "Tags found."
     }

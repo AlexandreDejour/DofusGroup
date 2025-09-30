@@ -1,8 +1,10 @@
 import axios from "axios";
+import { t } from "i18next";
 
 import { ApiClient } from "../client";
-import { AuthUser, UserEnriched } from "../../types/user";
+
 import { UpdateForm } from "../../types/form";
+import { AuthUser, UserEnriched } from "../../types/user";
 
 export class UserService {
   private axios;
@@ -23,7 +25,7 @@ export class UserService {
     } catch (error) {
       if (axios.isAxiosError(error)) {
         if (error.response?.status === 404) {
-          throw new Error("Utilisateur introuvable.");
+          throw new Error(`${t("userNotFound")}.`);
         }
       }
       throw error;
@@ -40,7 +42,7 @@ export class UserService {
     } catch (error) {
       if (axios.isAxiosError(error)) {
         if (error.response?.status === 404) {
-          throw new Error("Utilisateur introuvable.");
+          throw new Error(`${t("userNotFound")}.`);
         }
       }
       throw error;
@@ -49,15 +51,11 @@ export class UserService {
 
   public async update(userId: string, data: UpdateForm): Promise<AuthUser> {
     if (data.password && !this.passwordRegex.test(data.password)) {
-      throw new Error(
-        "Le mot de passe ne respecte pas les conditions minimales de sécurité.",
-      );
+      throw new Error(`${t("passwordRules")}.`);
     }
 
     if (data.password !== data.confirmPassword) {
-      throw new Error(
-        "Le mot de passe et la confirmation doivent être identique.",
-      );
+      throw new Error(`${t("passwordAndConfirm")}.`);
     }
 
     try {
@@ -71,7 +69,7 @@ export class UserService {
     } catch (error) {
       if (axios.isAxiosError(error)) {
         if ([400, 401, 403, 404].includes(error.response?.status ?? 0)) {
-          throw new Error("Utilisateur inconnu.");
+          throw new Error(`${t("userNotFound")}.`);
         }
       }
       throw error;
@@ -88,9 +86,9 @@ export class UserService {
     } catch (error) {
       if (axios.isAxiosError(error)) {
         if ([400, 401, 403].includes(error.response?.status ?? 0)) {
-          throw new Error("Cette action n'est pas autorisée.");
+          throw new Error(`${t("forbiddenAction")}.`);
         } else if (error.response?.status === 404) {
-          throw new Error("Cette utilisateur n'existe plus.");
+          throw new Error(`${t("userNotFound")}.`);
         }
       }
       throw error;

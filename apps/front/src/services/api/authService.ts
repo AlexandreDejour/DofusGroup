@@ -1,9 +1,10 @@
 import axios from "axios";
+import { t } from "i18next";
 
 import { ApiClient } from "../client";
 
 import type { AuthUser } from "../../types/user";
-import type { LoginForm, RegisterForm, UpdateForm } from "../../types/form";
+import type { LoginForm, RegisterForm } from "../../types/form";
 
 export class AuthService {
   private axios;
@@ -18,15 +19,11 @@ export class AuthService {
 
   public async register(data: RegisterForm): Promise<AuthUser> {
     if (!this.passwordRegex.test(data.password)) {
-      throw new Error(
-        "Le mot de passe ne respecte pas les conditions minimales de sécurité.",
-      );
+      throw new Error(`${t("minimumPasswordRules")}.`);
     }
 
     if (data.password !== data.confirmPassword) {
-      throw new Error(
-        "Le mot de passe et la confirmation doivent être identique.",
-      );
+      throw new Error(`${t("passwordAndConfirm")}.`);
     }
 
     try {
@@ -35,9 +32,7 @@ export class AuthService {
     } catch (error) {
       if (axios.isAxiosError(error)) {
         if (error.response?.status === 409) {
-          throw new Error(
-            "Ce nom d'utilisateur ou email n'est pas disponible.",
-          );
+          throw new Error(`${t("credentialsNotAvailable")}.`);
         }
       }
       throw error;
@@ -46,7 +41,7 @@ export class AuthService {
 
   public async login(data: LoginForm): Promise<AuthUser> {
     if (!this.passwordRegex.test(data.password)) {
-      throw new Error("Email ou mot de passe érroné.");
+      throw new Error(`${t("credentialsNotAvailable")}.`);
     }
 
     try {
@@ -57,7 +52,7 @@ export class AuthService {
     } catch (error) {
       if (axios.isAxiosError(error)) {
         if (error.response?.status === 401) {
-          throw new Error("Email ou mot de passe érroné.");
+          throw new Error(`${t("wrongCredentials")}.`);
         }
       }
       throw error;
@@ -74,7 +69,7 @@ export class AuthService {
     } catch (error) {
       if (axios.isAxiosError(error)) {
         if ([400, 401, 403, 404].includes(error.response?.status ?? 0)) {
-          throw new Error("Utilisateur inconnu.");
+          throw new Error(`${t("unknownUser")}`);
         }
       }
       throw error;

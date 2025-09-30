@@ -1,4 +1,5 @@
 import axios from "axios";
+import { t } from "i18next";
 
 import { Breed } from "../../types/breed";
 
@@ -19,7 +20,7 @@ export class BreedService {
     } catch (error) {
       if (axios.isAxiosError(error)) {
         if (error.response?.status === 204) {
-          throw new Error("Aucune classe disponible.");
+          throw new Error(`${t("anyClass")}.`);
         }
       }
       throw error;

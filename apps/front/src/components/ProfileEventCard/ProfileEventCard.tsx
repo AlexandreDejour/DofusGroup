@@ -20,6 +20,7 @@ export default function ProfileEventCard({
   handleDelete,
 }: ProfileEventCardProps) {
   const navigate = useNavigate();
+
   const { isDesktop } = useScreen();
 
   return (

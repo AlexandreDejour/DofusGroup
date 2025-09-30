@@ -1,8 +1,7 @@
 import "./EventCard.scss";
 
+import { t } from "../../i18n/i18n-helper";
 import { useNavigate } from "react-router";
-import { useTranslation } from "react-i18next";
-
 import { useScreen } from "../../contexts/screenContext";
 
 import { Event } from "../../types/event";
@@ -13,7 +12,6 @@ interface EventCardProps {
 
 export default function EventCard({ event }: EventCardProps) {
   const navigate = useNavigate();
-  const { t } = useTranslation("translation");
 
   const { isDesktop } = useScreen();
 
@@ -47,7 +45,7 @@ export default function EventCard({ event }: EventCardProps) {
             <span>Serveur:</span> {event.server.name}
           </p>
           <p className="event_card_container_date">
-            <span>{t("date")}:</span>{" "}
+            <span>{t("common.date")}:</span>{" "}
             {new Date(event.date).toLocaleString(undefined, {
               dateStyle: "short",
               timeStyle: "short",
@@ -55,10 +53,10 @@ export default function EventCard({ event }: EventCardProps) {
           </p>
           <p className="event_card_container_duration">
             {" "}
-            <span>{t("duration")}:</span> {event.duration} min
+            <span>{t("common.duration")}:</span> {event.duration} min
           </p>
           <p className="event_card_container_players">
-            <span>{t("")}players:</span> {event.characters.length}/
+            <span>{t("common.players")}:</span> {event.characters.length}/
             {event.max_players}
           </p>
         </div>
@@ -68,7 +66,7 @@ export default function EventCard({ event }: EventCardProps) {
         className="event_card_button button"
         onClick={() => navigate(`/event/${event.id}`)}
       >
-        {t("details")}
+        {t("common.details")}
       </button>
     </article>
   );

@@ -1,7 +1,7 @@
 import "./EventCharacterCard.scss";
 
+import { t } from "../../i18n/i18n-helper";
 import { useNavigate } from "react-router";
-import { useTranslation } from "react-i18next";
 
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -24,7 +24,6 @@ export default function EventCharacterCard({
   removeCharacter,
 }: CharacterCardProps) {
   const navigate = useNavigate();
-  const { t } = useTranslation("translation");
 
   const { user } = useAuth();
   const { isDesktop } = useScreen();
@@ -36,7 +35,7 @@ export default function EventCharacterCard({
           className="event_character_card_img"
           src={`/miniatures/${character.breed.name.toLocaleLowerCase()}_male.webp`}
           alt={`${t(
-            "classThumbnail",
+            "common.classThumbnail",
           )} ${character.breed.name.toLocaleLowerCase()}`}
         />
       ) : (
@@ -44,7 +43,7 @@ export default function EventCharacterCard({
           className="event_character_card_img"
           src={`/miniatures/${character.breed.name.toLocaleLowerCase()}_female.webp`}
           alt={`${t(
-            "classThumbnail",
+            "common.classThumbnail",
           )} ${character.breed.name.toLocaleLowerCase()}`}
         />
       )}
@@ -54,7 +53,7 @@ export default function EventCharacterCard({
           <h3 className="event_character_card_name">{character.name}</h3>
           <p className="event_character_card_breed">{character.breed.name}</p>
           <p className="event_character_card_level">
-            {t("level")}: {character.level}
+            {t("common.level")}: {character.level}
           </p>
         </>
       ) : (
@@ -66,7 +65,7 @@ export default function EventCharacterCard({
             {character.breed.name}
           </p>
           <p className="event_character_card_container_level">
-            {t("level")}: {character.level}
+            {t("common.level")}: {character.level}
           </p>
         </div>
       )}
@@ -77,7 +76,7 @@ export default function EventCharacterCard({
             className="event_character_card_buttons_details button"
             onClick={() => navigate(`/character/${character.id}`)}
           >
-            {t("details")}
+            {t("common.details")}
           </button>
           <button
             className="event_character_card_buttons_delete button delete"
@@ -92,7 +91,7 @@ export default function EventCharacterCard({
           className="event_character_card_details button"
           onClick={() => navigate(`/character/${character.id}`)}
         >
-          {t("details")}
+          {t("common.details")}
         </button>
       )}
     </article>

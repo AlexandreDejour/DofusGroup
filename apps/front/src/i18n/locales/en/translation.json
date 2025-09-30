@@ -11,9 +11,9 @@
     "back": "Back",
     "change": "Edit",
     "classThumbnail": "Class thumbnail",
-    "confirm": "Confirmation",
     "create": "Create",
     "createdBy": "created by",
+    "confirm": "Confirm",
     "date": "Date",
     "delete": {
       "default": "Delete",
@@ -21,8 +21,10 @@
     },
     "description": "Description",
     "details": "Details",
+    "dofusBook": "DofusBook Link",
     "dungeon": "Dungeon",
     "duration": "Duration",
+    "durationInMin": "Duration in minutes",
     "discussion": "Discussion",
     "error": {
       "default": "Error",
@@ -31,8 +33,10 @@
     "join": "Rejoindre",
     "level": "Level",
     "loading": "Loading...",
+    "maxPlayers": "Max players",
     "name": "Name",
     "ok": "OK",
+    "otherLinks": "Other links",
     "players": "Joueurs",
     "playerNumber": "Number of players",
     "public": "Public",
@@ -47,6 +51,8 @@
     "subArea": "Sub-area",
     "team": "Team",
     "title": "Title",
+    "usefulSites": "Useful sites",
+    "visibility": "visibility",
     "welcome": "Welcome.",
     "allRightsReserved": "All rights reserved.",
     "goodbye": "See you soon."
@@ -67,6 +73,7 @@
       }
     },
     "email": {
+      "default": "Email",
       "change": "Change email"
     },
     "usernameChange": "Change username",
@@ -114,6 +121,7 @@
     "selection": "Character selection",
     "default": "Default character",
     "noCharacter": "No character",
+    "your": "Your Characters",
 
     "error": {
       "none": "No character.",
@@ -156,6 +164,7 @@
     "create": "Create an event",
     "join": "Join the event",
     "discussion": "Discussion",
+    "modification": "Event modification",
     "noEvent": "No event.",
 
     "error": {

@@ -1,17 +1,16 @@
 import "./Header.scss";
 
 import { Link } from "react-router-dom";
+import { t } from "../../i18n/i18n-helper";
 
 import { useAuth } from "../../contexts/authContext";
 import { useModal } from "../../contexts/modalContext";
 import { useScreen } from "../../contexts/screenContext";
-import { useTranslation } from "react-i18next";
 
 export default function Header() {
   const { isDesktop } = useScreen();
   const { openModal } = useModal();
   const { user, logout } = useAuth();
-  const { t } = useTranslation();
 
   return (
     <header className="header">
@@ -28,17 +27,17 @@ export default function Header() {
       <nav className="header_nav">
         <ul className="header_nav_list">
           <li className="header_nav_list_item nav_link link">
-            <Link to="/">{t("events")}</Link>
+            <Link to="/">{t("event.list")}</Link>
           </li>
           {isDesktop && (
             <li className="header_nav_list_item nav_link link">
-              <Link to="/about">{t("about")}</Link>
+              <Link to="/about">{t("common.about")}</Link>
             </li>
           )}
           {user ? (
             <>
               <li className="header_nav_list_item nav_link link">
-                <Link to="/profile">{t("profile")}</Link>
+                <Link to="/profile">{t("common.profile")}</Link>
               </li>
               <li className="header_nav_list_item">
                 <button
@@ -46,7 +45,7 @@ export default function Header() {
                   onClick={() => logout()}
                   className="nav_button button"
                 >
-                  {t("logout")}
+                  {t("auth.logout")}
                 </button>
               </li>
             </>
@@ -58,7 +57,7 @@ export default function Header() {
                   onClick={() => openModal("login")}
                   className="nav_button button"
                 >
-                  {t("login")}
+                  {t("auth.login")}
                 </button>
               </li>
               <li className="header_nav_list_item">
@@ -67,7 +66,7 @@ export default function Header() {
                   onClick={() => openModal("register")}
                   className="nav_button button"
                 >
-                  {t("register")}
+                  {t("auth.register")}
                 </button>
               </li>
             </>

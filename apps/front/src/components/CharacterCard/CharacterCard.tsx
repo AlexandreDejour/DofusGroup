@@ -1,7 +1,7 @@
 import "./CharacterCard.scss";
 
 import { useNavigate } from "react-router";
-import { useTranslation } from "react-i18next";
+import { t } from "../../i18n/i18n-helper";
 
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -22,7 +22,6 @@ export default function CharacterCard({
 }: CharacterCardProps) {
   const navigate = useNavigate();
   const { isDesktop } = useScreen();
-  const { t } = useTranslation("translation");
 
   return (
     <article className="character_card">
@@ -31,7 +30,7 @@ export default function CharacterCard({
           className="character_card_img"
           src={`/miniatures/${character.breed.name.toLocaleLowerCase()}_male.webp`}
           alt={`${t(
-            "classThumbnail",
+            "common.classThumbnail",
           )} ${character.breed.name.toLocaleLowerCase()}`}
         />
       ) : (
@@ -39,7 +38,7 @@ export default function CharacterCard({
           className="character_card_img"
           src={`/miniatures/${character.breed.name.toLocaleLowerCase()}_female.webp`}
           alt={`${t(
-            "classThumbnail",
+            "common.classThumbnail",
           )} ${character.breed.name.toLocaleLowerCase()}`}
         />
       )}
@@ -49,7 +48,7 @@ export default function CharacterCard({
           <h3 className="character_card_name">{character.name}</h3>
           <p className="character_card_breed">{character.breed.name}</p>
           <p className="character_card_level">
-            {t("level")}: {character.level}
+            {t("common.level")}: {character.level}
           </p>
         </>
       ) : (
@@ -59,7 +58,7 @@ export default function CharacterCard({
             {character.breed.name}
           </p>
           <p className="character_card_container_level">
-            {t("level")}: {character.level}
+            {t("common.level")}: {character.level}
           </p>
         </div>
       )}
@@ -69,7 +68,7 @@ export default function CharacterCard({
           className="character_card_buttons_details button"
           onClick={() => navigate(`/character/${character.id}`)}
         >
-          {t("details")}
+          {t("common.details")}
         </button>
         <button
           className="character_card_buttons_delete button delete"

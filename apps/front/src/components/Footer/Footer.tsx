@@ -1,10 +1,11 @@
 import "./Footer.scss";
 
+import i18n from "../../i18n/i18n";
 import { Link } from "react-router";
+import { t } from "../../i18n/i18n-helper";
 import ReactCountryFlag from "react-country-flag";
 
 import { useAuth } from "../../contexts/authContext";
-import { useTranslation } from "react-i18next";
 
 export default function Footer() {
   const changeLanguage = (lng: string) => {
@@ -12,7 +13,6 @@ export default function Footer() {
   };
 
   const { user } = useAuth();
-  const { t, i18n } = useTranslation();
 
   return (
     <footer className="footer">
@@ -22,36 +22,36 @@ export default function Footer() {
           <ul>
             {user ? (
               <li>
-                <Link to="/profile">{t("profile")}</Link>
+                <Link to="/profile">{t("common.profile")}</Link>
               </li>
             ) : null}
             <li>
-              <Link to="/about">{t("about")}</Link>
+              <Link to="/about">{t("common.about")}</Link>
             </li>
             <li>
-              <Link to="/">{t("events")}</Link>
+              <Link to="/">{t("event.list")}</Link>
             </li>
           </ul>
         </div>
         <div className="footer_container_list">
-          <h3>{t("otherLinks")}</h3>
+          <h3>{t("common.otherLinks")}</h3>
           <ul>
             <li>
-              <a href="#">{t("reportBug")}</a>
+              <a href="#">{t("settings.reportBug")}</a>
             </li>
             <li>
-              <a href="#">{t("contactUs")}</a>
+              <a href="#">{t("settings.contact")}</a>
             </li>
             <li>
-              <Link to="/privacy_policy">{t("privacyPolicy")}</Link>
+              <Link to="/privacy_policy">{t("settings.privacyPolicy")}</Link>
             </li>
             <li>
-              <Link to="/gcu">{t("gcu")}</Link>
+              <Link to="/gcu">{t("settings.gcu")}</Link>
             </li>
           </ul>
         </div>
         <div className="footer_container_list">
-          <h3>Sites utiles</h3>
+          <h3>{t("common.usefulSites")}</h3>
           <ul>
             <li>
               <a
@@ -91,7 +91,9 @@ export default function Footer() {
 
       <div className="footer_language">
         <button
-          aria-label={t("changeLanguage", { language: t("french") })}
+          aria-label={t("settings.language.change", {
+            language: t("settings.language.french"),
+          })}
           onClick={() => changeLanguage("fr")}
         >
           <ReactCountryFlag
@@ -101,7 +103,9 @@ export default function Footer() {
           />
         </button>
         <button
-          aria-label={t("changeLanguage", { language: t("english") })}
+          aria-label={t("settings.language.change", {
+            language: t("settings.language.english"),
+          })}
           onClick={() => changeLanguage("en")}
         >
           <ReactCountryFlag
@@ -113,7 +117,8 @@ export default function Footer() {
       </div>
 
       <p>
-        &copy; {new Date().getFullYear()} DofusGroup — {t("allRightsReserved")}.
+        &copy; {new Date().getFullYear()} DofusGroup —{" "}
+        {t("common.allRightsReserved")}.
       </p>
     </footer>
   );

@@ -1,5 +1,7 @@
 import "./EventFilter.scss";
 
+import { t } from "../../i18n/i18n-helper";
+
 import { Tag } from "../../types/tag";
 import { Server } from "../../types/server";
 
@@ -8,7 +10,6 @@ import { useScreen } from "../../contexts/screenContext";
 import { generateOptions } from "../modals/utils/generateOptions";
 
 import SelectOptions from "../modals/formComponents/Options/SelectOptions";
-import { useTranslation } from "react-i18next";
 
 interface EventFilterProps {
   tags: Tag[];
@@ -34,7 +35,6 @@ export default function EventFilter({
   handleSearch,
 }: EventFilterProps) {
   const { isDesktop } = useScreen();
-  const { t } = useTranslation("translation");
 
   return (
     <form onSubmit={handleSearch} className="filter" role="form">
@@ -42,14 +42,14 @@ export default function EventFilter({
         <>
           <div className="filter_item">
             <label htmlFor="title" className="filter_item_label">
-              <span>{t("title")}: </span>
+              <span>{t("common.title")}: </span>
               <input
                 type="text"
                 name="title"
                 id="title"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                placeholder={t("title")}
+                placeholder={t("common.title")}
               />
             </label>
           </div>
@@ -60,7 +60,7 @@ export default function EventFilter({
               value={tag}
               items={tags}
               generateOptions={generateOptions.tags}
-              label={t("tag")}
+              label={t("tag.upperCase")}
               onChange={setTag}
             />
           </div>
@@ -71,7 +71,7 @@ export default function EventFilter({
               value={server}
               items={servers}
               generateOptions={generateOptions.servers}
-              label={t("server")}
+              label={t("server.upperCase")}
               onChange={setServer}
             />
           </div>
@@ -80,14 +80,14 @@ export default function EventFilter({
         <div className="filter_items">
           <div className="filter_items_item">
             <label htmlFor="title" className="filter_items_item_label title">
-              <span>{t("title")}: </span>
+              <span>{t("common.title")}: </span>
               <input
                 type="text"
                 name="title"
                 id="title"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                placeholder={t("title")}
+                placeholder={t("common.title")}
               />
             </label>
           </div>
@@ -98,7 +98,7 @@ export default function EventFilter({
               value={tag}
               items={tags}
               generateOptions={generateOptions.tags}
-              label={t("tag")}
+              label={t("tag.upperCase")}
               onChange={setTag}
             />
           </div>
@@ -109,7 +109,7 @@ export default function EventFilter({
               value={server}
               items={servers}
               generateOptions={generateOptions.servers}
-              label={t("server")}
+              label={t("server.upperCase")}
               onChange={setServer}
             />
           </div>
@@ -117,7 +117,7 @@ export default function EventFilter({
       )}
 
       <button type="submit" className="button">
-        {t("search")}
+        {t("common.search")}
       </button>
     </form>
   );

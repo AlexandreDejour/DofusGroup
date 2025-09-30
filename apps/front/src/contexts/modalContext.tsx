@@ -1,3 +1,4 @@
+import { t } from "../i18n/i18n-helper";
 import { useNavigate } from "react-router";
 import React, { createContext, useCallback, useContext, useState } from "react";
 
@@ -25,7 +26,6 @@ import { EventService } from "../services/api/eventService";
 import { CommentService } from "../services/api/commentService";
 import { CharacterService } from "../services/api/characterService";
 import isUpdateField from "../components/modals/utils/isUpdateField";
-import { useTranslation } from "react-i18next";
 
 const config = Config.getInstance();
 const axios = new ApiClient(config.baseUrl);
@@ -82,7 +82,6 @@ const ModalContext = createContext<ModalContextType | null>(null);
 
 export default function ModalProvider({ children }: ModalProviderProps) {
   const navigate = useNavigate();
-  const { t } = useTranslation("translation");
 
   const { user, setUser } = useAuth();
   const { showSuccess, showError } = useNotification();
@@ -136,8 +135,8 @@ export default function ModalProvider({ children }: ModalProviderProps) {
           await authService.register(data);
 
           showSuccess(
-            `${t("successfullyRegister")} !`,
-            `${t("wouldYouConnect")}.`,
+            t("auth.success.register"),
+            t("auth.prompt.connect"),
             6000,
           );
         }
@@ -150,8 +149,8 @@ export default function ModalProvider({ children }: ModalProviderProps) {
           setUser(response);
 
           showSuccess(
-            `${t("successfullyLogin")} !`,
-            `${t("youAreConnected")}.`,
+            t("auth.success.login"),
+            t("auth.success.connected", { username: response.username }),
           );
         }
 
@@ -168,14 +167,17 @@ export default function ModalProvider({ children }: ModalProviderProps) {
           setUser(response);
 
           showSuccess(
-            `${t("successfullyUpdate")} !`,
-            `${t("informationsUpdated")}.`,
+            t("system.success.dataUpdated"),
+            t("system.success.updated"),
           );
         }
 
         if (modalType === "newCharacter") {
           if (!user) {
-            showError(`${t("loginNeeded")} !`, `${t("actionNeedLogin")}.`);
+            showError(
+              t("auth.prompt.loginRequired"),
+              t("auth.prompt.loginRequiredAction"),
+            );
             return;
           }
 
@@ -205,15 +207,15 @@ export default function ModalProvider({ children }: ModalProviderProps) {
 
           setUser({ ...user, ...response });
 
-          showSuccess(
-            `${t("successfullyCreateCharacter")} !`,
-            `${t("characterCreated")}.`,
-          );
+          showSuccess(t("system.success.create"), t("character.create"));
         }
 
         if (modalType === "updateCharacter") {
           if (!user) {
-            showError(`${t("loginNeeded")} !`, `${t("actionNeedLogin")}.`);
+            showError(
+              t("auth.prompt.loginRequired"),
+              t("auth.prompt.loginRequiredAction"),
+            );
             return;
           }
 
@@ -251,14 +253,17 @@ export default function ModalProvider({ children }: ModalProviderProps) {
           setUser({ ...user, ...userData });
 
           showSuccess(
-            `${t("successfullyUpdate")} !`,
-            `${t("characterUpdated")}.`,
+            t("system.success.dataUpdated"),
+            t("character.success.updated"),
           );
         }
 
         if (modalType === "newEvent") {
           if (!user) {
-            showError(`${t("loginNeeded")} !`, `${t("actionNeedLogin")}.`);
+            showError(
+              t("auth.prompt.loginRequired"),
+              t("auth.prompt.loginRequiredAction"),
+            );
             return;
           }
 
@@ -295,15 +300,15 @@ export default function ModalProvider({ children }: ModalProviderProps) {
 
           setUser({ ...user, ...response });
 
-          showSuccess(
-            `${t("successfullyCreateEvent")}`,
-            `${t("eventCreated")}.`,
-          );
+          showSuccess(t("system.success.create"), t("event.create"));
         }
 
         if (modalType === "updateEvent") {
           if (!user) {
-            showError(`${t("loginNeeded")} !`, `${t("actionNeedLogin")}.`);
+            showError(
+              t("auth.prompt.loginRequired"),
+              t("auth.prompt.loginRequiredAction"),
+            );
             return;
           }
 
@@ -347,12 +352,18 @@ export default function ModalProvider({ children }: ModalProviderProps) {
           setUpdateTarget(eventData);
           setUser({ ...user, ...userData });
 
-          showSuccess(`${t("successfullyUpdate")} !`, `${t("eventUpdated")}.`);
+          showSuccess(
+            t("system.success.dataUpdated"),
+            t("event.success.updated"),
+          );
         }
 
         if (modalType === "joinEvent") {
           if (!user) {
-            showError(`${t("loginNeeded")} !`, `${t("actionNeedLogin")}.`);
+            showError(
+              t("auth.prompt.loginRequired"),
+              t("auth.prompt.loginRequiredAction"),
+            );
             return;
           }
 
@@ -381,12 +392,15 @@ export default function ModalProvider({ children }: ModalProviderProps) {
 
           await eventService.addCharacters(updateTarget.id, data);
 
-          showSuccess(`${t("successfullyRegister")}`, `${t("youJoinEvent")}.`);
+          showSuccess(t("auth.success.register"), t("event.prompt.joined"));
         }
 
         if (modalType === "comment") {
           if (!user) {
-            showError(`${t("loginNeeded")} !`, `${t("actionNeedLogin")}.`);
+            showError(
+              t("auth.prompt.loginRequired"),
+              t("auth.prompt.loginRequiredAction"),
+            );
             return;
           }
 
@@ -400,12 +414,15 @@ export default function ModalProvider({ children }: ModalProviderProps) {
 
           await commentService.create(user.id, updateTarget.id, data);
 
-          showSuccess(`${t("newComment")} !`, `${t("addNewComment")}.`);
+          showSuccess(t("comment.new"), t("comment.success.added"));
         }
 
         if (modalType === "updateComment") {
           if (!user) {
-            showError(`${t("loginNeeded")} !`, `${t("actionNeedLogin")}.`);
+            showError(
+              t("auth.prompt.loginRequired"),
+              t("auth.prompt.loginRequiredAction"),
+            );
             return;
           }
 
@@ -420,17 +437,17 @@ export default function ModalProvider({ children }: ModalProviderProps) {
           await commentService.update(user.id, updateTarget.id, data);
 
           showSuccess(
-            `${t("successfullyUpdate")} !`,
-            `${t("commentUpdated")}.`,
+            t("system.success.dataUpdated"),
+            t("comment.success.updated"),
           );
         }
 
         closeModal();
       } catch (error) {
         if (error instanceof Error) {
-          showError(`${t("error")}`, error.message);
+          showError(t("common.error.default"), error.message);
         } else {
-          showError(`${t("error")}`, `${t("errorOccurred")}.`);
+          showError(t("common.error.default"), t("system.error.occurred"));
         }
       }
     },
@@ -440,7 +457,10 @@ export default function ModalProvider({ children }: ModalProviderProps) {
   const handleDelete = useCallback(
     async (targetType: TargetType, targetId?: string) => {
       if (!user) {
-        showError(`${t("loginNeeded")} !`, `${t("actionNeedLogin")}.`);
+        showError(
+          t("auth.prompt.loginRequired"),
+          t("auth.prompt.loginRequiredAction"),
+        );
         return;
       }
 
@@ -449,7 +469,7 @@ export default function ModalProvider({ children }: ModalProviderProps) {
           await eventService.delete(user.id, targetId);
           const response = await userService.getOne(user.id);
 
-          showSuccess(`${t("dataDeletion")} !`, `${t("eventDeleted")}.`);
+          showSuccess(t("system.success.deleted"), t("event.success.deleted"));
 
           setUser({ ...user, ...response });
         }
@@ -458,7 +478,7 @@ export default function ModalProvider({ children }: ModalProviderProps) {
           await eventService.delete(user.id, targetId);
 
           showSuccess(
-            `${t("dataDeletion")} !`,
+            t("system.success.deleted"),
             "Votre évènement a été supprimé avec succès",
           );
 
@@ -469,7 +489,10 @@ export default function ModalProvider({ children }: ModalProviderProps) {
           await characterService.delete(user.id, targetId);
           const response = await userService.getOne(user.id);
 
-          showSuccess(`${t("dataDeletion")} !`, `${t("characterDeleted")}.`);
+          showSuccess(
+            t("system.success.deleted"),
+            t("character.success.deleted"),
+          );
 
           setUser({ ...user, ...response });
         }
@@ -477,7 +500,10 @@ export default function ModalProvider({ children }: ModalProviderProps) {
         if (targetType === "character_details" && targetId) {
           await characterService.delete(user.id, targetId);
 
-          showSuccess(`${t("dataDeletion")} !`, `${t("characterDeleted")}.`);
+          showSuccess(
+            t("system.success.deleted"),
+            t("character.success.deleted"),
+          );
 
           navigate(-1);
         }
@@ -485,21 +511,27 @@ export default function ModalProvider({ children }: ModalProviderProps) {
         if (targetType === "comment" && targetId) {
           await commentService.delete(user.id, targetId);
 
-          showSuccess(`${t("dataDeletion")} !`, `${t("commentDeleted")}.`);
+          showSuccess(
+            t("system.success.deleted"),
+            t("comment.success.deleted"),
+          );
         }
 
         if (targetType === "user") {
           await userService.delete(user.id);
 
-          showSuccess(`${t("dataDeletion")} !`, `${t("accountDeleted")}.`);
+          showSuccess(
+            t("system.success.deleted"),
+            t("auth.success.accountDeleted"),
+          );
 
           setUser(null);
         }
       } catch (error) {
         if (error instanceof Error) {
-          showError(`${t("error")}`, error.message);
+          showError(t("common.error.default"), error.message);
         } else {
-          showError(`${t("error")}`, `${t("errorOccurred")}.`);
+          showError(t("common.error.default"), t("system.error.occurred"));
         }
       }
     },

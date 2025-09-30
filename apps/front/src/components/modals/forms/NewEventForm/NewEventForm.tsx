@@ -1,5 +1,6 @@
 import "./NewEventForm.scss";
 
+import i18n from "i18next";
 import { isAxiosError } from "axios";
 import { useEffect, useState } from "react";
 import { t } from "../../../../i18n/i18n-helper";
@@ -126,7 +127,9 @@ export default function NewEventForm({ handleSubmit }: NewEventFormProps) {
 
         if (area) {
           const fetchSubAreas = async () => {
-            const selectedArea = areas.find((a) => a.name.fr === area);
+            const lang = i18n.language as "fr" | "en";
+
+            const selectedArea = areas.find((a) => a.name[lang] === area);
 
             if (!selectedArea) return;
 
@@ -165,7 +168,7 @@ export default function NewEventForm({ handleSubmit }: NewEventFormProps) {
     const fetchDungeons = async () => {
       const selectedTag = tags.find((t) => t.id === tag);
 
-      if (!selectedTag || selectedTag.name !== t("common.dungeon")) {
+      if (!selectedTag || selectedTag.name !== "Donjon") {
         setIsDungeon(false);
         return;
       }
@@ -174,7 +177,10 @@ export default function NewEventForm({ handleSubmit }: NewEventFormProps) {
 
       try {
         if (subArea) {
-          const selectedSubArea = subAreas.find((s) => s.name.fr === subArea);
+          const lang = i18n.language as "fr" | "en";
+          const selectedSubArea = subAreas.find(
+            (s) => s.name[lang] === subArea,
+          );
 
           if (!selectedSubArea) return;
 

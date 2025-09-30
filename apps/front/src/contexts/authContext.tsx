@@ -1,6 +1,6 @@
 import { isAxiosError } from "axios";
+import { t } from "../i18n/i18n-helper";
 import { useNavigate } from "react-router";
-import { useTranslation } from "react-i18next";
 import React, { createContext, useContext, useEffect, useState } from "react";
 
 import type { AuthUser } from "../types/user";
@@ -29,7 +29,6 @@ const AuthContext = createContext<AuthContextType | null>(null);
 
 export default function AuthProvider({ children }: AuthProviderProps) {
   const navigate = useNavigate();
-  const { t } = useTranslation("translation");
 
   const { showInfo } = useNotification();
 
@@ -60,7 +59,7 @@ export default function AuthProvider({ children }: AuthProviderProps) {
 
     setUser(null);
     navigate("/", { replace: true });
-    showInfo(`${t("goodBye")} !`, `${t("disconnected")}`, 3000);
+    showInfo(t("common.goodbye"), t("auth.success.disconnected"), 3000);
   };
 
   const contextValues: AuthContextType = {

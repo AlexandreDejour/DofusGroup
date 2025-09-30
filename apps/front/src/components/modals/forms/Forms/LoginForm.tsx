@@ -30,7 +30,7 @@ export default function LoginForm({ handleSubmit }: LoginFormProps) {
             name="password"
             id="password"
             required
-            placeholder={t("auth.password")}
+            placeholder={t("auth.password.default")}
             className="content_modal_form_label_input"
           />
         </label>

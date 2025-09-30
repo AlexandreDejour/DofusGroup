@@ -28,7 +28,7 @@ export default function CommentForm({
 
       <form onSubmit={handleSubmit} className="content_modal_form" role="form">
         <label htmlFor="content" className="content_modal_form_label">
-          <span>{t("comment")}: </span>
+          <span>{t("comment.single")}: </span>
           {typeGuard.commentEnriched(updateTarget) ? (
             <textarea
               name="content"

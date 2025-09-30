@@ -114,7 +114,7 @@ export default function CharacterDetails() {
                 className="button delete"
                 onClick={() => handleDelete("character_details", character.id)}
               >
-                {t("common.delete")}
+                {t("common.delete.default")}
               </button>
             </div>
           ) : null}

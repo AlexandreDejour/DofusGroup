@@ -17,7 +17,9 @@ export default function EventCard({ event }: EventCardProps) {
 
   return (
     <article className="event_card">
-      <h3 className="event_card_title">{event.title}</h3>
+      <h3 className="event_card_title">
+        {event.title.charAt(0).toLocaleUpperCase() + event.title.slice(1)}
+      </h3>
       <p
         className="event_card_tag"
         style={{ backgroundColor: event.tag.color }}

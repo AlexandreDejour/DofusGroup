@@ -118,7 +118,7 @@ export default function Footer() {
 
       <p>
         &copy; {new Date().getFullYear()} DofusGroup —{" "}
-        {t("common.allRightsReserved")}.
+        {t("common.allRightsReserved")}
       </p>
     </footer>
   );

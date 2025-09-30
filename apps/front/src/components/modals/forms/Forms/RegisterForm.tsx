@@ -24,7 +24,7 @@ export default function RegisterForm({ handleSubmit }: RegisterFormProps) {
         </label>
 
         <label htmlFor="mail" className="content_modal_form_label">
-          <span>{t("auth.email")}:</span>
+          <span>{t("auth.email.default")}:</span>
           <input
             type="email"
             name="mail"
@@ -43,7 +43,7 @@ export default function RegisterForm({ handleSubmit }: RegisterFormProps) {
             id="password"
             required
             title={t("auth.password.error.rules")}
-            placeholder={t("auth.password")}
+            placeholder={t("auth.password.default")}
             className="content_modal_form_label_input"
           />
         </label>

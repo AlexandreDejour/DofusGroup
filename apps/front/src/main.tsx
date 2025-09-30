@@ -1,6 +1,6 @@
 import "./assets/styles/_reset.scss";
 import "./index.scss";
-import "./i18n";
+import "./i18n/i18n";
 
 import React from "react";
 import ReactDOM from "react-dom/client";

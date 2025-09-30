@@ -1,6 +1,7 @@
 import "./ProfileEventCard.scss";
 
 import { useNavigate } from "react-router";
+import { t } from "../../i18n/i18n-helper";
 
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -25,7 +26,9 @@ export default function ProfileEventCard({
 
   return (
     <article className="profile_event_card">
-      <h3 className="profile_event_card_title">{event.title}</h3>
+      <h3 className="profile_event_card_title">
+        {event.title.charAt(0).toLocaleUpperCase() + event.title.slice(1)}
+      </h3>
       <p
         className="profile_event_card_tag"
         style={{ backgroundColor: event.tag.color }}
@@ -65,7 +68,7 @@ export default function ProfileEventCard({
           className="profile_event_card_buttons_details button"
           onClick={() => navigate(`/event/${event.id}`)}
         >
-          Détails
+          {t("common.details")}
         </button>
         <button
           className="profile_event_card_buttons_delete button delete"

@@ -1,3 +1,5 @@
+import i18n from "i18next";
+
 import { Tag } from "../../../types/tag";
 import { Breed } from "../../../types/breed";
 import { Status } from "../../../types/status";
@@ -49,14 +51,32 @@ export const generateOptions = {
   characters: (characters: Character[]): CharacterOptions[] =>
     characters.map((c) => ({ id: c.id, value: c.id, label: c.name })),
 
-  areas: (areas: Area[]): AreaOptions[] =>
-    areas.map((a) => ({ id: a.id, value: a.name.fr, label: a.name.fr })),
+  areas: (areas: Area[]): AreaOptions[] => {
+    const lang = i18n.language as "fr" | "en";
+    return areas.map((a) => ({
+      id: a.id,
+      value: a.name[lang],
+      label: a.name[lang],
+    }));
+  },
 
-  subAreas: (subAreas: SubArea[]): SubAreaOptions[] =>
-    subAreas.map((s) => ({ id: s.id, value: s.name.fr, label: s.name.fr })),
+  subAreas: (subAreas: SubArea[]): SubAreaOptions[] => {
+    const lang = i18n.language as "fr" | "en";
+    return subAreas.map((s) => ({
+      id: s.id,
+      value: s.name[lang],
+      label: s.name[lang],
+    }));
+  },
 
-  dungeons: (dungeons: Dungeon[]): DungeonOptions[] =>
-    dungeons.map((d) => ({ id: d.id, value: d.name.fr, label: d.name.fr })),
+  dungeons: (dungeons: Dungeon[]): DungeonOptions[] => {
+    const lang = i18n.language as "fr" | "en";
+    return dungeons.map((d) => ({
+      id: d.id,
+      value: d.name[lang],
+      label: d.name[lang],
+    }));
+  },
 
   statutes: (statutes: Status[]): StatusOptions[] =>
     statutes.map((s) => ({ id: s.id, value: s.value, label: s.label })),

@@ -30,7 +30,7 @@
       "default": "Error",
       "occurred": "An error occurred."
     },
-    "join": "Rejoindre",
+    "join": "Join",
     "level": "Level",
     "loading": "Loading...",
     "maxPlayers": "Max players",
@@ -55,7 +55,7 @@
     "visibility": "visibility",
     "welcome": "Welcome.",
     "allRightsReserved": "All rights reserved.",
-    "goodbye": "See you soon."
+    "goodbye": "See you soon !"
   },
 
   "auth": {
@@ -93,15 +93,17 @@
     },
 
     "success": {
-      "login": "Login successful.",
-      "register": "Registration successful.",
+      "login": "Login successful !",
+      "register": "Registration successful !",
       "accountDeleted": "Your account has been successfully deleted.",
-      "connected": "Hello ${response.username}! You are now logged in."
+      "connected": "Hello {{username}} ! You are now logged in.",
+      "disconnected": "You have been disconnected."
     },
 
     "prompt": {
       "connect": "Your account has been successfully created. Please log in.",
-      "loginRequired": "Login required."
+      "loginRequired": "Login required !",
+      "loginRequiredAction": "This action need to be login."
     }
   },
 
@@ -120,7 +122,7 @@
     "modification": "Character modification",
     "selection": "Character selection",
     "default": "Default character",
-    "noCharacter": "No character",
+    "noCharacter": "No character.",
     "your": "Your Characters",
 
     "error": {
@@ -141,8 +143,8 @@
 
   "comment": {
     "single": "Comment",
-    "add": "Add a comment",
-    "new": "New comment",
+    "add": "Add a comment !",
+    "new": "New comment !",
     "change": "Edit a comment",
     "write": "Write a comment",
 
@@ -171,7 +173,8 @@
       "none": "No event.",
       "noneUpcoming": "No upcoming event.",
       "noneFound": "No event found.",
-      "characterOut": "This character is no longer part of the event."
+      "characterOut": "This character is no longer part of the event.",
+      "disable": "You need to create character before create event."
     },
 
     "success": {
@@ -219,20 +222,21 @@
     },
 
     "success": {
+      "create": "Create successful !",
       "disconnected": "You have been successfully logged out.",
       "updated": "Your information has been successfully updated.",
-      "deleted": "Deletion successful.",
-      "dataUpdated": "Update successful."
+      "deleted": "Deletion successful !",
+      "dataUpdated": "Update successful !"
     },
 
     "data": {
-      "deletion": "Data deletion."
+      "deletion": "Data deletion !"
     }
   },
 
   "server": {
-    "default": "serveur",
-    "upperCase": "Serveur",
+    "default": "server",
+    "upperCase": "Server",
     "error": {
       "notFound": "Servers found."
     }

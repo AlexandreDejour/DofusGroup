@@ -56,7 +56,7 @@ export class EventService {
     if (!data.tag_id) throw new Error(t("validation.tag.required"));
 
     if (!(data.max_players >= 2 && data.max_players <= 8))
-      throw new Error(t("validation.playerNumber"));
+      throw new Error(t("validation.playerNumber.range"));
 
     if (data.max_players < data.characters_id.length)
       throw new Error(t("validation.playerNumber.limit"));
@@ -92,7 +92,7 @@ export class EventService {
     data: CreateEventForm,
   ): Promise<EventEnriched> {
     if (!(data.max_players >= 2 && data.max_players <= 8))
-      throw new Error(t("validation.playerNumber"));
+      throw new Error(t("validation.playerNumber.range"));
 
     if (new Date(data.date) <= new Date())
       throw new Error(t("validation.date.future"));

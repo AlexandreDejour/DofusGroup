@@ -75,7 +75,12 @@ export default function Profile() {
               </p>
             </div>
 
-            <div className="profile_section_actions">
+            <div
+              className="profile_section_actions"
+              title={
+                !userEnriched.characters?.length ? t("event.error.disable") : ""
+              }
+            >
               <button
                 type="button"
                 className="profile_section_actions_button button"
@@ -108,6 +113,12 @@ export default function Profile() {
                 type="button"
                 className="profile_section_actions_button button"
                 onClick={() => openModal("newEvent")}
+                disabled={!userEnriched.characters?.length}
+                style={{
+                  background: !userEnriched.characters?.length
+                    ? "grey"
+                    : "radial-gradient(circle, rgba(96,186,96,1) 0%, rgba(156,217,92,1) 90%)",
+                }}
               >
                 {t("event.create")}
               </button>

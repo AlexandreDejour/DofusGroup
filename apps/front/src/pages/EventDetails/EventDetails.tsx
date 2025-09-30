@@ -173,7 +173,7 @@ export default function EventDetails() {
               className="quick button"
               onClick={() => openModal("comment", event)}
             >
-              {t("comment.error.none")}
+              {t("comment.single")}
             </button>
             <ul className="event_section_comments_list">
               {event.comments.map((comment) => (

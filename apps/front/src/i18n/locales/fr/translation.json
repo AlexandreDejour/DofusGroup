@@ -207,7 +207,9 @@
       "occurred": "Une erreur est survenue.",
       "recoveryFailed": "Récupération de données impossible.",
       "forbidden": "Action interdite.",
-      "impossible": "Action impossible."
+      "impossible": "Action impossible.",
+      "profanity": "Contenu inapproprié !",
+      "inappropriate": "Le contenu de certains champs est inapproprié."
     },
     "success": {
       "create": "Création réussie !",

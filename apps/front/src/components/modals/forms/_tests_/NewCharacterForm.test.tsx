@@ -1,5 +1,7 @@
-import { render, screen, waitFor, fireEvent } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
+import { render, screen, waitFor, fireEvent } from "@testing-library/react";
+
+import { t } from "../../../../i18n/i18n-helper";
 
 import { useNotification } from "../../../../contexts/notificationContext";
 
@@ -65,7 +67,7 @@ describe("NewCharacterForm", () => {
   const mockHandleSubmit = vi.fn();
 
   const mockBreeds = [{ id: "123", name: "Iop" }];
-  const mockServers = [{ id: "123", name: "Serveur Test", mono_account: true }];
+  const mockServers = [{ id: "123", name: "Test server", mono_account: true }];
 
   beforeEach(() => {
     vi.clearAllMocks();
@@ -90,7 +92,7 @@ describe("NewCharacterForm", () => {
     render(<NewCharacterForm handleSubmit={mockHandleSubmit} />);
 
     expect(
-      screen.getByRole("heading", { name: /Création de personnage/i }),
+      screen.getByRole("heading", { name: t("character.create") }),
     ).toBeInTheDocument();
     expect(screen.getByRole("form")).toBeInTheDocument();
 
@@ -112,7 +114,7 @@ describe("NewCharacterForm", () => {
   });
 
   it("Should call showError when fetching breeds fails", async () => {
-    const errorMessage = "Erreur de connexion aux races";
+    const errorMessage = "Breed connection error";
     vi.mocked(
       BreedService.BreedService.prototype.getBreeds,
     ).mockRejectedValueOnce({
@@ -126,12 +128,15 @@ describe("NewCharacterForm", () => {
     render(<NewCharacterForm handleSubmit={mockHandleSubmit} />);
 
     await waitFor(() => {
-      expect(mockShowError).toHaveBeenCalledWith("Erreur", errorMessage);
+      expect(mockShowError).toHaveBeenCalledWith(
+        t("common.error.default"),
+        errorMessage,
+      );
     });
   });
 
   it("Should call showError when fetching servers fails", async () => {
-    const errorMessage = "Erreur de connexion aux serveurs";
+    const errorMessage = "Server connection error";
     vi.mocked(BreedService.BreedService.prototype.getBreeds).mockResolvedValue(
       mockBreeds,
     );
@@ -145,7 +150,10 @@ describe("NewCharacterForm", () => {
     render(<NewCharacterForm handleSubmit={mockHandleSubmit} />);
 
     await waitFor(() => {
-      expect(mockShowError).toHaveBeenCalledWith("Erreur", errorMessage);
+      expect(mockShowError).toHaveBeenCalledWith(
+        t("common.error.default"),
+        errorMessage,
+      );
     });
   });
 

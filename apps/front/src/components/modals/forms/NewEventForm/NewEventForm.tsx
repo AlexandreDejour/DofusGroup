@@ -75,9 +75,9 @@ export default function NewEventForm({ handleSubmit }: NewEventFormProps) {
         setTags(response);
       } catch (error) {
         if (isAxiosError(error)) {
-          showError(t("common.error"), error.message);
+          showError(t("common.error.default"), error.message);
         } else if (error instanceof Error) {
-          showError(t("common.error"), t("system.error.occurred"));
+          showError(t("common.error.default"), t("system.error.occurred"));
           console.error("General error:", error.message);
         }
       }
@@ -90,9 +90,9 @@ export default function NewEventForm({ handleSubmit }: NewEventFormProps) {
         setServers(response);
       } catch (error) {
         if (isAxiosError(error)) {
-          showError(t("common.error"), error.message);
+          showError(t("common.error.default"), error.message);
         } else if (error instanceof Error) {
-          showError(t("common.error"), t("system.error.occurred"));
+          showError(t("common.error.default"), t("system.error.occurred"));
           console.error("General error:", error.message);
         }
       }
@@ -113,9 +113,9 @@ export default function NewEventForm({ handleSubmit }: NewEventFormProps) {
         } else setCharacters(response);
       } catch (error) {
         if (isAxiosError(error)) {
-          showError(t("common.error"), error.message);
+          showError(t("common.error.default"), error.message);
         } else if (error instanceof Error) {
-          showError(t("common.error"), t("system.error.occurred"));
+          showError(t("common.error.default"), t("system.error.occurred"));
           console.error("General error:", error.message);
         }
       }
@@ -150,9 +150,9 @@ export default function NewEventForm({ handleSubmit }: NewEventFormProps) {
         }
       } catch (error) {
         if (isAxiosError(error)) {
-          showError(t("common.error"), error.message);
+          showError(t("common.error.default"), error.message);
         } else if (error instanceof Error) {
-          showError(t("common.error"), t("system.error.occurred"));
+          showError(t("common.error.default"), t("system.error.occurred"));
           console.error("General error:", error.message);
         }
       }
@@ -198,9 +198,9 @@ export default function NewEventForm({ handleSubmit }: NewEventFormProps) {
         }
       } catch (error) {
         if (isAxiosError(error)) {
-          showError(t("common.error"), error.message);
+          showError(t("common.error.default"), error.message);
         } else if (error instanceof Error) {
-          showError(t("common.error"), t("system.error.occurred"));
+          showError(t("common.error.default"), t("system.error.occurred"));
           console.error("General error:", error.message);
         }
       }

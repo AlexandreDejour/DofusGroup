@@ -51,9 +51,9 @@ export default function JoinEventForm({ handleSubmit }: JoinEventFormProps) {
         setCharacters(availableCharacters);
       } catch (error) {
         if (isAxiosError(error)) {
-          showError("Erreur", error.message);
+          showError(t("common.error.default"), error.message);
         } else if (error instanceof Error) {
-          showError("Erreur", "Une erreur est survenue");
+          showError(t("common.error.default"), t("system.error.occurred"));
           console.error("General error:", error.message);
         }
       }

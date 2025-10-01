@@ -1,5 +1,7 @@
-import { render, screen, waitFor, fireEvent } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
+import { render, screen, waitFor, fireEvent } from "@testing-library/react";
+
+import { t } from "../../../../i18n/i18n-helper";
 
 import { useAuth } from "../../../../contexts/authContext";
 import { useNotification } from "../../../../contexts/notificationContext";
@@ -187,7 +189,7 @@ describe("NewEventForm", () => {
 
     // Vérification du rendu initial
     expect(
-      screen.getByRole("heading", { name: /Création d'évènement/i }),
+      screen.getByRole("heading", { name: t("event.create") }),
     ).toBeInTheDocument();
     expect(screen.getByRole("form")).toBeInTheDocument();
 
@@ -237,15 +239,15 @@ describe("NewEventForm", () => {
 
   it("Should show error if fetching tags fails", async () => {
     vi.mocked(TagService.TagService.prototype.getTags).mockRejectedValue(
-      new Error("Erreur générale"),
+      new Error("General error"),
     );
 
     render(<NewEventForm handleSubmit={mockHandleSubmit} />);
 
     await waitFor(() => {
       expect(mockShowError).toHaveBeenCalledWith(
-        "Erreur",
-        "Une erreur est survenue",
+        t("common.error.default"),
+        t("system.error.occurred"),
       );
     });
   });
@@ -253,14 +255,14 @@ describe("NewEventForm", () => {
   it("Should show error if fetching servers fails", async () => {
     vi.mocked(
       ServerService.ServerService.prototype.getServers,
-    ).mockRejectedValue(new Error("Erreur générale"));
+    ).mockRejectedValue(new Error("General error"));
 
     render(<NewEventForm handleSubmit={mockHandleSubmit} />);
 
     await waitFor(() => {
       expect(mockShowError).toHaveBeenCalledWith(
-        "Erreur",
-        "Une erreur est survenue",
+        t("common.error.default"),
+        t("system.error.occurred"),
       );
     });
   });
@@ -268,14 +270,14 @@ describe("NewEventForm", () => {
   it("Should show error if fetching areas fails", async () => {
     vi.mocked(
       DofusDBService.DofusDBService.prototype.getAreas,
-    ).mockRejectedValue(new Error("Erreur générale"));
+    ).mockRejectedValue(new Error("General error"));
 
     render(<NewEventForm handleSubmit={mockHandleSubmit} />);
 
     await waitFor(() => {
       expect(mockShowError).toHaveBeenCalledWith(
-        "Erreur",
-        "Une erreur est survenue",
+        t("common.error.default"),
+        t("system.error.occurred"),
       );
     });
   });

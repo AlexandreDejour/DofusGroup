@@ -1,6 +1,8 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, waitFor, fireEvent } from "@testing-library/react";
 
+import { t } from "../../../../i18n/i18n-helper";
+
 import { EventEnriched } from "../../../../types/event";
 
 import { useAuth } from "../../../../contexts/authContext";
@@ -170,7 +172,7 @@ describe("UpdateEventForm", () => {
     );
 
     expect(
-      screen.getByRole("heading", { name: /Modification d'évènement/i }),
+      screen.getByRole("heading", { name: t("event.modification") }),
     ).toBeInTheDocument();
     expect(screen.getByRole("form")).toBeInTheDocument();
 
@@ -203,7 +205,7 @@ describe("UpdateEventForm", () => {
 
   it("should show error if fetching tags fails", async () => {
     vi.mocked(TagService.TagService.prototype.getTags).mockRejectedValue(
-      new Error("Erreur générale"),
+      new Error("General error"),
     );
 
     render(
@@ -215,8 +217,8 @@ describe("UpdateEventForm", () => {
 
     await waitFor(() => {
       expect(mockShowError).toHaveBeenCalledWith(
-        "Erreur",
-        "Une erreur est survenue",
+        t("common.error.default"),
+        t("system.error.occurred"),
       );
     });
   });
@@ -224,7 +226,7 @@ describe("UpdateEventForm", () => {
   it("should show error if fetching servers fails", async () => {
     vi.mocked(
       ServerService.ServerService.prototype.getServers,
-    ).mockRejectedValue(new Error("Erreur générale"));
+    ).mockRejectedValue(new Error("General error"));
 
     render(
       <UpdateEventForm
@@ -235,8 +237,8 @@ describe("UpdateEventForm", () => {
 
     await waitFor(() => {
       expect(mockShowError).toHaveBeenCalledWith(
-        "Erreur",
-        "Une erreur est survenue",
+        t("common.error.default"),
+        t("system.error.occurred"),
       );
     });
   });
@@ -244,7 +246,7 @@ describe("UpdateEventForm", () => {
   it("should show error if fetching areas fails", async () => {
     vi.mocked(
       DofusDBService.DofusDBService.prototype.getAreas,
-    ).mockRejectedValue(new Error("Erreur générale"));
+    ).mockRejectedValue(new Error("General error"));
 
     render(
       <UpdateEventForm
@@ -255,8 +257,8 @@ describe("UpdateEventForm", () => {
 
     await waitFor(() => {
       expect(mockShowError).toHaveBeenCalledWith(
-        "Erreur",
-        "Une erreur est survenue",
+        t("common.error.default"),
+        t("system.error.occurred"),
       );
     });
   });

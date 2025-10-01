@@ -83,9 +83,9 @@ export default function NewEventForm({
         setTags(response);
       } catch (error) {
         if (isAxiosError(error)) {
-          showError(t("common.error"), error.message);
+          showError(t("common.error.default"), error.message);
         } else if (error instanceof Error) {
-          showError(t("common.error"), t("system.error.occurred"));
+          showError(t("common.error.default"), t("system.error.occurred"));
           console.error("General error:", error.message);
         }
       }
@@ -98,9 +98,9 @@ export default function NewEventForm({
         setServers(response);
       } catch (error) {
         if (isAxiosError(error)) {
-          showError(t("common.error"), error.message);
+          showError(t("common.error.default"), error.message);
         } else if (error instanceof Error) {
-          showError(t("common.error"), t("system.error.occurred"));
+          showError(t("common.error.default"), t("system.error.occurred"));
           console.error("General error:", error.message);
         }
       }
@@ -134,9 +134,9 @@ export default function NewEventForm({
         }
       } catch (error) {
         if (isAxiosError(error)) {
-          showError(t("common.error"), error.message);
+          showError(t("common.error.default"), error.message);
         } else if (error instanceof Error) {
-          showError(t("common.error"), t("system.error.occurred"));
+          showError(t("common.error.default"), t("system.error.occurred"));
           console.error("General error:", error.message);
         }
       }
@@ -178,9 +178,9 @@ export default function NewEventForm({
         }
       } catch (error) {
         if (isAxiosError(error)) {
-          showError(t("common.error"), error.message);
+          showError(t("common.error.default"), error.message);
         } else if (error instanceof Error) {
-          showError(t("common.error"), t("system.error.occurred"));
+          showError(t("common.error.default"), t("system.error.occurred"));
           console.error("General error:", error.message);
         }
       }
@@ -197,7 +197,7 @@ export default function NewEventForm({
 
   return (
     <div className="update_event">
-      <h3 className="update_event_title">Modification d'évènement</h3>
+      <h3 className="update_event_title">{t("event.modification")}</h3>
       <form onSubmit={handleSubmit} className="update_event_form" role="form">
         <label htmlFor="title" className="update_event_form_label title">
           <span>{t("common.title")}:</span>

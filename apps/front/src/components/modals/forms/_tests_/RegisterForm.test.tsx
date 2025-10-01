@@ -1,17 +1,22 @@
 import "@testing-library/jest-dom";
-
 import { render, screen, fireEvent } from "@testing-library/react";
+
+import { t } from "../../../../i18n/i18n-helper";
 
 import RegisterForm from "../Forms/RegisterForm";
 
 describe("RegisterForm", () => {
   it("Display all form fields and button", () => {
     render(<RegisterForm handleSubmit={vi.fn()} />);
-    expect(screen.getByLabelText(/Pseudo:/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/Email:/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/^Mot de passe:$/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(`${t("auth.username")}:`)).toBeInTheDocument();
     expect(
-      screen.getByLabelText(/^Confirmation mot de passe:$/i),
+      screen.getByLabelText(`${t("auth.email.default")}:`),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByLabelText(`${t("auth.password.default")}:`),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByLabelText(`${t("auth.password.confirm")}:`),
     ).toBeInTheDocument();
     expect(screen.getByRole("button")).toBeInTheDocument();
   });

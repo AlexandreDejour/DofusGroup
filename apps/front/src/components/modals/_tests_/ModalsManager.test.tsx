@@ -1,5 +1,8 @@
 import "@testing-library/jest-dom";
 import { render, screen, fireEvent } from "@testing-library/react";
+
+import { t } from "../../../i18n/i18n-helper";
+
 import ModalProvider from "../../../contexts/modalContext";
 
 vi.mock("../../../config/config.ts", () => ({
@@ -66,9 +69,9 @@ import { CommentEnriched } from "../../../types/comment";
 import ModalsManager from "../ModalsManager";
 
 const FIELD_LABELS: Record<string, string> = {
-  mail: "email",
-  password: "mot de passe",
-  username: "pseudo",
+  mail: t("auth.email.default"),
+  password: t("auth.password.default"),
+  username: t("auth.username"),
 };
 
 function renderModalsManager() {
@@ -151,8 +154,12 @@ describe("ModalsManager", () => {
 
   it("Display RegisterForm when modalType is 'register'", () => {
     renderModalsManager();
-    expect(screen.getByRole("form")).toBeInTheDocument();
-    expect(screen.getByText(/Inscription/i)).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: t("auth.register") }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { level: 3, name: t("auth.register") }),
+    ).toBeInTheDocument();
   });
 
   it("Display LoginForm when modalType is 'login'", () => {
@@ -165,8 +172,12 @@ describe("ModalsManager", () => {
     });
 
     renderModalsManager();
-    expect(screen.getByRole("form")).toBeInTheDocument();
-    expect(screen.getByText(/Connexion/i)).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: t("auth.login") }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { level: 3, name: t("auth.login") }),
+    ).toBeInTheDocument();
   });
 
   it.each(Object.entries(FIELD_LABELS))(
@@ -185,7 +196,7 @@ describe("ModalsManager", () => {
       expect(
         screen.getByRole("heading", {
           level: 3,
-          name: new RegExp(`Modifier\\s+${expectedLabel}`, "i"),
+          name: new RegExp(`${t("common.change")}\\s+${expectedLabel}`, "i"),
         }),
       ).toBeInTheDocument();
 
@@ -201,7 +212,7 @@ describe("ModalsManager", () => {
       expect(mainInput).toHaveAttribute("id", field);
 
       if (field === "password") {
-        const confirmPlaceholder = `Confirmation ${expectedLabel}`;
+        const confirmPlaceholder = `${t("common.confirm")} ${expectedLabel}`;
         const confirmInput = screen.getByPlaceholderText(
           confirmPlaceholder,
         ) as HTMLInputElement;
@@ -299,9 +310,7 @@ describe("ModalsManager", () => {
 
     renderModalsManager();
     expect(screen.getByRole("form")).toBeInTheDocument();
-    expect(
-      screen.getByPlaceholderText(/rédigez un commentaire/i),
-    ).toBeInTheDocument();
+    expect(screen.getByPlaceholderText(t("comment.write"))).toBeInTheDocument();
   });
 
   it("renders CommentForm for 'updateComment' modalType with CommentEnriched target", () => {
@@ -338,7 +347,7 @@ describe("ModalsManager", () => {
 
   it("Don't close modal when user click on content", () => {
     renderModalsManager();
-    fireEvent.click(screen.getByText(/Inscription/i));
+    fireEvent.click(screen.getByRole("button", { name: /register/i }));
     expect(closeModal).not.toHaveBeenCalled();
   });
 

@@ -3,6 +3,7 @@ import "@testing-library/jest-dom";
 import { render, screen, fireEvent } from "@testing-library/react";
 
 import { MemoryRouter } from "react-router";
+import { t } from "../../../i18n/i18n-helper";
 
 import { useScreen } from "../../../contexts/screenContext";
 import CharacterCard from "../CharacterCard";
@@ -87,7 +88,7 @@ describe("CharacterCard", () => {
     renderCharacterCard(maleCharacter);
     const img = screen.getByRole("img");
     expect(img).toHaveAttribute("src", "/miniatures/cra_male.webp");
-    expect(img).toHaveAttribute("alt", "Miniature de classe cra");
+    expect(img).toHaveAttribute("alt", `${t("common.classThumbnail")} cra`);
   });
 
   it("Display image with female character", () => {
@@ -95,7 +96,7 @@ describe("CharacterCard", () => {
     renderCharacterCard(femaleCharacter);
     const img = screen.getByRole("img");
     expect(img).toHaveAttribute("src", "/miniatures/cra_female.webp");
-    expect(img).toHaveAttribute("alt", "Miniature de classe cra");
+    expect(img).toHaveAttribute("alt", `${t("common.classThumbnail")} cra`);
   });
 
   it("Display character name", () => {
@@ -110,6 +111,6 @@ describe("CharacterCard", () => {
 
   it("Display character level", () => {
     renderCharacterCard();
-    expect(screen.getByText("niveau: 50")).toBeInTheDocument();
+    expect(screen.getByText(`${t("common.level")}: 50`)).toBeInTheDocument();
   });
 });

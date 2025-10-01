@@ -1,38 +1,62 @@
 import { render, screen } from "@testing-library/react";
+import { I18nextProvider } from "react-i18next";
+import i18n from "../../../i18n/i18n";
 
 import PrivacyPolicy from "../PrivacyPolicy";
 
 describe("PrivacyPolicy component", () => {
-  it("Display main title", () => {
-    render(<PrivacyPolicy />);
+  beforeEach(() => {
+    render(
+      <I18nextProvider i18n={i18n}>
+        <PrivacyPolicy />
+      </I18nextProvider>,
+    );
+  });
+
+  it("displays main title", () => {
     expect(
       screen.getByRole("heading", {
         level: 2,
-        name: /Politique de confidentialité/i,
+        name: /Privacy Policy/i,
       }),
     ).toBeInTheDocument();
   });
 
-  it("Display date", () => {
+  it("displays last update date", () => {
     const today = new Date().toLocaleDateString();
-    render(<PrivacyPolicy />);
-    expect(screen.getByText(today)).toBeInTheDocument();
+    expect(screen.getByText(new RegExp(today))).toBeInTheDocument();
   });
 
-  it("Contain introduction section", () => {
-    render(<PrivacyPolicy />);
+  it("renders first and last sections", () => {
+    // Section 1
     expect(
       screen.getByRole("heading", { level: 3, name: /1\. Introduction/i }),
     ).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        /This privacy policy explains how the community site DofusGroup works/i,
+      ),
+    ).toBeInTheDocument();
+
+    // Section 10
+    expect(
+      screen.getByRole("heading", { level: 3, name: /10\. Policy Updates/i }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(/We reserve the right to update this privacy policy/i),
+    ).toBeInTheDocument();
   });
 
-  it("Contain policy modifications section", () => {
-    render(<PrivacyPolicy />);
+  it("renders list items in sections", () => {
+    // Section 2 li
+    expect(screen.getByText(/username/i)).toBeInTheDocument();
+    expect(screen.getByText(/email address/i)).toBeInTheDocument();
     expect(
-      screen.getByRole("heading", {
-        level: 3,
-        name: /10\. Modifications de la politique/i,
-      }),
+      screen.getByText(/password \(stored as a hash, never in plain text\)/i),
     ).toBeInTheDocument();
+
+    // Section 6 li
+    expect(screen.getByText(/secure password hashing/i)).toBeInTheDocument();
+    expect(screen.getByText(/email encryption/i)).toBeInTheDocument();
   });
 });

@@ -92,6 +92,7 @@ export default function Footer() {
 
       <div className="footer_language">
         <button
+          className="footer_language_button"
           aria-label={t("settings.language.change", {
             language: t("settings.language.french"),
           })}
@@ -100,10 +101,11 @@ export default function Footer() {
           <ReactCountryFlag
             countryCode="FR"
             svg
-            style={{ width: "24px", height: "24px" }}
+            style={{ width: "50%", height: "100%" }}
           />
         </button>
         <button
+          className="footer_language_button"
           aria-label={t("settings.language.change", {
             language: t("settings.language.english"),
           })}
@@ -112,7 +114,7 @@ export default function Footer() {
           <ReactCountryFlag
             countryCode="GB"
             svg
-            style={{ width: "24px", height: "24px" }}
+            style={{ width: "50%", height: "100%" }}
           />
         </button>
       </div>

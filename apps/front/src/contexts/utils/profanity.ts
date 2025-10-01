@@ -30,9 +30,34 @@ export function loadProfanityDictionary(lang: string) {
   }
 }
 
-// Check if text contain bad words
+// Check if text contains bad-words
 export function containsProfanity(text: string): boolean {
   return leoProfanity.check(text);
+}
+
+/**
+ * Check recursively if an object contains bad words
+ * @param obj Object to check
+ * @returns true if at least one string contains profanity
+ */
+export function containsProfanityInObject<T extends Record<string, any>>(
+  obj: T,
+): boolean {
+  for (const key in obj) {
+    const value = obj[key];
+
+    if (typeof value === "string") {
+      if (leoProfanity.check(value)) {
+        return true;
+      }
+    } else if (typeof value === "object" && value !== null) {
+      if (containsProfanityInObject(value)) {
+        return true; // recursive for array or nested object
+      }
+    }
+  }
+
+  return false;
 }
 
 // Fonction récursive qui nettoie toutes les chaînes dans un objet

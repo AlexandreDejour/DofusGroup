@@ -19,7 +19,6 @@ import { CharacterEnriched } from "../types/character";
 
 import { Config } from "../config/config";
 import { ApiClient } from "../services/client";
-import { cleanProfanity } from "./utils/profanity";
 import formDataToObject from "./utils/formDataToObject";
 import { AuthService } from "../services/api/authService";
 import { UserService } from "../services/api/userService";
@@ -27,6 +26,11 @@ import { EventService } from "../services/api/eventService";
 import { CommentService } from "../services/api/commentService";
 import { CharacterService } from "../services/api/characterService";
 import isUpdateField from "../components/modals/utils/isUpdateField";
+import {
+  cleanProfanity,
+  containsProfanity,
+  containsProfanityInObject,
+} from "./utils/profanity";
 
 const config = Config.getInstance();
 const axios = new ApiClient(config.baseUrl);
@@ -134,6 +138,15 @@ export default function ModalProvider({ children }: ModalProviderProps) {
             "confirmPassword",
           ];
           const data = formDataToObject<RegisterForm>(formData, { keys });
+
+          if (containsProfanity(data.username)) {
+            showError(
+              t("system.error.profanity"),
+              t("system.error.inappropriate"),
+            );
+            return;
+          }
+
           await authService.register(data);
 
           showSuccess(
@@ -204,7 +217,17 @@ export default function ModalProvider({ children }: ModalProviderProps) {
             numberKeys,
           });
 
-          await characterService.create(user.id, data);
+          if (containsProfanity(data.name)) {
+            showError(
+              t("system.error.profanity"),
+              t("system.error.inappropriate"),
+            );
+            return;
+          }
+
+          const cleanData = cleanProfanity(data);
+
+          await characterService.create(user.id, cleanData);
           const response = await userService.getOne(user.id);
 
           setUser({ ...user, ...response });
@@ -244,10 +267,20 @@ export default function ModalProvider({ children }: ModalProviderProps) {
             numberKeys,
           });
 
+          if (containsProfanity(data.name)) {
+            showError(
+              t("system.error.profanity"),
+              t("system.error.inappropriate"),
+            );
+            return;
+          }
+
+          const cleanData = cleanProfanity(data);
+
           const characterData = await characterService.update(
             user.id,
             updateTarget.id,
-            data,
+            cleanData,
           );
           const userData = await userService.getOne(user.id);
 

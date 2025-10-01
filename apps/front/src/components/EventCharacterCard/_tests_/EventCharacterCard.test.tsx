@@ -3,6 +3,7 @@ import "@testing-library/jest-dom";
 import { render, screen, fireEvent } from "@testing-library/react";
 
 import { MemoryRouter } from "react-router-dom";
+import { t } from "../../../i18n/i18n-helper";
 
 import { useScreen } from "../../../contexts/screenContext";
 
@@ -134,28 +135,28 @@ describe("EventCharacterCard", () => {
     renderComponent();
     expect(screen.getByText("Night-Hunter")).toBeInTheDocument();
     expect(screen.getByText("Iop")).toBeInTheDocument();
-    expect(screen.getByText("niveau: 190")).toBeInTheDocument();
+    expect(screen.getByText(`${t("common.level")}: 190`)).toBeInTheDocument();
   });
 
   it("Display male image if character is male", () => {
     renderComponent();
     const img = screen.getByRole("img");
-    expect(img).toHaveAttribute("src", "/miniatures/iop_male.webp");
+    expect(img).toHaveAttribute("src", `/miniatures/iop_male.webp`);
   });
 
   it("Display female image if character is female", () => {
     renderComponent(mockEvent, { ...mockCharacter, sex: "F" });
     const img = screen.getByRole("img");
-    expect(img).toHaveAttribute("src", "/miniatures/iop_female.webp");
+    expect(img).toHaveAttribute("src", `/miniatures/iop_female.webp`);
   });
 
   it("Display details and delete buttons if user is event author", () => {
     renderComponent();
     expect(
-      screen.getByRole("button", { name: /détails/i }),
+      screen.getByRole("button", { name: t("common.details") }),
     ).toBeInTheDocument();
     expect(
-      screen.getByRole("button", { name: /delete event night-hunter/i }),
+      screen.getByRole("button", { name: /Remove Night-Hunter from event/i }),
     ).toBeInTheDocument();
   });
 
@@ -169,16 +170,16 @@ describe("EventCharacterCard", () => {
     renderComponent(event, character);
 
     expect(
-      screen.getByRole("button", { name: /détails/i }),
+      screen.getByRole("button", { name: t("common.details") }),
     ).toBeInTheDocument();
     expect(
-      screen.queryByRole("button", { name: /delete/i }),
+      screen.queryByRole("button", { name: /Remove Night-Hunter from event/i }),
     ).not.toBeInTheDocument();
   });
 
   it("Navigate to character page on click to details", () => {
     renderComponent();
-    const button = screen.getByRole("button", { name: /détails/i });
+    const button = screen.getByRole("button", { name: t("common.details") });
     fireEvent.click(button);
     expect(mockNavigate).toHaveBeenCalledWith(
       "/character/95a333b9-0228-47a7-abfb-e002d61fddde",
@@ -188,7 +189,7 @@ describe("EventCharacterCard", () => {
   it("Call removeCharacter when click on delete", () => {
     renderComponent();
     const button = screen.getByRole("button", {
-      name: /delete event night-hunter/i,
+      name: /Remove Night-Hunter from event/i,
     });
     fireEvent.click(button);
     expect(mockRemoveCharacter).toHaveBeenCalledWith(

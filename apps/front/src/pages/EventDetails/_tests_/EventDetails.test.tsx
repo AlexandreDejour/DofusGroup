@@ -2,6 +2,8 @@ import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { describe, it, vi, beforeEach, afterEach } from "vitest";
 import { render, screen, waitFor, fireEvent } from "@testing-library/react";
 
+import { t } from "../../../i18n/i18n-helper";
+
 import EventDetails from "../EventDetails";
 
 // Mock config
@@ -124,7 +126,7 @@ describe("EventDetails", () => {
 
     renderWithRouter();
 
-    expect(screen.getByText(/chargement en cours/i)).toBeInTheDocument();
+    expect(screen.getByText(t("common.loading"))).toBeInTheDocument();
   });
 
   it("renders event details after successful fetch", async () => {
@@ -134,7 +136,9 @@ describe("EventDetails", () => {
       expect(screen.getByText(/titre test/i)).toBeInTheDocument();
     });
 
-    expect(screen.getByText(/créé par toto/i)).toBeInTheDocument();
+    expect(
+      screen.getByText(`${t("common.createdBy")} toto`),
+    ).toBeInTheDocument();
     expect(screen.getAllByText(/donjon/i).length).toBeGreaterThan(0);
     expect(screen.getByText(/Djaul/i)).toBeInTheDocument();
     expect(screen.getAllByText(/amakna/i).length).toBeGreaterThan(0);
@@ -149,10 +153,10 @@ describe("EventDetails", () => {
     await waitFor(() => screen.getByText(/titre test/i));
 
     expect(
-      screen.getByRole("button", { name: /modifier/i }),
+      screen.getByRole("button", { name: t("common.change") }),
     ).toBeInTheDocument();
     expect(
-      screen.getByRole("button", { name: /supprimer/i }),
+      screen.getByRole("button", { name: t("common.delete.default") }),
     ).toBeInTheDocument();
   });
 
@@ -161,7 +165,7 @@ describe("EventDetails", () => {
 
     await waitFor(() => screen.getByText(/titre test/i));
 
-    fireEvent.click(screen.getByRole("button", { name: /modifier/i }));
+    fireEvent.click(screen.getByRole("button", { name: t("common.change") }));
     expect(openModal).toHaveBeenCalledWith("updateEvent", mockEvent);
   });
 
@@ -170,7 +174,9 @@ describe("EventDetails", () => {
 
     await waitFor(() => screen.getByText(/titre test/i));
 
-    fireEvent.click(screen.getByRole("button", { name: /supprimer/i }));
+    fireEvent.click(
+      screen.getByRole("button", { name: t("common.delete.default") }),
+    );
     expect(handleDelete).toHaveBeenCalledWith(
       "event_details",
       "55c4e602-e91f-4cda-8abe-a5458717dd7e",
@@ -182,7 +188,9 @@ describe("EventDetails", () => {
 
     await waitFor(() => screen.getByText(/titre test/i));
 
-    const joinButtons = screen.getAllByRole("button", { name: /rejoindre/i });
+    const joinButtons = screen.getAllByRole("button", {
+      name: t("common.join"),
+    });
     fireEvent.click(joinButtons[0]);
     expect(openModal).toHaveBeenCalledWith("joinEvent", mockEvent);
   });
@@ -192,7 +200,7 @@ describe("EventDetails", () => {
 
     await waitFor(() => screen.getByText(/titre test/i));
 
-    fireEvent.click(screen.getByRole("button", { name: /retour/i }));
+    fireEvent.click(screen.getByRole("button", { name: t("common.return") }));
     expect(navigateMock).toHaveBeenCalledWith(-1);
   });
 
@@ -226,7 +234,9 @@ describe("EventDetails", () => {
 
     await waitFor(() => {
       expect(screen.getByText(/super event/i)).toBeInTheDocument();
-      expect(screen.getByText(/auteur: toto/i)).toBeInTheDocument();
+      expect(
+        screen.getByText(`${t("common.author")}: toto`),
+      ).toBeInTheDocument();
     });
   });
 
@@ -306,7 +316,7 @@ describe("EventDetails", () => {
   it("calls handleDelete and removes comment when clicking supprimer", async () => {
     const comment = {
       id: "7999dc4e-8760-47ab-92c9-dcde2a6a3e90",
-      content: "À supprimer",
+      content: "content to delete",
       user: { id: "9c63878b-4763-4de7-ac1e-d1ada9fc0159", username: "toto" },
     };
     getOneEnrichedMock = vi.fn().mockResolvedValue({
@@ -316,7 +326,7 @@ describe("EventDetails", () => {
 
     renderWithRouter();
 
-    await waitFor(() => screen.getByText(/à supprimer/i));
+    await waitFor(() => screen.getByText(/content to delete/i));
 
     fireEvent.click(
       screen.getByRole("button", {
@@ -329,9 +339,9 @@ describe("EventDetails", () => {
       "7999dc4e-8760-47ab-92c9-dcde2a6a3e90",
     );
 
-    // Le commentaire doit disparaître après suppression
+    // Comment disapear after click
     await waitFor(() => {
-      expect(screen.queryByText(/à supprimer/i)).not.toBeInTheDocument();
+      expect(screen.queryByText(/content to delete/i)).not.toBeInTheDocument();
     });
   });
 

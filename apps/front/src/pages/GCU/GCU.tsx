@@ -1,5 +1,21 @@
-import { useTranslation } from "react-i18next";
 import "./GCU.scss";
+
+import { useTranslation } from "react-i18next";
+
+type ContentBlock =
+  | { type: "p"; text: string }
+  | { type: "li"; items: string[] };
+
+type Subsection = {
+  title?: string;
+  content?: ContentBlock[];
+};
+
+type Section = {
+  title: string;
+  content?: ContentBlock[];
+  subsections?: Record<string, Subsection>;
+};
 
 export default function GCU() {
   const { t } = useTranslation("gcu");
@@ -8,6 +24,7 @@ export default function GCU() {
     "1",
     "2",
     "3",
+    "4",
     "5",
     "6",
     "7",
@@ -29,60 +46,56 @@ export default function GCU() {
         </p>
       </header>
 
-      {/* Simple sections */}
       {sectionKeys.map((key) => {
-        const section = t(`sections.${key}`, { returnObjects: true }) as {
-          title: string;
-          p1?: string;
-          p2?: string;
-          p3?: string;
-          li?: string[];
-        };
+        const section = t(`sections.${key}`, {
+          returnObjects: true,
+        }) as Section;
 
         return (
           <section key={key}>
             <h3>{section.title}</h3>
-            {section.p1 && <p>{section.p1}</p>}
-            {section.p2 && <p>{section.p2}</p>}
-            {section.p3 && <p>{section.p3}</p>}
-            {section.li && (
-              <ul>
-                {section.li.map((item, idx) => (
-                  <li key={idx}>{item}</li>
-                ))}
-              </ul>
-            )}
+
+            {/* main block management */}
+            {section.content &&
+              section.content.map((block, idx) => {
+                if (block.type === "p") return <p key={idx}>{block.text}</p>;
+                if (block.type === "li")
+                  return (
+                    <ul key={idx}>
+                      {block.items.map((item, i) => (
+                        <li key={i}>{item}</li>
+                      ))}
+                    </ul>
+                  );
+                return null;
+              })}
+
+            {/* specific block management (block 4) */}
+            {section.subsections &&
+              Object.entries(section.subsections).map(
+                ([subKey, subsection]) => (
+                  <div key={subKey}>
+                    {subsection.title && <h4>{subsection.title}</h4>}
+                    {subsection.content &&
+                      subsection.content.map((block, idx) => {
+                        if (block.type === "p")
+                          return <p key={idx}>{block.text}</p>;
+                        if (block.type === "li")
+                          return (
+                            <ul key={idx}>
+                              {block.items.map((item, i) => (
+                                <li key={i}>{item}</li>
+                              ))}
+                            </ul>
+                          );
+                        return null;
+                      })}
+                  </div>
+                ),
+              )}
           </section>
         );
       })}
-
-      {/* Specific management for section 4 */}
-      <section>
-        <h3>{t("sections.4.title")}</h3>
-        {["4.1", "4.2", "4.3"].map((subKey) => {
-          const subsection = t(`sections.4.subsections.${subKey}`, {
-            returnObjects: true,
-          }) as {
-            title?: string;
-            p?: string;
-            li?: string[];
-          };
-
-          return (
-            <div key={subKey}>
-              {subsection.title && <h4>{subsection.title}</h4>}
-              {subsection.p && <p>{subsection.p}</p>}
-              {subsection.li && (
-                <ul>
-                  {subsection.li.map((item, idx) => (
-                    <li key={idx}>{item}</li>
-                  ))}
-                </ul>
-              )}
-            </div>
-          );
-        })}
-      </section>
     </div>
   );
 }

@@ -2,6 +2,15 @@ import "./About.scss";
 
 import { useTranslation, Trans } from "react-i18next";
 
+type ContentBlock =
+  | { type: "p"; text: string }
+  | { type: "li"; items: string[] };
+
+type Section = {
+  title: string;
+  content?: ContentBlock[];
+};
+
 export default function About() {
   const { t } = useTranslation("about");
 
@@ -15,29 +24,24 @@ export default function About() {
       {["1", "2", "3", "4", "5"].map((sectionKey) => {
         const section = t(`sections.${sectionKey}`, {
           returnObjects: true,
-        }) as {
-          title: string;
-          p1?: string;
-          p2?: string;
-          p3?: string;
-          li?: string[];
-        };
+        }) as Section;
 
         return (
           <section key={sectionKey}>
             <h3>{section.title}</h3>
 
-            {section.p1 && <p>{section.p1}</p>}
-            {section.p2 && <p>{section.p2}</p>}
-            {section.p3 && <p>{section.p3}</p>}
-
-            {section.li && (
-              <ul>
-                {section.li.map((item, idx) => (
-                  <li key={idx}>{item}</li>
-                ))}
-              </ul>
-            )}
+            {section.content?.map((block, idx) => {
+              if (block.type === "p") return <p key={idx}>{block.text}</p>;
+              if (block.type === "li")
+                return (
+                  <ul key={idx}>
+                    {block.items.map((item, i) => (
+                      <li key={i}>{item}</li>
+                    ))}
+                  </ul>
+                );
+              return null;
+            })}
           </section>
         );
       })}

@@ -152,7 +152,7 @@ export default function Profile() {
           </section>
 
           <section className="profile_section">
-            <h2 className="profile_section_title">Personnages</h2>
+            <h2 className="profile_section_title">{t("character.list")}</h2>
             {userEnriched.characters && userEnriched.characters.length ? (
               <ul className="profile_section_list">
                 {userEnriched.characters.map((character) => (

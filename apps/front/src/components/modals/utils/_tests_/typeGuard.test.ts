@@ -4,7 +4,6 @@ import { describe, it, expect } from "vitest";
 import { CharacterEnriched } from "../../../../types/character";
 
 import { typeGuard } from "../typeGuard";
-import { EventEnriched } from "../../../../types/event";
 
 describe("typeGuard.characterEnriched", () => {
   const validCharacter: CharacterEnriched = {
@@ -15,6 +14,7 @@ describe("typeGuard.characterEnriched", () => {
     alignment: "Neutre",
     stuff: "https://d-bk.net/fr/d/1QVjw",
     default_character: false,
+    server_id: "de5a6c69-bc0b-496c-9b62-bd7ea076b8ed",
     server: {
       id: "de5a6c69-bc0b-496c-9b62-bd7ea076b8ed",
       name: "Dakal",
@@ -189,5 +189,39 @@ describe("typeGuard.eventEnriched", () => {
 
     const noUser = { ...validEvent, user: undefined };
     expect(typeGuard.eventEnriched(noUser)).toBe(false);
+  });
+
+  describe("typeGuard.isDate", () => {
+    it("should return true for Date instances", () => {
+      expect(typeGuard.isDate(new Date())).toBe(true);
+      expect(typeGuard.isDate(new Date("2030-01-01"))).toBe(true);
+    });
+
+    it("should return false for strings", () => {
+      expect(typeGuard.isDate("2023-01-01")).toBe(false);
+      expect(typeGuard.isDate("")).toBe(false);
+    });
+
+    it("should return false for numbers", () => {
+      expect(typeGuard.isDate(0)).toBe(false);
+      expect(typeGuard.isDate(1234567890)).toBe(false);
+    });
+
+    it("should return false for null and undefined", () => {
+      expect(typeGuard.isDate(null)).toBe(false);
+      expect(typeGuard.isDate(undefined)).toBe(false);
+    });
+
+    it("should return false for objects and arrays", () => {
+      expect(typeGuard.isDate({})).toBe(false);
+      expect(typeGuard.isDate({ date: new Date() })).toBe(false);
+      expect(typeGuard.isDate([])).toBe(false);
+      expect(typeGuard.isDate([new Date()])).toBe(false);
+    });
+
+    it("should return false for functions", () => {
+      expect(typeGuard.isDate(() => {})).toBe(false);
+      expect(typeGuard.isDate(Date)).toBe(false);
+    });
   });
 });

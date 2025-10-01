@@ -330,7 +330,17 @@ export default function ModalProvider({ children }: ModalProviderProps) {
             arrayKeys,
           });
 
-          await eventService.create(user.id, data);
+          if (containsProfanity(data.title)) {
+            showError(
+              t("system.error.profanity"),
+              t("system.error.inappropriate"),
+            );
+            return;
+          }
+
+          const cleanData = cleanProfanity(data);
+
+          await eventService.create(user.id, cleanData);
           const response = await userService.getOne(user.id);
 
           setUser({ ...user, ...response });
@@ -377,10 +387,20 @@ export default function ModalProvider({ children }: ModalProviderProps) {
             arrayKeys,
           });
 
+          if (containsProfanity(data.title)) {
+            showError(
+              t("system.error.profanity"),
+              t("system.error.inappropriate"),
+            );
+            return;
+          }
+
+          const cleanData = cleanProfanity(data);
+
           const eventData = await eventService.update(
             user.id,
             updateTarget?.id,
-            data,
+            cleanData,
           );
           const userData = await userService.getOne(user.id);
 

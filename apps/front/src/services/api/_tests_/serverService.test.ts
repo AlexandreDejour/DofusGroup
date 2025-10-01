@@ -1,6 +1,7 @@
 import { describe, it, beforeEach, expect, vi } from "vitest";
 
 import axios from "axios";
+import { t } from "../../../i18n/i18n-helper";
 
 import { Server } from "../../../types/server";
 
@@ -47,7 +48,7 @@ describe("ServerService", () => {
       apiClientMock.instance.get.mockRejectedValue(axiosError);
 
       await expect(serverService.getServers()).rejects.toThrow(
-        "Aucun serveur disponible.",
+        t("server.error.notFound"),
       );
     });
 

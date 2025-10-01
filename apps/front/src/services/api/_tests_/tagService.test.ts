@@ -1,6 +1,7 @@
 import { describe, it, beforeEach, expect, vi } from "vitest";
 
 import axios from "axios";
+import { t } from "../../../i18n/i18n-helper";
 
 import { Tag } from "../../../types/tag";
 
@@ -47,7 +48,7 @@ describe("TagService", () => {
       apiClientMock.instance.get.mockRejectedValue(axiosError);
 
       await expect(tagService.getTags()).rejects.toThrow(
-        "Aucun tag disponible.",
+        t("tag.error.notFound"),
       );
     });
 

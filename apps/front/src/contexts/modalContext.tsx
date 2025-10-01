@@ -491,7 +491,9 @@ export default function ModalProvider({ children }: ModalProviderProps) {
             keys,
           });
 
-          await commentService.update(user.id, updateTarget.id, data);
+          const cleanData = cleanProfanity(data);
+
+          await commentService.update(user.id, updateTarget.id, cleanData);
 
           showSuccess(
             t("system.success.dataUpdated"),

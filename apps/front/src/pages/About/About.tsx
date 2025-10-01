@@ -1,6 +1,6 @@
 import "./About.scss";
 
-import { useTranslation, Trans } from "react-i18next";
+import { useTranslation } from "react-i18next";
 
 type ContentBlock =
   | { type: "p"; text: string }

@@ -536,10 +536,7 @@ export default function ModalProvider({ children }: ModalProviderProps) {
         if (targetType === "event_details" && targetId) {
           await eventService.delete(user.id, targetId);
 
-          showSuccess(
-            t("system.success.deleted"),
-            "Votre évènement a été supprimé avec succès",
-          );
+          showSuccess(t("system.success.deleted"), t("event.success.deleted"));
 
           navigate(-1);
         }

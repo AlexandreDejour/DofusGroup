@@ -67,6 +67,7 @@ export class EventService {
         data,
         { withCredentials: true },
       );
+
       return response.data;
     } catch (error) {
       if (axios.isAxiosError(error)) {

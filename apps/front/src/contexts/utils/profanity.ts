@@ -1,5 +1,7 @@
 import leoProfanity from "leo-profanity";
 
+import { typeGuard } from "../../components/modals/utils/typeGuard";
+
 /**
  * Init filter in depends of user language
  * @param lang Language code (ex: "fr", "en")
@@ -60,7 +62,7 @@ export function containsProfanityInObject<T extends Record<string, any>>(
   return false;
 }
 
-// Fonction récursive qui nettoie toutes les chaînes dans un objet
+// Recursive fonction clean all string in object
 export function cleanProfanity<T extends Record<string, any>>(obj: T): T {
   const result: any = Array.isArray(obj) ? [] : {};
 
@@ -69,8 +71,14 @@ export function cleanProfanity<T extends Record<string, any>>(obj: T): T {
 
     if (typeof value === "string") {
       result[key] = leoProfanity.clean(value);
+    } else if (typeGuard.isDate(value)) {
+      result[key] = value; // Do nothing if Date
+    } else if (Array.isArray(value)) {
+      result[key] = value.map((v: any) =>
+        typeof v === "string" ? leoProfanity.clean(v) : v,
+      );
     } else if (typeof value === "object" && value !== null) {
-      result[key] = cleanProfanity(value); // récursion pour nested objects / arrays
+      result[key] = cleanProfanity(value); // recursive for object
     } else {
       result[key] = value; // boolean, number, null, etc.
     }

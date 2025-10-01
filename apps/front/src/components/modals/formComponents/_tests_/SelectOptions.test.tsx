@@ -59,7 +59,7 @@ describe("SelectOptions", () => {
     );
 
     const placeholder = screen.getByRole("option", {
-      name: "Sélectionnez category",
+      name: "Select category",
     });
     expect(placeholder).toBeInTheDocument();
   });

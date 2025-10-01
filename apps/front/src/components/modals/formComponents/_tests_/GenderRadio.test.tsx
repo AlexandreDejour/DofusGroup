@@ -2,12 +2,14 @@ import { describe, it, expect, vi } from "vitest";
 import userEvent from "@testing-library/user-event";
 import { render, screen } from "@testing-library/react";
 
+import { t } from "../../../../i18n/i18n-helper";
+
 import GenderRadio from "../Radio/GenderRadio";
 
 describe("GenderRadio", () => {
   it("renders the legend correctly", () => {
     render(<GenderRadio name="gender" value="" onChange={() => {}} />);
-    expect(screen.getByText("Sexe:")).toBeInTheDocument();
+    expect(screen.getByText(`${t("common.sex")}:`)).toBeInTheDocument();
   });
 
   it("renders both gender options with icons", () => {

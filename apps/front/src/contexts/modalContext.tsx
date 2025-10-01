@@ -19,6 +19,7 @@ import { CharacterEnriched } from "../types/character";
 
 import { Config } from "../config/config";
 import { ApiClient } from "../services/client";
+import { cleanProfanity } from "./utils/profanity";
 import formDataToObject from "./utils/formDataToObject";
 import { AuthService } from "../services/api/authService";
 import { UserService } from "../services/api/userService";
@@ -413,7 +414,9 @@ export default function ModalProvider({ children }: ModalProviderProps) {
             keys,
           });
 
-          await commentService.create(user.id, updateTarget.id, data);
+          const cleanData = cleanProfanity(data);
+
+          await commentService.create(user.id, updateTarget.id, cleanData);
 
           showSuccess(t("comment.new"), t("comment.success.added"));
         }

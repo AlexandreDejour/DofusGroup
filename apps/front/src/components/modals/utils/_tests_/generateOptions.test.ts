@@ -1,8 +1,14 @@
-import { describe, it, expect } from "vitest";
+import i18n from "i18next";
+import { describe, it, expect, beforeEach, vi } from "vitest";
 
 import { generateOptions } from "../../utils/generateOptions";
 
 describe("generateOptions", () => {
+  beforeEach(() => {
+    // Mock la langue pour tests areas/subAreas/dungeons
+    i18n.language = "fr";
+  });
+
   describe("servers", () => {
     it("should map servers correctly", () => {
       const servers = [{ id: "123", name: "Server A", mono_account: true }];
@@ -75,6 +81,7 @@ describe("generateOptions", () => {
           alignment: "Bonta",
           stuff: "",
           default_character: true,
+          server_id: "123",
         },
       ];
       const result = generateOptions.characters(characters);

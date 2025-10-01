@@ -3,6 +3,7 @@ import "@testing-library/jest-dom";
 import { render, screen, fireEvent } from "@testing-library/react";
 
 import { MemoryRouter } from "react-router";
+import { t } from "../../../i18n/i18n-helper";
 
 import { useScreen } from "../../../contexts/screenContext";
 
@@ -120,7 +121,7 @@ describe("EventCard", () => {
 
   it("Navigate to details on button click", () => {
     renderEventCard();
-    const button = screen.getByRole("button", { name: /détails/i });
+    const button = screen.getByRole("button", { name: t("common.details") });
     fireEvent.click(button);
     expect(mockNavigate).toHaveBeenCalledWith(
       "/event/e804f5c2-09af-4aac-ab05-8dc7743fcc2d",

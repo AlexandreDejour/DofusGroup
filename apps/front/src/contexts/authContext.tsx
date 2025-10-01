@@ -1,7 +1,7 @@
 import { isAxiosError } from "axios";
-import { t } from "../i18n/i18n-helper";
 import { useNavigate } from "react-router";
 import React, { createContext, useContext, useEffect, useState } from "react";
+import { useTypedTranslation } from "../i18n/i18n-helper";
 
 import type { AuthUser } from "../types/user";
 
@@ -29,6 +29,7 @@ const AuthContext = createContext<AuthContextType | null>(null);
 
 export default function AuthProvider({ children }: AuthProviderProps) {
   const navigate = useNavigate();
+  const t = useTypedTranslation();
 
   const { showInfo } = useNotification();
 

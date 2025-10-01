@@ -1,9 +1,9 @@
 import "./Profile.scss";
 
 import { isAxiosError } from "axios";
-import { t } from "../../i18n/i18n-helper";
 import { useNavigate } from "react-router";
 import { useEffect, useState } from "react";
+import { useTypedTranslation } from "../../i18n/i18n-helper";
 
 import { useAuth } from "../../contexts/authContext";
 import { useModal } from "../../contexts/modalContext";
@@ -23,6 +23,7 @@ const userService = new UserService(axios);
 
 export default function Profile() {
   const navigate = useNavigate();
+  const t = useTypedTranslation();
 
   const { showError } = useNotification();
   const { user, isAuthLoading } = useAuth();

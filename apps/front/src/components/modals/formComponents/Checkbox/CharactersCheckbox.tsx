@@ -1,6 +1,6 @@
 import "./CharactersCheckbox.scss";
 
-import { t } from "../../../../i18n/i18n-helper";
+import { useTypedTranslation } from "../../../../i18n/i18n-helper";
 
 import { CharacterEnriched } from "../../../../types/character";
 
@@ -11,6 +11,8 @@ interface CharacterCheckboxProps {
 export default function CharactersCheckbox({
   characters,
 }: CharacterCheckboxProps) {
+  const t = useTypedTranslation();
+
   return (
     <fieldset className="characters">
       <legend>{t("character.your")}:</legend>

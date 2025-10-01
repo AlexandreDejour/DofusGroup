@@ -2,7 +2,7 @@ import "./JoinEventForm.scss";
 
 import { isAxiosError } from "axios";
 import { useEffect, useState } from "react";
-import { t } from "../../../../i18n/i18n-helper";
+import { useTypedTranslation } from "../../../../i18n/i18n-helper";
 
 import { useAuth } from "../../../../contexts/authContext";
 import { useModal } from "../../../../contexts/modalContext";
@@ -25,6 +25,8 @@ interface JoinEventFormProps {
 }
 
 export default function JoinEventForm({ handleSubmit }: JoinEventFormProps) {
+  const t = useTypedTranslation();
+
   const { user } = useAuth();
   const { updateTarget } = useModal();
   const { showError } = useNotification();

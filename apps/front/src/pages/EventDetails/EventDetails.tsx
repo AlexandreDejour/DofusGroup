@@ -1,8 +1,8 @@
 import "./EventDetails.scss";
 
 import { isAxiosError } from "axios";
-import { t } from "../../i18n/i18n-helper";
 import { useCallback, useEffect, useState } from "react";
+import { useTypedTranslation } from "../../i18n/i18n-helper";
 import { Navigate, useNavigate, useParams } from "react-router";
 
 import { faPen } from "@fortawesome/free-solid-svg-icons";
@@ -27,6 +27,7 @@ const eventService = new EventService(axios);
 
 export default function EventDetails() {
   const navigate = useNavigate();
+  const t = useTypedTranslation();
 
   const { id } = useParams();
   const { user } = useAuth();

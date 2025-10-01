@@ -1,5 +1,5 @@
-import { t } from "../i18n/i18n-helper";
 import { useNavigate } from "react-router";
+import { useTypedTranslation } from "../i18n/i18n-helper";
 import React, { createContext, useCallback, useContext, useState } from "react";
 
 import { useAuth } from "./authContext";
@@ -82,6 +82,7 @@ const ModalContext = createContext<ModalContextType | null>(null);
 
 export default function ModalProvider({ children }: ModalProviderProps) {
   const navigate = useNavigate();
+  const t = useTypedTranslation();
 
   const { user, setUser } = useAuth();
   const { showSuccess, showError } = useNotification();

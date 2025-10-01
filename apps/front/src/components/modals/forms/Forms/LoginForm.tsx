@@ -1,12 +1,14 @@
 import "./Form.scss";
 
-import { t } from "../../../../i18n/i18n-helper";
+import { useTypedTranslation } from "../../../../i18n/i18n-helper";
 
 interface LoginFormProps {
   handleSubmit: (event: React.FormEvent<HTMLFormElement>) => void;
 }
 
 export default function LoginForm({ handleSubmit }: LoginFormProps) {
+  const t = useTypedTranslation();
+
   return (
     <div className="content_modal">
       <h3 className="content_modal_title">{t("auth.login")}</h3>

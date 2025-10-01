@@ -1,12 +1,14 @@
 import "./Form.scss";
 
-import { t } from "../../../../i18n/i18n-helper";
+import { useTypedTranslation } from "../../../../i18n/i18n-helper";
 
 interface RegisterFormProps {
   handleSubmit: (event: React.FormEvent<HTMLFormElement>) => void;
 }
 
 export default function RegisterForm({ handleSubmit }: RegisterFormProps) {
+  const t = useTypedTranslation();
+
   return (
     <div className="content_modal">
       <h3 className="content_modal_title">{t("auth.register")}</h3>

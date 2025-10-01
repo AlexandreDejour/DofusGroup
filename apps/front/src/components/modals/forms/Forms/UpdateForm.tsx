@@ -1,6 +1,6 @@
 import "./Form.scss";
 
-import { t } from "../../../../i18n/i18n-helper";
+import { useTypedTranslation } from "../../../../i18n/i18n-helper";
 
 interface UpdateFormProps {
   field: string;
@@ -8,6 +8,8 @@ interface UpdateFormProps {
 }
 
 export default function UpdateForm({ field, handleSubmit }: UpdateFormProps) {
+  const t = useTypedTranslation();
+
   const FIELD_MAP: Record<string, { label: string; type: string }> = {
     mail: { label: t("auth.email.default"), type: "email" },
     password: { label: t("auth.password.default"), type: "password" },

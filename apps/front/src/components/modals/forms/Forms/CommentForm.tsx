@@ -1,10 +1,10 @@
 import "./Form.scss";
 
 import { useState } from "react";
+import { useTypedTranslation } from "../../../../i18n/i18n-helper";
 
 import { CommentEnriched } from "../../../../types/comment";
 
-import { t } from "../../../../i18n/i18n-helper";
 import { typeGuard } from "../../utils/typeGuard";
 
 interface CommentFormProps {
@@ -16,6 +16,8 @@ export default function CommentForm({
   updateTarget,
   handleSubmit,
 }: CommentFormProps) {
+  const t = useTypedTranslation();
+
   const [content, setContent] = useState<string>(updateTarget?.content ?? "");
 
   return (

@@ -1,7 +1,7 @@
 import "./ProfileEventCard.scss";
 
 import { useNavigate } from "react-router";
-import { t } from "../../i18n/i18n-helper";
+import { useTypedTranslation } from "../../i18n/i18n-helper";
 
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -21,6 +21,7 @@ export default function ProfileEventCard({
   handleDelete,
 }: ProfileEventCardProps) {
   const navigate = useNavigate();
+  const t = useTypedTranslation();
 
   const { isDesktop } = useScreen();
 

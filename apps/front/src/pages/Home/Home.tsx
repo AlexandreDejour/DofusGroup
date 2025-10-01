@@ -1,8 +1,8 @@
 import "./Home.scss";
 
 import { isAxiosError } from "axios";
-import { t } from "../../i18n/i18n-helper";
 import { useCallback, useEffect, useState } from "react";
+import { useTypedTranslation } from "../../i18n/i18n-helper";
 
 import { Tag } from "../../types/tag";
 import { Event } from "../../types/event";
@@ -29,6 +29,8 @@ const eventService = new EventService(axios);
 const serverService = new ServerService(axios);
 
 export default function Home() {
+  const t = useTypedTranslation();
+
   const { isDesktop } = useScreen();
 
   const [totalPages, setTotalPages] = useState(1);

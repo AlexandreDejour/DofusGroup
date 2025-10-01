@@ -2,7 +2,7 @@ import "./NewCharacterForm.scss";
 
 import { isAxiosError } from "axios";
 import { useEffect, useState } from "react";
-import { t } from "../../../../i18n/i18n-helper";
+import { useTypedTranslation } from "../../../../i18n/i18n-helper";
 
 import { Breed } from "../../../../types/breed";
 import { Server } from "../../../../types/server";
@@ -31,6 +31,8 @@ interface NewCharacterFormProps {
 export default function NewCharacterForm({
   handleSubmit,
 }: NewCharacterFormProps) {
+  const t = useTypedTranslation();
+
   const { showError } = useNotification();
 
   const [breeds, setBreeds] = useState<Breed[]>([]);

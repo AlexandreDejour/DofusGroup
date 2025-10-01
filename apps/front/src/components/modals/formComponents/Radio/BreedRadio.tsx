@@ -2,8 +2,8 @@ import "./BreedRadio.scss";
 
 import { Breed } from "../../../../types/breed";
 
-import { t } from "../../../../i18n/i18n-helper";
 import { generateOptions } from "../../utils/generateOptions";
+import { useTypedTranslation } from "../../../../i18n/i18n-helper";
 
 export interface BreedRadioProps {
   name: string;
@@ -20,6 +20,8 @@ export default function BreedRadio({
   breeds,
   onChange,
 }: BreedRadioProps) {
+  const t = useTypedTranslation();
+
   const options = generateOptions.breeds(breeds, sex);
 
   return (

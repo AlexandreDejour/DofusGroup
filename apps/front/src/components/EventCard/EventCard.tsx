@@ -1,8 +1,8 @@
 import "./EventCard.scss";
 
-import { t } from "../../i18n/i18n-helper";
 import { useNavigate } from "react-router";
 import { useScreen } from "../../contexts/screenContext";
+import { useTypedTranslation } from "../../i18n/i18n-helper";
 
 import { Event } from "../../types/event";
 
@@ -12,6 +12,7 @@ interface EventCardProps {
 
 export default function EventCard({ event }: EventCardProps) {
   const navigate = useNavigate();
+  const t = useTypedTranslation();
 
   const { isDesktop } = useScreen();
 

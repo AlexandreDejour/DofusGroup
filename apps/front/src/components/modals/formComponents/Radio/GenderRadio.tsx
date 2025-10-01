@@ -1,8 +1,8 @@
 import "./GenderRadio.scss";
 
-import { t } from "../../../../i18n/i18n-helper";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMars, faVenus } from "@fortawesome/free-solid-svg-icons";
+import { useTypedTranslation } from "../../../../i18n/i18n-helper";
 
 export interface GenderRadioProps {
   name: string;
@@ -15,6 +15,8 @@ export default function GenderRadio({
   value,
   onChange,
 }: GenderRadioProps) {
+  const t = useTypedTranslation();
+
   const options = [
     {
       value: "M",

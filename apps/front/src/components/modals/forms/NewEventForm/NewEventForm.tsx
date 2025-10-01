@@ -3,7 +3,7 @@ import "./NewEventForm.scss";
 import i18n from "i18next";
 import { isAxiosError } from "axios";
 import { useEffect, useState } from "react";
-import { t } from "../../../../i18n/i18n-helper";
+import { useTypedTranslation } from "../../../../i18n/i18n-helper";
 
 import { Tag } from "../../../../types/tag";
 import { Server } from "../../../../types/server";
@@ -37,6 +37,8 @@ interface NewEventFormProps {
 }
 
 export default function NewEventForm({ handleSubmit }: NewEventFormProps) {
+  const t = useTypedTranslation();
+
   const { user } = useAuth();
   const { showError } = useNotification();
 

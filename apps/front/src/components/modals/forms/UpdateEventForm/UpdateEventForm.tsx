@@ -2,7 +2,7 @@ import "./UpdateEventForm.scss";
 
 import { isAxiosError } from "axios";
 import { useEffect, useState } from "react";
-import { t } from "../../../../i18n/i18n-helper";
+import { useTypedTranslation } from "../../../../i18n/i18n-helper";
 
 import { Tag } from "../../../../types/tag";
 import { Server } from "../../../../types/server";
@@ -36,6 +36,8 @@ export default function NewEventForm({
   updateTarget,
   handleSubmit,
 }: NewEventFormProps) {
+  const t = useTypedTranslation();
+
   const { showError } = useNotification();
 
   const [tags, setTags] = useState<Tag[]>([]);

@@ -1,7 +1,7 @@
 import "./EventCharacterCard.scss";
 
-import { t } from "../../i18n/i18n-helper";
 import { useNavigate } from "react-router";
+import { useTypedTranslation } from "../../i18n/i18n-helper";
 
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -24,6 +24,7 @@ export default function EventCharacterCard({
   removeCharacter,
 }: CharacterCardProps) {
   const navigate = useNavigate();
+  const t = useTypedTranslation();
 
   const { user } = useAuth();
   const { isDesktop } = useScreen();

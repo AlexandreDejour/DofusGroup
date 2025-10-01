@@ -1,4 +1,5 @@
-import { t } from "../../../../i18n/i18n-helper";
+import { useTypedTranslation } from "../../../../i18n/i18n-helper";
+
 import { BaseOptions } from "../../utils/generateOptions";
 
 export interface SelectOptionsProps<T, ID extends string | number> {
@@ -20,6 +21,8 @@ export default function SelectOptions<T, ID extends string | number>({
   placeholder,
   onChange,
 }: SelectOptionsProps<T, ID>) {
+  const t = useTypedTranslation();
+
   const options = generateOptions(items);
   const stringValues = [
     "alignment",

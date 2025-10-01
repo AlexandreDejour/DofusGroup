@@ -1,6 +1,6 @@
 import "./EventFilter.scss";
 
-import { t } from "../../i18n/i18n-helper";
+import { useTypedTranslation } from "../../i18n/i18n-helper";
 
 import { Tag } from "../../types/tag";
 import { Server } from "../../types/server";
@@ -34,6 +34,8 @@ export default function EventFilter({
   setServer,
   handleSearch,
 }: EventFilterProps) {
+  const t = useTypedTranslation();
+
   const { isDesktop } = useScreen();
 
   return (

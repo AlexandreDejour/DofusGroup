@@ -1,8 +1,8 @@
 import "./CharacterDetails.scss";
 
 import { isAxiosError } from "axios";
-import { t } from "../../i18n/i18n-helper";
 import { useEffect, useState } from "react";
+import { useTypedTranslation } from "../../i18n/i18n-helper";
 import { Navigate, useNavigate, useParams } from "react-router";
 
 import { CharacterEnriched } from "../../types/character";
@@ -20,6 +20,7 @@ const characterService = new CharacterService(axios);
 
 export default function CharacterDetails() {
   const navigate = useNavigate();
+  const t = useTypedTranslation();
 
   const { id } = useParams();
   const { user } = useAuth();

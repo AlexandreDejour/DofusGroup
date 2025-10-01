@@ -1,6 +1,7 @@
 import { describe, it, beforeEach, expect, vi } from "vitest";
 
 import axios from "axios";
+import { t } from "../../../i18n/i18n-helper";
 
 import { CreateEventForm } from "../../../types/form";
 import { EventEnriched, PaginatedEvents } from "../../../types/event";
@@ -49,6 +50,7 @@ describe("EventService", () => {
         alignment: "Neutre",
         stuff: null,
         default_character: false,
+        server_id: "73b70f36-b546-4ee4-95ce-9bbc4adb67df",
         user: {
           id: "3d2ebbe3-8193-448c-bec8-8993e7055240",
           username: "totolebeau",
@@ -127,7 +129,7 @@ describe("EventService", () => {
       apiClientMock.instance.get.mockRejectedValue(axiosError);
 
       await expect(eventService.getEvents()).rejects.toThrow(
-        "Aucun évènement à venir.",
+        t("event.error.noneUpcoming"),
       );
     });
 
@@ -203,28 +205,28 @@ describe("EventService", () => {
       const invalidData = { ...eventData, server_id: null };
       await expect(
         eventService.create(userId, invalidData as any),
-      ).rejects.toThrow("Vous devez renseigner un serveur.");
+      ).rejects.toThrow(t("validation.server.required"));
     });
 
     it("Throws an error if tag_id is missing", async () => {
       const invalidData = { ...eventData, tag_id: null };
       await expect(
         eventService.create(userId, invalidData as any),
-      ).rejects.toThrow("Vous devez renseigner un tag.");
+      ).rejects.toThrow(t("validation.tag.required"));
     });
 
     it("Throws an error if max_players is less than 2", async () => {
       const invalidData = { ...eventData, max_players: 1 };
       await expect(
         eventService.create(userId, invalidData as CreateEventForm),
-      ).rejects.toThrow("Le nombre de joueurs doit être compris entre 2 et 8.");
+      ).rejects.toThrow(t("validation.playerNumber.range"));
     });
 
     it("Throws an error if max_players is more than 8", async () => {
       const invalidData = { ...eventData, max_players: 9 };
       await expect(
         eventService.create(userId, invalidData as CreateEventForm),
-      ).rejects.toThrow("Le nombre de joueurs doit être compris entre 2 et 8.");
+      ).rejects.toThrow(t("validation.playerNumber.range"));
     });
 
     it("Throws a specific error for a 400 status code", async () => {
@@ -236,7 +238,7 @@ describe("EventService", () => {
       apiClientMock.instance.post.mockRejectedValue(axiosError);
 
       await expect(eventService.create(userId, eventData)).rejects.toThrow(
-        "Les informations transmises sont érronées ou incomplètes.",
+        t("auth.error.data.incomplete"),
       );
     });
 
@@ -249,7 +251,7 @@ describe("EventService", () => {
       apiClientMock.instance.post.mockRejectedValue(axiosError);
 
       await expect(eventService.create(userId, eventData)).rejects.toThrow(
-        "Vous devez être connecter pour créer un évènement.",
+        t("event.prompt.loginRequired"),
       );
     });
 
@@ -262,7 +264,7 @@ describe("EventService", () => {
       apiClientMock.instance.post.mockRejectedValue(axiosError);
 
       await expect(eventService.create(userId, eventData)).rejects.toThrow(
-        "La création de personnage est réservée à votre compte.",
+        t("system.error.forbidden"),
       );
     });
 
@@ -320,6 +322,7 @@ describe("EventService", () => {
             alignment: "Neutre",
             stuff: null,
             default_character: false,
+            server_id: "73b70f36-b546-4ee4-95ce-9bbc4adb67df",
             user: {
               id: "3d2ebbe3-8193-448c-bec8-8993e7055240",
               username: "totolebeau",
@@ -356,14 +359,14 @@ describe("EventService", () => {
       const invalidData = { ...validData, max_players: 1 };
       await expect(
         eventService.update(userId, eventId, invalidData),
-      ).rejects.toThrow("Le nombre de joueurs doit être compris entre 2 et 8.");
+      ).rejects.toThrow(t("validation.playerNumber.range"));
     });
 
     it("throws error if date is in the past", async () => {
       const pastData = { ...validData, date: new Date(Date.now() - 10000) };
       await expect(
         eventService.update(userId, eventId, pastData),
-      ).rejects.toThrow("La date doit être supérieur à maintenant");
+      ).rejects.toThrow(t("validation.date.future"));
     });
   });
 
@@ -403,7 +406,7 @@ describe("EventService", () => {
         server_id: "d717c30e-c704-48f8-959b-5937e6373da1",
       };
       await expect(eventService.addCharacters(eventId, data)).rejects.toThrow(
-        "Vous devez sélectionner au moins un personnage",
+        t("validation.playerNumber.min"),
       );
     });
   });
@@ -446,7 +449,7 @@ describe("EventService", () => {
       apiClientMock.instance.delete.mockRejectedValue(axiosError);
 
       await expect(eventService.delete(userId, eventId)).rejects.toThrow(
-        "Cette action n'est pas autorisée.",
+        t("system.error.forbidden"),
       );
     });
 
@@ -459,7 +462,7 @@ describe("EventService", () => {
       apiClientMock.instance.delete.mockRejectedValue(axiosError);
 
       await expect(eventService.delete(userId, eventId)).rejects.toThrow(
-        "Cette évènement n'existe plus.",
+        t("event.error.noneFound"),
       );
     });
 

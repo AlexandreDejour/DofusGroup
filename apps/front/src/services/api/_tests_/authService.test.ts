@@ -1,3 +1,5 @@
+import { t } from "../../../i18n/i18n-helper";
+
 import type { LoginForm, RegisterForm } from "../../../types/form";
 import type { AuthUser } from "../../../types/user";
 
@@ -25,7 +27,7 @@ describe("AuthService", () => {
       };
 
       await expect(authService.register(data)).rejects.toThrow(
-        "Le mot de passe ne respecte pas les conditions minimales de sécurité.",
+        t("auth.password.error.rules"),
       );
 
       expect(axiosMock.post).not.toHaveBeenCalled();
@@ -40,7 +42,7 @@ describe("AuthService", () => {
       };
 
       await expect(authService.register(data)).rejects.toThrow(
-        "Le mot de passe et la confirmation doivent être identique.",
+        t("auth.password.error.mismatch"),
       );
 
       expect(axiosMock.post).not.toHaveBeenCalled();
@@ -80,7 +82,7 @@ describe("AuthService", () => {
       };
 
       await expect(authService.register(data)).rejects.toThrow(
-        "Ce nom d'utilisateur ou email n'est pas disponible.",
+        t("auth.error.credentials.unavailable"),
       );
     });
 
@@ -106,7 +108,7 @@ describe("AuthService", () => {
       };
 
       await expect(authService.login(data)).rejects.toThrow(
-        "Email ou mot de passe érroné.",
+        t("auth.error.credentials.unavailable"),
       );
 
       expect(axiosMock.post).not.toHaveBeenCalled();
@@ -144,7 +146,7 @@ describe("AuthService", () => {
       };
 
       await expect(authService.login(data)).rejects.toThrow(
-        "Email ou mot de passe érroné.",
+        t("auth.error.credentials.invalid"),
       );
     });
 
@@ -177,7 +179,7 @@ describe("AuthService", () => {
       });
     });
 
-    it("Reject with 'Utilisateur inconnu.' if server returns 400, 401 or 404", async () => {
+    it("Reject with unknown user if server returns 400, 401 or 404", async () => {
       for (const status of [400, 401, 404]) {
         axiosMock.get.mockRejectedValueOnce({
           isAxiosError: true,
@@ -186,7 +188,7 @@ describe("AuthService", () => {
         });
 
         await expect(authService.apiMe()).rejects.toThrow(
-          "Utilisateur inconnu.",
+          t("auth.error.user.notFound"),
         );
       }
     });

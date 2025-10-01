@@ -1,5 +1,7 @@
 import "./CharactersCheckbox.scss";
 
+import { useTypedTranslation } from "../../../../i18n/i18n-helper";
+
 import { CharacterEnriched } from "../../../../types/character";
 
 interface CharacterCheckboxProps {
@@ -9,9 +11,11 @@ interface CharacterCheckboxProps {
 export default function CharactersCheckbox({
   characters,
 }: CharacterCheckboxProps) {
+  const t = useTypedTranslation();
+
   return (
     <fieldset className="characters">
-      <legend>Vos personnages:</legend>
+      <legend>{t("character.your")}:</legend>
       <div className="characters_choices">
         {characters.map((character) => (
           <label key={character.id} className="characters_choices_label">
@@ -26,13 +30,17 @@ export default function CharactersCheckbox({
                 <img
                   className="characters_choices_label_card_img"
                   src={`/miniatures/${character.breed.name.toLocaleLowerCase()}_male.webp`}
-                  alt={`Miniature de classe ${character.breed.name.toLocaleLowerCase()}`}
+                  alt={`${t(
+                    "common.classThumbnail",
+                  )} ${character.breed.name.toLocaleLowerCase()}`}
                 />
               ) : (
                 <img
                   className="characters_choices_label_card_img"
                   src={`/miniatures/${character.breed.name.toLocaleLowerCase()}_female.webp`}
-                  alt={`Miniature de classe ${character.breed.name.toLocaleLowerCase()}`}
+                  alt={`${t(
+                    "common.classThumbnail",
+                  )} ${character.breed.name.toLocaleLowerCase()}`}
                 />
               )}
               <div className="characters_choices_label_card_details">
@@ -43,7 +51,7 @@ export default function CharactersCheckbox({
                   {character.breed.name}
                 </p>
                 <p className="characters_choices_label_card_details_level">
-                  niveau: {character.level}
+                  {t("common.level")}: {character.level}
                 </p>
               </div>
             </div>

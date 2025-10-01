@@ -1,6 +1,8 @@
 import { describe, it, vi, beforeEach } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 
+import { t } from "../../../../i18n/i18n-helper";
+
 import { CommentEnriched } from "../../../../types/comment";
 
 import CommentForm from "../Forms/CommentForm";
@@ -15,12 +17,12 @@ describe("CommentForm", () => {
   it("Renders correctly in creation mode", () => {
     render(<CommentForm handleSubmit={handleSubmitMock} />);
 
-    expect(screen.getByText(/ajouter un commentaire/i)).toBeInTheDocument();
-    const textarea = screen.getByPlaceholderText(/rédigez un commentaire/i);
+    expect(screen.getByText(t("comment.add"))).toBeInTheDocument();
+    const textarea = screen.getByPlaceholderText(t("comment.write"));
     expect(textarea).toBeInTheDocument();
     expect(textarea).toHaveValue("");
     expect(
-      screen.getByRole("button", { name: /commenter/i }),
+      screen.getByRole("button", { name: t("comment.single") }),
     ).toBeInTheDocument();
   });
 
@@ -38,17 +40,17 @@ describe("CommentForm", () => {
       />,
     );
 
-    expect(screen.getByText(/modifier un commentaire/i)).toBeInTheDocument();
+    expect(screen.getByText(t("comment.change"))).toBeInTheDocument();
     const textarea = screen.getByDisplayValue("Contenu existant");
     expect(textarea).toBeInTheDocument();
   });
 
   it("Updates the textarea value when typing", () => {
     render(<CommentForm handleSubmit={handleSubmitMock} />);
-    const textarea = screen.getByPlaceholderText(/rédigez un commentaire/i);
+    const textarea = screen.getByPlaceholderText(t("comment.write"));
 
-    fireEvent.change(textarea, { target: { value: "Nouveau commentaire" } });
-    expect(textarea).toHaveValue("Nouveau commentaire");
+    fireEvent.change(textarea, { target: { value: t("comment.new") } });
+    expect(textarea).toHaveValue(t("comment.new"));
   });
 
   it("Calls handleSubmit when submitting the form", () => {

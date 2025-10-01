@@ -1,0 +1,77 @@
+{
+  "header": {
+    "title": "Politique de Confidentialité",
+    "lastUpdate": "Dernière mise à jour : {{date}}"
+  },
+  "sections": {
+    "1": {
+      "title": "1. Introduction",
+      "p1": "La présente politique de confidentialité explique comment fonctionne le site communautaire DofusGroup destiné aux joueurs du jeu Dofus (ci-après « nous », « notre » ou « le site »). Nous nous engageons à traiter vos données personnelles avec confidentialité et conformément au Règlement Général sur la Protection des Données (RGPD) et à la législation française applicable."
+    },
+    "2": {
+      "title": "2. Données collectées",
+      "p1": "Lors de la création d’un compte, nous recueillons uniquement les informations suivantes :",
+      "li": [
+        "pseudo",
+        "adresse e-mail",
+        "mot de passe (stocké sous forme hachée, jamais en clair)"
+      ],
+      "p2": "Aucune autre donnée personnelle n’est collectée automatiquement par le site."
+    },
+    "3": {
+      "title": "3. Finalités du traitement",
+      "p1": "Les données collectées sont utilisées uniquement pour :",
+      "li": [
+        "permettre l’inscription et l’authentification des utilisateurs",
+        "identifier l’utilisateur dans l’espace communautaire et lors de la création d’événements",
+        "sécuriser l’accès au compte et prévenir les usages frauduleux",
+        "permettre à l’utilisateur de gérer son compte (mise à jour, suppression)"
+      ],
+      "p2": "Nous n’utilisons pas vos données à des fins publicitaires ou de profilage."
+    },
+    "4": {
+      "title": "4. Cookies",
+      "p1": "Le site utilise uniquement des cookies techniques nécessaires au fonctionnement : notamment pour stocker le JSON Web Token (JWT) permettant de maintenir la session et d'authentifier l’utilisateur. Nous n’utilisons pas de cookies publicitaires ou de suivi tiers."
+    },
+    "5": {
+      "title": "5. Partage des données",
+      "p1": "Nous ne vendons ni n’échangeons vos informations personnelles. Les données peuvent être accessibles uniquement aux personnes autorisées (équipe technique / administrateurs) dans le cadre de la maintenance et du support.",
+      "p2": "Seules des API publiques nécessaires au fonctionnement du site (ex. chargement de polices) peuvent être appelées depuis le front ; ces appels n’entraînent pas le partage de données personnelles par défaut."
+    },
+    "6": {
+      "title": "6. Sécurité",
+      "p1": "Nous mettons en œuvre des mesures techniques et organisationnelles pour protéger vos données :",
+      "li": [
+        "hachage sécurisé des mots de passe",
+        "chiffrement des adresses e-mail",
+        "accès restreint aux serveurs en production",
+        "utilisation de connexions sécurisées (HTTPS/TLS)"
+      ],
+      "p2": "En production, seuls les services nécessaires auront accès au serveur. En cas d'incident grave impliquant des données personnelles, nous prendrons les mesures appropriées et informerons les personnes concernées conformément à la réglementation."
+    },
+    "7": {
+      "title": "7. Conservation et suppression des données",
+      "p1": "Vos données sont conservées tant que votre compte est actif. Si vous supprimez votre compte depuis votre page de profil, toutes vos données personnelles sont supprimées définitivement et ne sont pas conservées."
+    },
+    "8": {
+      "title": "8. Droits des utilisateurs",
+      "p1": "Conformément au RGPD, vous disposez des droits suivants :",
+      "li": [
+        "droit d'accès : obtenir une copie des données personnelles que nous détenons",
+        "droit de rectification : corriger ou mettre à jour vos informations",
+        "droit à l'effacement : supprimer votre compte et vos données",
+        "droit à la portabilité : demander l'export de vos données dans un format réutilisable",
+        "droit d'opposition et retrait du consentement lorsque le traitement est fondé sur ce dernier"
+      ],
+      "p2": "Vous pouvez exercer ces droits directement depuis votre profil. Vous pouvez également nous contacter par e-mail à : {{email}}."
+    },
+    "9": {
+      "title": "9. Modalités de contact",
+      "p1": "Pour toute question relative à la présente politique ou pour exercer vos droits, merci d’écrire à : {{email}}."
+    },
+    "10": {
+      "title": "10. Modifications de la politique",
+      "p1": "Nous nous réservons le droit d’actualiser cette politique de confidentialité. En cas de modification substantielle, nous indiquerons la date de mise à jour en haut de cette page et, si nécessaire, nous informerons les utilisateurs connectés."
+    }
+  }
+}

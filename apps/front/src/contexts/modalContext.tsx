@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router";
+import { useTypedTranslation } from "../i18n/i18n-helper";
 import React, { createContext, useCallback, useContext, useState } from "react";
 
 import { useAuth } from "./authContext";
@@ -81,6 +82,7 @@ const ModalContext = createContext<ModalContextType | null>(null);
 
 export default function ModalProvider({ children }: ModalProviderProps) {
   const navigate = useNavigate();
+  const t = useTypedTranslation();
 
   const { user, setUser } = useAuth();
   const { showSuccess, showError } = useNotification();
@@ -134,8 +136,8 @@ export default function ModalProvider({ children }: ModalProviderProps) {
           await authService.register(data);
 
           showSuccess(
-            "Inscription réussi !",
-            "Votre compte a été créé avec succès. Veuillez vous connecter.",
+            t("auth.success.register"),
+            t("auth.prompt.connect"),
             6000,
           );
         }
@@ -148,8 +150,8 @@ export default function ModalProvider({ children }: ModalProviderProps) {
           setUser(response);
 
           showSuccess(
-            "Connexion réussie !",
-            `Bonjour ${response.username} ! Vous êtes maintenant connecté(e).`,
+            t("auth.success.login"),
+            t("auth.success.connected", { username: response.username }),
           );
         }
 
@@ -166,16 +168,16 @@ export default function ModalProvider({ children }: ModalProviderProps) {
           setUser(response);
 
           showSuccess(
-            "Mise à jour réussie !",
-            `Vos informations ont été mise à jour avec succès.`,
+            t("system.success.dataUpdated"),
+            t("system.success.updated"),
           );
         }
 
         if (modalType === "newCharacter") {
           if (!user) {
             showError(
-              "Connexion requise !",
-              "Cette action nécessite d'être connecté.",
+              t("auth.prompt.loginRequired"),
+              t("auth.prompt.loginRequiredAction"),
             );
             return;
           }
@@ -206,17 +208,14 @@ export default function ModalProvider({ children }: ModalProviderProps) {
 
           setUser({ ...user, ...response });
 
-          showSuccess(
-            "Création de personnage réussie !",
-            `Vous avez créer un nouveau personnage.`,
-          );
+          showSuccess(t("system.success.create"), t("character.create"));
         }
 
         if (modalType === "updateCharacter") {
           if (!user) {
             showError(
-              "Connexion requise !",
-              "Cette action nécessite d'être connecté.",
+              t("auth.prompt.loginRequired"),
+              t("auth.prompt.loginRequiredAction"),
             );
             return;
           }
@@ -255,16 +254,16 @@ export default function ModalProvider({ children }: ModalProviderProps) {
           setUser({ ...user, ...userData });
 
           showSuccess(
-            "Mise à jour réussie !",
-            `Vous avez mis à jour votre personnage.`,
+            t("system.success.dataUpdated"),
+            t("character.success.updated"),
           );
         }
 
         if (modalType === "newEvent") {
           if (!user) {
             showError(
-              "Connexion requise !",
-              "Cette action nécessite d'être connecté.",
+              t("auth.prompt.loginRequired"),
+              t("auth.prompt.loginRequiredAction"),
             );
             return;
           }
@@ -302,17 +301,14 @@ export default function ModalProvider({ children }: ModalProviderProps) {
 
           setUser({ ...user, ...response });
 
-          showSuccess(
-            "Création d'évènement réussie !",
-            `Vous avez créer un nouvel évènement.`,
-          );
+          showSuccess(t("system.success.create"), t("event.create"));
         }
 
         if (modalType === "updateEvent") {
           if (!user) {
             showError(
-              "Connexion requise !",
-              "Cette action nécessite d'être connecté.",
+              t("auth.prompt.loginRequired"),
+              t("auth.prompt.loginRequiredAction"),
             );
             return;
           }
@@ -358,16 +354,16 @@ export default function ModalProvider({ children }: ModalProviderProps) {
           setUser({ ...user, ...userData });
 
           showSuccess(
-            "Mise à jour réussie !",
-            `Vous avez mis à jour votre évènement.`,
+            t("system.success.dataUpdated"),
+            t("event.success.updated"),
           );
         }
 
         if (modalType === "joinEvent") {
           if (!user) {
             showError(
-              "Connexion requise !",
-              "Cette action nécessite d'être connecté.",
+              t("auth.prompt.loginRequired"),
+              t("auth.prompt.loginRequiredAction"),
             );
             return;
           }
@@ -397,17 +393,14 @@ export default function ModalProvider({ children }: ModalProviderProps) {
 
           await eventService.addCharacters(updateTarget.id, data);
 
-          showSuccess(
-            "Inscription réussie !",
-            `Vous avez rejoint l'évènement.`,
-          );
+          showSuccess(t("auth.success.register"), t("event.prompt.joined"));
         }
 
         if (modalType === "comment") {
           if (!user) {
             showError(
-              "Connexion requise !",
-              "Cette action nécessite d'être connecté.",
+              t("auth.prompt.loginRequired"),
+              t("auth.prompt.loginRequiredAction"),
             );
             return;
           }
@@ -422,17 +415,14 @@ export default function ModalProvider({ children }: ModalProviderProps) {
 
           await commentService.create(user.id, updateTarget.id, data);
 
-          showSuccess(
-            "Nouveau commentaire !",
-            `Vous avez ajouter un nouveau commentaire.`,
-          );
+          showSuccess(t("comment.new"), t("comment.success.added"));
         }
 
         if (modalType === "updateComment") {
           if (!user) {
             showError(
-              "Connexion requise !",
-              "Cette action nécessite d'être connecté.",
+              t("auth.prompt.loginRequired"),
+              t("auth.prompt.loginRequiredAction"),
             );
             return;
           }
@@ -447,15 +437,18 @@ export default function ModalProvider({ children }: ModalProviderProps) {
 
           await commentService.update(user.id, updateTarget.id, data);
 
-          showSuccess("Mise à jour !", `Vous avez modifier votre commentaire.`);
+          showSuccess(
+            t("system.success.dataUpdated"),
+            t("comment.success.updated"),
+          );
         }
 
         closeModal();
       } catch (error) {
         if (error instanceof Error) {
-          showError("Erreur", error.message);
+          showError(t("common.error.default"), error.message);
         } else {
-          showError("Erreur", "Une erreur est survenue");
+          showError(t("common.error.default"), t("system.error.occurred"));
         }
       }
     },
@@ -466,8 +459,8 @@ export default function ModalProvider({ children }: ModalProviderProps) {
     async (targetType: TargetType, targetId?: string) => {
       if (!user) {
         showError(
-          "Connexion requise !",
-          "Cette action nécessite d'être connecté.",
+          t("auth.prompt.loginRequired"),
+          t("auth.prompt.loginRequiredAction"),
         );
         return;
       }
@@ -477,10 +470,7 @@ export default function ModalProvider({ children }: ModalProviderProps) {
           await eventService.delete(user.id, targetId);
           const response = await userService.getOne(user.id);
 
-          showSuccess(
-            "Supression de donnée !",
-            "Votre évènement a été supprimé avec succès",
-          );
+          showSuccess(t("system.success.deleted"), t("event.success.deleted"));
 
           setUser({ ...user, ...response });
         }
@@ -489,7 +479,7 @@ export default function ModalProvider({ children }: ModalProviderProps) {
           await eventService.delete(user.id, targetId);
 
           showSuccess(
-            "Supression de donnée !",
+            t("system.success.deleted"),
             "Votre évènement a été supprimé avec succès",
           );
 
@@ -501,8 +491,8 @@ export default function ModalProvider({ children }: ModalProviderProps) {
           const response = await userService.getOne(user.id);
 
           showSuccess(
-            "Supression de donnée !",
-            "Votre personnage a été supprimé avec succès",
+            t("system.success.deleted"),
+            t("character.success.deleted"),
           );
 
           setUser({ ...user, ...response });
@@ -512,8 +502,8 @@ export default function ModalProvider({ children }: ModalProviderProps) {
           await characterService.delete(user.id, targetId);
 
           showSuccess(
-            "Supression de donnée !",
-            "Votre personnage a été supprimé avec succès",
+            t("system.success.deleted"),
+            t("character.success.deleted"),
           );
 
           navigate(-1);
@@ -523,8 +513,8 @@ export default function ModalProvider({ children }: ModalProviderProps) {
           await commentService.delete(user.id, targetId);
 
           showSuccess(
-            "Supression de donnée !",
-            "Votre commentaire a été supprimé avec succès",
+            t("system.success.deleted"),
+            t("comment.success.deleted"),
           );
         }
 
@@ -532,17 +522,17 @@ export default function ModalProvider({ children }: ModalProviderProps) {
           await userService.delete(user.id);
 
           showSuccess(
-            "Supression de donnée !",
-            "Votre compte a été supprimé avec succès",
+            t("system.success.deleted"),
+            t("auth.success.accountDeleted"),
           );
 
           setUser(null);
         }
       } catch (error) {
         if (error instanceof Error) {
-          showError("Erreur", error.message);
+          showError(t("common.error.default"), error.message);
         } else {
-          showError("Erreur", "Une erreur est survenue");
+          showError(t("common.error.default"), t("system.error.occurred"));
         }
       }
     },

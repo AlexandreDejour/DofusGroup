@@ -1,9 +1,18 @@
-import { Link } from "react-router";
-
 import "./Footer.scss";
+
+import i18n from "../../i18n/i18n";
+import { Link } from "react-router";
+import { useTypedTranslation } from "../../i18n/i18n-helper";
+import ReactCountryFlag from "react-country-flag";
+
 import { useAuth } from "../../contexts/authContext";
 
 export default function Footer() {
+  const changeLanguage = (lng: string) => {
+    i18n.changeLanguage(lng);
+  };
+  const t = useTypedTranslation();
+
   const { user } = useAuth();
 
   return (
@@ -14,36 +23,36 @@ export default function Footer() {
           <ul>
             {user ? (
               <li>
-                <Link to="/profile">Profil</Link>
+                <Link to="/profile">{t("common.profile")}</Link>
               </li>
             ) : null}
             <li>
-              <Link to="/about">À propos</Link>
+              <Link to="/about">{t("common.about")}</Link>
             </li>
             <li>
-              <Link to="/">Évènements</Link>
+              <Link to="/">{t("event.list")}</Link>
             </li>
           </ul>
         </div>
         <div className="footer_container_list">
-          <h3>Autres liens</h3>
+          <h3>{t("common.otherLinks")}</h3>
           <ul>
             <li>
-              <a href="#">Signaler un bug</a>
+              <a href="#">{t("settings.reportBug")}</a>
             </li>
             <li>
-              <a href="#">Nous contacter</a>
+              <a href="#">{t("settings.contact")}</a>
             </li>
             <li>
-              <Link to="/privacy_policy">Politique de confidentialité</Link>
+              <Link to="/privacy_policy">{t("settings.privacyPolicy")}</Link>
             </li>
             <li>
-              <Link to="/gcu">Conditions générales d'utilisation</Link>
+              <Link to="/gcu">{t("settings.gcu")}</Link>
             </li>
           </ul>
         </div>
         <div className="footer_container_list">
-          <h3>Sites utiles</h3>
+          <h3>{t("common.usefulSites")}</h3>
           <ul>
             <li>
               <a
@@ -81,8 +90,38 @@ export default function Footer() {
         </div>
       </div>
 
+      <div className="footer_language">
+        <button
+          className="footer_language_button"
+          aria-label={t("settings.language.change", {
+            language: t("settings.language.french"),
+          })}
+          onClick={() => changeLanguage("fr")}
+        >
+          <ReactCountryFlag
+            countryCode="FR"
+            svg
+            style={{ width: "50%", height: "100%" }}
+          />
+        </button>
+        <button
+          className="footer_language_button"
+          aria-label={t("settings.language.change", {
+            language: t("settings.language.english"),
+          })}
+          onClick={() => changeLanguage("en")}
+        >
+          <ReactCountryFlag
+            countryCode="GB"
+            svg
+            style={{ width: "50%", height: "100%" }}
+          />
+        </button>
+      </div>
+
       <p>
-        &copy; {new Date().getFullYear()} DofusGroup — Tous droits réservés.
+        &copy; {new Date().getFullYear()} DofusGroup —{" "}
+        {t("common.allRightsReserved")}
       </p>
     </footer>
   );

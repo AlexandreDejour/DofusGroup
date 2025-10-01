@@ -1,6 +1,7 @@
 import "./CharacterCard.scss";
 
 import { useNavigate } from "react-router";
+import { useTypedTranslation } from "../../i18n/i18n-helper";
 
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -20,6 +21,8 @@ export default function CharacterCard({
   handleDelete,
 }: CharacterCardProps) {
   const navigate = useNavigate();
+  const t = useTypedTranslation();
+
   const { isDesktop } = useScreen();
 
   return (
@@ -28,13 +31,17 @@ export default function CharacterCard({
         <img
           className="character_card_img"
           src={`/miniatures/${character.breed.name.toLocaleLowerCase()}_male.webp`}
-          alt={`Miniature de classe ${character.breed.name.toLocaleLowerCase()}`}
+          alt={`${t(
+            "common.classThumbnail",
+          )} ${character.breed.name.toLocaleLowerCase()}`}
         />
       ) : (
         <img
           className="character_card_img"
           src={`/miniatures/${character.breed.name.toLocaleLowerCase()}_female.webp`}
-          alt={`Miniature de classe ${character.breed.name.toLocaleLowerCase()}`}
+          alt={`${t(
+            "common.classThumbnail",
+          )} ${character.breed.name.toLocaleLowerCase()}`}
         />
       )}
 
@@ -42,7 +49,9 @@ export default function CharacterCard({
         <>
           <h3 className="character_card_name">{character.name}</h3>
           <p className="character_card_breed">{character.breed.name}</p>
-          <p className="character_card_level">niveau: {character.level}</p>
+          <p className="character_card_level">
+            {t("common.level")}: {character.level}
+          </p>
         </>
       ) : (
         <div className="character_card_container">
@@ -51,7 +60,7 @@ export default function CharacterCard({
             {character.breed.name}
           </p>
           <p className="character_card_container_level">
-            niveau: {character.level}
+            {t("common.level")}: {character.level}
           </p>
         </div>
       )}
@@ -61,7 +70,7 @@ export default function CharacterCard({
           className="character_card_buttons_details button"
           onClick={() => navigate(`/character/${character.id}`)}
         >
-          Détails
+          {t("common.details")}
         </button>
         <button
           className="character_card_buttons_delete button delete"

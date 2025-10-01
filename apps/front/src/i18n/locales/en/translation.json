@@ -1,0 +1,264 @@
+{
+  "common": {
+    "about": "About",
+    "action": {
+      "needLogin": "This action requires you to be logged in."
+    },
+    "add": "Add",
+    "alignment": "Alignment",
+    "area": "Area",
+    "author": "Author",
+    "back": "Back",
+    "change": "Edit",
+    "classThumbnail": "Class thumbnail",
+    "create": "Create",
+    "createdBy": "created by",
+    "confirm": "Confirm",
+    "date": "Date",
+    "delete": {
+      "default": "Delete",
+      "account": "Delete account"
+    },
+    "description": "Description",
+    "details": "Details",
+    "dofusBook": "DofusBook Link",
+    "dungeon": "Dungeon",
+    "duration": "Duration",
+    "durationInMin": "Duration in minutes",
+    "discussion": "Discussion",
+    "error": {
+      "default": "Error",
+      "occurred": "An error occurred."
+    },
+    "join": "Join",
+    "level": "Level",
+    "loading": "Loading...",
+    "maxPlayers": "Max players",
+    "name": "Name",
+    "ok": "OK",
+    "otherLinks": "Other links",
+    "players": "Players",
+    "playerNumber": "Number of players",
+    "public": "Public",
+    "private": "Private",
+    "profile": "Profile",
+    "return": "Return",
+    "search": "Search",
+    "select": "Select",
+    "sex": "Sex",
+    "status": "Status",
+    "stuff": "Stuff",
+    "subArea": "Sub-area",
+    "team": "Team",
+    "title": "Title",
+    "usefulSites": "Useful sites",
+    "visibility": "visibility",
+    "welcome": "Welcome.",
+    "allRightsReserved": "All rights reserved.",
+    "goodbye": "See you soon !"
+  },
+
+  "auth": {
+    "login": "Login",
+    "logout": "Logout",
+    "register": "Register",
+    "username": "Username",
+    "password": {
+      "default": "Password",
+      "confirm": "Confirm password",
+      "change": "Change password",
+      "error": {
+        "rules": "The password does not meet the minimum security requirements.",
+        "mismatch": "Password and confirmation must match."
+      }
+    },
+    "email": {
+      "default": "Email",
+      "change": "Change email"
+    },
+    "usernameChange": "Change username",
+
+    "error": {
+      "credentials": {
+        "invalid": "Incorrect email or password.",
+        "unavailable": "This username or email is not available."
+      },
+      "user": {
+        "unknown": "Unknown user.",
+        "notFound": "User not found."
+      },
+      "data": {
+        "incomplete": "The information provided is incorrect or incomplete."
+      }
+    },
+
+    "success": {
+      "login": "Login successful !",
+      "register": "Registration successful !",
+      "accountDeleted": "Your account has been successfully deleted.",
+      "connected": "Hello {{username}} ! You are now logged in.",
+      "disconnected": "You have been disconnected."
+    },
+
+    "prompt": {
+      "connect": "Your account has been successfully created. Please log in.",
+      "loginRequired": "Login required !",
+      "loginRequiredAction": "This action need to be login."
+    }
+  },
+
+  "breed": {
+    "default": "class",
+    "upperCase": "Class",
+    "error": {
+      "notFound": "Breeds found."
+    }
+  },
+
+  "character": {
+    "list": "Characters",
+    "create": "Create a character",
+    "creation": "Character creation",
+    "modification": "Character modification",
+    "selection": "Character selection",
+    "default": "Default character",
+    "noCharacter": "No character.",
+    "your": "Your Characters",
+
+    "error": {
+      "none": "No character.",
+      "noneOnAccount": "You have not created any character on your account.",
+      "noneOnServer": "No character available on this server.",
+      "notFound": "This character no longer exists.",
+      "loginRequired": "You must be logged in to create character."
+    },
+
+    "success": {
+      "created": "You have created a new character.",
+      "updated": "You have updated your character.",
+      "deleted": "Your character has been successfully deleted.",
+      "creation": "Character creation successful."
+    }
+  },
+
+  "comment": {
+    "single": "Comment",
+    "add": "Add a comment !",
+    "new": "New comment !",
+    "change": "Edit a comment",
+    "write": "Write a comment",
+
+    "error": {
+      "none": "No comment.",
+      "notFound": "This comment no longer exists.",
+      "loginRequired": "You must be logged in to add a comment."
+    },
+
+    "success": {
+      "added": "You have added a new comment.",
+      "updated": "You have updated your comment.",
+      "deleted": "Your comment has been successfully deleted."
+    }
+  },
+
+  "event": {
+    "list": "Events",
+    "create": "Create an event",
+    "join": "Join the event",
+    "discussion": "Discussion",
+    "modification": "Event modification",
+    "noEvent": "No event.",
+
+    "error": {
+      "none": "No event.",
+      "noneUpcoming": "No upcoming event.",
+      "noneFound": "No event found.",
+      "characterOut": "This character is no longer part of the event.",
+      "disable": "You need to create character before create event."
+    },
+
+    "success": {
+      "created": "You have created a new event.",
+      "updated": "You have updated your event.",
+      "deleted": "Your event has been successfully deleted.",
+      "creation": "Event creation successful."
+    },
+
+    "prompt": {
+      "loginRequired": "You must be logged in to create an event.",
+      "joined": "You have joined the event."
+    }
+  },
+
+  "validation": {
+    "date": {
+      "future": "The date must be in the future."
+    },
+    "level": {
+      "rules": "Your character's level must be between 1 and 200."
+    },
+    "playerNumber": {
+      "limit": "The number of registered characters exceeds the maximum number of players.",
+      "min": "You must select at least one character.",
+      "range": "The number of players must be between 2 and 8."
+    },
+    "server": {
+      "required": "You must specify a server."
+    },
+    "tag": {
+      "required": "You must specify a tag."
+    },
+    "url": {
+      "rules": "Only URLs from DofusBook are accepted."
+    }
+  },
+
+  "system": {
+    "error": {
+      "occurred": "An error occurred.",
+      "recoveryFailed": "Data recovery failed.",
+      "forbidden": "Action forbidden.",
+      "impossible": "Action impossible."
+    },
+
+    "success": {
+      "create": "Create successful !",
+      "disconnected": "You have been successfully logged out.",
+      "updated": "Your information has been successfully updated.",
+      "deleted": "Deletion successful !",
+      "dataUpdated": "Update successful !"
+    },
+
+    "data": {
+      "deletion": "Data deletion !"
+    }
+  },
+
+  "server": {
+    "default": "server",
+    "upperCase": "Server",
+    "error": {
+      "notFound": "Servers found."
+    }
+  },
+
+  "settings": {
+    "language": {
+      "change": "Change language: {{language}}",
+      "english": "English",
+      "french": "French"
+    },
+    "gcu": "Terms of Use",
+    "privacyPolicy": "Privacy Policy",
+    "contact": "Contact us",
+    "reportBug": "Report a bug"
+  },
+
+  "tag": {
+    "default": "tag",
+    "upperCase": "Tag",
+    "error": {
+      "notFound": "Tags found."
+    }
+  }
+}

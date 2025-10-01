@@ -1,12 +1,15 @@
 import "./Header.scss";
 
 import { Link } from "react-router-dom";
+import { useTypedTranslation } from "../../i18n/i18n-helper";
 
 import { useAuth } from "../../contexts/authContext";
 import { useModal } from "../../contexts/modalContext";
 import { useScreen } from "../../contexts/screenContext";
 
 export default function Header() {
+  const t = useTypedTranslation();
+
   const { isDesktop } = useScreen();
   const { openModal } = useModal();
   const { user, logout } = useAuth();
@@ -26,17 +29,17 @@ export default function Header() {
       <nav className="header_nav">
         <ul className="header_nav_list">
           <li className="header_nav_list_item nav_link link">
-            <Link to="/">Évènements</Link>
+            <Link to="/">{t("event.list")}</Link>
           </li>
           {isDesktop && (
             <li className="header_nav_list_item nav_link link">
-              <Link to="/about">À propos</Link>
+              <Link to="/about">{t("common.about")}</Link>
             </li>
           )}
           {user ? (
             <>
               <li className="header_nav_list_item nav_link link">
-                <Link to="/profile">Profil</Link>
+                <Link to="/profile">{t("common.profile")}</Link>
               </li>
               <li className="header_nav_list_item">
                 <button
@@ -44,7 +47,7 @@ export default function Header() {
                   onClick={() => logout()}
                   className="nav_button button"
                 >
-                  Déconnexion
+                  {t("auth.logout")}
                 </button>
               </li>
             </>
@@ -56,7 +59,7 @@ export default function Header() {
                   onClick={() => openModal("login")}
                   className="nav_button button"
                 >
-                  Connexion
+                  {t("auth.login")}
                 </button>
               </li>
               <li className="header_nav_list_item">
@@ -65,7 +68,7 @@ export default function Header() {
                   onClick={() => openModal("register")}
                   className="nav_button button"
                 >
-                  Inscription
+                  {t("auth.register")}
                 </button>
               </li>
             </>

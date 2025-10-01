@@ -1,3 +1,5 @@
+import { useTypedTranslation } from "../../../../i18n/i18n-helper";
+
 import { BaseOptions } from "../../utils/generateOptions";
 
 export interface SelectOptionsProps<T, ID extends string | number> {
@@ -19,6 +21,8 @@ export default function SelectOptions<T, ID extends string | number>({
   placeholder,
   onChange,
 }: SelectOptionsProps<T, ID>) {
+  const t = useTypedTranslation();
+
   const options = generateOptions(items);
   const stringValues = [
     "alignment",
@@ -38,7 +42,7 @@ export default function SelectOptions<T, ID extends string | number>({
         onChange={(e) => onChange(e.target.value)}
       >
         <option value="">
-          {placeholder ?? `Sélectionnez ${label.toLowerCase()}`}
+          {placeholder ?? `${t("common.select")} ${label.toLowerCase()}`}
         </option>
         {options.map((opt) => (
           <option key={opt.id} value={opt.value}>

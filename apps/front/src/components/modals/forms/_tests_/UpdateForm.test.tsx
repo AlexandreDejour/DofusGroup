@@ -2,6 +2,8 @@
 import "@testing-library/jest-dom";
 import { render, screen, fireEvent } from "@testing-library/react";
 
+import { t } from "../../../../i18n/i18n-helper";
+
 import UpdateForm from "../Forms/UpdateForm";
 
 describe("UpdateForm", () => {
@@ -15,9 +17,9 @@ describe("UpdateForm", () => {
   });
 
   const FIELD_MAP: Record<string, { label: string; type: string }> = {
-    mail: { label: "email", type: "email" },
-    password: { label: "mot de passe", type: "password" },
-    username: { label: "pseudo", type: "text" },
+    mail: { label: t("auth.email.default"), type: "email" },
+    password: { label: t("auth.password.default"), type: "password" },
+    username: { label: t("auth.username"), type: "text" },
   };
 
   it.each(Object.entries(FIELD_MAP))(
@@ -29,7 +31,7 @@ describe("UpdateForm", () => {
       expect(
         screen.getByRole("heading", {
           level: 3,
-          name: new RegExp(`Modifier\\s+${label}`, "i"),
+          name: `${t("common.change")} ${label}`,
         }),
       ).toBeInTheDocument();
 
@@ -37,7 +39,6 @@ describe("UpdateForm", () => {
       const input = screen.getByLabelText(
         new RegExp(`^${label}$`, "i"),
       ) as HTMLInputElement;
-
       expect(input).toBeInTheDocument();
       expect(input).toHaveAttribute("type", type);
       expect(input).toHaveAttribute("name", field);
@@ -45,13 +46,15 @@ describe("UpdateForm", () => {
       expect(input).toBeRequired();
 
       // Submit button
-      const submitButton = screen.getByRole("button", { name: /Update/i });
+      const submitButton = screen.getByRole("button", {
+        name: /update/i,
+      });
       expect(submitButton).toBeInTheDocument();
 
-      // Password field should render confirmation input
+      // Password field: confirmation input
       if (field === "password") {
         const confirmInput = screen.getByLabelText(
-          /Confirmation/i,
+          new RegExp(`${t("common.confirm")} ${label}`, "i"),
         ) as HTMLInputElement;
         expect(confirmInput).toBeInTheDocument();
         expect(confirmInput).toHaveAttribute("type", "password");
@@ -63,11 +66,13 @@ describe("UpdateForm", () => {
   it("Call handleSubmit on form submit", () => {
     render(<UpdateForm field="username" handleSubmit={handleSubmit} />);
 
-    const input = screen.getByLabelText(/pseudo/i) as HTMLInputElement;
-    fireEvent.change(input, { target: { value: "nouveauPseudo" } });
-    expect(input.value).toBe("nouveauPseudo");
+    const input = screen.getByLabelText(t("auth.username")) as HTMLInputElement;
+    fireEvent.change(input, { target: { value: "newUsername" } });
+    expect(input.value).toBe("newUsername");
 
-    const submitButton = screen.getByRole("button", { name: /Update/i });
+    const submitButton = screen.getByRole("button", {
+      name: "Update",
+    });
     fireEvent.click(submitButton);
 
     expect(handleSubmit).toHaveBeenCalledTimes(1);
@@ -78,7 +83,7 @@ describe("UpdateForm", () => {
 
     const heading = screen.getByRole("heading", { level: 3 });
     expect(heading).toBeInTheDocument();
-    expect(heading.textContent).toMatch(/Modifier\s*/i);
+    expect(heading.textContent).toMatch(t("common.change"));
 
     const input = screen.getByRole("textbox") as HTMLInputElement;
     expect(input).toBeInTheDocument();

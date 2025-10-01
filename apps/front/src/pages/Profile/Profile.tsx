@@ -3,6 +3,7 @@ import "./Profile.scss";
 import { isAxiosError } from "axios";
 import { useNavigate } from "react-router";
 import { useEffect, useState } from "react";
+import { useTypedTranslation } from "../../i18n/i18n-helper";
 
 import { useAuth } from "../../contexts/authContext";
 import { useModal } from "../../contexts/modalContext";
@@ -22,6 +23,7 @@ const userService = new UserService(axios);
 
 export default function Profile() {
   const navigate = useNavigate();
+  const t = useTypedTranslation();
 
   const { showError } = useNotification();
   const { user, isAuthLoading } = useAuth();
@@ -44,9 +46,9 @@ export default function Profile() {
         setUserEnriched(response);
       } catch (error) {
         if (isAxiosError(error)) {
-          showError("Erreur", error.message);
+          showError(t("common.error.default"), error.message);
         } else if (error instanceof Error) {
-          showError("Erreur", "Une erreur est survenue");
+          showError(t("common.error.default"), t("common.error.occurred"));
           console.error("General error:", error.message);
         }
       }
@@ -60,68 +62,79 @@ export default function Profile() {
       {user && userEnriched ? (
         <main className="profile">
           <section className="profile_section">
-            <h2 className="profile_section_title">Profil</h2>
+            <h2 className="profile_section_title">{t("common.profile")}</h2>
 
             <div className="profile_section_details">
               <p className="profile_section_details_info">
-                Pseudo: {user.username}
+                {t("auth.username")}: {user.username}
               </p>
               <p className="profile_section_details_info">
-                Évènements: {userEnriched.events?.length}
+                {t("event.list")}: {userEnriched.events?.length}
               </p>
               <p className="profile_section_details_info">
-                Personnages: {userEnriched.characters?.length}
+                {t("character.list")}: {userEnriched.characters?.length}
               </p>
             </div>
 
-            <div className="profile_section_actions">
+            <div
+              className="profile_section_actions"
+              title={
+                !userEnriched.characters?.length ? t("event.error.disable") : ""
+              }
+            >
               <button
                 type="button"
                 className="profile_section_actions_button button"
                 onClick={() => openModal("username")}
               >
-                Modifier le pseudo
+                {t("auth.usernameChange")}
               </button>
               <button
                 type="button"
                 className="profile_section_actions_button button"
                 onClick={() => openModal("password")}
               >
-                Modifier le mot de passe
+                {t("auth.password.change")}
               </button>
               <button
                 type="button"
                 className="profile_section_actions_button button"
                 onClick={() => openModal("mail")}
               >
-                Modifier l'email
+                {t("auth.email.change")}
               </button>
               <button
                 type="button"
                 className="profile_section_actions_button button delete"
                 onClick={() => handleDelete("user")}
               >
-                Supprimer mon compte
+                {t("common.delete.account")}
               </button>
               <button
                 type="button"
                 className="profile_section_actions_button button"
                 onClick={() => openModal("newEvent")}
+                disabled={!userEnriched.characters?.length}
+                style={{
+                  background: !userEnriched.characters?.length
+                    ? "grey"
+                    : "radial-gradient(circle, rgba(96,186,96,1) 0%, rgba(156,217,92,1) 90%)",
+                }}
               >
-                Créer un évènement
+                {t("event.create")}
               </button>
               <button
                 type="button"
                 className="profile_section_actions_button button"
                 onClick={() => openModal("newCharacter")}
               >
-                Créer un personnage
+                {t("character.create")}
               </button>
             </div>
           </section>
 
           <section className="profile_section">
-            <h2 className="profile_section_title">Évènements</h2>
+            <h2 className="profile_section_title">{t("event.list")}</h2>
             {userEnriched.events && userEnriched.events.length ? (
               <ul className="profile_section_list">
                 {userEnriched.events.map((event) => (
@@ -134,12 +147,12 @@ export default function Profile() {
                 ))}
               </ul>
             ) : (
-              <p>Aucun évènement</p>
+              <p>{t("event.noEvent")}</p>
             )}
           </section>
 
           <section className="profile_section">
-            <h2 className="profile_section_title">Personnages</h2>
+            <h2 className="profile_section_title">{t("character.list")}</h2>
             {userEnriched.characters && userEnriched.characters.length ? (
               <ul className="profile_section_list">
                 {userEnriched.characters.map((character) => (
@@ -152,7 +165,7 @@ export default function Profile() {
                 ))}
               </ul>
             ) : (
-              <p>Aucun personnage</p>
+              <p>{t("character.noCharacter")}</p>
             )}
           </section>
         </main>

@@ -3,6 +3,7 @@ import "@testing-library/jest-dom";
 import { render, screen, fireEvent } from "@testing-library/react";
 
 import { MemoryRouter } from "react-router-dom";
+import { t } from "../../../i18n/i18n-helper";
 
 import { useScreen } from "../../../contexts/screenContext";
 
@@ -71,32 +72,30 @@ describe("Header", () => {
     });
 
     it("Display public navigation links", () => {
-      expect(screen.getByRole("link", { name: "Évènements" })).toHaveAttribute(
-        "href",
-        "/",
-      );
-      expect(screen.getByRole("link", { name: "À propos" })).toHaveAttribute(
-        "href",
-        "/about",
-      );
+      expect(
+        screen.getByRole("link", { name: t("event.list") }),
+      ).toHaveAttribute("href", "/");
+      expect(
+        screen.getByRole("link", { name: t("common.about") }),
+      ).toHaveAttribute("href", "/about");
     });
 
-    it("Display buttons <<Connexion>> and <<Inscription>>", () => {
+    it("Display buttons Login and Register", () => {
       expect(
-        screen.getByRole("button", { name: "Connexion" }),
+        screen.getByRole("button", { name: t("auth.login") }),
       ).toBeInTheDocument();
       expect(
-        screen.getByRole("button", { name: "Inscription" }),
+        screen.getByRole("button", { name: t("auth.register") }),
       ).toBeInTheDocument();
     });
 
-    it("Call openModal with 'login' on click on <<Connexion>>", () => {
-      fireEvent.click(screen.getByRole("button", { name: "Connexion" }));
+    it("Call openModal with 'login' on click on Login", () => {
+      fireEvent.click(screen.getByRole("button", { name: t("auth.login") }));
       expect(openModal).toHaveBeenCalledWith("login");
     });
 
-    it("Call openModal with 'register' on click on <<Inscription>>", () => {
-      fireEvent.click(screen.getByRole("button", { name: "Inscription" }));
+    it("Call openModal with 'register' on click on Register", () => {
+      fireEvent.click(screen.getByRole("button", { name: t("auth.register") }));
       expect(openModal).toHaveBeenCalledWith("register");
     });
   });
@@ -123,37 +122,34 @@ describe("Header", () => {
     });
 
     it("Display private navigation links", () => {
-      expect(screen.getByRole("link", { name: "Évènements" })).toHaveAttribute(
-        "href",
-        "/",
-      );
-      expect(screen.getByRole("link", { name: "À propos" })).toHaveAttribute(
-        "href",
-        "/about",
-      );
-      expect(screen.getByRole("link", { name: "Profil" })).toHaveAttribute(
-        "href",
-        "/profile",
-      );
+      expect(
+        screen.getByRole("link", { name: t("event.list") }),
+      ).toHaveAttribute("href", "/");
+      expect(
+        screen.getByRole("link", { name: t("common.about") }),
+      ).toHaveAttribute("href", "/about");
+      expect(
+        screen.getByRole("link", { name: t("common.profile") }),
+      ).toHaveAttribute("href", "/profile");
     });
 
-    it("Display button <<Déconnexion>>", () => {
+    it("Display button Logout", () => {
       expect(
-        screen.getByRole("button", { name: "Déconnexion" }),
+        screen.getByRole("button", { name: t("auth.logout") }),
       ).toBeInTheDocument();
     });
 
-    it("Call logout on click on <<Déconnexion>>", () => {
-      fireEvent.click(screen.getByRole("button", { name: "Déconnexion" }));
+    it("Call logout on click on Logout", () => {
+      fireEvent.click(screen.getByRole("button", { name: t("auth.logout") }));
       expect(logout).toHaveBeenCalled();
     });
 
-    it("Not Display buttons <<Connexion>> and <<Inscription>>", () => {
+    it("Not Display buttons Login and Register", () => {
       expect(
-        screen.queryByRole("button", { name: "Connexion" }),
+        screen.queryByRole("button", { name: t("auth.login") }),
       ).not.toBeInTheDocument();
       expect(
-        screen.queryByRole("button", { name: "Inscription" }),
+        screen.queryByRole("button", { name: t("auth.register") }),
       ).not.toBeInTheDocument();
     });
   });

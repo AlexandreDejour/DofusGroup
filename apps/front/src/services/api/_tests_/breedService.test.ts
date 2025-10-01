@@ -1,6 +1,7 @@
 import { describe, it, beforeEach, expect, vi } from "vitest";
 
 import axios from "axios";
+import { t } from "../../../i18n/i18n-helper";
 
 import { Breed } from "../../../types/breed";
 
@@ -47,7 +48,7 @@ describe("BreedService", () => {
       apiClientMock.instance.get.mockRejectedValue(axiosError);
 
       await expect(breedService.getBreeds()).rejects.toThrow(
-        "Aucune classe disponible.",
+        t("breed.error.notFound"),
       );
     });
 

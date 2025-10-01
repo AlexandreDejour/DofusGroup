@@ -1,8 +1,8 @@
 import "./EventCard.scss";
 
 import { useNavigate } from "react-router";
-
 import { useScreen } from "../../contexts/screenContext";
+import { useTypedTranslation } from "../../i18n/i18n-helper";
 
 import { Event } from "../../types/event";
 
@@ -12,12 +12,15 @@ interface EventCardProps {
 
 export default function EventCard({ event }: EventCardProps) {
   const navigate = useNavigate();
+  const t = useTypedTranslation();
 
   const { isDesktop } = useScreen();
 
   return (
     <article className="event_card">
-      <h3 className="event_card_title">{event.title}</h3>
+      <h3 className="event_card_title">
+        {event.title.charAt(0).toLocaleUpperCase() + event.title.slice(1)}
+      </h3>
       <p
         className="event_card_tag"
         style={{ backgroundColor: event.tag.color }}
@@ -45,7 +48,7 @@ export default function EventCard({ event }: EventCardProps) {
             <span>Serveur:</span> {event.server.name}
           </p>
           <p className="event_card_container_date">
-            <span>Date:</span>{" "}
+            <span>{t("common.date")}:</span>{" "}
             {new Date(event.date).toLocaleString(undefined, {
               dateStyle: "short",
               timeStyle: "short",
@@ -53,10 +56,11 @@ export default function EventCard({ event }: EventCardProps) {
           </p>
           <p className="event_card_container_duration">
             {" "}
-            <span>Durée:</span> {event.duration} min
+            <span>{t("common.duration")}:</span> {event.duration} min
           </p>
           <p className="event_card_container_players">
-            <span>Joueurs:</span> {event.characters.length}/{event.max_players}
+            <span>{t("common.players")}:</span> {event.characters.length}/
+            {event.max_players}
           </p>
         </div>
       )}
@@ -65,7 +69,7 @@ export default function EventCard({ event }: EventCardProps) {
         className="event_card_button button"
         onClick={() => navigate(`/event/${event.id}`)}
       >
-        Détails
+        {t("common.details")}
       </button>
     </article>
   );

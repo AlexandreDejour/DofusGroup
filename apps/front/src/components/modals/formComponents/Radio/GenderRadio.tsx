@@ -2,6 +2,7 @@ import "./GenderRadio.scss";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMars, faVenus } from "@fortawesome/free-solid-svg-icons";
+import { useTypedTranslation } from "../../../../i18n/i18n-helper";
 
 export interface GenderRadioProps {
   name: string;
@@ -14,6 +15,8 @@ export default function GenderRadio({
   value,
   onChange,
 }: GenderRadioProps) {
+  const t = useTypedTranslation();
+
   const options = [
     {
       value: "M",
@@ -39,7 +42,7 @@ export default function GenderRadio({
 
   return (
     <fieldset className="gender">
-      <legend className="gender_legend">Sexe:</legend>
+      <legend className="gender_legend">{t("common.sex")}:</legend>
       <div className="gender_choices">
         {options.map((opt) => (
           <label

@@ -6,7 +6,9 @@ import {
   fireEvent,
 } from "@testing-library/react";
 import { describe, it, vi, beforeEach, afterEach } from "vitest";
+
 import { MemoryRouter } from "react-router-dom";
+import { t } from "../../../i18n/i18n-helper";
 
 // Mock des services
 let deleteEventMock: any;
@@ -121,9 +123,11 @@ vi.mock("../../../components/ProfileEventCard/ProfileEventCard", () => ({
         {event.characters ? event.characters.length : 0}/{event.max_players}
       </p>
       <div>
-        <button>Détails</button>
+        <button>{t("common.details")}</button>
         {/* Pass the handleDelete prop and call it with the correct arguments */}
-        <button onClick={() => handleDelete("event", event.id)}>Delete</button>
+        <button onClick={() => handleDelete("event", event.id)}>
+          {t("common.delete.default")}
+        </button>
       </div>
     </section>
   ),
@@ -137,10 +141,10 @@ vi.mock("../../../components/CharacterCard/CharacterCard", () => ({
       <p data-testid="character-breed">{character.breed?.name}</p>
       <p data-testid="character-level">niveau: {character.level}</p>
       <div>
-        <button>Détails</button>
+        <button>{t("common.details")}</button>
         {/* Pass the handleDelete prop and call it with the correct arguments */}
         <button onClick={() => handleDelete("character", character.id)}>
-          Delete
+          {t("common.delete.default")}
         </button>
       </div>
     </section>
@@ -261,26 +265,28 @@ describe("Profile Page", () => {
     renderProfile();
 
     await waitFor(() => {
-      expect(screen.getByText("Pseudo: toto")).toBeInTheDocument();
-      expect(screen.getByText("Évènements: 1")).toBeInTheDocument();
-      expect(screen.getByText("Personnages: 1")).toBeInTheDocument();
       expect(
-        screen.getByRole("button", { name: "Modifier le pseudo" }),
+        screen.getByText(`${t("auth.username")}: toto`),
+      ).toBeInTheDocument();
+      expect(screen.getByText(`${t("event.list")}: 1`)).toBeInTheDocument();
+      expect(screen.getByText(`${t("character.list")}: 1`)).toBeInTheDocument();
+      expect(
+        screen.getByRole("button", { name: t("auth.usernameChange") }),
       ).toBeInTheDocument();
       expect(
-        screen.getByRole("button", { name: "Modifier le mot de passe" }),
+        screen.getByRole("button", { name: t("auth.password.change") }),
       ).toBeInTheDocument();
       expect(
-        screen.getByRole("button", { name: "Modifier l'email" }),
+        screen.getByRole("button", { name: t("auth.email.change") }),
       ).toBeInTheDocument();
       expect(
-        screen.getByRole("button", { name: "Supprimer mon compte" }),
+        screen.getByRole("button", { name: t("common.delete.account") }),
       ).toBeInTheDocument();
       expect(
-        screen.getByRole("button", { name: "Créer un évènement" }),
+        screen.getByRole("button", { name: t("event.create") }),
       ).toBeInTheDocument();
       expect(
-        screen.getByRole("button", { name: "Créer un personnage" }),
+        screen.getByRole("button", { name: t("character.create") }),
       ).toBeInTheDocument();
     });
   });
@@ -293,10 +299,10 @@ describe("Profile Page", () => {
     });
 
     const editUsernameButton = screen.getByRole("button", {
-      name: "Modifier le pseudo",
+      name: t("auth.usernameChange"),
     });
     const createEventButton = screen.getByRole("button", {
-      name: "Créer un évènement",
+      name: t("event.create"),
     });
 
     await act(async () => {
@@ -316,11 +322,13 @@ describe("Profile Page", () => {
     renderProfile();
 
     await waitFor(() => {
-      expect(screen.getByText("Pseudo: toto")).toBeInTheDocument();
+      expect(
+        screen.getByText(`${t("auth.username")}: toto`),
+      ).toBeInTheDocument();
     });
 
     const deleteAccountButton = screen.getByRole("button", {
-      name: "Supprimer mon compte",
+      name: t("common.delete.account"),
     });
 
     await act(async () => {
@@ -354,7 +362,9 @@ describe("Profile Page", () => {
       expect(screen.getByText("Rafle perco")).toBeInTheDocument();
     });
 
-    const deleteButton = screen.getAllByRole("button", { name: "Delete" })[0];
+    const deleteButton = screen.getAllByRole("button", {
+      name: t("common.delete.default"),
+    })[0];
 
     await act(async () => {
       fireEvent.click(deleteButton);
@@ -386,7 +396,9 @@ describe("Profile Page", () => {
       expect(screen.getByText("Chronos")).toBeInTheDocument();
     });
 
-    const deleteButton = screen.getAllByRole("button", { name: "Delete" })[1];
+    const deleteButton = screen.getAllByRole("button", {
+      name: t("common.delete.default"),
+    })[1];
 
     await act(async () => {
       fireEvent.click(deleteButton);
@@ -403,25 +415,28 @@ describe("Profile Page", () => {
     getOneEnrichedMock = vi
       .fn()
       .mockRejectedValue(
-        Object.assign(new Error("Erreur axios"), { isAxiosError: true }),
+        Object.assign(new Error("Axios error"), { isAxiosError: true }),
       );
     renderProfile();
 
     await waitFor(() => {
-      expect(showError).toHaveBeenCalledWith("Erreur", "Erreur axios");
+      expect(showError).toHaveBeenCalledWith(
+        t("common.error.default"),
+        "Axios error",
+      );
     });
   });
 
   it("Manage general error", async () => {
     getOneEnrichedMock = vi
       .fn()
-      .mockRejectedValue(new Error("Erreur générale"));
+      .mockRejectedValue(new Error(t("system.error.occurred")));
     renderProfile();
 
     await waitFor(() => {
       expect(showError).toHaveBeenCalledWith(
-        "Erreur",
-        "Une erreur est survenue",
+        t("common.error.default"),
+        t("system.error.occurred"),
       );
     });
   });

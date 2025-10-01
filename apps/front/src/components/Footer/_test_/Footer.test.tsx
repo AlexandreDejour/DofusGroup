@@ -1,6 +1,8 @@
 import "@testing-library/jest-dom";
 import { render, screen } from "@testing-library/react";
+
 import { MemoryRouter } from "react-router";
+import { t } from "../../../i18n/i18n-helper";
 
 let mockUseAuth: () => any = () => ({
   user: null,
@@ -31,38 +33,36 @@ describe("Footer", () => {
         screen.getByRole("heading", { name: "DofusGroup" }),
       ).toBeInTheDocument();
       expect(
-        screen.getByRole("heading", { name: "Autres liens" }),
+        screen.getByRole("heading", { name: t("common.otherLinks") }),
       ).toBeInTheDocument();
       expect(
-        screen.getByRole("heading", { name: "Sites utiles" }),
+        screen.getByRole("heading", { name: t("common.usefulSites") }),
       ).toBeInTheDocument();
     });
 
     it("Display internal links", () => {
-      expect(screen.getByRole("link", { name: "Évènements" })).toHaveAttribute(
-        "href",
-        "/",
-      );
-      expect(screen.getByRole("link", { name: "À propos" })).toHaveAttribute(
-        "href",
-        "/about",
-      );
+      expect(
+        screen.getByRole("link", { name: t("event.list") }),
+      ).toHaveAttribute("href", "/");
+      expect(
+        screen.getByRole("link", { name: t("common.about") }),
+      ).toHaveAttribute("href", "/about");
       expect(
         screen.getByRole("link", {
-          name: "Conditions générales d'utilisation",
+          name: t("settings.gcu"),
         }),
       ).toHaveAttribute("href", "/gcu");
       expect(
-        screen.getByRole("link", { name: "Politique de confidentialité" }),
+        screen.getByRole("link", { name: t("settings.privacyPolicy") }),
       ).toHaveAttribute("href", "/privacy_policy");
     });
 
     it("Display contact links", () => {
       expect(
-        screen.getByRole("link", { name: "Nous contacter" }),
+        screen.getByRole("link", { name: t("settings.contact") }),
       ).toBeInTheDocument();
       expect(
-        screen.getByRole("link", { name: "Signaler un bug" }),
+        screen.getByRole("link", { name: t("settings.reportBug") }),
       ).toBeInTheDocument();
     });
 
@@ -104,10 +104,9 @@ describe("Footer", () => {
     });
 
     it("Display private navigation links", () => {
-      expect(screen.getByRole("link", { name: "Profil" })).toHaveAttribute(
-        "href",
-        "/profile",
-      );
+      expect(
+        screen.getByRole("link", { name: t("common.profile") }),
+      ).toHaveAttribute("href", "/profile");
     });
   });
 });

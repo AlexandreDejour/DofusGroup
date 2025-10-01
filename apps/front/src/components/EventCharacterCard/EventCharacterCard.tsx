@@ -1,6 +1,7 @@
 import "./EventCharacterCard.scss";
 
 import { useNavigate } from "react-router";
+import { useTypedTranslation } from "../../i18n/i18n-helper";
 
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -23,6 +24,7 @@ export default function EventCharacterCard({
   removeCharacter,
 }: CharacterCardProps) {
   const navigate = useNavigate();
+  const t = useTypedTranslation();
 
   const { user } = useAuth();
   const { isDesktop } = useScreen();
@@ -33,13 +35,17 @@ export default function EventCharacterCard({
         <img
           className="event_character_card_img"
           src={`/miniatures/${character.breed.name.toLocaleLowerCase()}_male.webp`}
-          alt={`Miniature de classe ${character.breed.name.toLocaleLowerCase()}`}
+          alt={`${t(
+            "common.classThumbnail",
+          )} ${character.breed.name.toLocaleLowerCase()}`}
         />
       ) : (
         <img
           className="event_character_card_img"
           src={`/miniatures/${character.breed.name.toLocaleLowerCase()}_female.webp`}
-          alt={`Miniature de classe ${character.breed.name.toLocaleLowerCase()}`}
+          alt={`${t(
+            "common.classThumbnail",
+          )} ${character.breed.name.toLocaleLowerCase()}`}
         />
       )}
 
@@ -48,7 +54,7 @@ export default function EventCharacterCard({
           <h3 className="event_character_card_name">{character.name}</h3>
           <p className="event_character_card_breed">{character.breed.name}</p>
           <p className="event_character_card_level">
-            niveau: {character.level}
+            {t("common.level")}: {character.level}
           </p>
         </>
       ) : (
@@ -60,7 +66,7 @@ export default function EventCharacterCard({
             {character.breed.name}
           </p>
           <p className="event_character_card_container_level">
-            niveau: {character.level}
+            {t("common.level")}: {character.level}
           </p>
         </div>
       )}
@@ -71,11 +77,11 @@ export default function EventCharacterCard({
             className="event_character_card_buttons_details button"
             onClick={() => navigate(`/character/${character.id}`)}
           >
-            Détails
+            {t("common.details")}
           </button>
           <button
             className="event_character_card_buttons_delete button delete"
-            aria-label={`Delete event ${character.name}`}
+            aria-label={`Remove ${character.name} from event`}
             onClick={() => removeCharacter(event.id, character.id)}
           >
             <FontAwesomeIcon icon={faTrash} />
@@ -86,7 +92,7 @@ export default function EventCharacterCard({
           className="event_character_card_details button"
           onClick={() => navigate(`/character/${character.id}`)}
         >
-          Détails
+          {t("common.details")}
         </button>
       )}
     </article>

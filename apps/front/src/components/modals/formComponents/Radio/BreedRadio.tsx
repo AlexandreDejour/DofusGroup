@@ -3,6 +3,7 @@ import "./BreedRadio.scss";
 import { Breed } from "../../../../types/breed";
 
 import { generateOptions } from "../../utils/generateOptions";
+import { useTypedTranslation } from "../../../../i18n/i18n-helper";
 
 export interface BreedRadioProps {
   name: string;
@@ -19,11 +20,13 @@ export default function BreedRadio({
   breeds,
   onChange,
 }: BreedRadioProps) {
+  const t = useTypedTranslation();
+
   const options = generateOptions.breeds(breeds, sex);
 
   return (
     <fieldset className="breed">
-      <legend className="breed_legend">Classe:</legend>
+      <legend className="breed_legend">{t("breed.upperCase")}:</legend>
       <div className="breed_choices">
         {options.map((opt) => (
           <label

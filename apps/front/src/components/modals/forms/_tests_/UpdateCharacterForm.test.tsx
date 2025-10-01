@@ -1,6 +1,8 @@
 import { describe, it, vi, beforeEach, expect } from "vitest";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 
+import { t } from "../../../../i18n/i18n-helper";
+
 import { useNotification } from "../../../../contexts/notificationContext";
 
 import * as BreedService from "../../../../services/api/breedService";
@@ -115,16 +117,18 @@ describe("UpdateCharacterForm", () => {
     );
 
     expect(
-      screen.getByRole("heading", { name: /Modification de personnage/i }),
+      screen.getByRole("heading", { name: t("character.modification") }),
     ).toBeInTheDocument();
 
-    expect(screen.getByLabelText(/Nom:/i)).toHaveValue("Night-Hunter");
-    expect(screen.getByLabelText(/Niveau:/i)).toHaveValue(190);
-    expect(screen.getByLabelText(/Stuff:/i)).toHaveValue(
+    expect(screen.getByLabelText(`${t("common.name")}:`)).toHaveValue(
+      "Night-Hunter",
+    );
+    expect(screen.getByLabelText(`${t("common.level")}:`)).toHaveValue(190);
+    expect(screen.getByLabelText(`${t("common.stuff")}:`)).toHaveValue(
       "https://dofusbook.net/stuff/123",
     );
     expect(
-      screen.getByLabelText(/Personnage par défault:/i),
+      screen.getByLabelText(`${t("character.default")}:`),
     ).toBeInTheDocument();
 
     await waitFor(() => {
@@ -148,8 +152,8 @@ describe("UpdateCharacterForm", () => {
         handleSubmit={vi.fn()}
       />,
     );
-    const nameInput = screen.getByLabelText(/Nom:/i);
-    const stuffInput = screen.getByLabelText(/Stuff:/i);
+    const nameInput = screen.getByLabelText(`${t("common.name")}:`);
+    const stuffInput = screen.getByLabelText(`${t("common.stuff")}:`);
 
     fireEvent.change(nameInput, { target: { value: "NewName" } });
     fireEvent.change(stuffInput, {
@@ -214,7 +218,7 @@ describe("UpdateCharacterForm", () => {
   it("Display error if breed fetch fail", async () => {
     vi.mocked(
       BreedService.BreedService.prototype.getBreeds,
-    ).mockRejectedValueOnce(new Error("Erreur races"));
+    ).mockRejectedValueOnce(new Error("Breeds error"));
     render(
       <UpdateCharacterForm
         updateTarget={updateTarget}
@@ -223,8 +227,8 @@ describe("UpdateCharacterForm", () => {
     );
     await waitFor(() => {
       expect(mockShowError).toHaveBeenCalledWith(
-        "Erreur",
-        "Une erreur est survenue",
+        t("common.error.default"),
+        t("system.error.occurred"),
       );
     });
   });
@@ -232,7 +236,7 @@ describe("UpdateCharacterForm", () => {
   it("Display error if server fetch fail", async () => {
     vi.mocked(
       ServerService.ServerService.prototype.getServers,
-    ).mockRejectedValueOnce(new Error("Erreur serveurs"));
+    ).mockRejectedValueOnce(new Error("Servers error"));
     render(
       <UpdateCharacterForm
         updateTarget={updateTarget}
@@ -241,8 +245,8 @@ describe("UpdateCharacterForm", () => {
     );
     await waitFor(() => {
       expect(mockShowError).toHaveBeenCalledWith(
-        "Erreur",
-        "Une erreur est survenue",
+        t("common.error.default"),
+        t("system.error.occurred"),
       );
     });
   });

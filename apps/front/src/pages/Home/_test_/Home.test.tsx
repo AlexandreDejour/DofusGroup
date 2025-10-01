@@ -3,6 +3,7 @@ import "@testing-library/jest-dom";
 import { render, screen, waitFor } from "@testing-library/react";
 
 import { MemoryRouter } from "react-router-dom";
+import { t } from "../../../i18n/i18n-helper";
 
 import { useScreen } from "../../../contexts/screenContext";
 
@@ -34,7 +35,7 @@ vi.mock("../../../components/EventCard/EventCard", () => ({
       <p data-testid="event-players">
         {event.characters ? event.characters.length : 0}/{event.max_players}
       </p>
-      <button>Détails</button>
+      <button>{t("common.details")}</button>
     </article>
   ),
 }));
@@ -135,14 +136,18 @@ describe("Home page", () => {
 
   it("renders filter inputs", async () => {
     renderHome();
-    expect(await screen.findByLabelText(/Titre/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/Tag/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/Serveur/i)).toBeInTheDocument();
+    expect(
+      await screen.findByLabelText(`${t("common.title")}:`),
+    ).toBeInTheDocument();
+    expect(screen.getByLabelText(`${t("tag.upperCase")}:`)).toBeInTheDocument();
+    expect(
+      screen.getByLabelText(`${t("server.upperCase")}:`),
+    ).toBeInTheDocument();
   });
 
-  it("Display 'Aucun évènement disponible' at initial renderer", () => {
+  it("Display 'No event' at initial renderer", () => {
     renderHome();
-    expect(screen.getByText(/Aucun évènement disponible/i)).toBeInTheDocument();
+    expect(screen.getByText(t("event.error.none"))).toBeInTheDocument();
   });
 
   it("Display events list after API call", async () => {

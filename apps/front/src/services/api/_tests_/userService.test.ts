@@ -1,6 +1,7 @@
 import { describe, it, beforeEach, expect, vi } from "vitest";
 
 import axios from "axios";
+import { t } from "../../../i18n/i18n-helper";
 
 import { UpdateForm } from "../../../types/form";
 import { AuthUser, UserEnriched } from "../../../types/user";
@@ -50,7 +51,7 @@ describe("UserService", () => {
       apiClientMock.instance.get.mockRejectedValue(axiosError);
 
       await expect(userService.getOneEnriched("123")).rejects.toThrow(
-        "Utilisateur introuvable.",
+        t("auth.error.user.notFound"),
       );
     });
 
@@ -93,7 +94,7 @@ describe("UserService", () => {
       };
 
       await expect(userService.update("123", invalidForm)).rejects.toThrow(
-        "Le mot de passe ne respecte pas les conditions minimales de sécurité.",
+        t("auth.password.error.rules"),
       );
 
       expect(apiClientMock.instance.patch).not.toHaveBeenCalled();
@@ -106,7 +107,7 @@ describe("UserService", () => {
       };
 
       await expect(userService.update("123", invalidForm)).rejects.toThrow(
-        "Le mot de passe et la confirmation doivent être identique.",
+        t("auth.password.error.mismatch"),
       );
 
       expect(apiClientMock.instance.patch).not.toHaveBeenCalled();
@@ -122,7 +123,7 @@ describe("UserService", () => {
 
       await expect(
         userService.update("123", { username: "Johnny" }),
-      ).rejects.toThrow("Utilisateur inconnu.");
+      ).rejects.toThrow("User not found.");
     });
 
     it("Throw error if isn't axios error", async () => {

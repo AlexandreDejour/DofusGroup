@@ -1,6 +1,7 @@
 import { describe, it, beforeEach, expect, vi } from "vitest";
 
 import axios from "axios";
+import { t } from "../../../i18n/i18n-helper";
 
 import { CreateCharacterForm } from "../../../types/form";
 import { Character, CharacterEnriched } from "../../../types/character";
@@ -22,6 +23,7 @@ describe("CharacterService", () => {
     alignment: "Neutre",
     stuff: "https://d-bk.net/fr/d/1QVjw",
     default_character: false,
+    server_id: "de5a6c69-bc0b-496c-9b62-bd7ea076b8ed",
   };
 
   const mockCharacterEnriched: CharacterEnriched = {
@@ -32,6 +34,7 @@ describe("CharacterService", () => {
     alignment: "Neutre",
     stuff: "https://d-bk.net/fr/d/1QVjw",
     default_character: false,
+    server_id: "de5a6c69-bc0b-496c-9b62-bd7ea076b8ed",
     server: {
       id: "de5a6c69-bc0b-496c-9b62-bd7ea076b8ed",
       name: "Dakal",
@@ -86,7 +89,7 @@ describe("CharacterService", () => {
 
       await expect(
         characterService.getAllByUserId("fcdb0dd1-7f7e-44bd-9a9b-c4daf6cb1588"),
-      ).rejects.toThrow("Vous n'avez créé aucun personnage sur votre compte.");
+      ).rejects.toThrow(t("character.error.noneOnAccount"));
     });
 
     it("should rethrow a generic error if not an AxiosError", async () => {
@@ -123,7 +126,7 @@ describe("CharacterService", () => {
         characterService.getAllEnrichedByUserId(
           "fcdb0dd1-7f7e-44bd-9a9b-c4daf6cb1588",
         ),
-      ).rejects.toThrow("Vous n'avez créé aucun personnage sur votre compte.");
+      ).rejects.toThrow(t("character.error.noneOnAccount"));
     });
   });
 
@@ -191,18 +194,14 @@ describe("CharacterService", () => {
       const invalidData = { ...validData, level: 0 } as any;
       await expect(
         characterService.create(userId, invalidData),
-      ).rejects.toThrow(
-        "Le niveau de votre personnage doit être compris entre 1 et 200.",
-      );
+      ).rejects.toThrow(t("validation.level.rules"));
     });
 
     it("should throw an error if level is more than 200", async () => {
       const invalidData = { ...validData, level: 201 } as any;
       await expect(
         characterService.create(userId, invalidData),
-      ).rejects.toThrow(
-        "Le niveau de votre personnage doit être compris entre 1 et 200.",
-      );
+      ).rejects.toThrow(t("validation.level.rules"));
     });
 
     it("should throw an error for an invalid DofusBook URL", async () => {
@@ -212,9 +211,7 @@ describe("CharacterService", () => {
       } as any;
       await expect(
         characterService.create(userId, invalidData),
-      ).rejects.toThrow(
-        "Seules les URL provenant de DofusBook sont acceptées.",
-      );
+      ).rejects.toThrow(t("validation.url.rules"));
     });
 
     it("should not throw an error if stuff is null", async () => {
@@ -240,7 +237,7 @@ describe("CharacterService", () => {
       apiClientMock.instance.post.mockRejectedValue(axiosError);
 
       await expect(characterService.create(userId, validData)).rejects.toThrow(
-        "Les informations transmises sont érronées ou incomplètes.",
+        t("auth.error.data.incomplete"),
       );
     });
 
@@ -253,7 +250,7 @@ describe("CharacterService", () => {
       apiClientMock.instance.post.mockRejectedValue(axiosError);
 
       await expect(characterService.create(userId, validData)).rejects.toThrow(
-        "Vous devez être connecter pour créer un personnage.",
+        t("character.error.loginRequired"),
       );
     });
 
@@ -266,7 +263,7 @@ describe("CharacterService", () => {
       apiClientMock.instance.post.mockRejectedValue(axiosError);
 
       await expect(characterService.create(userId, validData)).rejects.toThrow(
-        "La création de personnage est réservée à votre compte.",
+        t("system.error.forbidden"),
       );
     });
 
@@ -312,18 +309,14 @@ describe("CharacterService", () => {
       const invalidData = { ...validData, level: 0 } as any;
       await expect(
         characterService.update(userId, charId, invalidData),
-      ).rejects.toThrow(
-        "Le niveau de votre personnage doit être compris entre 1 et 200.",
-      );
+      ).rejects.toThrow(t("validation.level.rules"));
     });
 
     it("should throw error for invalid stuff URL", async () => {
       const invalidData = { ...validData, stuff: "https://invalid.com" } as any;
       await expect(
         characterService.update(userId, charId, invalidData),
-      ).rejects.toThrow(
-        "Seules les URL provenant de DofusBook sont acceptées.",
-      );
+      ).rejects.toThrow(t("validation.url.rules"));
     });
   });
 
@@ -359,7 +352,7 @@ describe("CharacterService", () => {
             "fcdb0dd1-7f7e-44bd-9a9b-c4daf6cb1588",
             "character456",
           ),
-        ).rejects.toThrow("Cette action n'est pas autorisée.");
+        ).rejects.toThrow(t("system.error.forbidden"));
       }
     });
 
@@ -376,7 +369,7 @@ describe("CharacterService", () => {
           "fcdb0dd1-7f7e-44bd-9a9b-c4daf6cb1588",
           "character456",
         ),
-      ).rejects.toThrow("Ce personnage n'existe plus.");
+      ).rejects.toThrow(t("character.error.notFound"));
     });
 
     it("Throw error if isn't axios error", async () => {

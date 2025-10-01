@@ -1,6 +1,7 @@
 import { describe, it, beforeEach, expect, vi } from "vitest";
 
 import axios from "axios";
+import { t } from "../../../i18n/i18n-helper";
 
 import { CreateCommentForm } from "../../../types/form";
 import { Comment } from "../../../types/comment";
@@ -60,9 +61,7 @@ describe("CommentService", () => {
 
       await expect(
         commentService.create(userId, eventId, validData),
-      ).rejects.toThrow(
-        "Vous devez être connecter pour ajouter un commentaire.",
-      );
+      ).rejects.toThrow(t("comment.error.loginRequired"));
     });
 
     it("should throw a specific error for a 403 status code", async () => {
@@ -75,7 +74,7 @@ describe("CommentService", () => {
 
       await expect(
         commentService.create(userId, eventId, validData),
-      ).rejects.toThrow("L'ajout de commentaire est réservée à votre compte.");
+      ).rejects.toThrow(t("system.error.forbidden"));
     });
 
     it("should rethrow a generic error if not an AxiosError", async () => {
@@ -113,9 +112,7 @@ describe("CommentService", () => {
 
       await expect(
         commentService.update(userId, commentId, validData),
-      ).rejects.toThrow(
-        "Vous devez être connecter pour modifier un commentaire.",
-      );
+      ).rejects.toThrow(t("common.action.needLogin"));
     });
 
     it("should throw a specific error for a 403 status code", async () => {
@@ -128,9 +125,7 @@ describe("CommentService", () => {
 
       await expect(
         commentService.update(userId, commentId, validData),
-      ).rejects.toThrow(
-        "La modification de commentaire est réservée à votre compte.",
-      );
+      ).rejects.toThrow(t("system.error.forbidden"));
     });
 
     it("should throw a specific error for a 404 status code", async () => {
@@ -143,7 +138,7 @@ describe("CommentService", () => {
 
       await expect(
         commentService.update(userId, commentId, validData),
-      ).rejects.toThrow("Ce commentaire n'existe plus.");
+      ).rejects.toThrow(t("comment.error.notFound"));
     });
 
     it("should rethrow a generic error if not an AxiosError", async () => {
@@ -181,7 +176,7 @@ describe("CommentService", () => {
         apiClientMock.instance.delete.mockRejectedValue(axiosError);
 
         await expect(commentService.delete(userId, commentId)).rejects.toThrow(
-          "Cette action n'est pas autorisée.",
+          t("system.error.forbidden"),
         );
       }
     });
@@ -195,7 +190,7 @@ describe("CommentService", () => {
       apiClientMock.instance.delete.mockRejectedValue(axiosError);
 
       await expect(commentService.delete(userId, commentId)).rejects.toThrow(
-        "Ce commentaire n'existe plus.",
+        t("comment.error.notFound"),
       );
     });
 

@@ -1,5 +1,7 @@
 import { render, screen } from "@testing-library/react";
 
+import { t } from "../../../../i18n/i18n-helper";
+
 import type { CharacterEnriched } from "../../../../types/character";
 
 import CharactersCheckbox from "../Checkbox/CharactersCheckbox";
@@ -13,6 +15,7 @@ const mockCharacters: CharacterEnriched[] = [
     alignment: "Neutre",
     stuff: "https://d-bk.net/fr/d/1QVjw",
     default_character: false,
+    server_id: "de5a6c69-bc0b-496c-9b62-bd7ea076b8ed",
     server: {
       id: "de5a6c69-bc0b-496c-9b62-bd7ea076b8ed",
       name: "Dakal",
@@ -36,6 +39,7 @@ const mockCharacters: CharacterEnriched[] = [
     alignment: "Neutre",
     stuff: "https://d-bk.net/fr/d/1QVjw",
     default_character: false,
+    server_id: "de5a6c69-bc0b-496c-9b62-bd7ea076b8ed",
     server: {
       id: "de5a6c69-bc0b-496c-9b62-bd7ea076b8ed",
       name: "Dakal",
@@ -57,9 +61,11 @@ describe("CharactersCheckbox", () => {
   it("should render a fieldset with legend", () => {
     render(<CharactersCheckbox characters={mockCharacters} />);
     expect(
-      screen.getByRole("group", { name: /vos personnages/i }),
+      screen.getByRole("group", { name: /Your characters/i }),
     ).toBeInTheDocument();
-    expect(screen.getByText("Vos personnages:")).toBeInTheDocument();
+    expect(
+      screen.getByText(new RegExp(t("character.your"), "i")),
+    ).toBeInTheDocument();
   });
 
   it("should render one label per character", () => {
@@ -70,10 +76,12 @@ describe("CharactersCheckbox", () => {
 
   it("should render correct image based on sex and breed", () => {
     render(<CharactersCheckbox characters={mockCharacters} />);
-    const maleImg = screen.getByAltText("Miniature de classe cra");
+    const maleImg = screen.getByAltText(`${t("common.classThumbnail")} cra`);
     expect(maleImg).toHaveAttribute("src", "/miniatures/cra_male.webp");
 
-    const femaleImg = screen.getByAltText("Miniature de classe ecaflip");
+    const femaleImg = screen.getByAltText(
+      `${t("common.classThumbnail")} ecaflip`,
+    );
     expect(femaleImg).toHaveAttribute("src", "/miniatures/ecaflip_female.webp");
   });
 
@@ -81,11 +89,11 @@ describe("CharactersCheckbox", () => {
     render(<CharactersCheckbox characters={mockCharacters} />);
     expect(screen.getByText("Chronos")).toBeInTheDocument();
     expect(screen.getByText("Cra")).toBeInTheDocument();
-    expect(screen.getByText("niveau: 50")).toBeInTheDocument();
+    expect(screen.getByText(`${t("common.level")}: 50`)).toBeInTheDocument();
 
     expect(screen.getByText("Grumpy")).toBeInTheDocument();
     expect(screen.getByText("Ecaflip")).toBeInTheDocument();
-    expect(screen.getByText("niveau: 100")).toBeInTheDocument();
+    expect(screen.getByText(`${t("common.level")}: 100`)).toBeInTheDocument();
   });
 
   it("checkbox should have correct value", () => {

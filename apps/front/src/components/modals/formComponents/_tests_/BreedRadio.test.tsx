@@ -2,6 +2,8 @@ import { describe, it, expect, vi } from "vitest";
 import userEvent from "@testing-library/user-event";
 import { render, screen } from "@testing-library/react";
 
+import { t } from "../../../../i18n/i18n-helper";
+
 import BreedRadio from "../Radio/BreedRadio";
 
 describe("BreedRadio", () => {
@@ -21,7 +23,9 @@ describe("BreedRadio", () => {
       />,
     );
 
-    expect(screen.getByText("Classe:")).toBeInTheDocument();
+    expect(
+      screen.getByText(new RegExp(t("breed.upperCase"), "i")),
+    ).toBeInTheDocument();
   });
 
   it("renders all breeds with correct labels and images", () => {

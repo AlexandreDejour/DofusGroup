@@ -1,0 +1,225 @@
+{
+  "header": {
+    "title": "Terms of Use of DofusGroup",
+    "lastUpdate": "Last updated: {{date}}"
+  },
+  "sections": {
+    "1": {
+      "title": "1. Presentation",
+      "content": [
+        {
+          "type": "p",
+          "text": "1.1 DofusGroup is a fan site accessible at {{site}} (the “Site”), based on the universe of the game DOFUS (the “Game”), owned by Ankama Games."
+        },
+        {
+          "type": "p",
+          "text": "1.2 DofusGroup provides services allowing users to create events, organize into groups, and interact with other players (the “Service”)."
+        },
+        {
+          "type": "p",
+          "text": "1.3 These terms of use (the “Terms”) govern access to and use of the Site and its services. All users (hereafter “you”) agree to comply with them."
+        }
+      ]
+    },
+    "2": {
+      "title": "2. Acceptance of Terms",
+      "content": [
+        {
+          "type": "p",
+          "text": "2.1 By using DofusGroup, you accept these Terms in their entirety."
+        },
+        {
+          "type": "p",
+          "text": "2.2 Any use of the Site that does not comply with the Terms is strictly prohibited."
+        }
+      ]
+    },
+    "3": {
+      "title": "3. Access to the Site",
+      "content": [
+        {
+          "type": "p",
+          "text": "3.1 The Site is freely accessible to anyone with an internet connection. Access and connection costs are your responsibility."
+        },
+        {
+          "type": "p",
+          "text": "3.2 DofusGroup grants you a limited, non-exclusive, non-transferable license to access and use the Site, subject to compliance with these Terms."
+        }
+      ]
+    },
+    "4": {
+      "title": "4. Account Creation and Management",
+      "subsections": {
+        "4.1": {
+          "title": "4.1 Registration Conditions",
+          "content": [
+            {
+              "type": "li",
+              "items": [
+                "To create an account, you must be of legal age or have the consent of a legal guardian if you are a minor.",
+                "Required information includes: username, email address, and password."
+              ]
+            }
+          ]
+        },
+        "4.2": {
+          "title": "4.2 Security and Responsibility",
+          "content": [
+            {
+              "type": "li",
+              "items": [
+                "You are responsible for keeping your login credentials confidential.",
+                "Sharing, selling, or lending your account is prohibited.",
+                "DofusGroup is not responsible for damages resulting from unauthorized access to your account."
+              ]
+            }
+          ]
+        },
+        "4.3": {
+          "title": "4.3 Modification and Deletion",
+          "content": [
+            {
+              "type": "p",
+              "text": "You can modify your personal information and delete your account from your profile. Deleting your account will permanently remove all your data."
+            }
+          ]
+        }
+      }
+    },
+    "5": {
+      "title": "5. Rules of Conduct",
+      "content": [
+        {
+          "type": "li",
+          "items": [
+            "Respect other users and DofusGroup staff.",
+            "Do not post offensive, discriminatory, racist, or vulgar content.",
+            "Do not post sexual or pornographic content.",
+            "Do not send spam or attempt to collect information from other users."
+          ]
+        },
+        {
+          "type": "p",
+          "text": "Content posted by users is their sole responsibility. DofusGroup may remove any content that violates the rules."
+        }
+      ]
+    },
+    "6": {
+      "title": "6. Service Usage Limits",
+      "content": [
+        {
+          "type": "li",
+          "items": [
+            "Using software, scripts, or hacks to access or disrupt the Site.",
+            "Participating in attacks against the Site's servers.",
+            "Exploiting bugs or security vulnerabilities to gain an advantage or confidential information."
+          ]
+        }
+      ]
+    },
+    "7": {
+      "title": "7. Intellectual Property",
+      "content": [
+        {
+          "type": "p",
+          "text": "All elements of the game DOFUS belong to Ankama Games."
+        },
+        {
+          "type": "p",
+          "text": "Content created for DofusGroup (logos, images, graphics) belongs to DofusGroup and is protected by copyright."
+        },
+        {
+          "type": "p",
+          "text": "Use of DOFUS visuals or trademarks is for informational and non-commercial purposes only, and must not infringe Ankama’s rights."
+        },
+        {
+          "type": "p",
+          "text": "You may not copy, modify, reproduce, or distribute Site content without prior written permission."
+        }
+      ]
+    },
+    "8": {
+      "title": "8. Personal Data Protection",
+      "content": [
+        {
+          "type": "li",
+          "items": [
+            "DofusGroup only collects information necessary for creating and using your account: username, email, and password.",
+            "Your passwords are hashed and emails are encrypted. Cookies only store your authentication token (JWT).",
+            "DofusGroup does not share your personal information with third parties.",
+            "You can access, modify, or delete your personal data at any time from your profile.",
+            "For more details, see our Privacy Policy."
+          ]
+        }
+      ]
+    },
+    "9": {
+      "title": "9. Sanctions",
+      "content": [
+        { "type": "p", "text": "Any violation of the Terms may result in:" },
+        {
+          "type": "li",
+          "items": [
+            "Warning",
+            "Temporary or permanent suspension of the account",
+            "Civil or criminal actions if necessary"
+          ]
+        },
+        {
+          "type": "p",
+          "text": "Decisions by DofusGroup regarding enforcement of sanctions are final."
+        }
+      ]
+    },
+    "10": {
+      "title": "10. Liability and Warranty",
+      "content": [
+        {
+          "type": "li",
+          "items": [
+            "The Site and its services are provided “as is.”",
+            "DofusGroup does not guarantee continuous availability of the service.",
+            "DofusGroup is not responsible for indirect damages, data loss, or profits resulting from use of the Site.",
+            "Links to third-party sites are provided for informational purposes only, and DofusGroup does not guarantee their content."
+          ]
+        }
+      ]
+    },
+    "11": {
+      "title": "11. Modification of Terms",
+      "content": [
+        {
+          "type": "p",
+          "text": "DofusGroup reserves the right to modify the Terms at any time. You will be informed of changes via a banner on the Site or by email for important updates."
+        }
+      ]
+    },
+    "12": {
+      "title": "12. Termination",
+      "content": [
+        {
+          "type": "p",
+          "text": "You can terminate your account and these Terms at any time by requesting account deletion from your profile. DofusGroup may also terminate your access in case of Terms violation."
+        }
+      ]
+    },
+    "13": {
+      "title": "13. Support",
+      "content": [
+        {
+          "type": "p",
+          "text": "Support is available via the official DofusGroup Discord. In case of a security issue or bug, you must contact DofusGroup immediately via support."
+        }
+      ]
+    },
+    "14": {
+      "title": "14. Governing Law",
+      "content": [
+        {
+          "type": "p",
+          "text": "The Terms are governed by French law. If any provision is deemed invalid, the other provisions remain applicable."
+        }
+      ]
+    }
+  }
+}

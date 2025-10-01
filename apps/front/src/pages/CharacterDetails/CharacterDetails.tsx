@@ -2,6 +2,7 @@ import "./CharacterDetails.scss";
 
 import { isAxiosError } from "axios";
 import { useEffect, useState } from "react";
+import { useTypedTranslation } from "../../i18n/i18n-helper";
 import { Navigate, useNavigate, useParams } from "react-router";
 
 import { CharacterEnriched } from "../../types/character";
@@ -19,6 +20,8 @@ const characterService = new CharacterService(axios);
 
 export default function CharacterDetails() {
   const navigate = useNavigate();
+  const t = useTypedTranslation();
+
   const { id } = useParams();
   const { user } = useAuth();
   const { updateTarget, openModal, handleDelete } = useModal();
@@ -63,33 +66,37 @@ export default function CharacterDetails() {
               <img
                 className="character_section_details_img"
                 src={`/characters/${character.breed.name.toLocaleLowerCase()}_male.webp`}
-                alt={`Miniature de classe ${character.breed.name.toLocaleLowerCase()}`}
+                alt={`${t(
+                  "common.classThumbnail",
+                )} ${character.breed.name.toLocaleLowerCase()}`}
               />
             ) : (
               <img
                 className="character_section_details_img"
                 src={`/characters/${character.breed.name.toLocaleLowerCase()}_female.webp`}
-                alt={`Miniature de classe ${character.breed.name.toLocaleLowerCase()}`}
+                alt={`${t(
+                  "common.classThumbnail",
+                )} ${character.breed.name.toLocaleLowerCase()}`}
               />
             )}
             <div className="character_section_details_infos">
               <p>
-                <span>Classe:</span> {character.breed.name}
+                <span>{t("breed.upperCase")}:</span> {character.breed.name}
               </p>
               <p>
-                <span>Serveur:</span> {character.server.name}
+                <span>{t("server.upperCase")}:</span> {character.server.name}
               </p>
               <p>
-                <span>Niveau:</span> {character.level}
+                <span>{t("common.level")}:</span> {character.level}
               </p>
               <p>
-                <span>Alignement:</span> {character.alignment}
+                <span>{t("common.alignment")}:</span> {character.alignment}
               </p>
               <p>
-                <span>Sexe:</span> {character.sex}
+                <span>{t("common.sex")}:</span> {character.sex}
               </p>
               <a href={character.stuff ? character.stuff : ""}>
-                <span>Stuff:</span> {character.stuff}
+                <span>{t("common.stuff")}:</span> {character.stuff}
               </a>
             </div>
           </div>
@@ -101,27 +108,27 @@ export default function CharacterDetails() {
                 className="button"
                 onClick={() => openModal("updateCharacter", character)}
               >
-                Modifier
+                {t("common.change")}
               </button>
               <button
                 type="button"
                 className="button delete"
                 onClick={() => handleDelete("character_details", character.id)}
               >
-                Supprimer
+                {t("common.delete.default")}
               </button>
             </div>
           ) : null}
         </section>
       ) : (
-        <p>Chargement en cours</p>
+        <p>{t("common.loading")}</p>
       )}
       <button
         type="button"
         className="character_button button"
         onClick={() => navigate(-1)}
       >
-        Retour
+        {t("common.return")}
       </button>
     </main>
   );

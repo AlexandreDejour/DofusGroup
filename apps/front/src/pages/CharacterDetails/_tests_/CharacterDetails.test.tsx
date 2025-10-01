@@ -2,6 +2,8 @@ import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { describe, it, vi, beforeEach, afterEach } from "vitest";
 import { render, screen, waitFor, fireEvent } from "@testing-library/react";
 
+import { t } from "../../../i18n/i18n-helper";
+
 import CharacterDetails from "../CharacterDetails";
 
 // Mock config
@@ -112,7 +114,7 @@ describe("CharacterDetails", () => {
 
     renderWithRouter();
 
-    expect(screen.getByText("Chargement en cours")).toBeInTheDocument();
+    expect(screen.getByText(t("common.loading"))).toBeInTheDocument();
   });
 
   it("renders character details after successful fetch", async () => {
@@ -123,28 +125,28 @@ describe("CharacterDetails", () => {
     });
 
     expect(
-      screen.getByText("Classe:", { exact: false }).closest("p"),
-    ).toHaveTextContent("Classe: Cra");
+      screen.getByText(t("breed.upperCase"), { exact: false }).closest("p"),
+    ).toHaveTextContent(`${t("breed.upperCase")}: Cra`);
 
     expect(
-      screen.getByText("Serveur:", { exact: false }).closest("p"),
-    ).toHaveTextContent("Serveur: Dakal");
+      screen.getByText(t("server.upperCase"), { exact: false }).closest("p"),
+    ).toHaveTextContent(`${t("server.upperCase")}: Dakal`);
 
     expect(
-      screen.getByText("Niveau:", { exact: false }).closest("p"),
-    ).toHaveTextContent("Niveau: 50");
+      screen.getByText(t("common.level"), { exact: false }).closest("p"),
+    ).toHaveTextContent(`${t("common.level")}: 50`);
 
     expect(
-      screen.getByText("Alignement:", { exact: false }).closest("p"),
-    ).toHaveTextContent("Alignement: Neutre");
+      screen.getByText(t("common.alignment"), { exact: false }).closest("p"),
+    ).toHaveTextContent(`${t("common.alignment")}: Neutre`);
 
     expect(
-      screen.getByText("Sexe:", { exact: false }).closest("p"),
-    ).toHaveTextContent("Sexe: M");
+      screen.getByText(t("common.sex"), { exact: false }).closest("p"),
+    ).toHaveTextContent(`${t("common.sex")}: M`);
 
     expect(
-      screen.getByText("Stuff:", { exact: false }).closest("a"),
-    ).toHaveTextContent("Stuff: https://d-bk.net/fr/d/1QVjw");
+      screen.getByText(t("common.stuff"), { exact: false }).closest("a"),
+    ).toHaveTextContent(`${t("common.stuff")}: https://d-bk.net/fr/d/1QVjw`);
   });
 
   it("renders nothing if character is null (Navigate is rendered)", async () => {
@@ -156,7 +158,7 @@ describe("CharacterDetails", () => {
       // Vérifie que le contenu "Chronos" ou les boutons ne sont pas présents
       expect(screen.queryByText("Chronos")).not.toBeInTheDocument();
       expect(
-        screen.queryByRole("button", { name: "Retour" }),
+        screen.queryByRole("button", { name: t("common.return") }),
       ).not.toBeInTheDocument();
     });
   });
@@ -166,30 +168,32 @@ describe("CharacterDetails", () => {
 
     await waitFor(() => {
       expect(
-        screen.getByRole("button", { name: "Modifier" }),
+        screen.getByRole("button", { name: t("common.change") }),
       ).toBeInTheDocument();
       expect(
-        screen.getByRole("button", { name: "Supprimer" }),
+        screen.getByRole("button", { name: t("common.delete.default") }),
       ).toBeInTheDocument();
     });
   });
 
-  it("calls openModal when clicking Modifier", async () => {
+  it("calls openModal when clicking Edit", async () => {
     renderWithRouter();
 
     await waitFor(() => screen.getByText("Chronos"));
 
-    fireEvent.click(screen.getByRole("button", { name: "Modifier" }));
+    fireEvent.click(screen.getByRole("button", { name: t("common.change") }));
 
     expect(openModal).toHaveBeenCalledWith("updateCharacter", mockCharacter);
   });
 
-  it("calls handleDelete when clicking Supprimer", async () => {
+  it("calls handleDelete when clicking Delete", async () => {
     renderWithRouter();
 
     await waitFor(() => screen.getByText("Chronos"));
 
-    fireEvent.click(screen.getByRole("button", { name: "Supprimer" }));
+    fireEvent.click(
+      screen.getByRole("button", { name: t("common.delete.default") }),
+    );
 
     expect(handleDelete).toHaveBeenCalledWith(
       "character_details",
@@ -197,12 +201,12 @@ describe("CharacterDetails", () => {
     );
   });
 
-  it("navigates back to profile when clicking Retour", async () => {
+  it("navigates back to profile when clicking Return", async () => {
     renderWithRouter();
 
     await waitFor(() => screen.getByText("Chronos"));
 
-    fireEvent.click(screen.getByRole("button", { name: "Retour" }));
+    fireEvent.click(screen.getByRole("button", { name: t("common.return") }));
 
     expect(navigateMock).toHaveBeenCalledWith(-1);
   });

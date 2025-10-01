@@ -1,7 +1,10 @@
 import axios from "axios";
+import { t } from "../../i18n/i18n-helper";
+
 import { ApiClient } from "../client";
-import { Character, CharacterEnriched } from "../../types/character";
+
 import { CreateCharacterForm } from "../../types/form";
+import { Character, CharacterEnriched } from "../../types/character";
 
 export class CharacterService {
   private axios;
@@ -22,9 +25,7 @@ export class CharacterService {
     } catch (error) {
       if (axios.isAxiosError(error)) {
         if (error.response?.status === 204) {
-          throw new Error(
-            "Vous n'avez créé aucun personnage sur votre compte.",
-          );
+          throw new Error(t("character.error.noneOnAccount"));
         }
       }
       throw error;
@@ -43,9 +44,7 @@ export class CharacterService {
     } catch (error) {
       if (axios.isAxiosError(error)) {
         if (error.response?.status === 204) {
-          throw new Error(
-            "Vous n'avez créé aucun personnage sur votre compte.",
-          );
+          throw new Error(t("character.error.noneOnAccount"));
         }
       }
       throw error;
@@ -74,13 +73,11 @@ export class CharacterService {
     data: CreateCharacterForm,
   ): Promise<Character> {
     if (!(data.level >= 1 && data.level <= 200)) {
-      throw new Error(
-        "Le niveau de votre personnage doit être compris entre 1 et 200.",
-      );
+      throw new Error(t("validation.level.rules"));
     }
 
     if (data.stuff && !this.urlRegex.test(data.stuff)) {
-      throw new Error("Seules les URL provenant de DofusBook sont acceptées.");
+      throw new Error(t("validation.url.rules"));
     }
 
     try {
@@ -94,21 +91,15 @@ export class CharacterService {
     } catch (error) {
       if (axios.isAxiosError(error)) {
         if (error.response?.status === 400) {
-          throw new Error(
-            "Les informations transmises sont érronées ou incomplètes.",
-          );
+          throw new Error(t("auth.error.data.incomplete"));
         }
 
         if (error.response?.status === 401) {
-          throw new Error(
-            "Vous devez être connecter pour créer un personnage.",
-          );
+          throw new Error(t("character.error.loginRequired"));
         }
 
         if (error.response?.status === 403) {
-          throw new Error(
-            "La création de personnage est réservée à votre compte.",
-          );
+          throw new Error(t("system.error.forbidden"));
         }
       }
       throw error;
@@ -121,13 +112,11 @@ export class CharacterService {
     data: CreateCharacterForm,
   ): Promise<CharacterEnriched> {
     if (!(data.level >= 1 && data.level <= 200)) {
-      throw new Error(
-        "Le niveau de votre personnage doit être compris entre 1 et 200.",
-      );
+      throw new Error(t("validation.level.rules"));
     }
 
     if (data.stuff && !this.urlRegex.test(data.stuff)) {
-      throw new Error("Seules les URL provenant de DofusBook sont acceptées.");
+      throw new Error(t("validation.url.rules"));
     }
 
     try {
@@ -141,21 +130,15 @@ export class CharacterService {
     } catch (error) {
       if (axios.isAxiosError(error)) {
         if (error.response?.status === 400) {
-          throw new Error(
-            "Les informations transmises sont érronées ou incomplètes.",
-          );
+          throw new Error(t("auth.error.data.incomplete"));
         }
 
         if (error.response?.status === 401) {
-          throw new Error(
-            "Vous devez être connecter pour créer un personnage.",
-          );
+          throw new Error(t("character.error.loginRequired"));
         }
 
         if (error.response?.status === 403) {
-          throw new Error(
-            "La création de personnage est réservée à votre compte.",
-          );
+          throw new Error(t("system.error.forbidden"));
         }
       }
       throw error;
@@ -173,9 +156,9 @@ export class CharacterService {
     } catch (error) {
       if (axios.isAxiosError(error)) {
         if ([400, 401, 403].includes(error.response?.status ?? 0)) {
-          throw new Error("Cette action n'est pas autorisée.");
+          throw new Error(t("system.error.forbidden"));
         } else if (error.response?.status === 404) {
-          throw new Error("Ce personnage n'existe plus.");
+          throw new Error(t("character.error.notFound"));
         }
       }
       throw error;

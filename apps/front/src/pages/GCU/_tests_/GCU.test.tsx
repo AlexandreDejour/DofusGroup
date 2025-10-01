@@ -1,38 +1,65 @@
 import { render, screen } from "@testing-library/react";
+import { I18nextProvider } from "react-i18next";
+import i18n from "../../../i18n/i18n";
 
 import GCU from "../GCU";
 
 describe("GCU component", () => {
-  it("Display main title", () => {
-    render(<GCU />);
+  beforeEach(() => {
+    render(
+      <I18nextProvider i18n={i18n}>
+        <GCU />
+      </I18nextProvider>,
+    );
+  });
+
+  it("displays main title", () => {
     expect(
       screen.getByRole("heading", {
         level: 2,
-        name: /Conditions Générales d’Utilisation de DofusGroup/i,
+        name: /Terms of Use of DofusGroup/i,
       }),
     ).toBeInTheDocument();
   });
 
-  it("Display date", () => {
+  it("displays last update date", () => {
     const today = new Date().toLocaleDateString();
-    render(<GCU />);
-    expect(screen.getByText(today)).toBeInTheDocument();
+    expect(screen.getByText(new RegExp(today))).toBeInTheDocument();
   });
 
-  it("Contain presentation section", () => {
-    render(<GCU />);
+  it("renders first sections", () => {
     expect(
-      screen.getByRole("heading", { level: 3, name: /1\. Présentation/i }),
+      screen.getByRole("heading", { level: 3, name: /1\. Presentation/i }),
     ).toBeInTheDocument();
-  });
-
-  it("Contain acceptation section", () => {
-    render(<GCU />);
     expect(
       screen.getByRole("heading", {
         level: 3,
-        name: /2\. Acceptation des CGU/i,
+        name: /2\. Acceptance of Terms/i,
       }),
+    ).toBeInTheDocument();
+  });
+
+  it("renders subsections for section 4", () => {
+    // sub-section 4.1
+    expect(
+      screen.getByRole("heading", {
+        level: 4,
+        name: /4\.1 Registration Conditions/i,
+      }),
+    ).toBeInTheDocument();
+
+    // Check one list item
+    expect(
+      screen.getByText(/To create an account, you must be of legal age/i),
+    ).toBeInTheDocument();
+  });
+
+  it("renders some content for later sections", () => {
+    expect(
+      screen.getByRole("heading", { level: 3, name: /5\. Rules of Conduct/i }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(/Respect other users and DofusGroup staff/i),
     ).toBeInTheDocument();
   });
 });

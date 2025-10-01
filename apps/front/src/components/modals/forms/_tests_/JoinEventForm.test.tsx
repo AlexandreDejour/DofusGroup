@@ -1,5 +1,7 @@
-import { render, screen, waitFor } from "@testing-library/react";
 import { describe, it, vi, beforeEach } from "vitest";
+import { render, screen, waitFor } from "@testing-library/react";
+
+import { t } from "../../../../i18n/i18n-helper";
 
 // Mock config
 vi.mock("../../../../config/config.ts", () => ({
@@ -107,7 +109,7 @@ describe("JoinEventForm", () => {
     render(<JoinEventForm handleSubmit={vi.fn()} />);
     await waitFor(() => {
       expect(
-        screen.getByText("Aucun personnages disponible sur ce serveur"),
+        screen.getByText(t("character.error.noneOnServer")),
       ).toBeInTheDocument();
     });
   });
@@ -123,7 +125,7 @@ describe("JoinEventForm", () => {
       {
         id: "char-f8027c6b-8574-4abe-af03-8459868c19ab",
         name: "Chronos",
-        server: { id: "server-2", name: "Autre", mono_account: false },
+        server: { id: "server-2", name: "other", mono_account: false },
         breed: { name: "Xélor" },
       },
     ]);
@@ -137,28 +139,31 @@ describe("JoinEventForm", () => {
   it("Displays an axios error", async () => {
     mockGetAllEnrichedByUserId.mockRejectedValueOnce({
       isAxiosError: true,
-      message: "Erreur axios",
+      message: "Axios error",
     });
     render(<JoinEventForm handleSubmit={vi.fn()} />);
     await waitFor(() => {
-      expect(showErrorMock).toHaveBeenCalledWith("Erreur", "Erreur axios");
+      expect(showErrorMock).toHaveBeenCalledWith(
+        t("common.error.default"),
+        "Axios error",
+      );
     });
   });
 
   it("Displays a general error", async () => {
     mockGetAllEnrichedByUserId.mockRejectedValueOnce(
-      new Error("Erreur générale"),
+      new Error(t("common.error.default")),
     );
     render(<JoinEventForm handleSubmit={vi.fn()} />);
     await waitFor(() => {
       expect(showErrorMock).toHaveBeenCalledWith(
-        "Erreur",
-        "Une erreur est survenue",
+        t("common.error.default"),
+        t("system.error.occurred"),
       );
     });
   });
 
-  it("ne rend rien si user ou updateTarget sont absents", () => {
+  it("Display nothing if user or updatedTarget are not defined", () => {
     mockUser = null;
     const { container } = render(<JoinEventForm handleSubmit={vi.fn()} />);
     expect(container.firstChild).toBeNull();

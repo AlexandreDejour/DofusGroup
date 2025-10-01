@@ -1,7 +1,8 @@
 import "./UpdateCharacterForm.scss";
 
-import { useEffect, useState } from "react";
 import { isAxiosError } from "axios";
+import { useEffect, useState } from "react";
+import { useTypedTranslation } from "../../../../i18n/i18n-helper";
 
 import { Breed } from "../../../../types/breed";
 import { Server } from "../../../../types/server";
@@ -33,6 +34,8 @@ export default function UpdateCharacterForm({
   updateTarget,
   handleSubmit,
 }: UpdateCharacterFormProps) {
+  const t = useTypedTranslation();
+
   const { showError } = useNotification();
 
   const [breeds, setBreeds] = useState<Breed[]>([]);
@@ -62,9 +65,9 @@ export default function UpdateCharacterForm({
         setBreeds(response);
       } catch (error) {
         if (isAxiosError(error)) {
-          showError("Erreur", error.message);
+          showError(t("common.error.default"), error.message);
         } else if (error instanceof Error) {
-          showError("Erreur", "Une erreur est survenue");
+          showError(t("common.error.default"), t("system.error.occurred"));
           console.error("General error:", error.message);
         }
       }
@@ -77,9 +80,9 @@ export default function UpdateCharacterForm({
         setServers(response);
       } catch (error) {
         if (isAxiosError(error)) {
-          showError("Erreur", error.message);
+          showError(t("common.error.default"), error.message);
         } else if (error instanceof Error) {
-          showError("Erreur", "Une erreur est survenue");
+          showError(t("common.error.default"), t("system.error.occurred"));
           console.error("General error:", error.message);
         }
       }
@@ -91,14 +94,14 @@ export default function UpdateCharacterForm({
 
   return (
     <div className="update_character">
-      <h3 className="update_character_title">Modification de personnage</h3>
+      <h3 className="update_character_title">{t("character.modification")}</h3>
       <form
         onSubmit={handleSubmit}
         className="update_character_form"
         role="form"
       >
         <label htmlFor="name" className="update_character_form_label name">
-          <span>Nom:</span>
+          <span>{t("common.name")}:</span>
           <input
             type="text"
             name="name"
@@ -106,7 +109,7 @@ export default function UpdateCharacterForm({
             value={name}
             onChange={(e) => setName(e.target.value)}
             required
-            placeholder="Nom"
+            placeholder={t("common.name")}
             className="update_character_form_label_input"
           />
         </label>
@@ -126,7 +129,7 @@ export default function UpdateCharacterForm({
           className="update_character_form_label level"
           style={{ marginTop: "0" }}
         >
-          <span>Niveau:</span>
+          <span>{t("common.level")}:</span>
           <input
             type="number"
             name="level"
@@ -134,7 +137,7 @@ export default function UpdateCharacterForm({
             value={level}
             onChange={(e) => setLevel(e.target.valueAsNumber)}
             required
-            placeholder="Niveau"
+            placeholder={t("common.level")}
             className="update_character_form_label_input"
           />
         </label>
@@ -144,7 +147,7 @@ export default function UpdateCharacterForm({
           value={server}
           items={servers}
           generateOptions={generateOptions.servers}
-          label="Serveur"
+          label={t("server.default")}
           onChange={setServer}
         />
 
@@ -153,19 +156,19 @@ export default function UpdateCharacterForm({
           value={alignment}
           items={alignments}
           generateOptions={generateOptions.alignments}
-          label="Alignement"
+          label={t("common.alignment")}
           onChange={setAlignment}
         />
 
         <label htmlFor="stuff" className="update_character_form_label stuff">
-          <span>Stuff:</span>
+          <span>{t("common.stuff")}:</span>
           <input
             type="text"
             name="stuff"
             id="stuff"
             value={stuff}
             onChange={(e) => setStuff(e.target.value)}
-            placeholder="Lien DofusBook"
+            placeholder={t("common.dofusBook")}
             className="update_character_form_label_input"
           />
         </label>
@@ -174,7 +177,7 @@ export default function UpdateCharacterForm({
           htmlFor="default_character"
           className="update_character_form_label default"
         >
-          <span>Personnage par défault:</span>
+          <span>{t("character.default")}:</span>
           <input
             type="checkbox"
             name="default_character"
@@ -184,7 +187,7 @@ export default function UpdateCharacterForm({
         </label>
 
         <button type="submit" className="update_character_form_button button">
-          Modifier mon personnage
+          {t("character.modification")}
         </button>
       </form>
     </div>

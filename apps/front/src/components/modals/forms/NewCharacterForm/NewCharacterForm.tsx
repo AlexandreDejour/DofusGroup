@@ -1,7 +1,8 @@
 import "./NewCharacterForm.scss";
 
-import { useEffect, useState } from "react";
 import { isAxiosError } from "axios";
+import { useEffect, useState } from "react";
+import { useTypedTranslation } from "../../../../i18n/i18n-helper";
 
 import { Breed } from "../../../../types/breed";
 import { Server } from "../../../../types/server";
@@ -30,6 +31,8 @@ interface NewCharacterFormProps {
 export default function NewCharacterForm({
   handleSubmit,
 }: NewCharacterFormProps) {
+  const t = useTypedTranslation();
+
   const { showError } = useNotification();
 
   const [breeds, setBreeds] = useState<Breed[]>([]);
@@ -54,9 +57,9 @@ export default function NewCharacterForm({
         setBreeds(response);
       } catch (error) {
         if (isAxiosError(error)) {
-          showError("Erreur", error.message);
+          showError(t("common.error.default"), error.message);
         } else if (error instanceof Error) {
-          showError("Erreur", "Une erreur est survenue");
+          showError(t("common.error.default"), t("system.error.occurred"));
           console.error("General error:", error.message);
         }
       }
@@ -69,9 +72,9 @@ export default function NewCharacterForm({
         setServers(response);
       } catch (error) {
         if (isAxiosError(error)) {
-          showError("Erreur", error.message);
+          showError(t("common.error.default"), error.message);
         } else if (error instanceof Error) {
-          showError("Erreur", "Une erreur est survenue");
+          showError(t("common.error.default"), t("system.error.occurred"));
           console.error("General error:", error.message);
         }
       }
@@ -83,16 +86,16 @@ export default function NewCharacterForm({
 
   return (
     <div className="new_character">
-      <h3 className="new_character_title">Création de personnage</h3>
+      <h3 className="new_character_title">{t("character.create")}</h3>
       <form onSubmit={handleSubmit} className="new_character_form" role="form">
         <label htmlFor="name" className="new_character_form_label name">
-          <span>Nom:</span>
+          <span>{t("common.name")}:</span>
           <input
             type="text"
             name="name"
             id="name"
             required
-            placeholder="Nom"
+            placeholder={t("common.name")}
             className="new_character_form_label_input"
           />
         </label>
@@ -112,13 +115,13 @@ export default function NewCharacterForm({
           className="new_character_form_label level"
           style={{ margin: "0 auto" }}
         >
-          <span>Niveau:</span>
+          <span>{t("common.level")}:</span>
           <input
             type="number"
             name="level"
             id="level"
             required
-            placeholder="Niveau"
+            placeholder={t("common.level")}
             className="new_character_form_label_input"
           />
         </label>
@@ -128,7 +131,7 @@ export default function NewCharacterForm({
           value={server}
           items={servers}
           generateOptions={generateOptions.servers}
-          label="Serveur"
+          label={t("server.default")}
           onChange={setServer}
         />
 
@@ -137,17 +140,17 @@ export default function NewCharacterForm({
           value={alignment}
           items={alignments}
           generateOptions={generateOptions.alignments}
-          label="Alignement"
+          label={t("common.alignment")}
           onChange={setAlignment}
         />
 
         <label htmlFor="stuff" className="new_character_form_label stuff">
-          <span>Stuff:</span>
+          <span>{t("common.stuff")}:</span>
           <input
             type="text"
             name="stuff"
             id="stuff"
-            placeholder="Lien DofusBook"
+            placeholder={t("common.dofusBook")}
             className="new_character_form_label_input"
           />
         </label>
@@ -156,7 +159,7 @@ export default function NewCharacterForm({
           htmlFor="default_character"
           className="new_character_form_label default"
         >
-          <span>Personnage par défault:</span>
+          <span>{t("character.default")}:</span>
           <input
             type="checkbox"
             name="default_character"
@@ -166,7 +169,7 @@ export default function NewCharacterForm({
         </label>
 
         <button type="submit" className="new_character_form_button button">
-          Créer un personnage
+          {t("character.create")}
         </button>
       </form>
     </div>

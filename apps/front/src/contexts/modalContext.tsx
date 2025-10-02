@@ -169,9 +169,9 @@ export default function ModalProvider({ children }: ModalProviderProps) {
           if (!user) return;
 
           const keys: (keyof UpdateForm)[] = [modalType];
-          console.log(keys);
 
-          if (keys[0] === "password") keys.push("confirmPassword");
+          if (keys[0] === "password")
+            keys.push("confirmPassword", "oldPassword");
           const data = formDataToObject<UpdateForm>(formData, { keys });
           const response = await userService.update(user.id, data);
 

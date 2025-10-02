@@ -54,6 +54,9 @@ export class AuthService {
         if (error.response?.status === 401) {
           throw new Error(t("auth.error.credentials.invalid"));
         }
+        if (error.response?.status === 429) {
+          throw new Error(t("system.error.attemps"));
+        }
       }
       throw error;
     }

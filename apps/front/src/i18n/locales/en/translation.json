@@ -71,7 +71,8 @@
       "change": "Change password",
       "error": {
         "rules": "The password does not meet the minimum security requirements.",
-        "mismatch": "Password and confirmation must match."
+        "mismatch": "Password and confirmation must match.",
+        "oldPassword": "Actual password is not available."
       }
     },
     "email": {
@@ -217,12 +218,13 @@
 
   "system": {
     "error": {
-      "occurred": "An error occurred.",
-      "recoveryFailed": "Data recovery failed.",
+      "attemps": "Too many failed attemps, please try again later.",
       "forbidden": "Action forbidden.",
       "impossible": "Action impossible.",
-      "profanity": "Inappropriate content!",
-      "inappropriate": "The content of some fields is inappropriate."
+      "inappropriate": "The content of some fields is inappropriate.",
+      "occurred": "An error occurred.",
+      "recoveryFailed": "Data recovery failed.",
+      "profanity": "Inappropriate content !"
     },
 
     "success": {

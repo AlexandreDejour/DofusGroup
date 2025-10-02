@@ -71,7 +71,8 @@
       "change": "Modifier le mot de passe",
       "error": {
         "rules": "Le mot de passe ne respecte pas les conditions minimales de sécurité.",
-        "mismatch": "Le mot de passe et sa confirmation doivent correspondre."
+        "mismatch": "Le mot de passe et sa confirmation doivent correspondre.",
+        "oldPassword": "Le mot de passe actuel est incorrect"
       }
     },
     "email": {
@@ -206,6 +207,7 @@
 
   "system": {
     "error": {
+      "attemps": "Trop de tentatives répétées, veuillez réessayer plus tard.",
       "occurred": "Une erreur est survenue.",
       "recoveryFailed": "Récupération de données impossible.",
       "forbidden": "Action interdite.",

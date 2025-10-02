@@ -98,7 +98,6 @@ const mockCharacter: CharacterEnriched = {
   level: 190,
   alignment: "Bonta",
   stuff: "https://d-bk.net/fr/d/1EFhw",
-  default_character: true,
   server_id: "dabcc767-1902-4e47-be77-d486c7b3af39",
   breed: { id: "313ba421-abb0-4beb-b4ed-4e2e5a3a72c2", name: "Iop" },
   server: {

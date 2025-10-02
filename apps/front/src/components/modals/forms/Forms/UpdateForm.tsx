@@ -25,34 +25,59 @@ export default function UpdateForm({ field, handleSubmit }: UpdateFormProps) {
       </h3>
       <form onSubmit={handleSubmit} className="content_modal_form" role="form">
         <label htmlFor={field} className="content_modal_form_label">
-          <span>{label.charAt(0).toUpperCase() + label.slice(1)}</span>
+          <span>
+            {t("common.new")} {label}
+          </span>
           <input
             type={type}
             name={field}
             id={field}
             required
-            placeholder={label.charAt(0).toUpperCase() + label.slice(1)}
+            placeholder={`${t("common.new")} ${label}`}
             className="content_modal_form_label_input"
           />
         </label>
 
         {field === "password" && (
-          <label
-            htmlFor={`confirm${field.charAt(0).toUpperCase() + field.slice(1)}`}
-            className="content_modal_form_label"
-          >
-            <span>
-              {t("common.confirm")} {label}
-            </span>
-            <input
-              type={type}
-              name={`confirm${field.charAt(0).toUpperCase() + field.slice(1)}`}
-              id={`confirm${field.charAt(0).toUpperCase() + field.slice(1)}`}
-              required
-              placeholder={`${t("common.confirm")} ${label}`}
-              className="content_modal_form_label_input"
-            />
-          </label>
+          <>
+            <label
+              htmlFor={`confirm${
+                field.charAt(0).toUpperCase() + field.slice(1)
+              }`}
+              className="content_modal_form_label"
+            >
+              <span>
+                {t("common.confirm")} {label}
+              </span>
+              <input
+                type={type}
+                name={`confirm${
+                  field.charAt(0).toUpperCase() + field.slice(1)
+                }`}
+                id={`confirm${field.charAt(0).toUpperCase() + field.slice(1)}`}
+                required
+                placeholder={`${t("common.confirm")} ${label}`}
+                className="content_modal_form_label_input"
+              />
+            </label>
+
+            <label
+              htmlFor={`old${field.charAt(0).toUpperCase() + field.slice(1)}`}
+              className="content_modal_form_label"
+            >
+              <span>
+                {t("common.old")} {label}
+              </span>
+              <input
+                type={type}
+                name={`old${field.charAt(0).toUpperCase() + field.slice(1)}`}
+                id={`old${field.charAt(0).toUpperCase() + field.slice(1)}`}
+                required
+                placeholder={`${t("common.old")} ${label}`}
+                className="content_modal_form_label_input"
+              />
+            </label>
+          </>
         )}
 
         <button

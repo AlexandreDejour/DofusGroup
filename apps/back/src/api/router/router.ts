@@ -31,6 +31,7 @@ import { EventUtils } from "../../middlewares/repository/utils/eventUtils.js";
 import { AuthService } from "../../middlewares/utils/authService.js";
 import { CryptoService } from "../../middlewares/utils/cryptoService.js";
 import { DataEncryptionService } from "../../middlewares/utils/dataEncryptionService.js";
+import { profanityCleaner } from "../../middlewares/profanity/profanity.js";
 
 initAssociations(models);
 
@@ -51,6 +52,8 @@ const characterController = new CharacterController(new CharacterRepository());
 router.use((req, res, next) => {
   authService.setAuthUserRequest(req, res, next);
 });
+
+router.use((req, res, next) => profanityCleaner(req, res, next));
 
 router.use(createTagRouter(tagController));
 router.use(

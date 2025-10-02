@@ -57,4 +57,8 @@ export const typeGuard = {
       obj.user !== undefined
     );
   },
+
+  isDate: (obj: any): obj is Date => {
+    return obj instanceof Date;
+  },
 };

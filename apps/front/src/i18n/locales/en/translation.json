@@ -218,7 +218,9 @@
       "occurred": "An error occurred.",
       "recoveryFailed": "Data recovery failed.",
       "forbidden": "Action forbidden.",
-      "impossible": "Action impossible."
+      "impossible": "Action impossible.",
+      "profanity": "Inappropriate content!",
+      "inappropriate": "The content of some fields is inappropriate."
     },
 
     "success": {

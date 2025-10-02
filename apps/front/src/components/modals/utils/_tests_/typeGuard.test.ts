@@ -13,7 +13,6 @@ describe("typeGuard.characterEnriched", () => {
     level: 50,
     alignment: "Neutre",
     stuff: "https://d-bk.net/fr/d/1QVjw",
-    default_character: false,
     server_id: "de5a6c69-bc0b-496c-9b62-bd7ea076b8ed",
     server: {
       id: "de5a6c69-bc0b-496c-9b62-bd7ea076b8ed",
@@ -68,11 +67,6 @@ describe("typeGuard.characterEnriched", () => {
     expect(typeGuard.characterEnriched(withNullStuff)).toBe(true);
   });
 
-  it("should return false if default_character is not boolean", () => {
-    const invalid = { ...validCharacter, default_character: "true" as any };
-    expect(typeGuard.characterEnriched(invalid)).toBe(false);
-  });
-
   it("should return false if enriched properties (user, breed, server) are missing", () => {
     const noUser = { ...validCharacter, user: undefined };
     expect(typeGuard.characterEnriched(noUser)).toBe(false);
@@ -116,7 +110,6 @@ describe("typeGuard.eventEnriched", () => {
         level: 2,
         alignment: "Neutre",
         stuff: null,
-        default_character: false,
         user: {
           id: "3d2ebbe3-8193-448c-bec8-8993e7055240",
           username: "totolebeau",

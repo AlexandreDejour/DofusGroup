@@ -26,11 +26,7 @@ import { EventService } from "../services/api/eventService";
 import { CommentService } from "../services/api/commentService";
 import { CharacterService } from "../services/api/characterService";
 import isUpdateField from "../components/modals/utils/isUpdateField";
-import {
-  cleanProfanity,
-  containsProfanity,
-  containsProfanityInObject,
-} from "./utils/profanity";
+import { cleanProfanity, containsProfanity } from "./utils/profanity";
 
 const config = Config.getInstance();
 const axios = new ApiClient(config.baseUrl);
@@ -206,14 +202,10 @@ export default function ModalProvider({ children }: ModalProviderProps) {
             "breed_id",
             "server_id",
           ];
-          const booleanKeys: (keyof CreateCharacterForm)[] = [
-            "default_character",
-          ];
           const numberKeys: (keyof CreateCharacterForm)[] = ["level"];
 
           const data = formDataToObject<CreateCharacterForm>(formData, {
             keys,
-            booleanKeys,
             numberKeys,
           });
 
@@ -259,14 +251,10 @@ export default function ModalProvider({ children }: ModalProviderProps) {
             "breed_id",
             "server_id",
           ];
-          const booleanKeys: (keyof CreateCharacterForm)[] = [
-            "default_character",
-          ];
           const numberKeys: (keyof CreateCharacterForm)[] = ["level"];
 
           const data = formDataToObject<CreateCharacterForm>(formData, {
             keys,
-            booleanKeys,
             numberKeys,
           });
 

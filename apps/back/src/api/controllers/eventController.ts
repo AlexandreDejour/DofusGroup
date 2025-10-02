@@ -24,7 +24,7 @@ export class EventController {
       const limit = !isNaN(limitParam) && limitParam > 0 ? limitParam : 10;
       const page = !isNaN(pageParam) && pageParam > 0 ? pageParam : 1;
 
-      let events: Event[] = await this.repository.getAll();
+      let events: Event[] = await this.repository.getAllPublic();
 
       if (!events.length) {
         res.status(status.NO_CONTENT).json({ error: "Any event found" });

@@ -14,10 +14,28 @@ export class EventRepository {
   public constructor(utils: EventUtils) {
     this.utils = utils;
   }
+
   public async getAll(): Promise<Event[]> {
     try {
       const result: EventEntity[] = await EventEntity.findAll({
         include: ["tag", "server", "characters"],
+      });
+
+      const events: Event[] = result.map((event: EventEntity) =>
+        event.get({ plain: true }),
+      );
+
+      return events;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  public async getAllPublic(): Promise<Event[]> {
+    try {
+      const result: EventEntity[] = await EventEntity.findAll({
+        include: ["tag", "server", "characters"],
+        where: { status: "public" },
       });
 
       const events: Event[] = result.map((event: EventEntity) =>

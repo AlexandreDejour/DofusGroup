@@ -39,7 +39,6 @@ export const createCharacterSchema: Joi.ObjectSchema = Joi.object({
     "string.pattern.base": "Invalid url. Doesn't respect rules.",
     "string.base": "Stuff must be a string",
   }),
-  default_character: Joi.boolean().optional(),
   breed_id: Joi.string().guid({ version: "uuidv4" }).required().messages({
     "string.guid": "Breed ID must be a valid UUID v4",
     "any.required": "Breed ID is required",
@@ -80,7 +79,6 @@ export const updateCharacterSchema: Joi.ObjectSchema = Joi.object({
     "string.uri": "Stuff must be a valid URL",
     "string.base": "Stuff must be a string",
   }),
-  default_character: Joi.boolean().optional(),
   breed_id: Joi.string().guid({ version: "uuidv4" }).optional().messages({
     "string.guid": "Breed ID must be a valid UUID v4",
     "string.base": "Breed ID must be a string",

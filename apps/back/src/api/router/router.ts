@@ -60,7 +60,12 @@ router.use(
   createAuthRouter(authController, authService, dataEncryptionService),
 );
 router.use(
-  createUserRouter(userController, authService, dataEncryptionService),
+  createUserRouter(
+    userController,
+    authController,
+    authService,
+    dataEncryptionService,
+  ),
 );
 router.use(createEventRouter(eventController, authService));
 router.use(createBreedRouter(breedController));

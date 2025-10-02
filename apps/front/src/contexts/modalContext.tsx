@@ -232,7 +232,10 @@ export default function ModalProvider({ children }: ModalProviderProps) {
 
           setUser({ ...user, ...response });
 
-          showSuccess(t("system.success.create"), t("character.create"));
+          showSuccess(
+            t("system.success.create"),
+            t("character.success.created"),
+          );
         }
 
         if (modalType === "updateCharacter") {

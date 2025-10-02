@@ -5,6 +5,10 @@
   margin: 0 !important;
   border: none;
 
+  legend {
+    margin: auto;
+  }
+
   &_choices {
     width: 100%;
     margin-top: 2.5%;

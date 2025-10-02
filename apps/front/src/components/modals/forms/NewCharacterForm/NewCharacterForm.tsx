@@ -131,7 +131,7 @@ export default function NewCharacterForm({
           value={server}
           items={servers}
           generateOptions={generateOptions.servers}
-          label={t("server.default")}
+          label={t("server.upperCase")}
           onChange={setServer}
         />
 

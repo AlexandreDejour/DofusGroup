@@ -3,17 +3,17 @@
 .gender {
   width: 50%;
   margin: 2% auto 0% auto;
+  padding: 0%;
   border: none;
 
   @media (min-width: 1024px) {
-    width: 100%;
     margin: 0% auto;
-    grid-column: 1/2;
-    grid-row: 6/7;
+    grid-column: 2/3;
+    grid-row: 2/3;
   }
 
   &_legend {
-    margin-bottom: 2%;
+    margin: 0% auto;
     font-size: 1.2rem;
 
     @media (max-width: 1023px) {

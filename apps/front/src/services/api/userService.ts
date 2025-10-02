@@ -72,7 +72,10 @@ export class UserService {
           throw new Error(t("auth.error.user.notFound"));
         }
         if (error.response?.status === 401) {
-          throw new Error("Current password mismatch");
+          throw new Error(t("auth.password.error.oldPassword"));
+        }
+        if (error.response?.status === 429) {
+          throw new Error(t("system.error.attemps"));
         }
       }
       throw error;

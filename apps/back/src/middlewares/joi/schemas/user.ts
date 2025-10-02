@@ -40,6 +40,17 @@ export const updateUserSchema = Joi.object({
     "any.only": "Passwords don't match.",
     "string.base": "Confirm Password must be a string.",
   }),
+  oldPassword: Joi.string()
+    .when("password", {
+      is: Joi.exist(),
+      then: Joi.required().messages({
+        "any.required": "Old password is required when updating password.",
+      }),
+      otherwise: Joi.optional(),
+    })
+    .messages({
+      "string.base": "Old Password must be a string.",
+    }),
   mail: Joi.string().email().optional().messages({
     "string.email": "Invalid mail address.",
     "string.base": "Mail must be a string.",

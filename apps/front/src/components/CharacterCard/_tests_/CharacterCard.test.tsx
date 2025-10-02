@@ -35,7 +35,6 @@ const mockCharacter = {
   level: 50,
   alignment: "Bonta",
   stuff: "https://d-bk.net/fr/d/1QVjw",
-  default_character: true,
   user_id: "15ff46b5-60f3-4e86-98bc-da8fcaa3e29e",
   server_id: "de5a6c69-bc0b-496c-9b62-bd7ea076b8ed",
   breed_id: "d81c200e-831c-419a-948f-c45d1bbf6aac",

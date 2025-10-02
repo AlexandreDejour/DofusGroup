@@ -131,7 +131,7 @@ export default function NewCharacterForm({
           value={server}
           items={servers}
           generateOptions={generateOptions.servers}
-          label={t("server.default")}
+          label={t("server.upperCase")}
           onChange={setServer}
         />
 
@@ -151,19 +151,6 @@ export default function NewCharacterForm({
             name="stuff"
             id="stuff"
             placeholder={t("common.dofusBook")}
-            className="new_character_form_label_input"
-          />
-        </label>
-
-        <label
-          htmlFor="default_character"
-          className="new_character_form_label default"
-        >
-          <span>{t("character.default")}:</span>
-          <input
-            type="checkbox"
-            name="default_character"
-            id="default_character"
             className="new_character_form_label_input"
           />
         </label>

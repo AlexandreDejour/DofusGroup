@@ -8,11 +8,11 @@
   @media (min-width: 1024px) {
     margin-top: 0%;
     grid-column: 1/2;
-    grid-row: 1/6;
+    grid-row: 1/7;
   }
 
   &_legend {
-    margin-bottom: 1%;
+    margin: 0% auto 1% auto;
     font-size: 1.2rem;
 
     @media (max-width: 1023px) {

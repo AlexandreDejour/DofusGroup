@@ -88,7 +88,7 @@
       width: 95%;
       margin: 1% auto;
       grid-column: 2/3;
-      grid-row: 2/3;
+      grid-row: 3/4;
 
       @media (min-width: 1920px) {
         width: 85%;
@@ -103,7 +103,7 @@
       width: 95%;
       margin: 1% auto !important;
       grid-column: 2/3;
-      grid-row: 3/4;
+      grid-row: 4/5;
 
       @media (min-width: 1920px) {
         width: 85%;
@@ -118,7 +118,7 @@
       width: 95%;
       margin: 1% auto;
       grid-column: 2/3;
-      grid-row: 4/5;
+      grid-row: 5/6;
 
       @media (min-width: 1920px) {
         width: 85%;
@@ -132,21 +132,6 @@
     .stuff {
       width: 95%;
       margin: 1% auto;
-      grid-column: 2/3;
-      grid-row: 5/6;
-
-      @media (min-width: 1920px) {
-        width: 85%;
-      }
-
-      @media (min-width: 2560px) {
-        width: 80%;
-      }
-    }
-
-    .default {
-      width: 95%;
-      margin: auto;
       grid-column: 2/3;
       grid-row: 6/7;
 

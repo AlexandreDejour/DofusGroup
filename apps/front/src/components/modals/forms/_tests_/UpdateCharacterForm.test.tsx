@@ -127,9 +127,6 @@ describe("UpdateCharacterForm", () => {
     expect(screen.getByLabelText(`${t("common.stuff")}:`)).toHaveValue(
       "https://dofusbook.net/stuff/123",
     );
-    expect(
-      screen.getByLabelText(`${t("character.default")}:`),
-    ).toBeInTheDocument();
 
     await waitFor(() => {
       expect(BreedService.BreedService.prototype.getBreeds).toHaveBeenCalled();

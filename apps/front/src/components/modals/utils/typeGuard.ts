@@ -14,7 +14,6 @@ export const typeGuard = {
       typeof obj.level === "number" &&
       (typeof obj.alignment === "string" || obj.alignment === null) &&
       (typeof obj.stuff === "string" || obj.stuff === null) &&
-      typeof obj.default_character === "boolean" &&
       // enriched properties
       obj.user !== undefined &&
       obj.breed !== undefined &&

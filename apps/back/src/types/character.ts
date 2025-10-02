@@ -10,7 +10,6 @@ export type Character = {
   level: number;
   alignment: string;
   stuff: string;
-  default_character: boolean;
 };
 
 export type CharacterEnriched = Character & {

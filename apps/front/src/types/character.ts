@@ -10,7 +10,6 @@ export type Character = {
   level: number;
   alignment: string;
   stuff?: string | null;
-  default_character: boolean;
   server_id: string;
 };
 

@@ -7,10 +7,12 @@ import validateSchema from "../../middlewares/joi/validateSchema.js";
 import { AuthService } from "../../middlewares/utils/authService.js";
 import { DataEncryptionService } from "../../middlewares/utils/dataEncryptionService.js";
 import { UserController } from "../controllers/userController.js";
+import { AuthController } from "../controllers/authController.js";
 import { updateUserSchema } from "../../middlewares/joi/schemas/user.js";
 
 export function createUserRouter(
   controller: UserController,
+  authController: AuthController,
   authService: AuthService,
   encrypter: DataEncryptionService,
 ): Router {
@@ -34,6 +36,9 @@ export function createUserRouter(
       authService.checkPermission,
       htmlSanitizer,
       validateSchema(updateUserSchema),
+      (req, res, next) => {
+        authController.isPasswordMatch(req, res, next);
+      },
       encrypter.encryptData,
       hashPassword,
       (req, res, next) => {

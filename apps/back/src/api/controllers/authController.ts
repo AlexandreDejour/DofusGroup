@@ -115,6 +115,52 @@ export class AuthController {
     }
   }
 
+  public async isPasswordMatch(
+    req: AuthenticatedRequest,
+    res: Response,
+    next: NextFunction,
+  ) {
+    if (!req.body.password) {
+      return next();
+    }
+
+    const { oldPassword } = req.body;
+
+    try {
+      const { value, error } = authUserSchema.validate({
+        userId: req.userId,
+      });
+
+      if (error) {
+        res
+          .status(status.BAD_REQUEST)
+          .json({ message: "Invalid or missing user ID" });
+        return;
+      }
+
+      const id = value.userId;
+      const user: AuthUser | null = await this.repository.findOneById(id);
+
+      if (!user) {
+        res.status(status.NOT_FOUND).json({ message: "User not found" });
+        return;
+      }
+
+      const isPasswordMatch = await argon2.verify(user.password, oldPassword);
+
+      if (!isPasswordMatch) {
+        res.status(status.UNAUTHORIZED).json({
+          error: "Old password doesn't match current password",
+        });
+        return;
+      }
+
+      next();
+    } catch (error) {
+      next(error);
+    }
+  }
+
   public async getAccount(
     req: AuthenticatedRequest,
     res: Response,

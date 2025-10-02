@@ -1,19 +1,16 @@
-// src/middlewares/profanity/profanity.ts
-import type { Request, Response, NextFunction } from "express";
 import leoProfanityPkg from "leo-profanity";
+import type { Request, Response, NextFunction } from "express";
 
-const leoProfanity: any = (leoProfanityPkg as any).default ?? leoProfanityPkg;
+const leoProfanity = leoProfanityPkg.default ?? leoProfanityPkg;
 
-// --- Préchargement dictionnaires (au démarrage)
+// Loading dictionnaries
 try {
   leoProfanity.loadDictionary("en");
   if ((leoProfanity as any).getDictionary) {
     const fr = (leoProfanity as any).getDictionary("fr");
     if (Array.isArray(fr)) leoProfanity.add(fr);
   } else {
-    // fallback: charger fr (remplace en) puis ré-ajouter en si nécessaire
-    // (si getDictionary absent on ne peut pas fusionner proprement)
-    leoProfanity.add([]); // noop si pas de getDictionary
+    leoProfanity.add([]);
   }
 } catch (err) {
   console.warn("leo-profanity preload failed:", err);
@@ -51,7 +48,6 @@ function cleanValue(v: any): any {
     for (const [k, val] of Object.entries(v)) out[k] = cleanValue(val);
     return out;
   }
-  // objets complexes (ex: instances de classes, streams...) : ne pas toucher
   return v;
 }
 
@@ -84,14 +80,10 @@ export function profanityCleaner(
   next: NextFunction,
 ) {
   try {
-    // Option : ignorer certaines routes ou méthodes (décommenter/adapter si besoin)
-    // const SKIP_PATHS = ["/health", "/upload"];
-    // if (SKIP_PATHS.some(p => req.path.startsWith(p))) return next();
-
-    console.log(req.body);
     const cleanedBody = cleanValue(req.body);
     const cleanedQuery = cleanValue(req.query);
     const cleanedParams = cleanValue(req.params);
+
     // BODY
     if (req.body && typeof req.body === "object") {
       if (!mergeIntoTarget(req.body, cleanedBody)) {
@@ -101,8 +93,8 @@ export function profanityCleaner(
             writable: true,
             configurable: true,
           });
-        } catch (e) {
-          // fallback silencieux
+        } catch (error) {
+          // silent fallback
         }
       }
     } else {
@@ -112,10 +104,15 @@ export function profanityCleaner(
           writable: true,
           configurable: true,
         });
-      } catch (e) {}
+      } catch (error) {
+        console.warn(
+          "[profanityCleaner] Impossible to redefine req.body → ignored fallback",
+          error,
+        );
+      }
     }
 
-    // QUERY (très souvent getter-only) -> muter l'objet retourné
+    // QUERY
     if (req.query && typeof req.query === "object") {
       const ok = mergeIntoTarget(req.query, cleanedQuery);
       if (!ok) {
@@ -125,7 +122,7 @@ export function profanityCleaner(
             writable: true,
             configurable: true,
           });
-        } catch (e) {}
+        } catch (error) {}
       }
     } else {
       try {
@@ -134,7 +131,12 @@ export function profanityCleaner(
           writable: true,
           configurable: true,
         });
-      } catch (e) {}
+      } catch (error) {
+        console.warn(
+          "[profanityCleaner] Impossible to redefine req.query → ignored fallback",
+          error,
+        );
+      }
     }
 
     // PARAMS
@@ -147,7 +149,7 @@ export function profanityCleaner(
             writable: true,
             configurable: true,
           });
-        } catch (e) {}
+        } catch (error) {}
       }
     } else {
       try {
@@ -156,11 +158,16 @@ export function profanityCleaner(
           writable: true,
           configurable: true,
         });
-      } catch (e) {}
+      } catch (error) {
+        console.warn(
+          "[profanityCleaner] Impossible de définir req.query → ignored fallback",
+          error,
+        );
+      }
     }
 
     next();
-  } catch (err) {
-    next(err);
+  } catch (error) {
+    next(error);
   }
 }

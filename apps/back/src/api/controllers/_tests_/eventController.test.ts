@@ -19,7 +19,7 @@ describe("EventController", () => {
   let next: NextFunction;
 
   vi.mock("../../../middlewares/repository/eventRepository.js");
-  const mockGetAll = vi.spyOn(EventRepository.prototype, "getAll");
+  const mockGetAllPublic = vi.spyOn(EventRepository.prototype, "getAllPublic");
   const mockGetAllEnriched = vi.spyOn(
     EventRepository.prototype,
     "getAllEnriched",
@@ -81,7 +81,7 @@ describe("EventController", () => {
 
     it("Return events if exist without filters", async () => {
       req.query = { limit: "10", page: "1" };
-      mockGetAll.mockResolvedValue([baseEvent]);
+      mockGetAllPublic.mockResolvedValue([baseEvent]);
 
       const expected: PaginatedEvents = {
         events: [baseEvent],
@@ -93,12 +93,12 @@ describe("EventController", () => {
 
       await underTest.getAll(req as Request, res as Response, next);
 
-      expect(mockGetAll).toHaveBeenCalled();
+      expect(mockGetAllPublic).toHaveBeenCalled();
       expect(res.json).toHaveBeenCalledWith(expected);
     });
 
     it("Return 204 if no events", async () => {
-      mockGetAll.mockResolvedValue([]);
+      mockGetAllPublic.mockResolvedValue([]);
       await underTest.getAll(req as Request, res as Response, next);
 
       expect(res.status).toHaveBeenCalledWith(status.NO_CONTENT);
@@ -107,7 +107,7 @@ describe("EventController", () => {
 
     it("Filters by tagId if provided", async () => {
       const otherEvent = { ...baseEvent, tag_id: "tag-2" };
-      mockGetAll.mockResolvedValue([baseEvent, otherEvent]);
+      mockGetAllPublic.mockResolvedValue([baseEvent, otherEvent]);
       req.query = { tag_id: "tag-1", limit: "10", page: "1" };
 
       await underTest.getAll(req as Request, res as Response, next);
@@ -125,7 +125,7 @@ describe("EventController", () => {
 
     it("Filters by serverId if provided", async () => {
       const otherEvent = { ...baseEvent, server_id: "server-2" };
-      mockGetAll.mockResolvedValue([baseEvent, otherEvent]);
+      mockGetAllPublic.mockResolvedValue([baseEvent, otherEvent]);
       req.query = { server_id: "server-1", limit: "10", page: "1" };
 
       await underTest.getAll(req as Request, res as Response, next);
@@ -143,7 +143,7 @@ describe("EventController", () => {
 
     it("Filters by title if provided (case insensitive)", async () => {
       const otherEvent = { ...baseEvent, title: "Autre donjon" };
-      mockGetAll.mockResolvedValue([baseEvent, otherEvent]);
+      mockGetAllPublic.mockResolvedValue([baseEvent, otherEvent]);
       req.query = { title: "donjon minotot", limit: "10", page: "1" };
 
       await underTest.getAll(req as Request, res as Response, next);
@@ -161,7 +161,7 @@ describe("EventController", () => {
 
     it("Call next() in case of error", async () => {
       const error = new Error();
-      mockGetAll.mockRejectedValue(error);
+      mockGetAllPublic.mockRejectedValue(error);
       await underTest.getAll(req as Request, res as Response, next);
 
       expect(next).toHaveBeenCalledWith(error);
@@ -475,7 +475,6 @@ describe("EventController", () => {
             level: 190,
             alignment: "Bonta",
             stuff: "https://d-bk.net/fr/d/1EFhw",
-            default_character: true,
           },
           {
             id: "44fec4c8-19a6-4aaa-8f6a-16afe92af491",
@@ -484,7 +483,6 @@ describe("EventController", () => {
             level: 200,
             alignment: "Bonta",
             stuff: "https://d-bk.net/fr/d/3EFhw",
-            default_character: false,
           },
         ],
       };

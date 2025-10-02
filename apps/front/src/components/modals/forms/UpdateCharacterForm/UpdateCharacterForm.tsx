@@ -173,19 +173,6 @@ export default function UpdateCharacterForm({
           />
         </label>
 
-        <label
-          htmlFor="default_character"
-          className="update_character_form_label default"
-        >
-          <span>{t("character.default")}:</span>
-          <input
-            type="checkbox"
-            name="default_character"
-            id="default_character"
-            className="update_character_form_label_input"
-          />
-        </label>
-
         <button type="submit" className="update_character_form_button button">
           {t("character.modification")}
         </button>

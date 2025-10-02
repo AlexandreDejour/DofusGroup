@@ -37,7 +37,7 @@ describe("UpdateForm", () => {
 
       // Main input
       const input = screen.getByLabelText(
-        new RegExp(`^${label}$`, "i"),
+        `${t("common.new")} ${label}`,
       ) as HTMLInputElement;
       expect(input).toBeInTheDocument();
       expect(input).toHaveAttribute("type", type);
@@ -66,7 +66,9 @@ describe("UpdateForm", () => {
   it("Call handleSubmit on form submit", () => {
     render(<UpdateForm field="username" handleSubmit={handleSubmit} />);
 
-    const input = screen.getByLabelText(t("auth.username")) as HTMLInputElement;
+    const input = screen.getByLabelText(
+      `${t("common.new")} ${t("auth.username")}`,
+    ) as HTMLInputElement;
     fireEvent.change(input, { target: { value: "newUsername" } });
     expect(input.value).toBe("newUsername");
 

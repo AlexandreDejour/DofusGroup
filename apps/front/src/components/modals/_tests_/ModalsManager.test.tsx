@@ -200,8 +200,7 @@ describe("ModalsManager", () => {
         }),
       ).toBeInTheDocument();
 
-      const mainPlaceholder =
-        expectedLabel.charAt(0).toUpperCase() + expectedLabel.slice(1);
+      const mainPlaceholder = `${t("common.new")} ${expectedLabel}`;
 
       const mainInput = screen.getByPlaceholderText(
         mainPlaceholder,
@@ -253,7 +252,6 @@ describe("ModalsManager", () => {
       level: 50,
       alignment: "Neutre",
       stuff: "https://d-bk.net/fr/d/1QVjw",
-      default_character: false,
       server_id: "de5a6c69-bc0b-496c-9b62-bd7ea076b8ed",
       server: {
         id: "de5a6c69-bc0b-496c-9b62-bd7ea076b8ed",

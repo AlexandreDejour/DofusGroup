@@ -1,8 +1,11 @@
 import { Op } from "sequelize";
 
-import CharacterEntity from "../../database/models/Character.js";
-import EventEntity from "../../database/models/Event.js";
 import { Event, EventEnriched, EventBodyData } from "../../types/event.js";
+
+import EventEntity from "../../database/models/Event.js";
+import CommentEntity from "../../database/models/Comment.js";
+import CharacterEntity from "../../database/models/Character.js";
+
 import { EventUtils } from "./utils/eventUtils.js";
 
 export class EventRepository {
@@ -11,9 +14,29 @@ export class EventRepository {
   public constructor(utils: EventUtils) {
     this.utils = utils;
   }
+
   public async getAll(): Promise<Event[]> {
     try {
-      const result: EventEntity[] = await EventEntity.findAll();
+      const result: EventEntity[] = await EventEntity.findAll({
+        include: ["tag", "server", "characters"],
+      });
+
+      const events: Event[] = result.map((event: EventEntity) =>
+        event.get({ plain: true }),
+      );
+
+      return events;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  public async getAllPublic(): Promise<Event[]> {
+    try {
+      const result: EventEntity[] = await EventEntity.findAll({
+        include: ["tag", "server", "characters"],
+        where: { status: "public" },
+      });
 
       const events: Event[] = result.map((event: EventEntity) =>
         event.get({ plain: true }),
@@ -73,13 +96,14 @@ export class EventRepository {
         include: [
           "tag",
           "server",
-          "comments",
-          "characters",
+          { association: "comments", include: ["user"] },
+          { association: "characters", include: ["server", "breed", "user"] },
           {
             association: "user",
             attributes: { exclude: ["mail", "password"] },
           },
         ],
+        order: [[{ model: CommentEntity, as: "comments" }, "createdAt", "ASC"]],
       });
 
       if (!result) {
@@ -114,7 +138,9 @@ export class EventRepository {
     charactersId: string[],
   ): Promise<Event | null> {
     try {
-      const result: EventEntity | null = await EventEntity.findByPk(eventId);
+      const result: EventEntity | null = await EventEntity.findByPk(eventId, {
+        include: ["characters"],
+      });
 
       if (!result) {
         return null;
@@ -129,6 +155,8 @@ export class EventRepository {
           },
         },
       });
+
+      console.log(characters);
 
       if (!characters.length) {
         throw new Error("Characters not found");
@@ -149,58 +177,55 @@ export class EventRepository {
     }
   }
 
-  public async removeCharactersFromEvent(
+  public async removeCharacterFromEvent(
     eventId: string,
-    charactersId: string[],
+    characterId: string,
   ): Promise<Event | null> {
     try {
-      const result: EventEntity | null = await EventEntity.findOne({
+      const event: EventEntity | null = await EventEntity.findOne({
         where: { id: eventId },
         include: ["characters"],
       });
 
-      if (!result) {
+      if (!event) {
         return null;
       }
 
-      let characters: CharacterEntity[] = await CharacterEntity.findAll({
-        where: {
-          id: {
-            [Op.in]: charactersId,
-          },
-        },
-      });
+      const character: CharacterEntity | null =
+        await CharacterEntity.findByPk(characterId);
 
-      if (!characters.length) {
-        throw new Error("Characters not found");
+      if (!character) {
+        throw new Error("Character not found");
       }
 
-      const validCharactersId = this.utils.exceptCharactersNotInTeam(
-        result,
-        characters,
-      );
+      const isInTeam = this.utils.isInTeam(event, character);
 
-      this.utils.checkTeamMinLength(result, validCharactersId);
-
-      if (!validCharactersId.length) {
+      if (!isInTeam) {
         throw new Error("Unavailable characters to remove");
       }
 
-      await result.removeCharacters(validCharactersId);
+      const isMuchLonger = this.utils.checkTeamMinLength(event);
 
-      return result;
+      if (isMuchLonger < 1) {
+        throw new Error("Team can't be empty");
+      }
+
+      await event.removeCharacter(character.id);
+
+      return event;
     } catch (error) {
       throw error;
     }
   }
 
   public async update(
+    userId: string,
     eventId: string,
     eventData: Partial<EventBodyData>,
   ): Promise<EventEnriched | null> {
     try {
       const eventToUpdate: EventEntity | null = await EventEntity.findOne({
-        where: { id: eventId, user_id: eventData.user_id },
+        where: { id: eventId, user_id: userId },
         include: ["tag", "user", "server", "characters"],
       });
 

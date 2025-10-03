@@ -1,0 +1,88 @@
+{
+  "header": {
+    "title": "About DofusGroup",
+    "lead": "DofusGroup is a community platform for creating events around activities in the MMORPG Dofus, allowing players to easily organize themselves into groups."
+  },
+  "sections": {
+    "1": {
+      "title": "1. A platform to organize better",
+      "content": [
+        {
+          "type": "p",
+          "text": "The application allows users, once their account is created, to create events to find players who want to join them."
+        },
+        {
+          "type": "p",
+          "text": "Each user can add multiple characters in their profile (representing their in-game avatars) and register them for events available on the platform."
+        },
+        {
+          "type": "p",
+          "text": "A comment system attached to each event allows participants to communicate with each other."
+        }
+      ]
+    },
+    "2": {
+      "title": "2. Why DofusGroup?",
+      "content": [
+        {
+          "type": "p",
+          "text": "Currently, there is no efficient tool addressing this specific need: planning gaming sessions in advance and organizing groups clearly."
+        },
+        {
+          "type": "p",
+          "text": "DofusGroup is not designed to instantly find a group, but rather to provide a way to schedule an activity at a given date and time, register in advance, and form a stable group before the gaming session."
+        }
+      ]
+    },
+    "3": {
+      "title": "3. Target audience",
+      "content": [
+        {
+          "type": "p",
+          "text": "The platform is mainly intended for:"
+        },
+        {
+          "type": "li",
+          "items": [
+            "Single-account players dependent on other players to progress.",
+            "Guilds wishing to schedule sessions among their members."
+          ]
+        },
+        {
+          "type": "p",
+          "text": "Events can be made private: they are then accessible only via the event's URL."
+        },
+        {
+          "type": "p",
+          "text": "The main benefit for the user is better organization and optimization of gaming sessions, without relying on the game's recruitment channel, which is often hard to read."
+        }
+      ]
+    },
+    "4": {
+      "title": "4. Who am I?",
+      "content": [
+        {
+          "type": "p",
+          "text": "I am a <strong>career-changing developer</strong> and started developing DofusGroup alongside my training. My experience is web-oriented. Much of my learning is self-taught, which allows me to be technically curious and learn new tools quickly."
+        },
+        {
+          "type": "p",
+          "text": "I chose Dofus as a starting point because I have been passionate about this universe for nearly 20 years. The project continues the tradition of fan-sites and community tools developed by players over the years."
+        },
+        {
+          "type": "p",
+          "text": "What I enjoy most in development: turning a concrete need into a technical solution, working on ergonomics and design, and seeing a project take shape over time."
+        }
+      ]
+    },
+    "5": {
+      "title": "5. In summary",
+      "content": [
+        {
+          "type": "p",
+          "text": "DofusGroup was born from a mix of passion, learning, and the desire to share. It is a project designed for players, but also highlights my approach as a developer: creating concrete, useful, and accessible tools to improve the user experience."
+        }
+      ]
+    }
+  }
+}

@@ -1,5 +1,6 @@
 import express from "express";
 import { Express } from "express";
+import cors from "cors";
 import cookieParser from "cookie-parser";
 
 import { Config } from "./src/config/config.js";
@@ -9,6 +10,13 @@ import { errorHandler } from "./src/middlewares/utils/errorHandler.js";
 
 const app: Express = express();
 const config = Config.getInstance();
+
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+    credentials: true,
+  }),
+);
 
 app.use(cookieParser());
 app.use(express.json());

@@ -14,8 +14,8 @@ export class AuthService {
   private jwtSecret: string;
 
   constructor() {
-    const config = Config.getInstance();
-    this.jwtSecret = config.jwtSecret;
+    this.config = Config.getInstance();
+    this.jwtSecret = this.config.jwtSecret;
   }
 
   public async setAuthUserRequest(
@@ -33,12 +33,12 @@ export class AuthService {
       const { value, error } = jwtSchema.validate(
         jwt.verify(token, this.config.jwtSecret),
       );
+
       if (error) {
         return next(error);
       }
 
-      req.userId = value.sub;
-
+      req.userId = value.id;
       next();
     } catch (error) {
       next(error);
@@ -71,7 +71,7 @@ export class AuthService {
       throw new Error("JWT_SECRET is not set");
     }
 
-    return jwt.sign({ sub: userId }, this.jwtSecret, {
+    return jwt.sign({ id: userId }, this.jwtSecret, {
       expiresIn: "2h",
     });
   }

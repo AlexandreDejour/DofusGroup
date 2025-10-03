@@ -1,0 +1,37 @@
+:root {
+  color-scheme: light dark;
+  --semi-bold: 600;
+  --primary-text: #ffffff;
+  --text-button: #000000;
+  --primary-bg: #1f1b3e;
+  --secondary-bg: #636078;
+  --link-hover-bg: #4b495b;
+  --button-bg: radial-gradient(
+    circle,
+    rgba(96, 186, 96, 1) 0%,
+    rgba(156, 217, 92, 1) 90%
+  );
+  --button-delete-bg: #c0392b;
+  --box-shadow: 5px 5px 2px 1px rgba(0, 0, 0, 0.5);
+  --box-shadow-hover: 0px 0px 0px 0px rgba(0, 0, 0, 0.5);
+  --breed-hover-border: rgba(96, 186, 96, 1);
+  --male-hover-border: #03a3ff;
+  --female-hover-border: #ec49a7;
+  --notification-success: #19b350;
+  --notification-error: #dc2626;
+  --notification-info: #2563eb;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    --primary-text: #000000;
+    --primary-bg: #bab6a0;
+    --secondary-bg: #e4e4dc;
+    --link-hover-bg: #cfcfc2;
+  }
+}

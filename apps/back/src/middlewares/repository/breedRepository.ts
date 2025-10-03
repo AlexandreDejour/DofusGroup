@@ -1,4 +1,4 @@
-import BreedEntity from "../../database/models/Breeds.js";
+import BreedEntity from "../../database/models/Breed.js";
 import { Breed } from "../../types/breed.js";
 
 export class BreedRepository {

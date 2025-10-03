@@ -1,0 +1,16 @@
+.notification-container {
+  width: 25%;
+  position: fixed;
+  top: 10.5%;
+  right: 2.5%;
+  z-index: 9999;
+  pointer-events: none;
+
+  @media (max-width: 1023px) {
+    width: 75%;
+  }
+
+  .notification {
+    pointer-events: auto;
+  }
+}

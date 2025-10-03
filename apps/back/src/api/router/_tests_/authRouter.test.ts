@@ -1,7 +1,5 @@
 import request from "supertest";
 import { vi, describe, it, expect, beforeEach } from "vitest";
-import express from "express";
-import cookieParser from "cookie-parser";
 import status from "http-status";
 import jwt from "jsonwebtoken";
 
@@ -35,7 +33,7 @@ describe("authRouter", () => {
   const config = Config.getInstance();
   const secret = config.jwtSecret;
   const userId = "527be2f3-5903-4a98-a47d-e4bd593db73e";
-  const token = jwt.sign({ sub: userId }, secret, { expiresIn: "2h" });
+  const token = jwt.sign({ id: userId }, secret, { expiresIn: "2h" });
 
   describe("POST /auth/register", () => {
     it("Propagate request to authController.register", async () => {
@@ -129,6 +127,33 @@ describe("authRouter", () => {
       const res = await request(app).post("/auth/logout");
 
       expect(controller.logout).toHaveBeenCalled();
+      expect(res.status).toBe(status.NOT_FOUND);
+      expect(res.body).toEqual({ called: "next" });
+    });
+  });
+
+  describe("GET /auth/me", () => {
+    it("Propagate request to authController.apiMe", async () => {
+      // GIVEN
+      controller.apiMe = setup.mockSucessCall(status.OK);
+      // WHEN
+      const res = await request(app)
+        .get("/auth/me")
+        .set("Cookie", [`token=${token}`]);
+      // THEN
+      expect(controller.apiMe).toHaveBeenCalled();
+      expect(res.status).toBe(status.OK);
+      expect(res.body).toBe("Success!");
+    });
+
+    it("Next is called at end route.", async () => {
+      controller.apiMe = setup.mockNextCall();
+
+      const res = await request(app)
+        .get("/auth/me")
+        .set("Cookie", [`token=${token}`]);
+
+      expect(controller.apiMe).toHaveBeenCalled();
       expect(res.status).toBe(status.NOT_FOUND);
       expect(res.body).toEqual({ called: "next" });
     });

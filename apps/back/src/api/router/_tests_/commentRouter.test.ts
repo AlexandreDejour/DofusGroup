@@ -36,7 +36,7 @@ describe("commentRouter", () => {
   const secret = config.jwtSecret;
   const userId = "f0256483-0827-4cd5-923a-6bd10a135c4e";
   const commentId = "18d99a7c-1d47-4391-bacd-cc4848165768";
-  const token = jwt.sign({ sub: userId }, secret, { expiresIn: "2h" });
+  const token = jwt.sign({ id: userId }, secret, { expiresIn: "2h" });
 
   describe("GET /user/:userId/comments", () => {
     it("Propagate request to commentController.getAllByUserId", async () => {

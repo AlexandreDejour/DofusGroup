@@ -1,0 +1,73 @@
+@use "./assets/styles/variables";
+
+html {
+  overflow-x: hidden;
+}
+
+body {
+  width: 100vw;
+  min-height: 100vh;
+  margin: 0;
+  font-family: "Lexend", sans-serif;
+  color: var(--primary-text);
+  background-color: var(--primary-bg);
+  display: flex;
+  flex-direction: column;
+
+  @media (max-width: 600px) {
+    width: 100%;
+  }
+}
+
+.button {
+  cursor: pointer;
+  background: var(--button-bg);
+  color: var(--text-button);
+  border: none;
+  border-radius: 0.5rem;
+  box-shadow: var(--box-shadow);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: filter 0.2s ease;
+}
+
+.button:hover {
+  box-shadow: var(--box-shadow-hover);
+  filter: brightness(1.2);
+}
+
+.button:focus,
+.button:focus-visible {
+  outline: 4px auto -webkit-focus-ring-color;
+}
+
+.delete {
+  background: var(--button-delete-bg);
+}
+
+a {
+  text-decoration: none;
+  color: var(--primary-text);
+}
+
+.link {
+  transition: background-color 0.2s ease;
+}
+
+.link:hover,
+.link.active {
+  background-color: var(--link-hover-bg);
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}

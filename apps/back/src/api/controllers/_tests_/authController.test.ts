@@ -58,8 +58,12 @@ describe("AuthController", () => {
     status: vi.fn().mockReturnThis(),
   };
 
+  let jwtVerifyMock: any;
+
   beforeEach(() => {
     vi.clearAllMocks();
+    // Mock jwt.verify
+    jwtVerifyMock = vi.spyOn(require("jsonwebtoken"), "verify");
   });
 
   const underTest: AuthController = new AuthController(
@@ -189,6 +193,230 @@ describe("AuthController", () => {
     });
   });
 
+  // --- API ME ---
+  describe("apiMe", () => {
+    const mockUser = {
+      id: "3521dd0c-c303-4239-a545-10e5476abe2a",
+      username: "user",
+      password: "hashedpass",
+      mail: "user@mail.com",
+    };
+    const userWithoutPassword = {
+      id: "3521dd0c-c303-4239-a545-10e5476abe2a",
+      username: "user",
+      mail: "user@mail.com",
+    };
+
+    it("Return 401 any token exist", async () => {
+      req.cookies = {};
+
+      await underTest.apiMe(req as Request, res as Response, next);
+
+      expect(res.status).toHaveBeenCalledWith(status.UNAUTHORIZED);
+      expect(res.json).toHaveBeenCalledWith({ message: "Unauthorized access" });
+    });
+
+    it("Return 400 in case of invalid token (payload string)", async () => {
+      req.cookies = { token: "invalid.token" };
+
+      jwtVerifyMock.mockReturnValue("invalid_payload");
+
+      await underTest.apiMe(req as Request, res as Response, next);
+
+      expect(res.status).toHaveBeenCalledWith(status.BAD_REQUEST);
+      expect(res.json).toHaveBeenCalledWith({
+        message: "Invalid token payload",
+      });
+    });
+
+    it("Return 404 if user not found", async () => {
+      req.cookies = { token: "valid.token" };
+
+      jwtVerifyMock.mockReturnValue({
+        id: "3521dd0c-c303-4239-a545-10e5476abe2a",
+      });
+      mockFindById.mockResolvedValue(null);
+
+      await underTest.apiMe(req as Request, res as Response, next);
+
+      expect(res.status).toHaveBeenCalledWith(status.NOT_FOUND);
+      expect(res.json).toHaveBeenCalledWith({ message: "User not found" });
+    });
+
+    it("Return user without password in case of valid token", async () => {
+      req.cookies = { token: "valid.token" };
+
+      jwtVerifyMock.mockReturnValue({
+        id: "3521dd0c-c303-4239-a545-10e5476abe2a",
+      });
+      mockFindById.mockResolvedValue(mockUser);
+
+      await underTest.apiMe(req as Request, res as Response, next);
+
+      expect(res.json).toHaveBeenCalledWith(userWithoutPassword);
+      expect(res.status).not.toHaveBeenCalledWith(status.NOT_FOUND);
+      expect(res.status).not.toHaveBeenCalledWith(status.BAD_REQUEST);
+      expect(res.status).not.toHaveBeenCalledWith(status.UNAUTHORIZED);
+    });
+
+    it("Call next(error) in case of exception", async () => {
+      req.cookies = { token: "valid.token" };
+      const error = new Error("jwt error");
+
+      jwtVerifyMock.mockImplementation(() => {
+        throw error;
+      });
+
+      await underTest.apiMe(req as Request, res as Response, next);
+
+      expect(next).toHaveBeenCalledWith(error);
+    });
+  });
+
+  // --- IS PASSWORD MATCH ---
+  describe("isPasswordMatch", () => {
+    const userId = "3521dd0c-c303-4239-a545-10e5476abe2a";
+    const mockUser: AuthUser = {
+      id: userId,
+      username: "user",
+      password: "hashedpass",
+      mail: "user@mail.com",
+    };
+
+    it("Call next() directly if password not provided", async () => {
+      const req: Partial<AuthenticatedRequest> = {
+        body: {},
+      };
+
+      await underTest.isPasswordMatch(
+        req as AuthenticatedRequest,
+        res as Response,
+        next,
+      );
+
+      expect(next).toHaveBeenCalled();
+      expect(res.status).not.toHaveBeenCalled();
+    });
+
+    it("Return 400 if userId invalid", async () => {
+      const req: Partial<AuthenticatedRequest> = {
+        body: { password: "newpass", oldPassword: "oldpass" },
+        userId: "invalid-id",
+      };
+
+      (authUserSchema.validate as Mock).mockReturnValue({
+        value: {},
+        error: { message: "Invalid or missing user ID" },
+      });
+
+      await underTest.isPasswordMatch(
+        req as AuthenticatedRequest,
+        res as Response,
+        next,
+      );
+
+      expect(res.status).toHaveBeenCalledWith(status.BAD_REQUEST);
+      expect(res.json).toHaveBeenCalledWith({
+        message: "Invalid or missing user ID",
+      });
+      expect(next).not.toHaveBeenCalled();
+    });
+
+    it("Return 404 if user not found", async () => {
+      const req: Partial<AuthenticatedRequest> = {
+        body: { password: "newpass", oldPassword: "oldpass" },
+        userId,
+      };
+
+      (authUserSchema.validate as Mock).mockReturnValue({
+        value: { userId },
+        error: undefined,
+      });
+      mockFindById.mockResolvedValue(null);
+
+      await underTest.isPasswordMatch(
+        req as AuthenticatedRequest,
+        res as Response,
+        next,
+      );
+
+      expect(res.status).toHaveBeenCalledWith(status.NOT_FOUND);
+      expect(res.json).toHaveBeenCalledWith({ message: "User not found" });
+      expect(next).not.toHaveBeenCalled();
+    });
+
+    it("Return 401 if old password doesn't match", async () => {
+      const req: Partial<AuthenticatedRequest> = {
+        body: { password: "newpass", oldPassword: "wrongpass" },
+        userId,
+      };
+
+      (authUserSchema.validate as Mock).mockReturnValue({
+        value: { userId },
+        error: undefined,
+      });
+      mockFindById.mockResolvedValue(mockUser);
+      (argon2.verify as Mock).mockResolvedValue(false);
+
+      await underTest.isPasswordMatch(
+        req as AuthenticatedRequest,
+        res as Response,
+        next,
+      );
+
+      expect(res.status).toHaveBeenCalledWith(status.UNAUTHORIZED);
+      expect(res.json).toHaveBeenCalledWith({
+        error: "Old password doesn't match current password",
+      });
+      expect(next).not.toHaveBeenCalled();
+    });
+
+    it("Call next() if old password matches", async () => {
+      const req: Partial<AuthenticatedRequest> = {
+        body: { password: "newpass", oldPassword: "correctpass" },
+        userId,
+      };
+
+      (authUserSchema.validate as Mock).mockReturnValue({
+        value: { userId },
+        error: undefined,
+      });
+      mockFindById.mockResolvedValue(mockUser);
+      (argon2.verify as Mock).mockResolvedValue(true);
+
+      await underTest.isPasswordMatch(
+        req as AuthenticatedRequest,
+        res as Response,
+        next,
+      );
+
+      expect(next).toHaveBeenCalled();
+      expect(res.status).not.toHaveBeenCalled();
+    });
+
+    it("Call next(error) if exception thrown", async () => {
+      const req: Partial<AuthenticatedRequest> = {
+        body: { password: "newpass", oldPassword: "correctpass" },
+        userId,
+      };
+      const error = new Error("DB error");
+
+      (authUserSchema.validate as Mock).mockReturnValue({
+        value: { userId },
+        error: undefined,
+      });
+      mockFindById.mockRejectedValue(error);
+
+      await underTest.isPasswordMatch(
+        req as AuthenticatedRequest,
+        res as Response,
+        next,
+      );
+
+      expect(next).toHaveBeenCalledWith(error);
+    });
+  });
+
   // --- GET ACCOUNT ---
   describe("getAccount", () => {
     it("Return user if valid userId and user exists", async () => {
@@ -285,7 +513,7 @@ describe("AuthController", () => {
   // --- LOGOUT ---
   describe("logout", () => {
     it("Return empty cookie", () => {
-      underTest.logout(req as Request, res as Response);
+      underTest.logout(req as Request, res as Response, next);
 
       expect(res.clearCookie).toHaveBeenCalledWith("token", {
         httpOnly: true,

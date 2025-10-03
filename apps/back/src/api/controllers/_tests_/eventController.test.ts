@@ -1,9 +1,14 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
 import status from "http-status";
-import type { Request, Response } from "express";
+import type { NextFunction, Request, Response } from "express";
 
-import { Event, EventBodyData, EventEnriched } from "../../../types/event.js";
+import {
+  Event,
+  EventBodyData,
+  EventEnriched,
+  PaginatedEvents,
+} from "../../../types/event.js";
 import { EventController } from "../eventController.js";
 import { EventRepository } from "../../../middlewares/repository/eventRepository.js";
 import { EventUtils } from "../../../middlewares/repository/utils/eventUtils.js";
@@ -11,10 +16,10 @@ import { EventUtils } from "../../../middlewares/repository/utils/eventUtils.js"
 describe("EventController", () => {
   let req: Partial<Request>;
   let res: Partial<Response>;
-  let next = vi.fn();
+  let next: NextFunction;
 
   vi.mock("../../../middlewares/repository/eventRepository.js");
-  const mockGetAll = vi.spyOn(EventRepository.prototype, "getAll");
+  const mockGetAllPublic = vi.spyOn(EventRepository.prototype, "getAllPublic");
   const mockGetAllEnriched = vi.spyOn(
     EventRepository.prototype,
     "getAllEnriched",
@@ -30,20 +35,24 @@ describe("EventController", () => {
     EventRepository.prototype,
     "addCharactersToEvent",
   );
-  const mockRemoveCharacters = vi.spyOn(
+  const mockRemoveCharacter = vi.spyOn(
     EventRepository.prototype,
-    "removeCharactersFromEvent",
+    "removeCharacterFromEvent",
   );
   const mockDelete = vi.spyOn(EventRepository.prototype, "delete");
 
-  req = {};
-  res = {
-    json: vi.fn(),
-    status: vi.fn().mockReturnThis(),
-  };
-
   beforeEach(() => {
     vi.clearAllMocks();
+    req = {
+      params: {},
+      query: {},
+      body: {},
+    };
+    res = {
+      json: vi.fn(),
+      status: vi.fn().mockReturnThis(),
+    };
+    next = vi.fn();
   });
 
   const underTest: EventController = new EventController(
@@ -51,46 +60,108 @@ describe("EventController", () => {
   );
   // --- GET ALL ---
   describe("getAll", () => {
-    it("Return events if exist", async () => {
-      // GIVEN
-      const mockEvents: Event[] = [
-        {
-          id: "923a9fe0-1395-4f4e-8d18-4a9ac183b924",
-          title: "Donjon minotot",
-          date: new Date("2026-01-01"),
-          duration: 60,
-          area: "Amakna",
-          sub_area: "Ile des taures",
-          donjon_name: "Labyrinthe du minotoror",
-          description: "donjon full succès",
-          max_players: 8,
-          status: "public",
-        },
-      ];
+    const baseEvent: Event = {
+      id: "923a9fe0-1395-4f4e-8d18-4a9ac183b924",
+      title: "Donjon minotot",
+      date: new Date("2026-01-01"),
+      duration: 60,
+      area: "Amakna",
+      sub_area: "Ile des taures",
+      donjon_name: "Labyrinthe du minotoror",
+      description: "donjon full succès",
+      max_players: 8,
+      status: "public",
+      tag_id: "tag-1",
+      server_id: "server-1",
+    };
 
-      mockGetAll.mockResolvedValue(mockEvents);
-      // WHEN
-      await underTest.getAll(req as Request, res as Response, next);
-      // THEN
-      expect(mockGetAll).toHaveBeenCalled();
-      expect(res.json).toHaveBeenCalledWith(mockEvents);
-      expect(res.status).not.toHaveBeenCalledWith(status.NOT_FOUND);
+    beforeEach(() => {
+      vi.clearAllMocks();
     });
 
-    it("Return 404 if any event found.", async () => {
-      const mockEvents: Event[] = [];
+    it("Return events if exist without filters", async () => {
+      req.query = { limit: "10", page: "1" };
+      mockGetAllPublic.mockResolvedValue([baseEvent]);
 
-      mockGetAll.mockResolvedValue(mockEvents);
+      const expected: PaginatedEvents = {
+        events: [baseEvent],
+        limit: 10,
+        page: 1,
+        total: 1,
+        totalPages: 1,
+      };
+
+      await underTest.getAll(req as Request, res as Response, next);
+
+      expect(mockGetAllPublic).toHaveBeenCalled();
+      expect(res.json).toHaveBeenCalledWith(expected);
+    });
+
+    it("Return 204 if no events", async () => {
+      mockGetAllPublic.mockResolvedValue([]);
       await underTest.getAll(req as Request, res as Response, next);
 
       expect(res.status).toHaveBeenCalledWith(status.NO_CONTENT);
       expect(res.json).toHaveBeenCalledWith({ error: "Any event found" });
     });
 
-    it("Call next() in case of error.", async () => {
-      const error = new Error();
+    it("Filters by tagId if provided", async () => {
+      const otherEvent = { ...baseEvent, tag_id: "tag-2" };
+      mockGetAllPublic.mockResolvedValue([baseEvent, otherEvent]);
+      req.query = { tag_id: "tag-1", limit: "10", page: "1" };
 
-      mockGetAll.mockRejectedValue(error);
+      await underTest.getAll(req as Request, res as Response, next);
+
+      const expected: PaginatedEvents = {
+        events: [baseEvent],
+        limit: 10,
+        page: 1,
+        total: 1,
+        totalPages: 1,
+      };
+
+      expect(res.json).toHaveBeenCalledWith(expected);
+    });
+
+    it("Filters by serverId if provided", async () => {
+      const otherEvent = { ...baseEvent, server_id: "server-2" };
+      mockGetAllPublic.mockResolvedValue([baseEvent, otherEvent]);
+      req.query = { server_id: "server-1", limit: "10", page: "1" };
+
+      await underTest.getAll(req as Request, res as Response, next);
+
+      const expected: PaginatedEvents = {
+        events: [baseEvent],
+        limit: 10,
+        page: 1,
+        total: 1,
+        totalPages: 1,
+      };
+
+      expect(res.json).toHaveBeenCalledWith(expected);
+    });
+
+    it("Filters by title if provided (case insensitive)", async () => {
+      const otherEvent = { ...baseEvent, title: "Autre donjon" };
+      mockGetAllPublic.mockResolvedValue([baseEvent, otherEvent]);
+      req.query = { title: "donjon minotot", limit: "10", page: "1" };
+
+      await underTest.getAll(req as Request, res as Response, next);
+
+      const expected: PaginatedEvents = {
+        events: [baseEvent],
+        limit: 10,
+        page: 1,
+        total: 1,
+        totalPages: 1,
+      };
+
+      expect(res.json).toHaveBeenCalledWith(expected);
+    });
+
+    it("Call next() in case of error", async () => {
+      const error = new Error();
+      mockGetAllPublic.mockRejectedValue(error);
       await underTest.getAll(req as Request, res as Response, next);
 
       expect(next).toHaveBeenCalledWith(error);
@@ -99,9 +170,9 @@ describe("EventController", () => {
 
   // --- GET ONE ---
   describe("getOne", () => {
-    req.params = {
-      eventId: "923a9fe0-1395-4f4e-8d18-4a9ac183b924",
-    };
+    beforeEach(() => {
+      req.params = { eventId: "923a9fe0-1395-4f4e-8d18-4a9ac183b924" };
+    });
 
     it("Return event if exists", async () => {
       const mockEvent: Event = {
@@ -115,6 +186,8 @@ describe("EventController", () => {
         description: "donjon full succès",
         max_players: 8,
         status: "public",
+        tag_id: "b8c145a0-c68a-4adb-a33b-ae6f0ec89ee1",
+        server_id: "5f076e0a-60a0-42d5-a18e-853a46ddc335",
       };
       mockGetOne.mockResolvedValue(mockEvent);
 
@@ -159,6 +232,8 @@ describe("EventController", () => {
           description: "donjon full succès",
           max_players: 8,
           status: "public",
+          tag_id: "f7a34554-d2d7-48d5-8bc2-1f7e4b06c8f8",
+          server_id: "6c19c76b-cbc1-4a58-bdeb-b336eaf6f51c",
           tag: {
             id: "f7a34554-d2d7-48d5-8bc2-1f7e4b06c8f8",
             name: "Donjon",
@@ -208,9 +283,9 @@ describe("EventController", () => {
 
   // --- GET ONE ENRICHED ---
   describe("getOneByUserIdEnriched", () => {
-    req.params = {
-      eventId: "923a9fe0-1395-4f4e-8d18-4a9ac183b924",
-    };
+    beforeEach(() => {
+      req.params = { eventId: "923a9fe0-1395-4f4e-8d18-4a9ac183b924" };
+    });
 
     it("Return event if exists", async () => {
       const mockEventEnriched: EventEnriched = {
@@ -224,6 +299,8 @@ describe("EventController", () => {
         description: "donjon full succès",
         max_players: 8,
         status: "public",
+        tag_id: "f7a34554-d2d7-48d5-8bc2-1f7e4b06c8f8",
+        server_id: "6c19c76b-cbc1-4a58-bdeb-b336eaf6f51c",
         tag: {
           id: "f7a34554-d2d7-48d5-8bc2-1f7e4b06c8f8",
           name: "Donjon",
@@ -301,6 +378,8 @@ describe("EventController", () => {
         description: "donjon full succès",
         max_players: 8,
         status: "public",
+        tag_id: "f7a34554-d2d7-48d5-8bc2-1f7e4b06c8f8",
+        server_id: "6c19c76b-cbc1-4a58-bdeb-b336eaf6f51c",
       };
       const mockNewEventEnriched: EventEnriched = {
         id: "923a9fe0-1395-4f4e-8d18-4a9ac183b924",
@@ -313,6 +392,8 @@ describe("EventController", () => {
         description: "donjon full succès",
         max_players: 8,
         status: "public",
+        tag_id: "f7a34554-d2d7-48d5-8bc2-1f7e4b06c8f8",
+        server_id: "6c19c76b-cbc1-4a58-bdeb-b336eaf6f51c",
         tag: {
           id: "f7a34554-d2d7-48d5-8bc2-1f7e4b06c8f8",
           name: "Donjon",
@@ -347,11 +428,14 @@ describe("EventController", () => {
     it("Add characters if event exists", async () => {
       req.params = { eventId: "182a492c-feb7-4af8-910c-e61dc2536754" };
       req.body = {
-        characterIds: [
-          "1db5cd8a-cd22-48e8-9a4e-90ee032c9f15",
-          "44fec4c8-19a6-4aaa-8f6a-16afe92af491",
-        ],
+        data: {
+          characters_id: [
+            "1db5cd8a-cd22-48e8-9a4e-90ee032c9f15",
+            "44fec4c8-19a6-4aaa-8f6a-16afe92af491",
+          ],
+        },
       };
+
       const mockEvent: Event = {
         id: "182a492c-feb7-4af8-910c-e61dc2536754",
         title: "Donjon minotot",
@@ -363,18 +447,12 @@ describe("EventController", () => {
         description: "donjon full succès",
         max_players: 8,
         status: "public",
+        tag_id: "f7a34554-d2d7-48d5-8bc2-1f7e4b06c8f8",
+        server_id: "6c19c76b-cbc1-4a58-bdeb-b336eaf6f51c",
       };
+
       const mockEventEnriched: EventEnriched = {
-        id: "182a492c-feb7-4af8-910c-e61dc2536754",
-        title: "Donjon minotot",
-        date: new Date("2026-01-01"),
-        duration: 60,
-        area: "Amakna",
-        sub_area: "Ile des taures",
-        donjon_name: "Labyrinthe du minotoror",
-        description: "donjon full succès",
-        max_players: 8,
-        status: "public",
+        ...mockEvent,
         tag: {
           id: "f7a34554-d2d7-48d5-8bc2-1f7e4b06c8f8",
           name: "Donjon",
@@ -397,7 +475,6 @@ describe("EventController", () => {
             level: 190,
             alignment: "Bonta",
             stuff: "https://d-bk.net/fr/d/1EFhw",
-            default_character: true,
           },
           {
             id: "44fec4c8-19a6-4aaa-8f6a-16afe92af491",
@@ -406,7 +483,6 @@ describe("EventController", () => {
             level: 200,
             alignment: "Bonta",
             stuff: "https://d-bk.net/fr/d/3EFhw",
-            default_character: false,
           },
         ],
       };
@@ -420,13 +496,16 @@ describe("EventController", () => {
         next,
       );
 
-      expect(mockAddCharacters).toHaveBeenCalled();
+      expect(mockAddCharacters).toHaveBeenCalledWith(
+        req.params.eventId,
+        req.body.data.characters_id,
+      );
       expect(mockGetOneEnriched).toHaveBeenCalledWith(mockEvent.id);
       expect(res.json).toHaveBeenCalledWith(mockEventEnriched);
       expect(res.status).not.toHaveBeenCalledWith(status.NOT_FOUND);
     });
 
-    it("Return 400 if userId isn't define.", async () => {
+    it("Return 400 if eventId isn't defined.", async () => {
       req.params = {};
 
       await underTest.addCharactersToEvent(
@@ -436,20 +515,18 @@ describe("EventController", () => {
       );
 
       expect(res.status).toHaveBeenCalledWith(status.BAD_REQUEST);
-      expect(res.json).toHaveBeenCalledWith({
-        error: "Event ID is required",
-      });
+      expect(res.json).toHaveBeenCalledWith({ error: "Event ID is required" });
     });
 
-    it("Call next() if event doesn't exists.", async () => {
-      req.params = {
-        eventId: "923a9fe0-1395-4f4e-8d18-4a9ac183b924",
-      };
+    it("Return 404 if event doesn't exist.", async () => {
+      req.params = { eventId: "923a9fe0-1395-4f4e-8d18-4a9ac183b924" };
       req.body = {
-        characterIds: [
-          "1db5cd8a-cd22-48e8-9a4e-90ee032c9f15",
-          "44fec4c8-19a6-4aaa-8f6a-16afe92af491",
-        ],
+        data: {
+          characters_id: [
+            "1db5cd8a-cd22-48e8-9a4e-90ee032c9f15",
+            "44fec4c8-19a6-4aaa-8f6a-16afe92af491",
+          ],
+        },
       };
 
       mockAddCharacters.mockResolvedValue(null);
@@ -464,36 +541,17 @@ describe("EventController", () => {
       expect(res.json).toHaveBeenCalledWith({ error: "Event not found" });
     });
 
-    it("Call next() in case of error.", async () => {
-      req.params = {
-        eventId: "923a9fe0-1395-4f4e-8d18-4a9ac183b924",
-      };
-      req.body = {
-        characterIds: [
-          "1db5cd8a-cd22-48e8-9a4e-90ee032c9f15",
-          "44fec4c8-19a6-4aaa-8f6a-16afe92af491",
-        ],
-      };
-      const error = new Error();
-
-      mockAddCharacters.mockRejectedValue(error);
-      await underTest.addCharactersToEvent(
-        req as Request,
-        res as Response,
-        next,
-      );
-
-      expect(next).toHaveBeenCalledWith(error);
-    });
-  });
-
-  // --- REMOVE CHARACTERS FROM EVENT ---
-  describe("removeCharactersFromEvent", () => {
-    it("Remove characters if event exists", async () => {
+    it("Return 500 if enriched event cannot be retrieved.", async () => {
       req.params = { eventId: "182a492c-feb7-4af8-910c-e61dc2536754" };
       req.body = {
-        characterIds: ["1b4a318a-d991-4ec9-8178-38e6bbb5c322"],
+        data: {
+          characters_id: [
+            "1db5cd8a-cd22-48e8-9a4e-90ee032c9f15",
+            "44fec4c8-19a6-4aaa-8f6a-16afe92af491",
+          ],
+        },
       };
+
       const mockEvent: Event = {
         id: "182a492c-feb7-4af8-910c-e61dc2536754",
         title: "Donjon minotot",
@@ -505,113 +563,39 @@ describe("EventController", () => {
         description: "donjon full succès",
         max_players: 8,
         status: "public",
-      };
-      const mockEventUpdatedEnriched: EventEnriched = {
-        id: "182a492c-feb7-4af8-910c-e61dc2536754",
-        title: "Donjon minotot",
-        date: new Date("2026-01-01"),
-        duration: 60,
-        area: "Amakna",
-        sub_area: "Ile des taures",
-        donjon_name: "Labyrinthe du minotoror",
-        description: "donjon full succès",
-        max_players: 8,
-        status: "public",
-        tag: {
-          id: "f7a34554-d2d7-48d5-8bc2-1f7e4b06c8f8",
-          name: "Donjon",
-          color: "#DFF0FF",
-        },
-        server: {
-          id: "6c19c76b-cbc1-4a58-bdeb-b336eaf6f51c",
-          name: "Rafal",
-          mono_account: false,
-        },
-        user: {
-          id: "07a3cd78-3a4a-4aae-a681-7634d72197c2",
-          username: "toto",
-        },
-        characters: [
-          {
-            id: "1b4a318a-d991-4ec9-8178-38e6bbb5c322",
-            name: "Chronos-Trigger",
-            sex: "M",
-            level: 180,
-            alignment: "Bonta",
-            stuff: "https://d-bk.net/fr/d/3EJhw",
-            default_character: true,
-          },
-        ],
+        tag_id: "f7a34554-d2d7-48d5-8bc2-1f7e4b06c8f8",
+        server_id: "6c19c76b-cbc1-4a58-bdeb-b336eaf6f51c",
       };
 
-      mockRemoveCharacters.mockResolvedValue(mockEvent);
-      mockGetOneEnriched.mockResolvedValue(mockEventUpdatedEnriched);
+      mockAddCharacters.mockResolvedValue(mockEvent);
+      mockGetOneEnriched.mockResolvedValue(null);
 
-      await underTest.removeCharactersFromEvent(
+      await underTest.addCharactersToEvent(
         req as Request,
         res as Response,
         next,
       );
 
-      expect(mockRemoveCharacters).toHaveBeenCalled();
-      expect(mockGetOneEnriched).toHaveBeenCalledWith(
-        mockEventUpdatedEnriched.id,
-      );
-      expect(res.json).toHaveBeenCalledWith(mockEventUpdatedEnriched);
-      expect(res.status).not.toHaveBeenCalledWith(status.NOT_FOUND);
-    });
-
-    it("Return 400 if userId isn't define.", async () => {
-      req.params = {};
-
-      await underTest.removeCharactersFromEvent(
-        req as Request,
-        res as Response,
-        next,
-      );
-
-      expect(res.status).toHaveBeenCalledWith(status.BAD_REQUEST);
+      expect(res.status).toHaveBeenCalledWith(status.INTERNAL_SERVER_ERROR);
       expect(res.json).toHaveBeenCalledWith({
-        error: "Event ID is required",
+        error: "Failed to retrieve enriched event",
       });
     });
 
-    it("Call next() if event doesn't exists.", async () => {
-      req.params = {
-        eventId: "923a9fe0-1395-4f4e-8d18-4a9ac183b924",
-      };
-      req.body = {
-        characterIds: [
-          "1db5cd8a-cd22-48e8-9a4e-90ee032c9f15",
-          "44fec4c8-19a6-4aaa-8f6a-16afe92af491",
-        ],
-      };
-
-      mockRemoveCharacters.mockResolvedValue(null);
-
-      await underTest.removeCharactersFromEvent(
-        req as Request,
-        res as Response,
-        next,
-      );
-
-      expect(res.status).toHaveBeenCalledWith(status.NOT_FOUND);
-      expect(res.json).toHaveBeenCalledWith({ error: "Event not found" });
-    });
-
     it("Call next() in case of error.", async () => {
-      req.params = {
-        eventId: "923a9fe0-1395-4f4e-8d18-4a9ac183b924",
-      };
+      req.params = { eventId: "923a9fe0-1395-4f4e-8d18-4a9ac183b924" };
       req.body = {
-        characterIds: [
-          "1db5cd8a-cd22-48e8-9a4e-90ee032c9f15",
-          "44fec4c8-19a6-4aaa-8f6a-16afe92af491",
-        ],
+        data: {
+          characters_id: [
+            "1db5cd8a-cd22-48e8-9a4e-90ee032c9f15",
+            "44fec4c8-19a6-4aaa-8f6a-16afe92af491",
+          ],
+        },
       };
-      const error = new Error();
 
-      mockRemoveCharacters.mockRejectedValue(error);
+      const error = new Error();
+      mockAddCharacters.mockRejectedValue(error);
+
       await underTest.addCharactersToEvent(
         req as Request,
         res as Response,
@@ -622,22 +606,16 @@ describe("EventController", () => {
     });
   });
 
-  // --- PATCH ---
-  describe("update", () => {
-    it("Return event if updated.", async () => {
-      req.params = {
-        userId: "182a492c-feb7-4af8-910c-e61dc2536754",
-        eventId: "923a9fe0-1395-4f4e-8d18-4a9ac183b924",
-      };
+  // --- REMOVE CHARACTERS FROM EVENT ---
+  describe("removeCharacterFromEvent", () => {
+    it("Remove character if event exists", async () => {
+      req.params = { eventId: "182a492c-feb7-4af8-910c-e61dc2536754" };
       req.body = {
-        title: "Donjon minotoror",
-        max_players: 4,
-        status: "private",
+        character_id: "1b4a318a-d991-4ec9-8178-38e6bbb5c322",
       };
-      // GIVEN
-      const mockDatas: EventBodyData = req.body;
-      const mockEventToUpdate: EventEnriched = {
-        id: "923a9fe0-1395-4f4e-8d18-4a9ac183b924",
+
+      const mockEvent: Event = {
+        id: "182a492c-feb7-4af8-910c-e61dc2536754",
         title: "Donjon minotot",
         date: new Date("2026-01-01"),
         duration: 60,
@@ -647,6 +625,12 @@ describe("EventController", () => {
         description: "donjon full succès",
         max_players: 8,
         status: "public",
+        tag_id: "f7a34554-d2d7-48d5-8bc2-1f7e4b06c8f8",
+        server_id: "6c19c76b-cbc1-4a58-bdeb-b336eaf6f51c",
+      };
+
+      const mockEventUpdatedEnriched: EventEnriched = {
+        ...mockEvent,
         tag: {
           id: "f7a34554-d2d7-48d5-8bc2-1f7e4b06c8f8",
           name: "Donjon",
@@ -663,21 +647,179 @@ describe("EventController", () => {
         },
         characters: [],
       };
-      const mockUpdatedEvent = { ...mockEventToUpdate, ...mockDatas };
 
-      mockUpdate.mockResolvedValue(mockUpdatedEvent);
-      // WHEN
-      await underTest.update(req as Request, res as Response, next);
-      //THEN
-      expect(mockUpdatedEvent.title).toBe("Donjon minotoror");
-      expect(mockUpdatedEvent.max_players).toBe(4);
-      expect(mockUpdatedEvent.status).toBe("private");
-      expect(mockUpdate).toHaveBeenCalledWith(req.params.eventId, mockDatas);
-      expect(res.json).toHaveBeenCalledWith(mockUpdatedEvent);
+      mockRemoveCharacter.mockResolvedValue(mockEvent);
+      mockGetOneEnriched.mockResolvedValue(mockEventUpdatedEnriched);
+
+      await underTest.removeCharacterFromEvent(
+        req as Request,
+        res as Response,
+        next,
+      );
+
+      expect(mockRemoveCharacter).toHaveBeenCalledWith(
+        req.params.eventId,
+        req.body.character_id,
+      );
+      expect(mockGetOneEnriched).toHaveBeenCalledWith(mockEvent.id);
+      expect(res.json).toHaveBeenCalledWith(mockEventUpdatedEnriched);
       expect(res.status).not.toHaveBeenCalledWith(status.NOT_FOUND);
     });
 
-    it("Return 400 if userId isn't define.", async () => {
+    it("Return 400 if eventId isn't defined.", async () => {
+      req.params = {};
+
+      await underTest.removeCharacterFromEvent(
+        req as Request,
+        res as Response,
+        next,
+      );
+
+      expect(res.status).toHaveBeenCalledWith(status.BAD_REQUEST);
+      expect(res.json).toHaveBeenCalledWith({ error: "Event ID is required" });
+    });
+
+    it("Return 404 if event doesn't exist.", async () => {
+      req.params = {
+        eventId: "923a9fe0-1395-4f4e-8d18-4a9ac183b924",
+      };
+      req.body = {
+        character_id: "1db5cd8a-cd22-48e8-9a4e-90ee032c9f15",
+      };
+
+      mockRemoveCharacter.mockResolvedValue(null);
+
+      await underTest.removeCharacterFromEvent(
+        req as Request,
+        res as Response,
+        next,
+      );
+
+      expect(res.status).toHaveBeenCalledWith(status.NOT_FOUND);
+      expect(res.json).toHaveBeenCalledWith({ error: "Event not found" });
+    });
+
+    it("Return 500 if enriched event cannot be retrieved.", async () => {
+      req.params = { eventId: "182a492c-feb7-4af8-910c-e61dc2536754" };
+      req.body = { character_id: "1b4a318a-d991-4ec9-8178-38e6bbb5c322" };
+
+      const mockEvent: Event = {
+        id: "182a492c-feb7-4af8-910c-e61dc2536754",
+        title: "Donjon minotot",
+        date: new Date("2026-01-01"),
+        duration: 60,
+        area: "Amakna",
+        sub_area: "Ile des taures",
+        donjon_name: "Labyrinthe du minotoror",
+        description: "donjon full succès",
+        max_players: 8,
+        status: "public",
+        tag_id: "f7a34554-d2d7-48d5-8bc2-1f7e4b06c8f8",
+        server_id: "6c19c76b-cbc1-4a58-bdeb-b336eaf6f51c",
+      };
+
+      mockRemoveCharacter.mockResolvedValue(mockEvent);
+      mockGetOneEnriched.mockResolvedValue(null);
+
+      await underTest.removeCharacterFromEvent(
+        req as Request,
+        res as Response,
+        next,
+      );
+
+      expect(res.status).toHaveBeenCalledWith(status.INTERNAL_SERVER_ERROR);
+      expect(res.json).toHaveBeenCalledWith({
+        error: "Failed to retrieve enriched event",
+      });
+    });
+
+    it("Call next() in case of error.", async () => {
+      req.params = {
+        eventId: "923a9fe0-1395-4f4e-8d18-4a9ac183b924",
+      };
+      req.body = {
+        character_id: "1db5cd8a-cd22-48e8-9a4e-90ee032c9f15",
+      };
+
+      const error = new Error();
+      mockRemoveCharacter.mockRejectedValue(error);
+
+      await underTest.removeCharacterFromEvent(
+        req as Request,
+        res as Response,
+        next,
+      );
+
+      expect(next).toHaveBeenCalledWith(error);
+    });
+  });
+
+  // --- PATCH ---
+  describe("update", () => {
+    it("Return enriched event if updated.", async () => {
+      req.params = {
+        userId: "182a492c-feb7-4af8-910c-e61dc2536754",
+        eventId: "923a9fe0-1395-4f4e-8d18-4a9ac183b924",
+      };
+      req.body = {
+        title: "Donjon minotoror",
+        max_players: 4,
+        status: "private",
+      };
+
+      // GIVEN
+      const mockDatas: EventBodyData = req.body;
+      const mockEventToUpdate: Event = {
+        id: "923a9fe0-1395-4f4e-8d18-4a9ac183b924",
+        title: "Donjon minotot",
+        date: new Date("2026-01-01"),
+        duration: 60,
+        area: "Amakna",
+        sub_area: "Ile des taures",
+        donjon_name: "Labyrinthe du minotoror",
+        description: "donjon full succès",
+        max_players: 8,
+        status: "public",
+        tag_id: "f7a34554-d2d7-48d5-8bc2-1f7e4b06c8f8",
+        server_id: "6c19c76b-cbc1-4a58-bdeb-b336eaf6f51c",
+      };
+
+      const mockUpdatedEvent = { ...mockEventToUpdate, ...mockDatas };
+
+      const mockUpdatedEventEnriched: EventEnriched = {
+        ...mockUpdatedEvent,
+        tag: {
+          id: "f7a34554-d2d7-48d5-8bc2-1f7e4b06c8f8",
+          name: "Donjon",
+          color: "#DFF0FF",
+        },
+        server: {
+          id: "6c19c76b-cbc1-4a58-bdeb-b336eaf6f51c",
+          name: "Rafal",
+          mono_account: false,
+        },
+        user: { id: "07a3cd78-3a4a-4aae-a681-7634d72197c2", username: "toto" },
+        characters: [],
+      };
+
+      mockUpdate.mockResolvedValue(mockUpdatedEvent);
+      mockGetOneEnriched.mockResolvedValue(mockUpdatedEventEnriched);
+
+      // WHEN
+      await underTest.update(req as Request, res as Response, next);
+
+      // THEN
+      expect(mockUpdate).toHaveBeenCalledWith(
+        req.params.userId,
+        req.params.eventId,
+        mockDatas,
+      );
+      expect(mockGetOneEnriched).toHaveBeenCalledWith(mockUpdatedEvent.id);
+      expect(res.json).toHaveBeenCalledWith(mockUpdatedEventEnriched);
+      expect(res.status).not.toHaveBeenCalledWith(status.NOT_FOUND);
+    });
+
+    it("Return 400 if userId isn't defined.", async () => {
       req.params = {};
 
       await underTest.update(req as Request, res as Response, next);
@@ -686,22 +828,24 @@ describe("EventController", () => {
       expect(res.json).toHaveBeenCalledWith({ error: "User ID is required" });
     });
 
-    it("Call next() if event doesn't exists.", async () => {
+    it("Return 404 if event doesn't exist.", async () => {
       req.params = {
         userId: "182a492c-feb7-4af8-910c-e61dc2536754",
         eventId: "923a9fe0-1395-4f4e-8d18-4a9ac183b924",
       };
       req.body = {
         title: "Donjon minotoror",
-        max_player: "4",
+        max_players: 4,
         status: "private",
       };
 
       mockUpdate.mockResolvedValue(null);
+
       await underTest.update(req as Request, res as Response, next);
 
       expect(res.status).toHaveBeenCalledWith(status.NOT_FOUND);
       expect(res.json).toHaveBeenCalledWith({ error: "Event not found" });
+      expect(mockGetOneEnriched).not.toHaveBeenCalled();
     });
 
     it("Call next() in case of error.", async () => {
@@ -711,12 +855,13 @@ describe("EventController", () => {
       };
       req.body = {
         title: "Donjon minotoror",
-        max_player: "4",
+        max_players: 4,
         status: "private",
       };
-      const error = new Error();
 
+      const error = new Error();
       mockUpdate.mockRejectedValue(error);
+
       await underTest.update(req as Request, res as Response, next);
 
       expect(next).toHaveBeenCalledWith(error);
@@ -725,7 +870,12 @@ describe("EventController", () => {
 
   // --- DELETE ---
   describe("delete", () => {
-    req.params = { userId: "182a492c-feb7-4af8-910c-e61dc2536754" };
+    beforeEach(() => {
+      req.params = {
+        userId: "182a492c-feb7-4af8-910c-e61dc2536754",
+        eventId: "923a9fe0-1395-4f4e-8d18-4a9ac183b924",
+      };
+    });
 
     it("Return 204 if event is delete.", async () => {
       // GIVEN

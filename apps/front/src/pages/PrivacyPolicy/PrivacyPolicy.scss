@@ -1,0 +1,41 @@
+.privacy {
+  width: 90%;
+  margin: auto;
+  font-size: 1.2rem;
+  text-align: start;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+
+  @media (max-width: 1023px) {
+    margin: 2% auto;
+    font-size: 1rem;
+  }
+
+  @media (max-width: 600px) {
+    font-size: 0.8rem;
+  }
+
+  @media (min-width: 1920px) {
+    width: 75%;
+    font-size: 1.3rem;
+  }
+
+  @media (min-width: 2560px) {
+    width: 65%;
+    font-size: 1.5rem;
+  }
+
+  header {
+    width: 100%;
+    margin-bottom: 2%;
+    text-align: center;
+  }
+
+  section {
+    width: 100%;
+    margin: 1% auto;
+    padding: 0;
+  }
+}

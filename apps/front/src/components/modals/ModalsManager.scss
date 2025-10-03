@@ -1,0 +1,70 @@
+@use "../../assets/styles/variables";
+
+.modal {
+  width: 100vw;
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 0;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  overflow: hidden;
+
+  @media (max-width: 1023px) {
+    padding: 2% 0%;
+  }
+
+  &_content {
+    width: 50%;
+    max-height: 90vh;
+    padding: 2%;
+    background-color: var(--secondary-bg);
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    border-radius: 1rem;
+    overflow-y: auto;
+
+    @media (max-width: 1023px) {
+      width: 80%;
+    }
+
+    @media (max-width: 600px) {
+      padding: 3%;
+      width: 90%;
+    }
+
+    @media (min-width: 1920px) {
+      width: 40%;
+    }
+
+    @media (min-width: 2560px) {
+      width: 30%;
+    }
+
+    &_close {
+      cursor: pointer;
+      background-color: var(--secondary-bg);
+      font-size: 1.2rem;
+      color: var(--primary-text);
+      border: none;
+
+      @media (min-width: 1920px) {
+        font-size: 1.4rem;
+      }
+
+      @media (min-width: 2560px) {
+        font-size: 1.6rem;
+      }
+    }
+
+    &_form {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+    }
+  }
+}

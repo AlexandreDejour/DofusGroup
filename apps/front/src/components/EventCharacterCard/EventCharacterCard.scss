@@ -1,0 +1,130 @@
+.event_character_card {
+  width: 100%;
+  margin: 2% 0%;
+  padding: 2%;
+  background-color: var(--primary-bg);
+  font-size: 1.1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-radius: 1rem;
+
+  @media (max-width: 1023px) {
+    height: 100%;
+    padding: 4% 1% 6% 1%;
+    font-size: 1rem;
+    display: flex;
+    flex-direction: column;
+  }
+
+  @media (max-width: 600px) {
+    width: 90%;
+    margin: 2% auto;
+    font-size: 0.8rem;
+  }
+
+  @media (min-width: 1920px) {
+    font-size: 1.3rem;
+  }
+
+  @media (min-width: 2560px) {
+    font-size: 1.5rem;
+  }
+
+  &_img {
+    width: 7.5%;
+
+    @media (max-width: 1023px) {
+      width: 25%;
+      margin-bottom: 5%;
+    }
+  }
+
+  &_name {
+    width: 25%;
+    font-size: 1.3rem;
+
+    @media (max-width: 1023px) {
+      font-size: 1.2rem;
+    }
+
+    @media (max-width: 600px) {
+      font-size: 1rem;
+    }
+
+    @media (min-width: 1920px) {
+      font-size: 1.4rem;
+    }
+
+    @media (min-width: 2560px) {
+      font-size: 1.5rem;
+    }
+  }
+
+  &_breed {
+    width: 12.5%;
+  }
+
+  &_level {
+    width: 12.5%;
+  }
+
+  &_buttons {
+    width: 30%;
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+
+    @media (max-width: 1023px) {
+      width: 60%;
+      margin-top: 5%;
+    }
+
+    &_details {
+      width: 50%;
+      margin: 2% 0%;
+      padding: 3% 1%;
+
+      @media (max-width: 1023px) {
+        width: 55%;
+      }
+    }
+
+    &_delete {
+      width: 25%;
+      padding: 4.5% 1%;
+
+      @media (max-width: 1023px) {
+        width: 30%;
+        padding: 5% 1%;
+      }
+    }
+  }
+
+  &_details {
+    width: 15%;
+    padding: 1.5%;
+
+    @media (max-width: 1023px) {
+      width: 25%;
+      margin-top: 5%;
+    }
+  }
+
+  &_container {
+    width: 95%;
+
+    @media (max-width: 600px) {
+      display: flex;
+      flex-direction: column;
+    }
+
+    span {
+      font-weight: bold;
+
+      @media (max-width: 600px) {
+        margin-right: 2%;
+      }
+    }
+  }
+}

@@ -9,6 +9,7 @@ import { DataEncryptionService } from "../../middlewares/utils/dataEncryptionSer
 import { AuthController } from "../controllers/authController.js";
 import { createUserSchema } from "../../middlewares/joi/schemas/user.js";
 import { loginSchema } from "../../middlewares/joi/schemas/auth.js";
+import { loginLimiter } from "../../middlewares/utils/loginLimiter.js";
 
 export function createAuthRouter(
   controller: AuthController,
@@ -30,6 +31,7 @@ export function createAuthRouter(
 
   router.post(
     "/auth/login",
+    loginLimiter,
     htmlSanitizer,
     validateSchema(loginSchema),
     (req, res, next) => {
@@ -39,6 +41,10 @@ export function createAuthRouter(
 
   router.post("/auth/logout", (req, res, next) => {
     controller.logout(req, res, next);
+  });
+
+  router.get("/auth/me", (req, res, next) => {
+    controller.apiMe(req, res, next);
   });
 
   router.get(

@@ -11,16 +11,65 @@ export class EventController {
     this.repository = repository;
   }
 
-  public async getAll(_req: Request, res: Response, next: NextFunction) {
+  public async getAll(req: Request, res: Response, next: NextFunction) {
     try {
-      const events: Event[] = await this.repository.getAll();
+      const tagId = req.query.tag_id as string | undefined;
+      const title = req.query.title as string | undefined;
+      const serverId = req.query.server_id as string | undefined;
+      const pageParam = parseInt(req.query.page as string, 10);
+      const limitParam = parseInt(req.query.limit as string, 10);
+
+      console.log(tagId, serverId, title);
+
+      const limit = !isNaN(limitParam) && limitParam > 0 ? limitParam : 10;
+      const page = !isNaN(pageParam) && pageParam > 0 ? pageParam : 1;
+
+      let events: Event[] = await this.repository.getAllPublic();
 
       if (!events.length) {
         res.status(status.NO_CONTENT).json({ error: "Any event found" });
         return;
       }
 
-      res.json(events);
+      // Filter passed events
+      const now = new Date();
+      events = events.filter((event) => new Date(event.date) >= now);
+
+      // optionnal filters
+      if (tagId) {
+        events = events.filter((event) => event.tag_id === tagId);
+      }
+
+      if (serverId) {
+        events = events.filter((event) => event.server_id === serverId);
+      }
+
+      if (title) {
+        const lowered = title.toLowerCase();
+        events = events.filter((event) =>
+          event.title.toLowerCase().includes(lowered),
+        );
+      }
+
+      // Filter by ascending date
+      events.sort(
+        (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime(),
+      );
+
+      const total = events.length;
+      const totalPages = Math.ceil(total / limit);
+      const start = (page - 1) * limit;
+      const end = start + limit;
+
+      const pagedEvents = events.slice(start, end);
+
+      res.json({
+        events: pagedEvents,
+        page,
+        limit,
+        total,
+        totalPages,
+      });
     } catch (error) {
       next(error);
     }
@@ -114,9 +163,9 @@ export class EventController {
       }
 
       const eventId: string = req.params.eventId;
-      const charactersIds: string[] = req.body.characters_id;
+      const charactersIds: string[] = req.body.data.characters_id;
 
-      let eventUpdated: Event | null =
+      const eventUpdated: Event | null =
         await this.repository.addCharactersToEvent(eventId, charactersIds);
 
       if (!eventUpdated) {
@@ -140,7 +189,7 @@ export class EventController {
     }
   }
 
-  public async removeCharactersFromEvent(
+  public async removeCharacterFromEvent(
     req: Request,
     res: Response,
     next: NextFunction,
@@ -152,10 +201,10 @@ export class EventController {
       }
 
       const eventId: string = req.params.eventId;
-      const charactersId: string[] = req.body.characters_id;
+      const characterId: string = req.body.character_id;
 
       const eventUpdated: Event | null =
-        await this.repository.removeCharactersFromEvent(eventId, charactersId);
+        await this.repository.removeCharacterFromEvent(eventId, characterId);
 
       if (!eventUpdated) {
         res.status(status.NOT_FOUND).json({ error: "Event not found" });
@@ -179,16 +228,19 @@ export class EventController {
   }
 
   public async update(req: Request, res: Response, next: NextFunction) {
-    try {
-      if (!req.params.userId) {
-        res.status(status.BAD_REQUEST).json({ error: "User ID is required" });
-        return;
-      }
+    const userId: string = req.params.userId;
+    const eventId: string = req.params.eventId;
 
-      const eventId: string = req.params.eventId;
+    if (!userId) {
+      res.status(status.BAD_REQUEST).json({ error: "User ID is required" });
+      return;
+    }
+
+    try {
       const eventData: Partial<EventBodyData> = req.body;
 
       const eventUpdated: Event | null = await this.repository.update(
+        userId,
         eventId,
         eventData,
       );
@@ -202,7 +254,7 @@ export class EventController {
         eventUpdated.id,
       );
 
-      res.json(eventUpdated);
+      res.json(eventUpdatedEnriched);
     } catch (error) {
       next(error);
     }

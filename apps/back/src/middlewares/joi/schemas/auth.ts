@@ -17,7 +17,7 @@ export const loginSchema: Joi.ObjectSchema = Joi.object({
 });
 
 export const jwtSchema: Joi.ObjectSchema = Joi.object({
-  sub: Joi.string(),
+  id: Joi.string(),
   iat: Joi.number().required(),
   exp: Joi.number().required(),
 });

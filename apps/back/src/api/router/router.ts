@@ -31,14 +31,15 @@ import { EventUtils } from "../../middlewares/repository/utils/eventUtils.js";
 import { AuthService } from "../../middlewares/utils/authService.js";
 import { CryptoService } from "../../middlewares/utils/cryptoService.js";
 import { DataEncryptionService } from "../../middlewares/utils/dataEncryptionService.js";
+import { profanityCleaner } from "../../middlewares/profanity/profanity.js";
 
 initAssociations(models);
 
+const authService = new AuthService();
+const dataEncryptionService = new DataEncryptionService(new CryptoService());
+
 const tagController = new TagController(new TagRepository());
-const authController = new AuthController(
-  new AuthService(),
-  new AuthRepository(),
-);
+const authController = new AuthController(authService, new AuthRepository());
 const userController = new UserController(new UserRepository());
 const eventController = new EventController(
   new EventRepository(new EventUtils()),
@@ -48,19 +49,23 @@ const serverController = new ServerController(new ServerRepository());
 const commentController = new CommentController(new CommentRepository());
 const characterController = new CharacterController(new CharacterRepository());
 
-const authService = new AuthService();
-const dataEncryptionService = new DataEncryptionService(new CryptoService());
-
 router.use((req, res, next) => {
   authService.setAuthUserRequest(req, res, next);
 });
+
+router.use((req, res, next) => profanityCleaner(req, res, next));
 
 router.use(createTagRouter(tagController));
 router.use(
   createAuthRouter(authController, authService, dataEncryptionService),
 );
 router.use(
-  createUserRouter(userController, authService, dataEncryptionService),
+  createUserRouter(
+    userController,
+    authController,
+    authService,
+    dataEncryptionService,
+  ),
 );
 router.use(createEventRouter(eventController, authService));
 router.use(createBreedRouter(breedController));

@@ -8,7 +8,7 @@ import {
 
 import User from "./User.js";
 import Event from "./Event.js";
-import Breed from "./Breeds.js";
+import Breed from "./Breed.js";
 import Server from "./Server.js";
 
 import client from "../client.js";
@@ -24,7 +24,6 @@ export default class CharacterEntity extends Model<
   declare public level: number;
   declare public alignment: string;
   declare public stuff: string;
-  declare public default_character: boolean;
 
   declare public user_id: string;
   declare public server_id: string;
@@ -89,9 +88,6 @@ CharacterEntity.init(
     },
     stuff: {
       type: DataTypes.STRING,
-    },
-    default_character: {
-      type: DataTypes.BOOLEAN,
     },
     user_id: {
       type: DataTypes.UUID,

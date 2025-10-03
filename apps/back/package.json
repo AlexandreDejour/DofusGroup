@@ -6,7 +6,12 @@
   "type": "module",
   "scripts": {
     "start": "tsx index.ts",
-    "dev": "tsx watch index.ts"
+    "dev": "tsx watch index.ts",
+    "test": "npx vitest",
+    "db:migrate": "npx sequelize-cli db:migrate",
+    "db:migrate:undo": "npx sequelize-cli db:migrate:undo",
+    "db:seed:all": "npx sequelize-cli db:seed:all",
+    "db:seed:undo:all": "npx sequelize-cli db:seed:undo:all"
   },
   "keywords": [
     "api",
@@ -18,8 +23,10 @@
   "devDependencies": {
     "@eslint/js": "^9.28.0",
     "@types/cookie-parser": "^1.4.9",
+    "@types/cors": "^2.8.19",
     "@types/express": "^5.0.3",
     "@types/jsonwebtoken": "^9.0.10",
+    "@types/leo-profanity": "^1.5.4",
     "@types/node": "^24.0.0",
     "@types/sanitize-html": "^2.16.0",
     "@types/supertest": "^6.0.3",
@@ -31,6 +38,7 @@
     "eslint-plugin-prettier": "^5.4.1",
     "globals": "^16.2.0",
     "prettier": "^3.5.3",
+    "sequelize-cli": "^6.6.3",
     "sequelize-typescript": "^2.1.6",
     "supertest": "^7.1.1",
     "ts-node-dev": "^2.0.0",
@@ -41,13 +49,17 @@
   "dependencies": {
     "argon2": "^0.43.1",
     "cookie-parser": "^1.4.7",
+    "cors": "^2.8.5",
     "dotenv": "^16.5.0",
     "express": "^5.1.0",
+    "express-rate-limit": "^8.1.0",
     "http-errors": "^2.0.0",
     "http-status": "^2.1.0",
     "joi": "^17.13.3",
     "jsonwebtoken": "^9.0.2",
-    "pg": "^8.16.0",
+    "leo-profanity": "^1.8.0",
+    "pg": "^8.16.3",
+    "pg-hstore": "^2.3.4",
     "sanitize-html": "^2.17.0",
     "sequelize": "^6.37.7",
     "ts-node": "^10.9.2",

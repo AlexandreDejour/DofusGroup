@@ -33,7 +33,7 @@ describe("characterRouter", () => {
   const secret = config.jwtSecret;
   const userId = "f0256483-0827-4cd5-923a-6bd10a135c4e";
   const characterId = "18d99a7c-1d47-4391-bacd-cc4848165768";
-  const token = jwt.sign({ sub: userId }, secret, { expiresIn: "2h" });
+  const token = jwt.sign({ id: userId }, secret, { expiresIn: "2h" });
 
   describe("GET /user/:userId/characters", () => {
     it("Propagate request to characterController.getAllByUserId", async () => {
@@ -66,38 +66,33 @@ describe("characterRouter", () => {
     });
   });
 
-  describe("GET /user/:userId/character/:characterId", () => {
+  describe("GET /character/:characterId", () => {
     it("Propagate request to characterController.getOneByUserId", async () => {
       //GIVEN
-      controller.getOneByUserId = setup.mockSucessCall(status.OK);
+      controller.getOne = setup.mockSucessCall(status.OK);
       //WHEN
-      const res = await request(app).get(
-        `/user/${userId}/character/${characterId}`,
-      );
+      const res = await request(app).get(`/character/${characterId}`);
       //THEN
-      expect(controller.getOneByUserId).toHaveBeenCalled();
-      expect(receivedReq?.params.userId).toBe(userId);
+      expect(controller.getOne).toHaveBeenCalled();
       expect(receivedReq?.params.characterId).toBe(characterId);
       expect(res.status).toBe(status.OK);
       expect(res.body).toBe("Success!");
     });
 
     it("Next is called at end route.", async () => {
-      controller.getOneByUserId = setup.mockNextCall();
+      controller.getOne = setup.mockNextCall();
 
-      const res = await request(app).get(
-        `/user/${userId}/character/${characterId}`,
-      );
+      const res = await request(app).get(`/character/${characterId}`);
 
-      expect(controller.getOneByUserId).toHaveBeenCalled();
+      expect(controller.getOne).toHaveBeenCalled();
       expect(res.status).toBe(status.NOT_FOUND);
       expect(res.body).toEqual({ called: "next" });
     });
 
     it("Excluded bad request when id isn't a UUID.", async () => {
-      const res = await request(app).get("/user/1234/character/toto");
+      const res = await request(app).get("/character/toto");
 
-      expect(controller.getOneByUserId).not.toHaveBeenCalled();
+      expect(controller.getOne).not.toHaveBeenCalled();
       expect(res.status).toBe(status.BAD_REQUEST);
     });
   });
@@ -133,38 +128,33 @@ describe("characterRouter", () => {
     });
   });
 
-  describe("GET /user/:userId/character/enriched/:characterId", () => {
+  describe("GET /character:characterId/enriched/", () => {
     it("Propagate request to characterController.getOneByUserIdEnriched", async () => {
       //GIVEN
-      controller.getOneEnrichedByUserId = setup.mockSucessCall(status.OK);
+      controller.getOneEnriched = setup.mockSucessCall(status.OK);
       //WHEN
-      const res = await request(app).get(
-        `/user/${userId}/character/enriched/${characterId}`,
-      );
+      const res = await request(app).get(`/character/${characterId}/enriched`);
       //THEN
-      expect(controller.getOneEnrichedByUserId).toHaveBeenCalled();
-      expect(receivedReq?.params.userId).toBe(userId);
+      expect(controller.getOneEnriched).toHaveBeenCalled();
       expect(receivedReq?.params.characterId).toBe(characterId);
       expect(res.status).toBe(status.OK);
       expect(res.body).toBe("Success!");
     });
 
     it("Next is called at end route.", async () => {
-      controller.getOneEnrichedByUserId = setup.mockNextCall();
+      controller.getOneEnriched = setup.mockNextCall();
 
-      const res = await request(app).get(
-        `/user/${userId}/character/enriched/${characterId}`,
-      );
+      const res = await request(app).get(`/character/${characterId}/enriched`);
 
-      expect(controller.getOneEnrichedByUserId).toHaveBeenCalled();
+      expect(controller.getOneEnriched).toHaveBeenCalled();
       expect(res.status).toBe(status.NOT_FOUND);
       expect(res.body).toEqual({ called: "next" });
     });
 
     it("Excluded bad request when id isn't a UUID.", async () => {
-      const res = await request(app).get("/user/1234/character/enriched/toto");
+      const res = await request(app).get("/character/toto/enriched");
 
-      expect(controller.getOneEnrichedByUserId).not.toHaveBeenCalled();
+      expect(controller.getOneEnriched).not.toHaveBeenCalled();
       expect(res.status).toBe(status.BAD_REQUEST);
     });
   });

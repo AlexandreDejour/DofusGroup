@@ -267,13 +267,23 @@ describe("CommentController", () => {
       req.body = {
         content: "Ready to fight",
       };
-      const mockDatas: CommentBodyData = {
-        ...req.body,
-        user_id: req.params.userId,
-      };
+      const mockDatas: CommentBodyData = req.body;
       const mockNewComment: CommentEnriched = {
         id: "0f309e32-2281-4b46-bb2e-bc2a7248e39b",
         content: "Ready to fight",
+        user: { id: "436d798e-b084-454c-8f78-593e966a9a66", username: "toto" },
+        event: {
+          id: "923a9fe0-1395-4f4e-8d18-4a9ac183b924",
+          title: "Donjon minotot",
+          date: new Date("2026-01-01"),
+          duration: 60,
+          area: "Amakna",
+          sub_area: "Ile des taures",
+          donjon_name: "Labyrinthe du minotoror",
+          description: "donjon full succès",
+          max_players: 8,
+          status: "public",
+        },
       };
 
       mockPost.mockResolvedValue(mockNewComment);

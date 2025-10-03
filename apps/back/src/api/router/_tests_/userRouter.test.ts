@@ -1,7 +1,5 @@
 import request from "supertest";
 import { vi, describe, it, expect, beforeEach } from "vitest";
-import express from "express";
-import cookieParser from "cookie-parser";
 import status from "http-status";
 import jwt from "jsonwebtoken";
 
@@ -13,29 +11,32 @@ import { AuthService } from "../../../middlewares/utils/authService.js";
 import { DataEncryptionService } from "../../../middlewares/utils/dataEncryptionService.js";
 import { CryptoService } from "../../../middlewares/utils/cryptoService.js";
 import { UserRepository } from "../../../middlewares/repository/userRepository.js";
+import { AuthController } from "../../controllers/authController.js";
+import { AuthRepository } from "../../../middlewares/repository/authRepository.js";
 
 describe("userRouter", () => {
   const repository = {} as UserRepository;
-  const controller = new UserController(repository);
+  const authRepository = {} as AuthRepository;
   const service = new AuthService();
+  const controller = new UserController(repository);
+  const authController = new AuthController(service, authRepository);
   const encrypter = new DataEncryptionService(new CryptoService());
   let app: ReturnType<typeof setup.App>;
 
   beforeEach(() => {
     vi.clearAllMocks();
-    app = setup.App<UserController, [AuthService, DataEncryptionService]>(
-      controller,
-      createUserRouter,
-      {
-        routerFactoryArgs: [service, encrypter],
-      },
-    );
+    app = setup.App<
+      UserController,
+      [AuthController, AuthService, DataEncryptionService]
+    >(controller, createUserRouter, {
+      routerFactoryArgs: [authController, service, encrypter],
+    });
   });
 
   const config = Config.getInstance();
   const secret = config.jwtSecret;
   const userId = "527be2f3-5903-4a98-a47d-e4bd593db73e";
-  const token = jwt.sign({ sub: userId }, secret, { expiresIn: "2h" });
+  const token = jwt.sign({ id: userId }, secret, { expiresIn: "2h" });
 
   describe("GET /users", () => {
     it("Propagate request to userController.getAll", async () => {
@@ -148,6 +149,7 @@ describe("userRouter", () => {
   describe("PATCH /user/:userId", () => {
     it("Propagate request to userController.update", async () => {
       //GIVEN
+      authController.isPasswordMatch = setup.mockNextCall();
       controller.update = setup.mockSucessCall(status.OK);
       //WHEN
       const res = await request(app)
@@ -155,6 +157,7 @@ describe("userRouter", () => {
         .send({
           password: "!SuperS3cr3t",
           confirmPassword: "!SuperS3cr3t",
+          oldPassword: "!0ldPassword",
           mail: "mail@example.com",
         })
         .set("Content-Type", "application/json")
@@ -167,6 +170,7 @@ describe("userRouter", () => {
     });
 
     it("Next is called at end route.", async () => {
+      authController.isPasswordMatch = setup.mockNextCall();
       controller.update = setup.mockNextCall();
 
       const res = await request(app)
@@ -174,6 +178,7 @@ describe("userRouter", () => {
         .send({
           password: "!SuperS3cr3t",
           confirmPassword: "!SuperS3cr3t",
+          oldPassword: "!0ldPassword",
           mail: "mail@example.com",
         })
         .set("Content-Type", "application/json")

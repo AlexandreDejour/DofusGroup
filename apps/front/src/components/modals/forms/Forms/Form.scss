@@ -1,0 +1,91 @@
+.content_modal {
+  width: 80%;
+
+  &_title {
+    font-size: 1.5rem;
+
+    @media (max-width: 1023px) {
+      font-size: 1.3rem !important;
+    }
+
+    @media (max-width: 600px) {
+      font-size: 1.1rem !important;
+    }
+
+    @media (min-width: 1920px) {
+      font-size: 1.7rem !important;
+    }
+
+    @media (min-width: 2560px) {
+      font-size: 2rem !important;
+    }
+  }
+
+  &_form {
+    margin: 2% 0% 5% 0%;
+    font-size: 1.2rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    @media (max-width: 1023px) {
+      font-size: 1rem !important;
+    }
+
+    @media (max-width: 600px) {
+      font-size: 0.8rem !important;
+    }
+
+    @media (min-width: 1920px) {
+      font-size: 1.4rem !important;
+    }
+
+    @media (min-width: 2560px) {
+      font-size: 1.6rem !important;
+    }
+
+    &_label {
+      width: 95%;
+      margin-top: 5%;
+      display: flex;
+      flex-direction: column;
+
+      @media (max-width: 600px) {
+        width: 100%;
+      }
+
+      &_input {
+        margin-top: 2%;
+        padding: 2% 3%;
+      }
+
+      select {
+        margin-top: 2%;
+        padding: 2% 3%;
+      }
+    }
+
+    &_button {
+      margin-top: 7.5%;
+      padding: 2% 4%;
+      font-size: 1.2rem;
+
+      @media (max-width: 1023px) {
+        font-size: 1rem !important;
+      }
+
+      @media (max-width: 600px) {
+        font-size: 0.8rem !important;
+      }
+
+      @media (min-width: 1920px) {
+        font-size: 1.4rem;
+      }
+
+      @media (min-width: 2560px) {
+        font-size: 1.6rem;
+      }
+    }
+  }
+}

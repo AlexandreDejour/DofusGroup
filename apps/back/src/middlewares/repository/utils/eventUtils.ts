@@ -17,18 +17,16 @@ export class EventUtils {
     }
   }
 
-  public checkTeamMinLength(
-    eventEntity: EventEntity,
-    charactersId: string[],
-  ): void {
+  public checkTeamMinLength(eventEntity: EventEntity): number {
     const minLength = 1;
     const existingCount = eventEntity.characters?.length ?? 0;
-    const incomingCount = charactersId.length;
-    const totalCount = existingCount - incomingCount;
+    const totalCount = existingCount - 1;
 
     if (totalCount < minLength) {
       throw new Error(`Event can't have any characters`);
     }
+
+    return totalCount;
   }
 
   public checkCharactersServer(
@@ -66,20 +64,12 @@ export class EventUtils {
     return newCharacters;
   }
 
-  public exceptCharactersNotInTeam(
+  public isInTeam(
     eventEntity: EventEntity,
-    charactersEntity: CharacterEntity[],
-  ): string[] {
-    const existingCharactersIds =
-      eventEntity.characters?.map((c) => c.id) ?? [];
-
-    const availableCharactersToRemove = charactersEntity.filter((character) =>
-      existingCharactersIds.includes(character.id),
+    characterEntity: CharacterEntity,
+  ): boolean {
+    return (
+      eventEntity.characters?.some((c) => c.id === characterEntity.id) ?? false
     );
-
-    const availableCharactersId =
-      availableCharactersToRemove.map((c) => c.id) ?? [];
-
-    return availableCharactersId;
   }
 }

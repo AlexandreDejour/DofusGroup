@@ -1,0 +1,257 @@
+{
+  "common": {
+    "about": "À propos",
+    "action": {
+      "needLogin": "Cette action nécessite d'être connecté."
+    },
+    "add": "Ajouter",
+    "alignment": "Alignement",
+    "area": "Zone",
+    "author": "Auteur",
+    "back": "Retour",
+    "change": "Modifier",
+    "classThumbnail": "Miniature de classe",
+    "create": "Créer",
+    "createdBy": "Créé par",
+    "confirm": "Confirmer",
+    "date": "Date",
+    "delete": {
+      "default": "Supprimer",
+      "account": "Supprimer le compte"
+    },
+    "description": "Description",
+    "details": "Détails",
+    "dofusBook": "Lien DofusBook",
+    "dungeon": "Donjon",
+    "duration": "Durée",
+    "durationInMin": "Durée en minutes",
+    "discussion": "Discussion",
+    "error": {
+      "default": "Erreur",
+      "occurred": "Une erreur est survenue."
+    },
+    "join": "Rejoindre",
+    "level": "Niveau",
+    "loading": "Chargement...",
+    "maxPlayers": "Joueurs maximum",
+    "name": "Nom",
+    "new": "Nouveau",
+    "ok": "OK",
+    "old": "Ancien",
+    "otherLinks": "Autres liens",
+    "players": "Joueurs",
+    "playerNumber": "Nombre de joueurs",
+    "public": "Public",
+    "private": "Privé",
+    "profile": "Profil",
+    "return": "Retour",
+    "search": "Rechercher",
+    "select": "Sélectionner",
+    "sex": "Sexe",
+    "status": "Statut",
+    "stuff": "Stuff",
+    "subArea": "Sous-zone",
+    "team": "Groupe",
+    "title": "Titre",
+    "usefulSites": "Sites utiles",
+    "visibility": "Visibilité",
+    "welcome": "Bienvenue.",
+    "allRightsReserved": "Tous droits réservés.",
+    "goodbye": "À bientôt !"
+  },
+
+  "auth": {
+    "login": "Connexion",
+    "logout": "Déconnexion",
+    "register": "Inscription",
+    "username": "Nom d'utilisateur",
+    "password": {
+      "default": "Mot de passe",
+      "confirm": "Confirmer le mot de passe",
+      "change": "Modifier le mot de passe",
+      "error": {
+        "rules": "Le mot de passe ne respecte pas les conditions minimales de sécurité.",
+        "mismatch": "Le mot de passe et sa confirmation doivent correspondre.",
+        "oldPassword": "Le mot de passe actuel est incorrect"
+      }
+    },
+    "email": {
+      "default": "Email",
+      "change": "Modifier l'email"
+    },
+    "usernameChange": "Modifier le nom d'utilisateur",
+    "error": {
+      "credentials": {
+        "invalid": "Email ou mot de passe incorrect.",
+        "unavailable": "Ce nom d'utilisateur ou email n'est pas disponible."
+      },
+      "user": {
+        "unknown": "Utilisateur inconnu.",
+        "notFound": "Utilisateur introuvable."
+      },
+      "data": {
+        "incomplete": "Les informations fournies sont incorrectes ou incomplètes."
+      }
+    },
+    "success": {
+      "login": "Connexion réussie !",
+      "register": "Inscription réussie !",
+      "accountDeleted": "Votre compte a été supprimé avec succès.",
+      "connected": "Bonjour {{username}} ! Vous êtes maintenant connecté(e).",
+      "disconnected": "Vous avez été déconnecté(e)."
+    },
+    "prompt": {
+      "connect": "Votre compte a été créé avec succès. Veuillez vous connecter.",
+      "loginRequired": "Connexion requise !",
+      "loginRequiredAction": "Cette action nécessite d'être connecté(e)."
+    }
+  },
+
+  "breed": {
+    "default": "classe",
+    "upperCase": "Classe",
+    "error": {
+      "notFound": "Aucune race trouvée."
+    }
+  },
+
+  "character": {
+    "list": "Personnages",
+    "create": "Créer un personnage",
+    "creation": "Création de personnage",
+    "modification": "Modification de personnage",
+    "selection": "Sélection de personnage(s)",
+    "default": "Personnage par défaut",
+    "noCharacter": "Aucun personnage",
+    "your": "Vos personnages",
+    "error": {
+      "none": "Aucun personnage.",
+      "noneOnAccount": "Vous n'avez créé aucun personnage sur votre compte.",
+      "noneOnServer": "Aucun personnage disponible sur ce serveur.",
+      "notFound": "Ce personnage n'existe plus.",
+      "loginRequired": "Vous devez être connecté pour créer un personnage."
+    },
+    "success": {
+      "created": "Vous avez créé un nouveau personnage.",
+      "updated": "Vous avez mis à jour votre personnage.",
+      "deleted": "Votre personnage a été supprimé avec succès.",
+      "creation": "Création de personnage réussie."
+    }
+  },
+
+  "comment": {
+    "single": "Commentaire",
+    "add": "Ajouter un commentaire !",
+    "new": "Nouveau commentaire !",
+    "change": "Modifier un commentaire",
+    "write": "Rédiger un commentaire",
+    "error": {
+      "none": "Aucun commentaire.",
+      "notFound": "Ce commentaire n'existe plus.",
+      "loginRequired": "Vous devez être connecté pour ajouter un commentaire."
+    },
+    "success": {
+      "added": "Vous avez ajouté un nouveau commentaire.",
+      "updated": "Vous avez modifié votre commentaire.",
+      "deleted": "Votre commentaire a été supprimé avec succès."
+    }
+  },
+
+  "event": {
+    "list": "Évènements",
+    "create": "Créer un évènement",
+    "join": "Rejoindre l'évènement",
+    "discussion": "Discussion",
+    "modification": "Modification d'évènement",
+    "noEvent": "Aucun évènement.",
+    "error": {
+      "none": "Aucun évènement.",
+      "noneUpcoming": "Aucun évènement à venir.",
+      "noneFound": "Aucun évènement trouvé.",
+      "characterOut": "Ce personnage ne fait plus partie de l'évènement.",
+      "disable": "Vous devez créer un personnage avant de pouvoir créer un évènement."
+    },
+    "success": {
+      "created": "Vous avez créé un nouvel évènement.",
+      "updated": "Vous avez mis à jour votre évènement.",
+      "deleted": "Votre évènement a été supprimé avec succès.",
+      "creation": "Création d'évènement réussie."
+    },
+    "prompt": {
+      "loginRequired": "Vous devez être connecté pour créer un évènement.",
+      "joined": "Vous avez rejoint l'évènement."
+    }
+  },
+  "validation": {
+    "date": {
+      "future": "La date doit être dans le futur."
+    },
+    "level": {
+      "rules": "Le niveau de votre personnage doit être compris entre 1 et 200."
+    },
+    "playerNumber": {
+      "limit": "Le nombre de personnages inscrits dépasse le nombre maximum de joueurs.",
+      "min": "Vous devez sélectionner au moins un personnage.",
+      "range": "Le nombre de joueurs doit être compris entre 2 et 8."
+    },
+    "server": {
+      "required": "Vous devez renseigner un serveur."
+    },
+    "tag": {
+      "required": "Vous devez renseigner un tag."
+    },
+    "url": {
+      "rules": "Seules les URL provenant de DofusBook sont acceptées."
+    }
+  },
+
+  "system": {
+    "error": {
+      "attemps": "Trop de tentatives répétées, veuillez réessayer plus tard.",
+      "occurred": "Une erreur est survenue.",
+      "recoveryFailed": "Récupération de données impossible.",
+      "forbidden": "Action interdite.",
+      "impossible": "Action impossible.",
+      "profanity": "Contenu inapproprié !",
+      "inappropriate": "Le contenu de certains champs est inapproprié."
+    },
+    "success": {
+      "create": "Création réussie !",
+      "disconnected": "Vous avez été déconnecté avec succès.",
+      "updated": "Vos informations ont été mises à jour avec succès.",
+      "deleted": "Suppression réussie !",
+      "dataUpdated": "Mise à jour réussie !"
+    },
+    "data": {
+      "deletion": "Suppression de données !"
+    }
+  },
+
+  "server": {
+    "default": "serveur",
+    "upperCase": "Serveur",
+    "error": {
+      "notFound": "Aucun serveur trouvé."
+    }
+  },
+
+  "settings": {
+    "language": {
+      "change": "Modifier la langue : {{language}}",
+      "english": "Anglais",
+      "french": "Français"
+    },
+    "gcu": "Conditions générales d'utilisation",
+    "privacyPolicy": "Politique de confidentialité",
+    "contact": "Nous contacter",
+    "reportBug": "Signaler un bug"
+  },
+
+  "tag": {
+    "default": "tag",
+    "upperCase": "Tag",
+    "error": {
+      "notFound": "Aucun tag trouvé."
+    }
+  }
+}

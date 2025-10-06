@@ -13,6 +13,7 @@ import EventDetails from "../pages/EventDetails/EventDetails";
 import PrivacyPolicy from "../pages/PrivacyPolicy/PrivacyPolicy";
 import NotificationContainer from "./Notification/NotificationContainer";
 import CharacterDetails from "../pages/CharacterDetails/CharacterDetails";
+import NotFound from "../pages/NotFound/NotFound";
 
 export default function App() {
   return (
@@ -27,6 +28,7 @@ export default function App() {
         <Route path="/privacy_policy" element={<PrivacyPolicy />} />
         <Route path="/about" element={<About />} />
         <Route path="/gcu" element={<GCU />} />
+        <Route path="*" element={<NotFound />} />
       </Routes>
       <NotificationContainer />
       <Footer />

@@ -30,6 +30,7 @@
       "default": "Error",
       "occurred": "An error occurred."
     },
+    "home": "Home",
     "join": "Join",
     "level": "Level",
     "loading": "Loading...",
@@ -222,6 +223,7 @@
       "forbidden": "Action forbidden.",
       "impossible": "Action impossible.",
       "inappropriate": "The content of some fields is inappropriate.",
+      "notFound": "This page can't be found.",
       "occurred": "An error occurred.",
       "recoveryFailed": "Data recovery failed.",
       "profanity": "Inappropriate content !"

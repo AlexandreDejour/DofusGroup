@@ -20,6 +20,14 @@ describe("EventController", () => {
 
   vi.mock("../../../middlewares/repository/eventRepository.js");
   const mockGetAllPublic = vi.spyOn(EventRepository.prototype, "getAllPublic");
+  const mockGetAllRegistered = vi.spyOn(
+    EventRepository.prototype,
+    "getAllRegistered",
+  );
+  const mockGetAllByUserId = vi.spyOn(
+    EventRepository.prototype,
+    "getAllByUserId",
+  );
   const mockGetAllEnriched = vi.spyOn(
     EventRepository.prototype,
     "getAllEnriched",
@@ -71,6 +79,7 @@ describe("EventController", () => {
       description: "donjon full succès",
       max_players: 8,
       status: "public",
+      user_id: "1905dae9-c572-4d9e-9baa-d8d72bc83fc4",
       tag_id: "tag-1",
       server_id: "server-1",
     };
@@ -168,6 +177,109 @@ describe("EventController", () => {
     });
   });
 
+  // --- GET ALL REGISTERED ---
+  describe("getAllRegistered", () => {
+    beforeEach(() => {
+      req.query = {};
+    });
+
+    it("Return events if exist for registered characters", async () => {
+      req.query = { characterIds: ["char-1", "char-2"] };
+
+      const baseEvent: Event = {
+        id: "923a9fe0-1395-4f4e-8d18-4a9ac183b924",
+        title: "Donjon minotot",
+        date: new Date("2026-01-01"),
+        duration: 60,
+        area: "Amakna",
+        sub_area: "Ile des taures",
+        donjon_name: "Labyrinthe du minotoror",
+        description: "donjon full succès",
+        max_players: 8,
+        status: "public",
+        user_id: "1905dae9-c572-4d9e-9baa-d8d72bc83fc4",
+        tag_id: "tag-1",
+        server_id: "server-1",
+      };
+
+      mockGetAllRegistered.mockResolvedValue([baseEvent]);
+
+      await underTest.getAllRegistered(req as Request, res as Response, next);
+
+      expect(mockGetAllRegistered).toHaveBeenCalledWith(["char-1", "char-2"]);
+      expect(res.json).toHaveBeenCalledWith([baseEvent]);
+    });
+
+    it("Return 204 if no registered events", async () => {
+      req.query = { characterIds: ["char-1"] };
+      mockGetAllRegistered.mockResolvedValue([]);
+      await underTest.getAllRegistered(req as Request, res as Response, next);
+
+      expect(res.status).toHaveBeenCalledWith(status.NO_CONTENT);
+      expect(res.json).toHaveBeenCalledWith({ error: "Any event found" });
+    });
+
+    it("Call next() in case of error", async () => {
+      const error = new Error();
+      mockGetAllRegistered.mockRejectedValue(error);
+      req.query = { characterIds: ["char-1"] };
+      await underTest.getAllRegistered(req as Request, res as Response, next);
+      expect(next).toHaveBeenCalledWith(error);
+    });
+  });
+
+  // --- GET ALL BY USER ID ---
+  describe("getAllByUserId", () => {
+    it("Return events for given userId", async () => {
+      const userId = "1905dae9-c572-4d9e-9baa-d8d72bc83fc4";
+      req.params = { userId };
+
+      const userEvent: Event = {
+        id: "923a9fe0-1395-4f4e-8d18-4a9ac183b924",
+        title: "Donjon minotot",
+        date: new Date("2026-01-01"),
+        duration: 60,
+        area: "Amakna",
+        sub_area: "Ile des taures",
+        donjon_name: "Labyrinthe du minotoror",
+        description: "donjon full succès",
+        max_players: 8,
+        status: "public",
+        user_id: "1905dae9-c572-4d9e-9baa-d8d72bc83fc4",
+        tag_id: "tag-1",
+        server_id: "server-1",
+      };
+
+      mockGetAllByUserId.mockResolvedValue([userEvent]);
+
+      await underTest.getAllByUserId(req as Request, res as Response, next);
+
+      expect(mockGetAllByUserId).toHaveBeenCalledWith(userId);
+      expect(res.json).toHaveBeenCalledWith([userEvent]);
+    });
+
+    it("Return 204 if no event for user", async () => {
+      const userId = "user-456";
+      req.params = { userId };
+      mockGetAllByUserId.mockResolvedValue([]);
+
+      await underTest.getAllByUserId(req as Request, res as Response, next);
+
+      expect(res.status).toHaveBeenCalledWith(status.NO_CONTENT);
+      expect(res.json).toHaveBeenCalledWith({ error: "Any event found" });
+    });
+
+    it("Call next() in case of error", async () => {
+      const error = new Error();
+      const userId = "user-789";
+      req.params = { userId };
+      mockGetAllByUserId.mockRejectedValue(error);
+
+      await underTest.getAllByUserId(req as Request, res as Response, next);
+      expect(next).toHaveBeenCalledWith(error);
+    });
+  });
+
   // --- GET ONE ---
   describe("getOne", () => {
     beforeEach(() => {
@@ -186,6 +298,7 @@ describe("EventController", () => {
         description: "donjon full succès",
         max_players: 8,
         status: "public",
+        user_id: "1905dae9-c572-4d9e-9baa-d8d72bc83fc4",
         tag_id: "b8c145a0-c68a-4adb-a33b-ae6f0ec89ee1",
         server_id: "5f076e0a-60a0-42d5-a18e-853a46ddc335",
       };
@@ -232,6 +345,7 @@ describe("EventController", () => {
           description: "donjon full succès",
           max_players: 8,
           status: "public",
+          user_id: "07a3cd78-3a4a-4aae-a681-7634d72197c2",
           tag_id: "f7a34554-d2d7-48d5-8bc2-1f7e4b06c8f8",
           server_id: "6c19c76b-cbc1-4a58-bdeb-b336eaf6f51c",
           tag: {
@@ -299,6 +413,7 @@ describe("EventController", () => {
         description: "donjon full succès",
         max_players: 8,
         status: "public",
+        user_id: "07a3cd78-3a4a-4aae-a681-7634d72197c2",
         tag_id: "f7a34554-d2d7-48d5-8bc2-1f7e4b06c8f8",
         server_id: "6c19c76b-cbc1-4a58-bdeb-b336eaf6f51c",
         tag: {
@@ -378,6 +493,7 @@ describe("EventController", () => {
         description: "donjon full succès",
         max_players: 8,
         status: "public",
+        user_id: "07a3cd78-3a4a-4aae-a681-7634d72197c2",
         tag_id: "f7a34554-d2d7-48d5-8bc2-1f7e4b06c8f8",
         server_id: "6c19c76b-cbc1-4a58-bdeb-b336eaf6f51c",
       };
@@ -392,6 +508,7 @@ describe("EventController", () => {
         description: "donjon full succès",
         max_players: 8,
         status: "public",
+        user_id: "07a3cd78-3a4a-4aae-a681-7634d72197c2",
         tag_id: "f7a34554-d2d7-48d5-8bc2-1f7e4b06c8f8",
         server_id: "6c19c76b-cbc1-4a58-bdeb-b336eaf6f51c",
         tag: {
@@ -447,6 +564,7 @@ describe("EventController", () => {
         description: "donjon full succès",
         max_players: 8,
         status: "public",
+        user_id: "07a3cd78-3a4a-4aae-a681-7634d72197c2",
         tag_id: "f7a34554-d2d7-48d5-8bc2-1f7e4b06c8f8",
         server_id: "6c19c76b-cbc1-4a58-bdeb-b336eaf6f51c",
       };
@@ -563,6 +681,7 @@ describe("EventController", () => {
         description: "donjon full succès",
         max_players: 8,
         status: "public",
+        user_id: "1905dae9-c572-4d9e-9baa-d8d72bc83fc4",
         tag_id: "f7a34554-d2d7-48d5-8bc2-1f7e4b06c8f8",
         server_id: "6c19c76b-cbc1-4a58-bdeb-b336eaf6f51c",
       };
@@ -625,6 +744,7 @@ describe("EventController", () => {
         description: "donjon full succès",
         max_players: 8,
         status: "public",
+        user_id: "07a3cd78-3a4a-4aae-a681-7634d72197c2",
         tag_id: "f7a34554-d2d7-48d5-8bc2-1f7e4b06c8f8",
         server_id: "6c19c76b-cbc1-4a58-bdeb-b336eaf6f51c",
       };
@@ -714,6 +834,7 @@ describe("EventController", () => {
         description: "donjon full succès",
         max_players: 8,
         status: "public",
+        user_id: "1905dae9-c572-4d9e-9baa-d8d72bc83fc4",
         tag_id: "f7a34554-d2d7-48d5-8bc2-1f7e4b06c8f8",
         server_id: "6c19c76b-cbc1-4a58-bdeb-b336eaf6f51c",
       };
@@ -780,6 +901,7 @@ describe("EventController", () => {
         description: "donjon full succès",
         max_players: 8,
         status: "public",
+        user_id: "07a3cd78-3a4a-4aae-a681-7634d72197c2",
         tag_id: "f7a34554-d2d7-48d5-8bc2-1f7e4b06c8f8",
         server_id: "6c19c76b-cbc1-4a58-bdeb-b336eaf6f51c",
       };

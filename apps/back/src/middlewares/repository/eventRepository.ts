@@ -1,5 +1,6 @@
 import { Op } from "sequelize";
 
+import { Character } from "../../types/character.js";
 import { Event, EventEnriched, EventBodyData } from "../../types/event.js";
 
 import EventEntity from "../../database/models/Event.js";
@@ -42,6 +43,31 @@ export class EventRepository {
         event.get({ plain: true }),
       );
 
+      return events;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  public async getAllRegistered(characterIds: string[]): Promise<Event[]> {
+    try {
+      const result = await EventEntity.findAll({
+        include: [
+          "tag",
+          "server",
+          {
+            association: "characters",
+            where: { id: { [Op.in]: characterIds } },
+            required: true,
+          },
+        ],
+        subQuery: false, // élimine les doublons
+      });
+
+      const events: Event[] = result.map((event: EventEntity) =>
+        event.get({ plain: true }),
+      );
+      console.log(events);
       return events;
     } catch (error) {
       throw error;

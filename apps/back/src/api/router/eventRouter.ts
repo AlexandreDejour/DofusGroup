@@ -20,6 +20,10 @@ export function createEventRouter(
     controller.getAll(req, res, next);
   });
 
+  router.get("/events/registered", (req, res, next) => {
+    controller.getAllRegistered(req, res, next);
+  });
+
   router.get("/events/enriched", (req, res, next) => {
     controller.getAllEnriched(req, res, next);
   });

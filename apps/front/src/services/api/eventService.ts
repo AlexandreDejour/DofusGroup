@@ -56,7 +56,7 @@ export class EventService {
 
   public async getAllByUserId(userId: string): Promise<Event[]> {
     try {
-      const response = await this.axios.get<Event[]>(`/events/${userId}`);
+      const response = await this.axios.get<Event[]>(`/user/${userId}/events`);
 
       return response.data;
     } catch (error) {

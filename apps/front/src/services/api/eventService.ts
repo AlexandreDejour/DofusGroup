@@ -54,6 +54,21 @@ export class EventService {
     }
   }
 
+  public async getAllByUserId(userId: string): Promise<Event[]> {
+    try {
+      const response = await this.axios.get<Event[]>(`/events/${userId}`);
+
+      return response.data;
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        if (error.response?.status === 204) {
+          throw new Error(t("event.error.none"));
+        }
+      }
+      throw error;
+    }
+  }
+
   public async getOneEnriched(eventId: string) {
     try {
       const response = await this.axios.get<EventEnriched>(

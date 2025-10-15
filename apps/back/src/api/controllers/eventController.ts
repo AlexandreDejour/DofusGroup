@@ -1,7 +1,6 @@
 import status from "http-status";
 import { NextFunction, Request, Response } from "express";
 
-import { Character } from "../../types/character.js";
 import { Event, EventBodyData, EventEnriched } from "../../types/event.js";
 
 import { EventRepository } from "../../middlewares/repository/eventRepository.js";
@@ -88,8 +87,7 @@ export class EventController {
         : [];
 
     try {
-      const events: EventEnriched[] =
-        await this.repository.getAllRegistered(ids);
+      const events: Event[] = await this.repository.getAllRegistered(ids);
 
       if (!events.length) {
         res.status(status.NO_CONTENT).json({ error: "Any event found" });
@@ -99,6 +97,23 @@ export class EventController {
       events.sort(
         (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime(),
       );
+
+      res.json(events);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  public async getAllByUserId(req: Request, res: Response, next: NextFunction) {
+    const { userId } = req.params;
+
+    try {
+      const events: Event[] = await this.repository.getAllByUserId(userId);
+
+      if (!events.length) {
+        res.status(status.NO_CONTENT).json({ error: "Any event found" });
+        return;
+      }
 
       res.json(events);
     } catch (error) {

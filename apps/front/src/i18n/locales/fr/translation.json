@@ -117,7 +117,7 @@
   },
 
   "character": {
-    "list": "Personnages",
+    "list": "Vos personnages",
     "create": "Créer un personnage",
     "creation": "Création de personnage",
     "modification": "Modification de personnage",
@@ -165,6 +165,8 @@
     "discussion": "Discussion",
     "modification": "Modification d'évènement",
     "noEvent": "Aucun évènement.",
+    "upComing": "Évènements à venir",
+    "your": "Vos évènements",
     "error": {
       "none": "Aucun évènement.",
       "noneUpcoming": "Aucun évènement à venir.",

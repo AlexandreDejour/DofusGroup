@@ -127,7 +127,7 @@
     "selection": "Character selection",
     "default": "Default character",
     "noCharacter": "No character.",
-    "your": "Your Characters",
+    "your": "Your characters",
 
     "error": {
       "none": "No character.",
@@ -172,6 +172,8 @@
     "discussion": "Discussion",
     "modification": "Event modification",
     "noEvent": "No event.",
+    "upComing": "Upcoming events",
+    "your": "Your events",
 
     "error": {
       "none": "No event.",

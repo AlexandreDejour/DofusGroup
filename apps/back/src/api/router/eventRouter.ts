@@ -28,6 +28,10 @@ export function createEventRouter(
     controller.getAllEnriched(req, res, next);
   });
 
+  router.get("/events/:userId", (req, res, next) => {
+    controller.getAllByUserId(req, res, next);
+  });
+
   router.get("/event/:eventId", validateUUID, (req, res, next) => {
     controller.getOne(req, res, next);
   });

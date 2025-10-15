@@ -1,10 +1,11 @@
+import qs from "qs";
 import axios from "axios";
 import { t } from "../../i18n/i18n-helper";
 
 import { ApiClient } from "../client";
 
 import { CreateEventForm } from "../../types/form";
-import { EventEnriched, PaginatedEvents } from "../../types/event";
+import { Event, EventEnriched, PaginatedEvents } from "../../types/event";
 
 export class EventService {
   private axios;
@@ -22,11 +23,46 @@ export class EventService {
       const response = await this.axios.get<PaginatedEvents>("/events", {
         params: { limit, page, ...filters },
       });
+
       return response.data;
     } catch (error) {
       if (axios.isAxiosError(error)) {
         if (error.response?.status === 204) {
           throw new Error(t("event.error.noneUpcoming"));
+        }
+      }
+      throw error;
+    }
+  }
+
+  public async getRegistered(characterIds: string[]): Promise<Event[]> {
+    try {
+      const response = await this.axios.get<Event[]>("/events/registered", {
+        params: { characterIds },
+        paramsSerializer: (params) =>
+          qs.stringify(params, { arrayFormat: "repeat" }),
+      });
+
+      return response.data;
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        if (error.response?.status === 204) {
+          throw new Error(t("event.error.noneUpcoming"));
+        }
+      }
+      throw error;
+    }
+  }
+
+  public async getAllByUserId(userId: string): Promise<Event[]> {
+    try {
+      const response = await this.axios.get<Event[]>(`/user/${userId}/events`);
+
+      return response.data;
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        if (error.response?.status === 204) {
+          throw new Error(t("event.error.none"));
         }
       }
       throw error;

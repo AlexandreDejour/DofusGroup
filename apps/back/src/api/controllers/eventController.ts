@@ -2,6 +2,7 @@ import status from "http-status";
 import { NextFunction, Request, Response } from "express";
 
 import { Event, EventBodyData, EventEnriched } from "../../types/event.js";
+
 import { EventRepository } from "../../middlewares/repository/eventRepository.js";
 
 export class EventController {
@@ -18,8 +19,6 @@ export class EventController {
       const serverId = req.query.server_id as string | undefined;
       const pageParam = parseInt(req.query.page as string, 10);
       const limitParam = parseInt(req.query.limit as string, 10);
-
-      console.log(tagId, serverId, title);
 
       const limit = !isNaN(limitParam) && limitParam > 0 ? limitParam : 10;
       const page = !isNaN(pageParam) && pageParam > 0 ? pageParam : 1;
@@ -70,6 +69,53 @@ export class EventController {
         total,
         totalPages,
       });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  public async getAllRegistered(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) {
+    const { characterIds } = req.query;
+    const ids: string[] = Array.isArray(characterIds)
+      ? characterIds.map((c) => String(c))
+      : characterIds
+        ? [String(characterIds)]
+        : [];
+
+    try {
+      const events: Event[] = await this.repository.getAllRegistered(ids);
+
+      if (!events.length) {
+        res.status(status.NO_CONTENT).json({ error: "Any event found" });
+        return;
+      }
+
+      events.sort(
+        (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime(),
+      );
+
+      res.json(events);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  public async getAllByUserId(req: Request, res: Response, next: NextFunction) {
+    const { userId } = req.params;
+
+    try {
+      const events: Event[] = await this.repository.getAllByUserId(userId);
+
+      if (!events.length) {
+        res.status(status.NO_CONTENT).json({ error: "Any event found" });
+        return;
+      }
+
+      res.json(events);
     } catch (error) {
       next(error);
     }

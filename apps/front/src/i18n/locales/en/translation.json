@@ -127,7 +127,7 @@
     "selection": "Character selection",
     "default": "Default character",
     "noCharacter": "No character.",
-    "your": "Your Characters",
+    "your": "Your characters",
 
     "error": {
       "none": "No character.",
@@ -172,6 +172,9 @@
     "discussion": "Discussion",
     "modification": "Event modification",
     "noEvent": "No event.",
+    "noOwnerCharacter": "Your events without an owner character have also been deleted.",
+    "upComing": "Upcoming events",
+    "your": "Your events",
 
     "error": {
       "none": "No event.",

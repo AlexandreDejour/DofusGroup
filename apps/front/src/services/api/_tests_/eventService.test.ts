@@ -4,7 +4,7 @@ import axios from "axios";
 import { t } from "../../../i18n/i18n-helper";
 
 import { CreateEventForm } from "../../../types/form";
-import { EventEnriched, PaginatedEvents } from "../../../types/event";
+import { Event, EventEnriched, PaginatedEvents } from "../../../types/event";
 
 import { ApiClient } from "../../client";
 import { EventService } from "../eventService";
@@ -49,7 +49,6 @@ describe("EventService", () => {
         level: 2,
         alignment: "Neutre",
         stuff: null,
-        default_character: false,
         server_id: "73b70f36-b546-4ee4-95ce-9bbc4adb67df",
         user: {
           id: "3d2ebbe3-8193-448c-bec8-8993e7055240",
@@ -139,6 +138,96 @@ describe("EventService", () => {
       apiClientMock.instance.get.mockRejectedValue(error);
 
       await expect(eventService.getEvents()).rejects.toThrow("Unknown error");
+    });
+  });
+
+  describe("getRegistered", () => {
+    it("calls axios.get with correct params and returns events", async () => {
+      const mockEvents: Event[] = [
+        {
+          id: "evt-1",
+          title: "Test",
+          date: new Date(),
+          duration: 60,
+          max_players: 4,
+          status: "public",
+          sub_area: "",
+          donjon_name: "",
+          description: "",
+          tag: { id: "t1", name: "tag", color: "#000" },
+          server: { id: "s1", name: "Srv", mono_account: false },
+          characters: [],
+        },
+      ];
+
+      apiClientMock.instance.get.mockResolvedValue({ data: mockEvents });
+
+      const result = await eventService.getRegistered(["char-1", "char-2"]);
+
+      expect(apiClientMock.instance.get).toHaveBeenCalledWith(
+        "/events/registered",
+        {
+          params: { characterIds: ["char-1", "char-2"] },
+          paramsSerializer: expect.any(Function),
+        },
+      );
+      expect(result).toEqual(mockEvents);
+    });
+
+    it("throws specific error if response is 204", async () => {
+      const axiosError = {
+        isAxiosError: true,
+        response: { status: 204 },
+      };
+      (axios.isAxiosError as any).mockReturnValue(true);
+      apiClientMock.instance.get.mockRejectedValue(axiosError);
+
+      await expect(eventService.getRegistered(["char-1"])).rejects.toThrow(
+        t("event.error.noneUpcoming"),
+      );
+    });
+  });
+
+  describe("getAllByUserId", () => {
+    it("calls axios.get and returns events", async () => {
+      const mockEvents: Event[] = [
+        {
+          id: "evt-2",
+          title: "User events",
+          date: new Date(),
+          duration: 30,
+          max_players: 5,
+          status: "public",
+          sub_area: "",
+          donjon_name: "",
+          description: "",
+          tag: { id: "t2", name: "tag2", color: "#111" },
+          server: { id: "s2", name: "Srv2", mono_account: false },
+          characters: [],
+        },
+      ];
+
+      apiClientMock.instance.get.mockResolvedValue({ data: mockEvents });
+
+      const result = await eventService.getAllByUserId(userId);
+
+      expect(apiClientMock.instance.get).toHaveBeenCalledWith(
+        `/events/${userId}`,
+      );
+      expect(result).toEqual(mockEvents);
+    });
+
+    it("throws specific error if response is 204", async () => {
+      const axiosError = {
+        isAxiosError: true,
+        response: { status: 204 },
+      };
+      (axios.isAxiosError as any).mockReturnValue(true);
+      apiClientMock.instance.get.mockRejectedValue(axiosError);
+
+      await expect(eventService.getAllByUserId(userId)).rejects.toThrow(
+        t("event.error.none"),
+      );
     });
   });
 
@@ -321,7 +410,6 @@ describe("EventService", () => {
             level: 2,
             alignment: "Neutre",
             stuff: null,
-            default_character: false,
             server_id: "73b70f36-b546-4ee4-95ce-9bbc4adb67df",
             user: {
               id: "3d2ebbe3-8193-448c-bec8-8993e7055240",

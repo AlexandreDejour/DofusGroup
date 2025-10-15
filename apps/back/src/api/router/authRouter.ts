@@ -9,7 +9,7 @@ import { DataEncryptionService } from "../../middlewares/utils/dataEncryptionSer
 import { AuthController } from "../controllers/authController.js";
 import { createUserSchema } from "../../middlewares/joi/schemas/user.js";
 import { loginSchema } from "../../middlewares/joi/schemas/auth.js";
-import { loginLimiter } from "../../middlewares/utils/loginLimiter.js";
+import { requestLimiter } from "../../middlewares/utils/requestLimiter.js";
 
 export function createAuthRouter(
   controller: AuthController,
@@ -31,7 +31,7 @@ export function createAuthRouter(
 
   router.post(
     "/auth/login",
-    loginLimiter,
+    requestLimiter,
     htmlSanitizer,
     validateSchema(loginSchema),
     (req, res, next) => {

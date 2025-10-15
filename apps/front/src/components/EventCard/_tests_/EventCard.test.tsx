@@ -80,6 +80,7 @@ describe("EventCard", () => {
     vi.spyOn(Date.prototype, "toLocaleString").mockReturnValue(
       "17/08/2025 12:00",
     );
+    renderEventCard();
   });
 
   afterEach(() => {
@@ -87,40 +88,33 @@ describe("EventCard", () => {
   });
 
   it("Display event title", () => {
-    renderEventCard();
     expect(screen.getByText("Event Test")).toBeInTheDocument();
   });
 
   it("Display tag title with his color", () => {
-    renderEventCard();
     const tagElement = screen.getByText("PVM");
     expect(tagElement).toBeInTheDocument();
     expect(tagElement).toHaveStyle({ backgroundColor: "#ff0000" });
   });
 
   it("Display server", () => {
-    renderEventCard();
     expect(screen.getByText("Jiva")).toBeInTheDocument();
   });
 
   it("Display date", () => {
-    renderEventCard();
     expect(screen.getByText("17/08/2025 12:00")).toBeInTheDocument();
     expect(Date.prototype.toLocaleString).toHaveBeenCalled();
   });
 
   it("Display Duration", () => {
-    renderEventCard();
     expect(screen.getByText("120 min")).toBeInTheDocument();
   });
 
   it("Display current players", () => {
-    renderEventCard();
     expect(screen.getByText("1/8")).toBeInTheDocument();
   });
 
   it("Navigate to details on button click", () => {
-    renderEventCard();
     const button = screen.getByRole("button", { name: t("common.details") });
     fireEvent.click(button);
     expect(mockNavigate).toHaveBeenCalledWith(

@@ -16,12 +16,11 @@ export default function formDataToObject<T extends Record<string, any>>(
     arrayKeys?: (keyof T)[];
   },
 ): T {
-  // entries sous forme [key, value] (value peut être string ou File)
+  // entries [key, value] (can be string or file)
   const entries = Array.from(formData.entries());
   const obj = entries.reduce<Record<string, FormDataEntryValue>>(
     (acc, [k, v]) => {
-      // si plusieurs valeurs pour la même clé, Object.fromEntries garderait la dernière,
-      // on utilisera getAll pour arrayKeys quand nécessaire.
+      // If many values for the same key, Object.fromEntries keep the last one,
       acc[k] = v;
       return acc;
     },

@@ -212,7 +212,7 @@ describe("EventService", () => {
       const result = await eventService.getAllByUserId(userId);
 
       expect(apiClientMock.instance.get).toHaveBeenCalledWith(
-        `/events/${userId}`,
+        `/user/${userId}/events`,
       );
       expect(result).toEqual(mockEvents);
     });

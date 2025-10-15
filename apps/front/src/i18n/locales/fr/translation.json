@@ -165,6 +165,7 @@
     "discussion": "Discussion",
     "modification": "Modification d'évènement",
     "noEvent": "Aucun évènement.",
+    "noOwnerCharacter": "Vos évènement sans personnage propriétaire ont également été supprimés.",
     "upComing": "Évènements à venir",
     "your": "Vos évènements",
     "error": {

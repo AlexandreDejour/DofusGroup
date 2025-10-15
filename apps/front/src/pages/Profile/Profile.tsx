@@ -67,7 +67,7 @@ export default function Profile() {
 
       try {
         const characterIds = userEnriched.characters.map((c) => c.id);
-        console.log(characterIds);
+
         const response = await eventService.getRegistered(characterIds);
 
         if (userEnriched.events?.length) {

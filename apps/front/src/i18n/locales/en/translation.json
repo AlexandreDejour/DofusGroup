@@ -172,6 +172,7 @@
     "discussion": "Discussion",
     "modification": "Event modification",
     "noEvent": "No event.",
+    "noOwnerCharacter": "Your events without an owner character have also been deleted.",
     "upComing": "Upcoming events",
     "your": "Your events",
 

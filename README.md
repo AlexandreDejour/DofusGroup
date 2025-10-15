@@ -2,7 +2,7 @@
 
 ## Presentation
 
-Hi! My name is Alexandre, i'm french and i'm a new web developer. I will present you my personal project made during my studies in O'Clock School. DofusGroup is an app to help [Dofus](https://www.dofus.com/fr) players find team mates in the game.
+Hi! My name is Alexandre, i'm french and i'm a new web developer. I will present to you my personal project made during my studies in O'Clock School. DofusGroup is an app to help [Dofus](https://www.dofus.com/fr) players find team mates in the game.
 
 ## Description
 
@@ -17,12 +17,12 @@ Team building in Dofus is somtimes long, hard and boring for multiple facts:
     - Loosing time checking other player caracteristic (level, stuff, knowledge, ...)
     - No preparation
     - Low interest for some of them
-  
- All of these, slows down players's progression and deteriorate their experience if they don't find any mate. This situation is accentuated if players don't have many playing time. But now DofusGroup is now here to change the game!
+
+All of these, slows down players's progression and deteriorate their experience if they don't find any mate. This situation is accentuated if players don't have many playing time. But now DofusGroup is now here to change the game!
 
 ### Goal
 
-DofusGroup is here to maximise players's time playing. How it does ? You can early create public event in application with date, hour, tag and other informations. You can invite your friend to the event and DofusGroup's users can join the team if event's author accept them. This feature increase numbers of possible team player dans permit them to win time play. In fact all players know when activity is plan and with who.
+DofusGroup is here to maximise players's time playing. How it does ? You can early create public event in application with date, hour, tag and other informations. You can invite your friend to the event and DofusGroup's users can join the team. This feature increase numbers of possible team player and permit them to win time play. In fact all players know when activity is plan and with who.
 
 ## Functionnalities
 
@@ -31,18 +31,13 @@ DofusGroup is here to maximise players's time playing. How it does ? You can ear
 Every register Dofusgroup's user have a user profil. To register new user need to create an account with valide pseudo, mail adress and password with dedicated formular.This personal profil give access of some functionnalities:
 
     - Manage personnal informations
-    - Create/manage character profil
-    - Create/manage/join events
-    - Manage friends list
+    - Create/manage/delete characters
+    - Create/manage/join/delete events
 
 ### Character's profil
 
-In Dofus each players can have many characters in their account, that's why they can create multiple characters in their profil. Each character's profil reunites many informations as name, level, stuff, server and many others. When user join an event he does with choosing character. Event's author can see character's informations to help him define if he accepts this player in his group.
+In Dofus each players can have many characters in their account, that's why they can create multiple characters in their profil. Each character's profil reunites many informations as name, level, stuff, server and many others. When user join an event he does with choosing character. Event's author can see character's informations to help him define if he is a well mate for the event.
 
 ### Events
 
-All registered users can create events with dedicated formular. As character's profil, each event will have his own property as title, tag, type, date and others. This informations will help users to find relevant event in list with sorting tool. Users's can also share events with their friend with unique link.
-
-### Friends list
-
-Each user have his own friends list to easily share his events with mates. He can invite them automotically during event creation or with the unique link. More of these, for each user, friends's events appear first in the list.
+All registered users can create events with dedicated formular. As character's profil, each event will have his own property as title, tag, type, date and others. This informations will help users to find relevant event in list with sorting tool. By default every every event's are public, but you can also set it private. Private events not appear in the main list, you can share URL link with your friends, and permits them join the team.

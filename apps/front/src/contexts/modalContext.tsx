@@ -534,13 +534,49 @@ export default function ModalProvider({ children }: ModalProviderProps) {
 
         if (targetType === "character" && targetId) {
           await characterService.delete(user.id, targetId);
+
+          const userCharacters = await characterService.getAllByUserId(user.id);
+          const events = await eventService.getAllByUserId(user.id);
+
+          if (!userCharacters.length) {
+            await Promise.all(
+              events.map((event) => eventService.delete(user.id, event.id)),
+            );
+
+            showSuccess(
+              t("system.success.deleted"),
+              `${t("character.success.deleted")} ${t(
+                "event.noOwnerCharacter",
+              )}`,
+            );
+          } else {
+            const characterids = userCharacters.flatMap(
+              (character) => character.id,
+            );
+            const eventsWithoutOwnerCharacters = events.filter(
+              (event) =>
+                !event.characters.some((character) =>
+                  characterids.includes(character.id),
+                ),
+            );
+
+            if (eventsWithoutOwnerCharacters) {
+              await Promise.all(
+                eventsWithoutOwnerCharacters.map((event) =>
+                  eventService.delete(user.id, event.id),
+                ),
+              );
+            }
+
+            showSuccess(
+              t("system.success.deleted"),
+              `${t("character.success.deleted")} ${t(
+                "event.noOwnerCharacter",
+              )}`,
+            );
+          }
+
           const response = await userService.getOne(user.id);
-
-          showSuccess(
-            t("system.success.deleted"),
-            t("character.success.deleted"),
-          );
-
           setUser({ ...user, ...response });
         }
 

@@ -61,13 +61,30 @@ export class EventRepository {
             required: true,
           },
         ],
-        subQuery: false, // élimine les doublons
+        subQuery: false, // delete duplicates
       });
 
       const events: Event[] = result.map((event: EventEntity) =>
         event.get({ plain: true }),
       );
-      console.log(events);
+
+      return events;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  public async getAllByUserId(userId: string): Promise<Event[]> {
+    try {
+      const result = await EventEntity.findAll({
+        include: ["tag", "server", "characters"],
+        where: { user_id: userId },
+      });
+
+      const events: Event[] = result.map((event: EventEntity) =>
+        event.get({ plain: true }),
+      );
+
       return events;
     } catch (error) {
       throw error;

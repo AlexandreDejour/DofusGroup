@@ -9,7 +9,7 @@ import { DataEncryptionService } from "../../middlewares/utils/dataEncryptionSer
 import { UserController } from "../controllers/userController.js";
 import { AuthController } from "../controllers/authController.js";
 import { updateUserSchema } from "../../middlewares/joi/schemas/user.js";
-import { loginLimiter } from "../../middlewares/utils/loginLimiter.js";
+import { requestLimiter } from "../../middlewares/utils/requestLimiter.js";
 
 export function createUserRouter(
   controller: UserController,
@@ -34,7 +34,7 @@ export function createUserRouter(
     })
     .patch(
       validateUUID,
-      loginLimiter,
+      requestLimiter,
       authService.checkPermission,
       htmlSanitizer,
       validateSchema(updateUserSchema),

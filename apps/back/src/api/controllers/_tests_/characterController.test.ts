@@ -59,20 +59,19 @@ describe("CharacterController", () => {
           level: 190,
           alignment: "Bonta",
           stuff: "https://d-bk.net/fr/d/1EFhw",
-          default_character: true,
         },
       ];
 
       mockGetAll.mockResolvedValue(mockCharacters);
       // WHEN
       await underTest.getAllByUserId(req as Request, res as Response, next);
-      //THEN
+      // THEN
       expect(mockGetAll).toHaveBeenCalled();
       expect(res.json).toHaveBeenCalledWith(mockCharacters);
-      expect(res.status).not.toHaveBeenCalledWith(status.NOT_FOUND);
+      expect(res.status).not.toHaveBeenCalledWith(status.NO_CONTENT);
     });
 
-    it("Return 404 if any character found.", async () => {
+    it("Return 204 if any character found.", async () => {
       const mockCharacters: Character[] = [];
 
       mockGetAll.mockResolvedValue(mockCharacters);
@@ -107,7 +106,6 @@ describe("CharacterController", () => {
         level: 190,
         alignment: "Bonta",
         stuff: "https://d-bk.net/fr/d/1EFhw",
-        default_character: true,
       };
 
       mockGetOne.mockResolvedValue(mockCharacter);
@@ -148,7 +146,6 @@ describe("CharacterController", () => {
           level: 190,
           alignment: "Bonta",
           stuff: "https://d-bk.net/fr/d/1EFhw",
-          default_character: true,
           user: {
             id: "436d798e-b084-454c-8f78-593e966a9a66",
             username: "Goldorak",
@@ -219,7 +216,6 @@ describe("CharacterController", () => {
         level: 190,
         alignment: "Bonta",
         stuff: "https://d-bk.net/fr/d/1EFhw",
-        default_character: true,
         user: {
           id: "436d798e-b084-454c-8f78-593e966a9a66",
           username: "Goldorak",
@@ -283,7 +279,6 @@ describe("CharacterController", () => {
         level: 190,
         alignment: "Bonta",
         stuff: "https://d-bk.net/fr/d/1EFhw",
-        default_character: true,
       };
       const mockNewCharacterEnriched: CharacterEnriched = {
         id: "0f309e32-2281-4b46-bb2e-bc2a7248e39b",
@@ -292,7 +287,6 @@ describe("CharacterController", () => {
         level: 190,
         alignment: "Bonta",
         stuff: "https://d-bk.net/fr/d/1EFhw",
-        default_character: true,
         user: {
           id: "436d798e-b084-454c-8f78-593e966a9a66",
           username: "Goldorak",
@@ -338,7 +332,6 @@ describe("CharacterController", () => {
         level: 190,
         alignment: "Bonta",
         stuff: "https://d-bk.net/fr/d/1EFhw",
-        default_character: true,
         user: {
           id: "436d798e-b084-454c-8f78-593e966a9a66",
           username: "Goldorak",
@@ -360,7 +353,6 @@ describe("CharacterController", () => {
       //THEN
       expect(mockUpdatedCharacter.level).toBe(200);
       expect(mockUpdatedCharacter.alignment).toBe("Brakmar");
-      expect(mockUpdatedCharacter.default_character).toBe(false);
       expect(mockUpdate).toHaveBeenCalledWith(
         req.params.userId,
         req.params.characterId,

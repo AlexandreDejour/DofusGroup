@@ -95,7 +95,11 @@ export default function CharacterDetails() {
               <p>
                 <span>{t("common.sex")}:</span> {character.sex}
               </p>
-              <a href={character.stuff ? character.stuff : ""}>
+              <a
+                href={character.stuff ? character.stuff : ""}
+                target="_blank"
+                rel="noreferrer"
+              >
                 <span>{t("common.stuff")}:</span> {character.stuff}
               </a>
             </div>

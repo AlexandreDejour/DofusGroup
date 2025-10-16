@@ -16,13 +16,8 @@ echo "🚀 Executing migrations..."
 npx sequelize-cli db:migrate
 
 # --- Seeds (executed if .seeded not exist) ---
-if [ ! -f /app/.seeded ]; then
-  echo "🌱 Executing initial seeds..."
-  npx sequelize-cli db:seed:all
-  touch /app/.seeded
-else
-  echo "🌱 Seeds already executed."
-fi
+echo "🌱 Executing initial seeds (idempotent)..."
+npx sequelize-cli db:seed:all
 
 if [ "$NODE_ENV" = "production" ]; then
   echo "🚀 Creating app user role if not exists..."

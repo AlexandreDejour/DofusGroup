@@ -21,7 +21,7 @@ export async function up(queryInterface, Sequelize) {
     {
       id: Sequelize.literal("gen_random_uuid()"),
       name: "Drop",
-      color: "#16a085",
+      color: "#077005",
       created_at: new Date(),
       updated_at: new Date(),
     },
@@ -35,7 +35,7 @@ export async function up(queryInterface, Sequelize) {
     {
       id: Sequelize.literal("gen_random_uuid()"),
       name: "AVA",
-      color: "#f39c12",
+      color: "#9C4F07",
       created_at: new Date(),
       updated_at: new Date(),
     },
@@ -49,7 +49,7 @@ export async function up(queryInterface, Sequelize) {
     {
       id: Sequelize.literal("gen_random_uuid()"),
       name: "Kolizéum",
-      color: "#f1c40f",
+      color: "#273CF5",
       created_at: new Date(),
       updated_at: new Date(),
     },

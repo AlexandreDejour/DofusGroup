@@ -1,7 +1,12 @@
 import * as dotenv from "dotenv";
 import path from "path";
 
-dotenv.config({ path: path.resolve(import.meta.dirname, "../../.env") });
+if (process.env.NODE_ENV !== "production") {
+  dotenv.config();
+}
+
+console.log("🔍 ENV from Node:", process.env.NODE_ENV);
+console.log("🔍 PG_URL seen by Node:", process.env.PG_URL);
 
 export class Config {
   private static instance: Config;

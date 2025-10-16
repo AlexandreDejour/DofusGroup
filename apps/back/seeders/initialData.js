@@ -2,6 +2,25 @@
 
 /** @type {import('sequelize-cli').Migration} */
 export async function up(queryInterface, Sequelize) {
+  // -Create seed check table
+  await queryInterface.sequelize.query(`
+    CREATE TABLE IF NOT EXISTS app_metadata (
+      key TEXT PRIMARY KEY,
+      value TEXT NOT NULL,
+      updated_at TIMESTAMP DEFAULT now()
+    );
+  `);
+
+  // Check if initial seeding have been already play
+  const [result] = await queryInterface.sequelize.query(
+    "SELECT value FROM app_metadata WHERE key='initial_seed';",
+  );
+
+  if (result.length > 0 && result[0].value === "true") {
+    console.log("🌱 Initial seeds already applied, skipping...");
+    return;
+  }
+
   // Tags
   await queryInterface.bulkInsert("tags", [
     {
@@ -107,10 +126,24 @@ export async function up(queryInterface, Sequelize) {
     updated_at: new Date(),
   }));
   await queryInterface.bulkInsert("servers", servers);
+
+  // Check seeding has played
+  await queryInterface.sequelize.query(`
+    INSERT INTO app_metadata (key, value) 
+    VALUES ('initial_seed', 'true')
+    ON CONFLICT (key) DO UPDATE SET value='true', updated_at=now();
+  `);
+
+  console.log("🌱 Initial seeds applied successfully.");
 }
 
 export async function down(queryInterface, Sequelize) {
   await queryInterface.bulkDelete("tags", null, { cascade: true });
   await queryInterface.bulkDelete("breeds", null, { cascade: true });
   await queryInterface.bulkDelete("servers", null, { cascade: true });
+
+  // Delete seeding flag if needed
+  await queryInterface.sequelize.query(`
+    DELETE FROM app_metadata WHERE key='initial_seed';
+  `);
 }

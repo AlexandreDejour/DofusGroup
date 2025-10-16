@@ -4,33 +4,59 @@ set -e
 echo "🏁 Init backend..."
 echo "🌍 Environnement : ${NODE_ENV:-development}"
 
-# Attente que PostgreSQL soit prêt
-echo "⏳ Waiting for database..."
-until npx sequelize-cli db:migrate:status > /dev/null 2>&1; do
-  echo "➡️ PostgreSQL not ready yet, new attempt in 3s..."
-  sleep 3
+# --- Wair for PostgreSQL ---
+echo "⏳ Waiting for PostgreSQL..."
+until pg_isready -h db -U $POSTGRES_USER; do
+  echo "➡️ PostgreSQL not ready yet..."
+  sleep 2
 done
 
-# --- Différenciation dev / prod ---
-if [ "$NODE_ENV" = "production" ]; then
-  echo "🏗️ Prod mode : executing migrations and seeds if needed."
-  if npx sequelize-cli db:migrate:status | grep -q "down"; then
-    echo "🚀 Executing migrations..."
-    npx sequelize-cli db:migrate
-    if [ ! -f /app/.seeded ]; then
-      echo "🌱 Executing initial seeds..."
-      npx sequelize-cli db:seed:all
-      touch /app/.seeded
-    else
-      echo "🌱 Seeds already executed."
-    fi
-  else
-    echo "✅ Database already migrated."
-  fi
+# --- Migrations ---
+echo "🚀 Executing migrations..."
+npx sequelize-cli db:migrate
+
+# --- Seeds (executed if .seeded not exist) ---
+if [ ! -f /app/.seeded ]; then
+  echo "🌱 Executing initial seeds..."
+  npx sequelize-cli db:seed:all
+  touch /app/.seeded
 else
-  echo "Dev mode : ignore migrations (execute manually npx sequelize-cli db:migrate if needed)."
+  echo "🌱 Seeds already executed."
 fi
 
-# --- Executing optionnal command ---
+if [ "$NODE_ENV" = "production" ]; then
+  echo "🚀 Creating app user role if not exists..."
+  psql "postgresql://$POSTGRES_USER:$POSTGRES_PASSWORD@db:5432/$POSTGRES_DB" <<EOF
+DO
+\$do\$
+BEGIN
+   IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = '${APP_DB_USER}') THEN
+      EXECUTE format('CREATE ROLE %I WITH LOGIN PASSWORD %L', '${APP_DB_USER}', '${APP_DB_PASSWORD}');
+   END IF;
+END
+\$do\$;
+EOF
+
+  echo "🚀 Applying permissions for ${APP_DB_USER}..."
+  psql "postgresql://$POSTGRES_USER:$POSTGRES_PASSWORD@db:5432/$POSTGRES_DB" <<EOF
+-- Tables CRUD
+GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE users, events, characters, comments, event_team TO ${APP_DB_USER};
+
+-- Tables lecture seule
+GRANT SELECT ON TABLE tags, breeds, servers TO ${APP_DB_USER};
+EOF
+
+  echo "✅ Production setup complete. Switching to app user..."
+  # Update PG_URL
+  export PG_URL="postgresql://${APP_DB_USER}:${APP_DB_PASSWORD}@db:5432/${POSTGRES_DB}"
+
+else
+  echo "🛠️ Dev mode : ignoring migrations, seeds, and role setup."
+fi
+
+# --- Executing optional command (e.g., npm start) ---
+echo "🌍 Environnement : $NODE_ENV"
 echo "🚀 Launching process : $@"
+echo "🔎 Final PG_URL: $PG_URL"
+
 exec "$@"

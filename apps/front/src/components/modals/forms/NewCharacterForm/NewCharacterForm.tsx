@@ -20,7 +20,7 @@ import GenderRadio from "../../formComponents/Radio/GenderRadio";
 import SelectOptions from "../../formComponents/Options/SelectOptions";
 
 const config = Config.getInstance();
-const axios = new ApiClient(config.baseUrl);
+const axios = new ApiClient(config.backUrl);
 const breedService = new BreedService(axios);
 const serverService = new ServerService(axios);
 

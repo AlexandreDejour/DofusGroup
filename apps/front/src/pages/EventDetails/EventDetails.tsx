@@ -22,7 +22,7 @@ import { EventService } from "../../services/api/eventService";
 import EventCharacterCard from "../../components/EventCharacterCard/EventCharacterCard";
 
 const config = Config.getInstance();
-const axios = new ApiClient(config.baseUrl);
+const axios = new ApiClient(config.backUrl);
 const eventService = new EventService(axios);
 
 export default function EventDetails() {

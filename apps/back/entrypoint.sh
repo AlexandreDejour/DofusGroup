@@ -16,7 +16,7 @@ echo "🚀 Executing migrations..."
 npx sequelize-cli db:migrate
 
 # --- Seeds (executed if .seeded not exist) ---
-echo "🌱 Executing initial seeds (idempotent)..."
+echo "🌱 Executing initial seeds..."
 npx sequelize-cli db:seed:all
 
 if [ "$NODE_ENV" = "production" ]; then
@@ -44,9 +44,6 @@ EOF
   echo "✅ Production setup complete. Switching to app user..."
   # Update PG_URL
   export PG_URL="postgresql://${APP_DB_USER}:${APP_DB_PASSWORD}@db:5432/${POSTGRES_DB}"
-
-else
-  echo "🛠️ Dev mode : ignoring migrations, seeds, and role setup."
 fi
 
 # --- Executing optional command (e.g., npm start) ---

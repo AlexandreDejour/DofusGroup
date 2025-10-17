@@ -52,6 +52,30 @@ export default function Home() {
   const [title, setTitle] = useState<string>("");
   const [server, setServer] = useState<string>("");
 
+  const checkUserCharacters = useCallback(async () => {
+    if (!user) return;
+
+    try {
+      const response = await userService.getOneEnriched(user.id);
+
+      if (!response.characters?.length) {
+        showError(
+          "Condition non remplie !",
+          "Vous devez avoir au moins un personnage pour créé un évènement.",
+        );
+        return false;
+      }
+
+      return true;
+    } catch (error) {
+      if (isAxiosError(error)) {
+        console.error("Axios error:", error.message);
+      } else if (error instanceof Error) {
+        console.error("General error:", error.message);
+      }
+    }
+  }, [user]);
+
   useEffect(() => {
     const fetchEvents = async () => {
       try {
@@ -99,7 +123,7 @@ export default function Home() {
     fetchTags();
     fetchEvents();
     fetchServers();
-  }, [currentPage]);
+  }, [currentPage, checkUserCharacters]);
 
   const handleSearch = useCallback(
     async (event: React.FormEvent<HTMLFormElement>) => {
@@ -131,30 +155,6 @@ export default function Home() {
     [],
   );
 
-  const checkUserCharacter = useCallback(async () => {
-    if (!user) return;
-
-    try {
-      const response = await userService.getOneEnriched(user.id);
-
-      if (!response.characters?.length) {
-        showError(
-          "Condition non remplie !",
-          "Vous devez avoir au moins un personnage pour créé un évènement.",
-        );
-        return false;
-      }
-
-      return true;
-    } catch (error) {
-      if (isAxiosError(error)) {
-        console.error("Axios error:", error.message);
-      } else if (error instanceof Error) {
-        console.error("General error:", error.message);
-      }
-    }
-  }, [user]);
-
   return (
     <main className="home">
       <EventFilter
@@ -181,7 +181,7 @@ export default function Home() {
             type="button"
             className="home_header_create button"
             onClick={async () => {
-              const hasCharacters = await checkUserCharacter();
+              const hasCharacters = await checkUserCharacters();
               if (hasCharacters) openModal("newEvent");
             }}
             disabled={!user}

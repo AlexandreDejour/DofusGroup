@@ -69,11 +69,12 @@ export class AuthController {
 
       res
         .cookie("token", accessToken, {
-          httpOnly: true, // Prevents access via JavaScriptt (XSS protection)
+          httpOnly: true,
           // TODO swap to true
-          secure: false, // Use HTTPS in production
-          sameSite: "strict", // CRSF protection
-          maxAge: 7200000, // Life time (2h)
+          secure: false, // HTTPS needed
+          sameSite: "lax", // authorized secured cross-site
+          path: "/", // cookie send for all routes
+          maxAge: 7200000,
         })
         .json(userWithoutPassword);
     } catch (error) {
@@ -194,8 +195,9 @@ export class AuthController {
   public logout(_req: Request, res: Response, _next: NextFunction) {
     res.clearCookie("token", {
       httpOnly: true,
-      secure: false,
-      sameSite: "strict",
+      secure: false, // same as cookie
+      sameSite: "lax", // same as cookie
+      path: "/", // same as cookie
     });
     res.json({ message: "Successfully logout" });
   }

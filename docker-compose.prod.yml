@@ -3,27 +3,28 @@ services:
     build:
       context: ./apps/front
     command: ["npm", "run", "start"]
-    volumes:
-      - ./apps/front:/app
     ports:
       - "5173:5173"
     depends_on:
       - back
     environment:
-      - NODE_ENV=development
+      - NODE_ENV=production
       - VITE_API_URL=${VITE_API_URL}
       - HOST=0.0.0.0
 
   back:
     build: ./apps/back
     env_file: .env
-    volumes:
-      - ./apps/back:/app
+    command: ["npm", "run", "start"]
     ports:
       - "3000:3000"
     environment:
-      - NODE_ENV=development
+      - NODE_ENV=production
       - PG_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
+      - APP_DB_USER=${APP_DB_USER}
+      - APP_DB_PASSWORD=${APP_DB_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+      - PG_HOST=db
     depends_on:
       db:
         condition: service_healthy

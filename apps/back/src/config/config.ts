@@ -1,7 +1,9 @@
 import * as dotenv from "dotenv";
 import path from "path";
 
-dotenv.config({ path: path.resolve(import.meta.dirname, "../../.env") });
+if (process.env.NODE_ENV !== "production") {
+  dotenv.config();
+}
 
 export class Config {
   private static instance: Config;

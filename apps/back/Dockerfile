@@ -8,10 +8,12 @@ RUN npm install
 
 COPY . .
 
+RUN apt-get update && apt-get install -y postgresql-client && rm -rf /var/lib/apt/lists/*
+
+RUN chmod +x entrypoint.sh
+
 EXPOSE 3000
 
-RUN wget https://github.com/jwilder/dockerize/releases/download/v0.6.1/dockerize-alpine-linux-amd64-v0.6.1.tar.gz \
-    && tar -C /usr/local/bin -xzvf dockerize-alpine-linux-amd64-v0.6.1.tar.gz \
-    && rm dockerize-alpine-linux-amd64-v0.6.1.tar.gz
+ENTRYPOINT ["./entrypoint.sh"]
 
-CMD ["npm" , "run", "dev"]
+CMD ["npm", "run", "dev"]

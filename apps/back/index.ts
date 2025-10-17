@@ -1,6 +1,8 @@
 import express from "express";
 import { Express } from "express";
+
 import cors from "cors";
+import helmet from "helmet";
 import cookieParser from "cookie-parser";
 
 import { Config } from "./src/config/config.js";
@@ -15,6 +17,15 @@ app.use(
   cors({
     origin: "http://localhost:5173",
     credentials: true,
+  }),
+);
+
+app.use(
+  helmet({
+    crossOriginOpenerPolicy: false,
+    crossOriginEmbedderPolicy: false,
+    crossOriginResourcePolicy: false,
+    hsts: false,
   }),
 );
 

@@ -52,8 +52,6 @@ export default function Home() {
   const [title, setTitle] = useState<string>("");
   const [server, setServer] = useState<string>("");
 
-  const [hasCharacters, setHasCharacters] = useState<Boolean>(false);
-
   useEffect(() => {
     const fetchEvents = async () => {
       try {
@@ -139,13 +137,15 @@ export default function Home() {
     try {
       const response = await userService.getOneEnriched(user.id);
 
-      if (!response.characters?.length)
+      if (!response.characters?.length) {
         showError(
           "Condition non remplie !",
           "Vous devez avoir au moins un personnage pour créé un évènement.",
         );
+        return false;
+      }
 
-      setHasCharacters(true);
+      return true;
     } catch (error) {
       if (isAxiosError(error)) {
         console.error("Axios error:", error.message);
@@ -153,7 +153,7 @@ export default function Home() {
         console.error("General error:", error.message);
       }
     }
-  }, []);
+  }, [user]);
 
   return (
     <main className="home">
@@ -180,10 +180,9 @@ export default function Home() {
           <button
             type="button"
             className="home_header_create button"
-            onClick={() => {
-              checkUserCharacter();
-              if (!hasCharacters) return;
-              openModal("newCharacter");
+            onClick={async () => {
+              const hasCharacters = await checkUserCharacter();
+              if (hasCharacters) openModal("newEvent");
             }}
             disabled={!user}
             style={{

@@ -4,13 +4,14 @@ import react from "@vitejs/plugin-react";
 export default defineConfig({
   plugins: [react()],
   server: {
-    host: "0.0.0.0",
+    host: true,
     port: 5173,
     strictPort: true,
-  },
-  test: {
-    globals: true,
-    environment: "jsdom",
-    setupFiles: ["@testing-library/jest-dom"],
+    hmr: {
+      clientPort: 8080,
+      protocol: "ws",
+      host: "localhost",
+      port: 5173,
+    },
   },
 });

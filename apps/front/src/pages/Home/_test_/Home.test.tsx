@@ -22,6 +22,38 @@ vi.mock("../../../contexts/screenContext", () => ({
   useScreen: vi.fn(),
 }));
 
+const openModal = vi.fn();
+const handleDelete = vi.fn();
+vi.mock("../../../contexts/modalContext", () => ({
+  __esModule: true,
+  default: ({ children }: { children: React.ReactNode }) => children,
+  useModal: () => ({
+    openModal,
+    handleDelete,
+  }),
+}));
+
+vi.mock("../../../contexts/authContext", () => ({
+  __esModule: true,
+  useAuth: () => ({
+    user: {
+      id: "15ff46b5-60f3-4e86-98bc-da8fcaa3e29e",
+      username: "toto",
+    },
+    setUser: vi.fn(),
+    isAuthLoading: false,
+  }),
+}));
+
+const showError = vi.fn();
+vi.mock("../../../contexts/notificationContext", () => ({
+  __esModule: true,
+  default: ({ children }: { children: React.ReactNode }) => children,
+  useNotification: () => ({
+    showError,
+  }),
+}));
+
 vi.mock("../../../components/EventCard/EventCard", () => ({
   default: ({ event }: any) => (
     <article data-testid="event-card">
@@ -134,7 +166,7 @@ describe("Home page", () => {
     vi.clearAllMocks();
   });
 
-  it("renders filter inputs", async () => {
+  it("Renders filter inputs", async () => {
     renderHome();
     expect(
       await screen.findByLabelText(`${t("common.title")}:`),
@@ -142,6 +174,20 @@ describe("Home page", () => {
     expect(screen.getByLabelText(`${t("tag.upperCase")}:`)).toBeInTheDocument();
     expect(
       screen.getByLabelText(`${t("server.upperCase")}:`),
+    ).toBeInTheDocument();
+  });
+
+  it("Display list header", () => {
+    renderHome();
+
+    expect(screen.getByText(`${t("common.title")}`)).toBeInTheDocument();
+    expect(screen.getByText(`${t("tag.upperCase")}`)).toBeInTheDocument();
+    expect(screen.getByText(`${t("server.upperCase")}`)).toBeInTheDocument();
+    expect(screen.getByText(`${t("common.date")}`)).toBeInTheDocument();
+    expect(screen.getByText(`${t("common.duration")}`)).toBeInTheDocument();
+    expect(screen.getByText(`${t("common.players")}`)).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: t("common.new") }),
     ).toBeInTheDocument();
   });
 

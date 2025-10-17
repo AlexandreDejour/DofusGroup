@@ -8,11 +8,15 @@ import { Tag } from "../../types/tag";
 import { Event } from "../../types/event";
 import { Server } from "../../types/server";
 
+import { useAuth } from "../../contexts/authContext";
+import { useModal } from "../../contexts/modalContext";
 import { useScreen } from "../../contexts/screenContext";
+import { useNotification } from "../../contexts/notificationContext";
 
 import { Config } from "../../config/config";
 import { ApiClient } from "../../services/client";
 import { TagService } from "../../services/api/tagService";
+import { UserService } from "../../services/api/userService";
 import { EventService } from "../../services/api/eventService";
 import { ServerService } from "../../services/api/serverService";
 
@@ -25,13 +29,17 @@ import { SearchForm } from "../../types/form";
 const config = Config.getInstance();
 const axios = new ApiClient(config.baseUrl);
 const tagService = new TagService(axios);
+const userService = new UserService(axios);
 const eventService = new EventService(axios);
 const serverService = new ServerService(axios);
 
 export default function Home() {
   const t = useTypedTranslation();
 
+  const { user } = useAuth();
+  const { openModal } = useModal();
   const { isDesktop } = useScreen();
+  const { showError } = useNotification();
 
   const [totalPages, setTotalPages] = useState(1);
   const [currentPage, setCurrentPage] = useState(1);
@@ -43,6 +51,30 @@ export default function Home() {
   const [tag, setTag] = useState<string>("");
   const [title, setTitle] = useState<string>("");
   const [server, setServer] = useState<string>("");
+
+  const checkUserCharacters = useCallback(async () => {
+    if (!user) return;
+
+    try {
+      const response = await userService.getOneEnriched(user.id);
+
+      if (!response.characters?.length) {
+        showError(
+          "Condition non remplie !",
+          "Vous devez avoir au moins un personnage pour créé un évènement.",
+        );
+        return false;
+      }
+
+      return true;
+    } catch (error) {
+      if (isAxiosError(error)) {
+        console.error("Axios error:", error.message);
+      } else if (error instanceof Error) {
+        console.error("General error:", error.message);
+      }
+    }
+  }, [user]);
 
   useEffect(() => {
     const fetchEvents = async () => {
@@ -91,7 +123,7 @@ export default function Home() {
     fetchTags();
     fetchEvents();
     fetchServers();
-  }, [currentPage]);
+  }, [currentPage, checkUserCharacters]);
 
   const handleSearch = useCallback(
     async (event: React.FormEvent<HTMLFormElement>) => {
@@ -145,7 +177,22 @@ export default function Home() {
           <p className="home_header_date">{t("common.date")}</p>
           <p className="home_header_duration">{t("common.duration")}</p>
           <p className="home_header_players">{t("common.players")}</p>
-          <p className="home_header_details"></p>
+          <button
+            type="button"
+            className="home_header_create button"
+            onClick={async () => {
+              const hasCharacters = await checkUserCharacters();
+              if (hasCharacters) openModal("newEvent");
+            }}
+            disabled={!user}
+            style={{
+              background: !user
+                ? "grey"
+                : "radial-gradient(circle, rgba(96,186,96,1) 0%, rgba(156,217,92,1) 90%)",
+            }}
+          >
+            {t("common.new")}
+          </button>
         </header>
       )}
 

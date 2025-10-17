@@ -37,9 +37,9 @@ export default function Home() {
   const t = useTypedTranslation();
 
   const { user } = useAuth();
+  const { openModal } = useModal();
   const { isDesktop } = useScreen();
   const { showError } = useNotification();
-  const { openModal } = useModal();
 
   const [totalPages, setTotalPages] = useState(1);
   const [currentPage, setCurrentPage] = useState(1);

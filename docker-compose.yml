@@ -17,7 +17,6 @@ services:
   back:
     build: ./apps/back
     env_file: .env
-    command: ["npm", "run", "start"]
     volumes:
       - ./apps/back:/app
     ports:

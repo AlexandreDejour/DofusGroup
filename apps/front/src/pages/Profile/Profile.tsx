@@ -21,7 +21,7 @@ import CharacterCard from "../../components/CharacterCard/CharacterCard";
 import ProfileEventCard from "../../components/ProfileEventCard/ProfileEventCard";
 
 const config = Config.getInstance();
-const axios = new ApiClient(config.baseUrl);
+const axios = new ApiClient(config.backUrl);
 const userService = new UserService(axios);
 const eventService = new EventService(axios);
 

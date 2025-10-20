@@ -17,7 +17,7 @@ import { CharacterEnriched } from "../../../../types/character";
 import CharactersCheckbox from "../../formComponents/Checkbox/CharactersCheckbox";
 
 const config = Config.getInstance();
-const axios = new ApiClient(config.baseUrl);
+const axios = new ApiClient(config.backUrl);
 const characterService = new CharacterService(axios);
 
 interface JoinEventFormProps {

@@ -22,10 +22,11 @@ import formatDateToLocalInput from "../../utils/formatDateToLocalInput";
 import SelectOptions from "../../formComponents/Options/SelectOptions";
 
 const config = Config.getInstance();
-const axios = new ApiClient(config.baseUrl);
-const dofusDBService = new DofusDBService(axios);
-const tagService = new TagService(axios);
-const serverService = new ServerService(axios);
+const axiosBack = new ApiClient(config.backUrl);
+const axiosDofusDB = new ApiClient(config.dofusdbUrl);
+const tagService = new TagService(axiosBack);
+const serverService = new ServerService(axiosBack);
+const dofusDBService = new DofusDBService(axiosDofusDB);
 
 interface NewEventFormProps {
   updateTarget: EventEnriched;

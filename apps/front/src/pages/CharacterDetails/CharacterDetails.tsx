@@ -15,7 +15,7 @@ import { ApiClient } from "../../services/client";
 import { CharacterService } from "../../services/api/characterService";
 
 const config = Config.getInstance();
-const axios = new ApiClient(config.baseUrl);
+const axios = new ApiClient(config.backUrl);
 const characterService = new CharacterService(axios);
 
 export default function CharacterDetails() {

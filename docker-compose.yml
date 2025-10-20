@@ -1,12 +1,22 @@
 services:
+  nginx:
+    image: nginx:latest
+    container_name: nginx
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./nginx/conf.d/default.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      - front
+      - back
   front:
     build:
       context: ./apps/front
     command: ["npm", "run", "start"]
     volumes:
       - ./apps/front:/app
-    ports:
-      - "5173:5173"
+    expose:
+      - "5173"
     depends_on:
       - back
     environment:
@@ -15,12 +25,14 @@ services:
       - HOST=0.0.0.0
 
   back:
-    build: ./apps/back
+    build:
+      context: ./apps/back
+      dockerfile: Dockerfile
     env_file: .env
     volumes:
       - ./apps/back:/app
-    ports:
-      - "3000:3000"
+    expose:
+      - "3000"
     environment:
       - NODE_ENV=development
       - PG_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}

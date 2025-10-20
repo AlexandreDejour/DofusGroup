@@ -47,8 +47,9 @@ EOF
 fi
 
 # --- Executing optional command (e.g., npm start) ---
+echo "Link : http://localhost:8080"
 echo "🌍 Environnement : $NODE_ENV"
 echo "🚀 Launching process : $@"
-echo "🔎 Final PG_URL: $PG_URL"
+echo "🔎 PG_URL: $PG_URL"
 
 exec "$@"

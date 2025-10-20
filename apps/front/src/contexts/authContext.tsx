@@ -11,7 +11,7 @@ import { useNotification } from "./notificationContext";
 import { AuthService } from "../services/api/authService";
 
 const config = Config.getInstance();
-const axios = new ApiClient(config.baseUrl);
+const axios = new ApiClient(config.backUrl);
 const authService = new AuthService(axios);
 
 export interface AuthContextType {

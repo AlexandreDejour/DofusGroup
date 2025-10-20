@@ -27,7 +27,7 @@ import formDataToObject from "../../contexts/utils/formDataToObject";
 import { SearchForm } from "../../types/form";
 
 const config = Config.getInstance();
-const axios = new ApiClient(config.baseUrl);
+const axios = new ApiClient(config.backUrl);
 const tagService = new TagService(axios);
 const userService = new UserService(axios);
 const eventService = new EventService(axios);

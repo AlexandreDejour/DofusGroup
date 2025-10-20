@@ -29,7 +29,7 @@ import isUpdateField from "../components/modals/utils/isUpdateField";
 import { cleanProfanity, containsProfanity } from "./utils/profanity";
 
 const config = Config.getInstance();
-const axios = new ApiClient(config.baseUrl);
+const axios = new ApiClient(config.backUrl);
 const authService = new AuthService(axios);
 const userService = new UserService(axios);
 const eventService = new EventService(axios);

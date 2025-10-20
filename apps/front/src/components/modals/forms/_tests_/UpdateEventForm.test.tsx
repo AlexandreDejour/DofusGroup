@@ -20,7 +20,8 @@ import UpdateEventForm from "../UpdateEventForm/UpdateEventForm";
 vi.mock("../../../../config/config.ts", () => ({
   Config: {
     getInstance: () => ({
-      baseUrl: "http://localhost",
+      backUrl: "/api",
+      dofusdbUrl: "/dofusdb",
     }),
   },
 }));

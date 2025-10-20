@@ -518,7 +518,8 @@ describe("AuthController", () => {
       expect(res.clearCookie).toHaveBeenCalledWith("token", {
         httpOnly: true,
         secure: false,
-        sameSite: "strict",
+        sameSite: "lax",
+        path: "/",
       });
       expect(res.json).toHaveBeenCalledWith({ message: "Successfully logout" });
     });

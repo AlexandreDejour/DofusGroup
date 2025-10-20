@@ -35,6 +35,7 @@
     "level": "Niveau",
     "loading": "Chargement...",
     "maxPlayers": "Joueurs maximum",
+    "minimalCondition": "Condition minimum non remplie !",
     "name": "Nom",
     "new": "Nouveau",
     "ok": "OK",
@@ -130,7 +131,8 @@
       "noneOnAccount": "Vous n'avez créé aucun personnage sur votre compte.",
       "noneOnServer": "Aucun personnage disponible sur ce serveur.",
       "notFound": "Ce personnage n'existe plus.",
-      "loginRequired": "Vous devez être connecté pour créer un personnage."
+      "loginRequired": "Vous devez être connecté pour créer un personnage.",
+      "required": "Vous devez avoir au moins un personnage pour créé un évènement."
     },
     "success": {
       "created": "Vous avez créé un nouveau personnage.",

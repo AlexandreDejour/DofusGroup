@@ -59,10 +59,7 @@ export default function Home() {
       const response = await userService.getOneEnriched(user.id);
 
       if (!response.characters?.length) {
-        showError(
-          "Condition non remplie !",
-          "Vous devez avoir au moins un personnage pour créé un évènement.",
-        );
+        showError(t("common.minimalCondition"), t("character.error.required"));
         return false;
       }
 

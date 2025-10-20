@@ -35,6 +35,7 @@
     "level": "Level",
     "loading": "Loading...",
     "maxPlayers": "Max players",
+    "minimalCondition": "Minimum condition not met !",
     "name": "Name",
     "new": "New",
     "ok": "OK",
@@ -134,7 +135,8 @@
       "noneOnAccount": "You have not created any character on your account.",
       "noneOnServer": "No character available on this server.",
       "notFound": "This character no longer exists.",
-      "loginRequired": "You must be logged in to create character."
+      "loginRequired": "You must be logged in to create character.",
+      "required": "You must have at least one character to create an event."
     },
 
     "success": {

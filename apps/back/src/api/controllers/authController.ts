@@ -1,7 +1,7 @@
 import argon2 from "argon2";
 import status from "http-status";
 import jwt, { JwtPayload } from "jsonwebtoken";
-import { NextFunction, Request, Response } from "express";
+import { CookieOptions, NextFunction, Request, Response } from "express";
 
 import { Config } from "../../config/config.js";
 import { AuthenticatedRequest } from "../../middlewares/utils/authService.js";
@@ -14,11 +14,22 @@ export class AuthController {
   private config: Config;
   private service: AuthService;
   private repository: AuthRepository;
+  private cookieOptions: CookieOptions;
 
   public constructor(service: AuthService, repository: AuthRepository) {
     this.config = Config.getInstance();
     this.service = service;
     this.repository = repository;
+    this.cookieOptions = {
+      httpOnly: true,
+      secure: this.config.environment === "production",
+      sameSite: "lax",
+      path: "/",
+      domain:
+        this.config.environment === "production"
+          ? ".dofusgroup.com"
+          : undefined,
+    };
   }
 
   public async register(req: Request, res: Response, next: NextFunction) {
@@ -68,14 +79,7 @@ export class AuthController {
       const { password: _password, ...userWithoutPassword } = user;
 
       res
-        .cookie("token", accessToken, {
-          httpOnly: true,
-          // TODO swap to true
-          secure: false, // HTTPS needed
-          sameSite: "lax", // authorized secured cross-site
-          path: "/", // cookie send for all routes
-          maxAge: 7200000,
-        })
+        .cookie("token", accessToken, this.cookieOptions)
         .json(userWithoutPassword);
     } catch (error) {
       next(error);
@@ -193,12 +197,7 @@ export class AuthController {
   }
 
   public logout(_req: Request, res: Response, _next: NextFunction) {
-    res.clearCookie("token", {
-      httpOnly: true,
-      secure: false, // same as cookie
-      sameSite: "lax", // same as cookie
-      path: "/", // same as cookie
-    });
+    res.clearCookie("token", this.cookieOptions);
     res.json({ message: "Successfully logout" });
   }
 }

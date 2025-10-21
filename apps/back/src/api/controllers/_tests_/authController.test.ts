@@ -118,9 +118,16 @@ describe("AuthController", () => {
       await underTest.register(req as Request, res as Response, next);
 
       expect(mockFindByUsername).toHaveBeenCalledWith("toto");
-      expect(res.json).toHaveBeenCalledWith({ error: "Username forbidden" });
-      expect(res.status).toHaveBeenCalledWith(status.CONFLICT);
       expect(mockRegister).not.toHaveBeenCalled();
+      expect(next).toHaveBeenCalled();
+      const err = next.mock.calls[0][0];
+      expect(err).toBeInstanceOf(Error);
+      expect(err).toEqual(
+        expect.objectContaining({
+          status: status.CONFLICT,
+          message: "Username forbidden",
+        }),
+      );
     });
   });
 
@@ -171,13 +178,19 @@ describe("AuthController", () => {
       mockFindByUsername.mockResolvedValue(null);
       await underTest.login(req as Request, res as Response, next);
 
-      expect(res.status).toHaveBeenCalledWith(status.UNAUTHORIZED);
-      expect(res.json).toHaveBeenCalledWith({
-        error: "Username or password unavailable",
-      });
+      expect(mockFindByUsername).toHaveBeenCalledWith("tata");
+      expect(next).toHaveBeenCalled();
+      const err = next.mock.calls[0][0];
+      expect(err).toBeInstanceOf(Error);
+      expect(err).toEqual(
+        expect.objectContaining({
+          status: status.UNAUTHORIZED,
+          message: "Username or password unavailable",
+        }),
+      );
     });
 
-    it("Return 401 if username and password not match.", async () => {
+    it("Return 401 if password not match.", async () => {
       req.body = {
         username: "tata",
         password: "secret",
@@ -186,10 +199,16 @@ describe("AuthController", () => {
       (argon2.verify as Mock).mockResolvedValue(false);
       await underTest.login(req as Request, res as Response, next);
 
-      expect(res.status).toHaveBeenCalledWith(status.UNAUTHORIZED);
-      expect(res.json).toHaveBeenCalledWith({
-        error: "Username or password unavailable",
-      });
+      expect(mockFindByUsername).toHaveBeenCalledWith("tata");
+      expect(next).toHaveBeenCalled();
+      const err = next.mock.calls[0][0];
+      expect(err).toBeInstanceOf(Error);
+      expect(err).toEqual(
+        expect.objectContaining({
+          status: status.UNAUTHORIZED,
+          message: "Username or password unavailable",
+        }),
+      );
     });
   });
 
@@ -212,8 +231,15 @@ describe("AuthController", () => {
 
       await underTest.apiMe(req as Request, res as Response, next);
 
-      expect(res.status).toHaveBeenCalledWith(status.UNAUTHORIZED);
-      expect(res.json).toHaveBeenCalledWith({ message: "Unauthorized access" });
+      expect(next).toHaveBeenCalled();
+      const err = next.mock.calls[0][0];
+      expect(err).toBeInstanceOf(Error);
+      expect(err).toEqual(
+        expect.objectContaining({
+          status: status.UNAUTHORIZED,
+          message: "Unauthorized access",
+        }),
+      );
     });
 
     it("Return 400 in case of invalid token (payload string)", async () => {
@@ -223,10 +249,15 @@ describe("AuthController", () => {
 
       await underTest.apiMe(req as Request, res as Response, next);
 
-      expect(res.status).toHaveBeenCalledWith(status.BAD_REQUEST);
-      expect(res.json).toHaveBeenCalledWith({
-        message: "Invalid token payload",
-      });
+      expect(next).toHaveBeenCalled();
+      const err = next.mock.calls[0][0];
+      expect(err).toBeInstanceOf(Error);
+      expect(err).toEqual(
+        expect.objectContaining({
+          status: status.BAD_REQUEST,
+          message: "Invalid token payload",
+        }),
+      );
     });
 
     it("Return 404 if user not found", async () => {
@@ -239,8 +270,15 @@ describe("AuthController", () => {
 
       await underTest.apiMe(req as Request, res as Response, next);
 
-      expect(res.status).toHaveBeenCalledWith(status.NOT_FOUND);
-      expect(res.json).toHaveBeenCalledWith({ message: "User not found" });
+      expect(next).toHaveBeenCalled();
+      const err = next.mock.calls[0][0];
+      expect(err).toBeInstanceOf(Error);
+      expect(err).toEqual(
+        expect.objectContaining({
+          status: status.NOT_FOUND,
+          message: "User not found",
+        }),
+      );
     });
 
     it("Return user without password in case of valid token", async () => {
@@ -315,11 +353,15 @@ describe("AuthController", () => {
         next,
       );
 
-      expect(res.status).toHaveBeenCalledWith(status.BAD_REQUEST);
-      expect(res.json).toHaveBeenCalledWith({
-        message: "Invalid or missing user ID",
-      });
-      expect(next).not.toHaveBeenCalled();
+      expect(next).toHaveBeenCalled();
+      const err = next.mock.calls[0][0];
+      expect(err).toBeInstanceOf(Error);
+      expect(err).toEqual(
+        expect.objectContaining({
+          status: status.BAD_REQUEST,
+          message: "Invalid or missing user ID",
+        }),
+      );
     });
 
     it("Return 404 if user not found", async () => {
@@ -340,9 +382,15 @@ describe("AuthController", () => {
         next,
       );
 
-      expect(res.status).toHaveBeenCalledWith(status.NOT_FOUND);
-      expect(res.json).toHaveBeenCalledWith({ message: "User not found" });
-      expect(next).not.toHaveBeenCalled();
+      expect(next).toHaveBeenCalled();
+      const err = next.mock.calls[0][0];
+      expect(err).toBeInstanceOf(Error);
+      expect(err).toEqual(
+        expect.objectContaining({
+          status: status.NOT_FOUND,
+          message: "User not found",
+        }),
+      );
     });
 
     it("Return 401 if old password doesn't match", async () => {
@@ -364,11 +412,15 @@ describe("AuthController", () => {
         next,
       );
 
-      expect(res.status).toHaveBeenCalledWith(status.UNAUTHORIZED);
-      expect(res.json).toHaveBeenCalledWith({
-        error: "Old password doesn't match current password",
-      });
-      expect(next).not.toHaveBeenCalled();
+      expect(next).toHaveBeenCalled();
+      const err = next.mock.calls[0][0];
+      expect(err).toBeInstanceOf(Error);
+      expect(err).toEqual(
+        expect.objectContaining({
+          status: status.UNAUTHORIZED,
+          message: "Old password doesn't match current password",
+        }),
+      );
     });
 
     it("Call next() if old password matches", async () => {
@@ -476,11 +528,16 @@ describe("AuthController", () => {
         next,
       );
 
-      expect(res.status).toHaveBeenCalledWith(status.BAD_REQUEST);
-      expect(res.json).toHaveBeenCalledWith({
-        message: "Invalid or missing user ID",
-      });
       expect(mockFindById).not.toHaveBeenCalled();
+      expect(next).toHaveBeenCalled();
+      const err = next.mock.calls[0][0];
+      expect(err).toBeInstanceOf(Error);
+      expect(err).toEqual(
+        expect.objectContaining({
+          status: status.BAD_REQUEST,
+          message: "Invalid or missing user ID",
+        }),
+      );
     });
 
     it("Return 404 if user not found", async () => {
@@ -503,10 +560,15 @@ describe("AuthController", () => {
       expect(mockFindById).toHaveBeenCalledWith(
         "3521dd0c-c303-4239-a545-10e5476abe2a",
       );
-      expect(res.status).toHaveBeenCalledWith(status.NOT_FOUND);
-      expect(res.json).toHaveBeenCalledWith({
-        message: "User not found",
-      });
+      expect(next).toHaveBeenCalled();
+      const err = next.mock.calls[0][0];
+      expect(err).toBeInstanceOf(Error);
+      expect(err).toEqual(
+        expect.objectContaining({
+          status: status.NOT_FOUND,
+          message: "User not found",
+        }),
+      );
     });
   });
 

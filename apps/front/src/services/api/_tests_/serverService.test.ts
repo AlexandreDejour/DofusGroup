@@ -1,27 +1,27 @@
-import { describe, it, beforeEach, expect, vi } from "vitest";
-
-import axios from "axios";
-import { t } from "../../../i18n/i18n-helper";
+import { describe, it, beforeEach, expect, vi, Mock } from "vitest";
 
 import { Server } from "../../../types/server";
 
 import { ApiClient } from "../../client";
 import { ServerService } from "../serverService";
+import handleApiError from "../../utils/handleApiError";
 
-vi.mock("axios");
+vi.mock("../../utils/handleApiError", () => ({
+  default: vi.fn(),
+}));
 
 describe("ServerService", () => {
   let apiClientMock: any;
   let serverService: ServerService;
 
   beforeEach(() => {
+    (handleApiError as unknown as Mock).mockReset();
     apiClientMock = {
       instance: {
         get: vi.fn(),
       },
     };
     serverService = new ServerService(apiClientMock as ApiClient);
-    vi.mocked(axios.isAxiosError).mockReturnValue(false);
   });
 
   describe("getTags", () => {
@@ -38,25 +38,19 @@ describe("ServerService", () => {
       expect(result).toEqual(mockServers);
     });
 
-    it("should throw a specific error if response status is 204", async () => {
-      const axiosError = {
-        isAxiosError: true,
-        response: { status: 204 },
-      };
+    it("Throw specific error when any server found (handleApiError throws)", async () => {
+      const error = new Error("Any server found.");
+      apiClientMock.instance.get.mockRejectedValue(error);
 
-      vi.mocked(axios.isAxiosError).mockReturnValue(true);
-      apiClientMock.instance.get.mockRejectedValue(axiosError);
+      (handleApiError as unknown as Mock).mockImplementation(() => {
+        throw error;
+      });
 
       await expect(serverService.getServers()).rejects.toThrow(
-        t("server.error.notFound"),
+        "Any server found.",
       );
-    });
 
-    it("should re-throw a generic error if it's not an AxiosError", async () => {
-      const genericError = new Error("Network error");
-      apiClientMock.instance.get.mockRejectedValue(genericError);
-
-      await expect(serverService.getServers()).rejects.toThrow("Network error");
+      expect(handleApiError).toHaveBeenCalledWith(error);
     });
   });
 });

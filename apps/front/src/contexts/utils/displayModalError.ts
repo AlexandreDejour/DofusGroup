@@ -65,7 +65,8 @@ export function displayModalError(
       message = t("auth.error.credentials.unavailable");
     }
 
-    if (isUpdateField(modalType)) {
+    if (modalType && isUpdateField(modalType) && apiError.status === 401) {
+      message = t("auth.password.error.oldPassword");
     }
   }
 

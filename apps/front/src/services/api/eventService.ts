@@ -115,8 +115,9 @@ export class EventService {
   }
 
   public async addCharacters(eventId: string, data: CreateEventForm) {
-    if (!data.characters_id.length)
+    if (!data.characters_id.length) {
       throw new Error(t("validation.playerNumber.min"));
+    }
 
     try {
       const response = await this.axios.post(

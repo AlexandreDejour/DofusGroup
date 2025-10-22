@@ -130,7 +130,7 @@
       "none": "No character.",
       "noneOnAccount": "You have not created any character on your account.",
       "noneOnServer": "No character available on this server.",
-      "notFound": "This character no longer exists.",
+      "notFound": "Character not found.",
       "loginRequired": "You must be logged in to create character.",
       "required": "You must have at least one character to create an event."
     },
@@ -152,7 +152,7 @@
 
     "error": {
       "none": "No comment.",
-      "notFound": "This comment no longer exists.",
+      "notFound": "Comment not found.",
       "loginRequired": "You must be logged in to add a comment."
     },
 
@@ -178,6 +178,7 @@
       "none": "No event.",
       "noneUpcoming": "No upcoming event.",
       "noneFound": "No event found.",
+      "notFound": "Event not found.",
       "characterOut": "This character is no longer part of the event.",
       "disable": "You need to create character before create event."
     },

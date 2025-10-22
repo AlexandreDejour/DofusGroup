@@ -126,7 +126,7 @@
       "none": "Aucun personnage.",
       "noneOnAccount": "Vous n'avez créé aucun personnage sur votre compte.",
       "noneOnServer": "Aucun personnage disponible sur ce serveur.",
-      "notFound": "Ce personnage n'existe plus.",
+      "notFound": "Personnage introuvable.",
       "loginRequired": "Vous devez être connecté pour créer un personnage.",
       "required": "Vous devez avoir au moins un personnage pour créé un évènement."
     },
@@ -146,7 +146,7 @@
     "write": "Rédiger un commentaire",
     "error": {
       "none": "Aucun commentaire.",
-      "notFound": "Ce commentaire n'existe plus.",
+      "notFound": "Commentaire introuvable.",
       "loginRequired": "Vous devez être connecté pour ajouter un commentaire."
     },
     "success": {
@@ -170,6 +170,7 @@
       "none": "Aucun évènement.",
       "noneUpcoming": "Aucun évènement à venir.",
       "noneFound": "Aucun évènement trouvé.",
+      "notFound": "Évènement introuvable",
       "characterOut": "Ce personnage ne fait plus partie de l'évènement.",
       "disable": "Vous devez créer un personnage avant de pouvoir créer un évènement."
     },

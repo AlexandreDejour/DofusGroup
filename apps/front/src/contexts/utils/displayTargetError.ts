@@ -56,12 +56,28 @@ export function displayTargetError(
         break;
     }
 
-    if (modalType === "login" && apiError.status === 401) {
-      message = t("auth.error.credentials.invalid");
+    if (targetType === "user" && apiError.status === 404) {
+      message = t("auth.error.user.notFound");
     }
 
-    if (modalType === "register" && apiError.status === 409) {
-      message = t("auth.error.credentials.unavailable");
+    if (targetType === "event" && apiError.status === 404) {
+      message = t("event.error.notFound");
+    }
+
+    if (targetType === "event_details" && apiError.status === 404) {
+      message = t("event.error.notFound");
+    }
+
+    if (targetType === "character" && apiError.status === 404) {
+      message = t("character.error.notFound");
+    }
+
+    if (targetType === "character_details" && apiError.status === 404) {
+      message = t("character.error.notFound");
+    }
+
+    if (targetType === "character" && apiError.status === 404) {
+      message = t("comment.error.notFound");
     }
   }
 

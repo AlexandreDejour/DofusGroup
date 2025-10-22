@@ -19,6 +19,7 @@ import { CharacterEnriched } from "../types/character";
 
 import { Config } from "../config/config";
 import { ApiClient } from "../services/client";
+import { displayApiError } from "./utils/displayError";
 import formDataToObject from "./utils/formDataToObject";
 import { AuthService } from "../services/api/authService";
 import { UserService } from "../services/api/userService";
@@ -494,11 +495,7 @@ export default function ModalProvider({ children }: ModalProviderProps) {
 
         closeModal();
       } catch (error) {
-        if (error instanceof Error) {
-          showError(t("common.error.default"), error.message);
-        } else {
-          showError(t("common.error.default"), t("system.error.occurred"));
-        }
+        displayApiError(error, t, showError, modalType);
       }
     },
     [modalType, closeModal],
@@ -611,11 +608,7 @@ export default function ModalProvider({ children }: ModalProviderProps) {
           setUser(null);
         }
       } catch (error) {
-        if (error instanceof Error) {
-          showError(t("common.error.default"), error.message);
-        } else {
-          showError(t("common.error.default"), t("system.error.occurred"));
-        }
+        displayApiError(error, t, showError, targetType);
       }
     },
     [user, setUser],

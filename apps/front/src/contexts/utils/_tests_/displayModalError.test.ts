@@ -23,7 +23,7 @@ describe("displayModalError", () => {
 
     expect(showError).toHaveBeenCalledWith(
       "system.error.default",
-      "system.error.occurred",
+      error.message,
     );
   });
 

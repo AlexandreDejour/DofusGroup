@@ -1,5 +1,6 @@
 import argon2 from "argon2";
 import status from "http-status";
+import createHttpError from "http-errors";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import { CookieOptions, NextFunction, Request, Response } from "express";
 
@@ -40,8 +41,8 @@ export class AuthController {
         await this.repository.findOneByUsername(username);
 
       if (isExist) {
-        res.status(status.CONFLICT).json({ error: "Username forbidden" });
-        return;
+        const error = createHttpError(status.CONFLICT, "Username forbidden");
+        return next(error);
       }
 
       const newUser: AuthUser = await this.repository.register(req.body);
@@ -60,19 +61,21 @@ export class AuthController {
         await this.repository.findOneByUsername(username);
 
       if (!user) {
-        res
-          .status(status.UNAUTHORIZED)
-          .json({ error: "Username or password unavailable" });
-        return;
+        const error = createHttpError(
+          status.UNAUTHORIZED,
+          "Username or password unavailable",
+        );
+        return next(error);
       }
 
       const isPasswordMatch = await argon2.verify(user.password, password);
 
       if (!isPasswordMatch) {
-        res
-          .status(status.UNAUTHORIZED)
-          .json({ error: "Username or password unavailable" });
-        return;
+        const error = createHttpError(
+          status.UNAUTHORIZED,
+          "Username or password unavailable",
+        );
+        return next(error);
       }
 
       const accessToken = await this.service.generateAccessToken(user.id);
@@ -89,26 +92,27 @@ export class AuthController {
   public async apiMe(req: Request, res: Response, next: NextFunction) {
     const token = req.cookies.token;
     if (!token) {
-      res.status(status.UNAUTHORIZED).json({ message: "Unauthorized access" });
-      return;
+      const error = createHttpError(status.UNAUTHORIZED, "Unauthorized access");
+      return next(error);
     }
 
     try {
       const decoded = jwt.verify(token, this.config.jwtSecret);
 
       if (typeof decoded === "string") {
-        res
-          .status(status.BAD_REQUEST)
-          .json({ message: "Invalid token payload" });
-        return;
+        const error = createHttpError(
+          status.BAD_REQUEST,
+          "Invalid token payload",
+        );
+        return next(error);
       }
 
       const payload = decoded as JwtPayload & { id: string };
       const user = await this.repository.findOneById(payload.id);
 
       if (!user) {
-        res.status(status.NOT_FOUND).json({ message: "User not found" });
-        return;
+        const error = createHttpError(status.NOT_FOUND, "User not found");
+        return next(error);
       }
 
       const { password: _password, ...userWithoutPassword } = user;
@@ -137,27 +141,29 @@ export class AuthController {
       });
 
       if (error) {
-        res
-          .status(status.BAD_REQUEST)
-          .json({ message: "Invalid or missing user ID" });
-        return;
+        const error = createHttpError(
+          status.BAD_REQUEST,
+          "Invalid or missing user ID",
+        );
+        return next(error);
       }
 
       const id = value.userId;
       const user: AuthUser | null = await this.repository.findOneById(id);
 
       if (!user) {
-        res.status(status.NOT_FOUND).json({ message: "User not found" });
-        return;
+        const error = createHttpError(status.NOT_FOUND, "User not found");
+        return next(error);
       }
 
       const isPasswordMatch = await argon2.verify(user.password, oldPassword);
 
       if (!isPasswordMatch) {
-        res.status(status.UNAUTHORIZED).json({
-          error: "Old password doesn't match current password",
-        });
-        return;
+        const error = createHttpError(
+          status.UNAUTHORIZED,
+          "Old password doesn't match current password",
+        );
+        return next(error);
       }
 
       next();
@@ -175,10 +181,11 @@ export class AuthController {
       const { value, error } = authUserSchema.validate({ userId: req.userId });
 
       if (error) {
-        res
-          .status(status.BAD_REQUEST)
-          .json({ message: "Invalid or missing user ID" });
-        return;
+        const error = createHttpError(
+          status.BAD_REQUEST,
+          "Invalid or missing user ID",
+        );
+        return next(error);
       }
 
       const id = value.userId;
@@ -186,8 +193,8 @@ export class AuthController {
       const user = await this.repository.findOneById(id);
 
       if (!user) {
-        res.status(status.NOT_FOUND).json({ message: "User not found" });
-        return;
+        const error = createHttpError(status.NOT_FOUND, "User not found");
+        return next(error);
       }
 
       res.json(user);

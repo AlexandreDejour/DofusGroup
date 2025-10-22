@@ -1,4 +1,5 @@
 import status from "http-status";
+import createHttpError from "http-errors";
 import { NextFunction, Request, Response } from "express";
 
 import {
@@ -23,8 +24,8 @@ export class CharacterController {
         await this.repository.getAllByUserId(userId);
 
       if (!characters.length) {
-        res.status(status.NO_CONTENT).json({ error: "Any character found" });
-        return;
+        const error = createHttpError(status.NO_CONTENT, "Any character found");
+        return next(error);
       }
 
       res.json(characters);
@@ -45,9 +46,10 @@ export class CharacterController {
         await this.repository.getAllEnrichedByUserId(userId);
 
       if (!characters.length) {
-        res.status(status.NO_CONTENT).json({ error: "Any character found" });
-        return;
+        const error = createHttpError(status.NO_CONTENT, "Any character found");
+        return next(error);
       }
+
       res.json(characters);
     } catch (error) {
       next(error);
@@ -62,8 +64,8 @@ export class CharacterController {
         await this.repository.getOne(characterId);
 
       if (!character) {
-        res.status(status.NOT_FOUND).json({ error: "Character not found" });
-        return;
+        const error = createHttpError(status.NOT_FOUND, "Character not found");
+        return next(error);
       }
 
       res.json(character);
@@ -80,8 +82,8 @@ export class CharacterController {
         await this.repository.getOneEnriched(characterId);
 
       if (!character) {
-        res.status(status.NOT_FOUND).json({ error: "Character not found" });
-        return;
+        const error = createHttpError(status.NO_CONTENT, "Any character found");
+        return next(error);
       }
 
       res.json(character);
@@ -93,8 +95,11 @@ export class CharacterController {
   public async post(req: Request, res: Response, next: NextFunction) {
     try {
       if (!req.params.userId) {
-        res.status(status.BAD_REQUEST).json({ error: "User ID is required" });
-        return;
+        const error = createHttpError(
+          status.BAD_REQUEST,
+          "User ID is required",
+        );
+        return next(error);
       }
 
       const userId: string = req.params.userId;
@@ -115,8 +120,11 @@ export class CharacterController {
   public async update(req: Request, res: Response, next: NextFunction) {
     try {
       if (!req.params.userId) {
-        res.status(status.BAD_REQUEST).json({ error: "User ID is required" });
-        return;
+        const error = createHttpError(
+          status.BAD_REQUEST,
+          "User ID is required",
+        );
+        return next(error);
       }
 
       const { userId, characterId } = req.params;
@@ -129,8 +137,8 @@ export class CharacterController {
       );
 
       if (!characterUpdated) {
-        res.status(status.NOT_FOUND).json({ error: "Character not found" });
-        return;
+        const error = createHttpError(status.NOT_FOUND, "Character not found");
+        return next(error);
       }
 
       const characterUpdatedEnriched = await this.repository.getOneEnriched(
@@ -146,8 +154,11 @@ export class CharacterController {
   public async delete(req: Request, res: Response, next: NextFunction) {
     try {
       if (!req.params.userId) {
-        res.status(status.BAD_REQUEST).json({ error: "User ID is required" });
-        return;
+        const error = createHttpError(
+          status.BAD_REQUEST,
+          "User ID is required",
+        );
+        return next(error);
       }
 
       const { userId, characterId } = req.params;
@@ -155,8 +166,8 @@ export class CharacterController {
       const result: boolean = await this.repository.delete(userId, characterId);
 
       if (!result) {
-        res.status(status.NOT_FOUND).json({ error: "Character not found" });
-        return;
+        const error = createHttpError(status.NOT_FOUND, "Character not found");
+        return next(error);
       }
 
       res.status(status.NO_CONTENT).end();

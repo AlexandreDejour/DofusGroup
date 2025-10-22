@@ -16,7 +16,7 @@ import { EventUtils } from "../../../middlewares/repository/utils/eventUtils.js"
 describe("EventController", () => {
   let req: Partial<Request>;
   let res: Partial<Response>;
-  let next: NextFunction;
+  let next = vi.fn();
 
   vi.mock("../../../middlewares/repository/eventRepository.js");
   const mockGetAllPublic = vi.spyOn(EventRepository.prototype, "getAllPublic");
@@ -110,8 +110,15 @@ describe("EventController", () => {
       mockGetAllPublic.mockResolvedValue([]);
       await underTest.getAll(req as Request, res as Response, next);
 
-      expect(res.status).toHaveBeenCalledWith(status.NO_CONTENT);
-      expect(res.json).toHaveBeenCalledWith({ error: "Any event found" });
+      expect(next).toHaveBeenCalled();
+      const err = next.mock.calls[0][0];
+      expect(err).toBeInstanceOf(Error);
+      expect(err).toEqual(
+        expect.objectContaining({
+          status: status.NO_CONTENT,
+          message: "Any event found",
+        }),
+      );
     });
 
     it("Filters by tagId if provided", async () => {
@@ -215,8 +222,15 @@ describe("EventController", () => {
       mockGetAllRegistered.mockResolvedValue([]);
       await underTest.getAllRegistered(req as Request, res as Response, next);
 
-      expect(res.status).toHaveBeenCalledWith(status.NO_CONTENT);
-      expect(res.json).toHaveBeenCalledWith({ error: "Any event found" });
+      expect(next).toHaveBeenCalled();
+      const err = next.mock.calls[0][0];
+      expect(err).toBeInstanceOf(Error);
+      expect(err).toEqual(
+        expect.objectContaining({
+          status: status.NO_CONTENT,
+          message: "Any event found",
+        }),
+      );
     });
 
     it("Call next() in case of error", async () => {
@@ -265,8 +279,15 @@ describe("EventController", () => {
 
       await underTest.getAllByUserId(req as Request, res as Response, next);
 
-      expect(res.status).toHaveBeenCalledWith(status.NO_CONTENT);
-      expect(res.json).toHaveBeenCalledWith({ error: "Any event found" });
+      expect(next).toHaveBeenCalled();
+      const err = next.mock.calls[0][0];
+      expect(err).toBeInstanceOf(Error);
+      expect(err).toEqual(
+        expect.objectContaining({
+          status: status.NO_CONTENT,
+          message: "Any event found",
+        }),
+      );
     });
 
     it("Call next() in case of error", async () => {
@@ -311,12 +332,19 @@ describe("EventController", () => {
       expect(res.status).not.toHaveBeenCalledWith(status.NOT_FOUND);
     });
 
-    it("Call next() if event doesn't exists.", async () => {
+    it("Return 404 if event doesn't exists.", async () => {
       mockGetOne.mockResolvedValue(null);
       await underTest.getOne(req as Request, res as Response, next);
 
-      expect(res.status).toHaveBeenCalledWith(status.NOT_FOUND);
-      expect(res.json).toHaveBeenCalledWith({ error: "Event not found" });
+      expect(next).toHaveBeenCalled();
+      const err = next.mock.calls[0][0];
+      expect(err).toBeInstanceOf(Error);
+      expect(err).toEqual(
+        expect.objectContaining({
+          status: status.NOT_FOUND,
+          message: "Event not found",
+        }),
+      );
     });
 
     it("Call next() in case of error.", async () => {
@@ -375,14 +403,21 @@ describe("EventController", () => {
       expect(res.status).not.toHaveBeenCalledWith(status.NOT_FOUND);
     });
 
-    it("Return 404 if any event found.", async () => {
+    it("Return 204 if any event found.", async () => {
       const mockEventsEnriched: EventEnriched[] = [];
 
       mockGetAllEnriched.mockResolvedValue(mockEventsEnriched);
       await underTest.getAllEnriched(req as Request, res as Response, next);
 
-      expect(res.status).toHaveBeenCalledWith(status.NO_CONTENT);
-      expect(res.json).toHaveBeenCalledWith({ error: "Any event found" });
+      expect(next).toHaveBeenCalled();
+      const err = next.mock.calls[0][0];
+      expect(err).toBeInstanceOf(Error);
+      expect(err).toEqual(
+        expect.objectContaining({
+          status: status.NO_CONTENT,
+          message: "Any event found",
+        }),
+      );
     });
 
     it("Call next() in case of error.", async () => {
@@ -445,8 +480,15 @@ describe("EventController", () => {
       mockGetOneEnriched.mockResolvedValue(null);
       await underTest.getOneEnriched(req as Request, res as Response, next);
 
-      expect(res.status).toHaveBeenCalledWith(status.NOT_FOUND);
-      expect(res.json).toHaveBeenCalledWith({ error: "Event not found" });
+      expect(next).toHaveBeenCalled();
+      const err = next.mock.calls[0][0];
+      expect(err).toBeInstanceOf(Error);
+      expect(err).toEqual(
+        expect.objectContaining({
+          status: status.NOT_FOUND,
+          message: "Event not found",
+        }),
+      );
     });
 
     it("Call next() in case of error.", async () => {
@@ -632,8 +674,15 @@ describe("EventController", () => {
         next,
       );
 
-      expect(res.status).toHaveBeenCalledWith(status.BAD_REQUEST);
-      expect(res.json).toHaveBeenCalledWith({ error: "Event ID is required" });
+      expect(next).toHaveBeenCalled();
+      const err = next.mock.calls[0][0];
+      expect(err).toBeInstanceOf(Error);
+      expect(err).toEqual(
+        expect.objectContaining({
+          status: status.BAD_REQUEST,
+          message: "User ID is required",
+        }),
+      );
     });
 
     it("Return 404 if event doesn't exist.", async () => {
@@ -655,8 +704,15 @@ describe("EventController", () => {
         next,
       );
 
-      expect(res.status).toHaveBeenCalledWith(status.NOT_FOUND);
-      expect(res.json).toHaveBeenCalledWith({ error: "Event not found" });
+      expect(next).toHaveBeenCalled();
+      const err = next.mock.calls[0][0];
+      expect(err).toBeInstanceOf(Error);
+      expect(err).toEqual(
+        expect.objectContaining({
+          status: status.NOT_FOUND,
+          message: "Event not found",
+        }),
+      );
     });
 
     it("Return 500 if enriched event cannot be retrieved.", async () => {
@@ -695,10 +751,15 @@ describe("EventController", () => {
         next,
       );
 
-      expect(res.status).toHaveBeenCalledWith(status.INTERNAL_SERVER_ERROR);
-      expect(res.json).toHaveBeenCalledWith({
-        error: "Failed to retrieve enriched event",
-      });
+      expect(next).toHaveBeenCalled();
+      const err = next.mock.calls[0][0];
+      expect(err).toBeInstanceOf(Error);
+      expect(err).toEqual(
+        expect.objectContaining({
+          status: status.INTERNAL_SERVER_ERROR,
+          message: "Failed to retrieve enriched event",
+        }),
+      );
     });
 
     it("Call next() in case of error.", async () => {
@@ -795,8 +856,15 @@ describe("EventController", () => {
         next,
       );
 
-      expect(res.status).toHaveBeenCalledWith(status.BAD_REQUEST);
-      expect(res.json).toHaveBeenCalledWith({ error: "Event ID is required" });
+      expect(next).toHaveBeenCalled();
+      const err = next.mock.calls[0][0];
+      expect(err).toBeInstanceOf(Error);
+      expect(err).toEqual(
+        expect.objectContaining({
+          status: status.BAD_REQUEST,
+          message: "User ID is required",
+        }),
+      );
     });
 
     it("Return 404 if event doesn't exist.", async () => {
@@ -815,8 +883,15 @@ describe("EventController", () => {
         next,
       );
 
-      expect(res.status).toHaveBeenCalledWith(status.NOT_FOUND);
-      expect(res.json).toHaveBeenCalledWith({ error: "Event not found" });
+      expect(next).toHaveBeenCalled();
+      const err = next.mock.calls[0][0];
+      expect(err).toBeInstanceOf(Error);
+      expect(err).toEqual(
+        expect.objectContaining({
+          status: status.NOT_FOUND,
+          message: "Event not found",
+        }),
+      );
     });
 
     it("Return 500 if enriched event cannot be retrieved.", async () => {
@@ -848,10 +923,15 @@ describe("EventController", () => {
         next,
       );
 
-      expect(res.status).toHaveBeenCalledWith(status.INTERNAL_SERVER_ERROR);
-      expect(res.json).toHaveBeenCalledWith({
-        error: "Failed to retrieve enriched event",
-      });
+      expect(next).toHaveBeenCalled();
+      const err = next.mock.calls[0][0];
+      expect(err).toBeInstanceOf(Error);
+      expect(err).toEqual(
+        expect.objectContaining({
+          status: status.INTERNAL_SERVER_ERROR,
+          message: "Failed to retrieve enriched event",
+        }),
+      );
     });
 
     it("Call next() in case of error.", async () => {
@@ -946,8 +1026,15 @@ describe("EventController", () => {
 
       await underTest.update(req as Request, res as Response, next);
 
-      expect(res.status).toHaveBeenCalledWith(status.BAD_REQUEST);
-      expect(res.json).toHaveBeenCalledWith({ error: "User ID is required" });
+      expect(next).toHaveBeenCalled();
+      const err = next.mock.calls[0][0];
+      expect(err).toBeInstanceOf(Error);
+      expect(err).toEqual(
+        expect.objectContaining({
+          status: status.BAD_REQUEST,
+          message: "User ID is required",
+        }),
+      );
     });
 
     it("Return 404 if event doesn't exist.", async () => {
@@ -965,8 +1052,15 @@ describe("EventController", () => {
 
       await underTest.update(req as Request, res as Response, next);
 
-      expect(res.status).toHaveBeenCalledWith(status.NOT_FOUND);
-      expect(res.json).toHaveBeenCalledWith({ error: "Event not found" });
+      expect(next).toHaveBeenCalled();
+      const err = next.mock.calls[0][0];
+      expect(err).toBeInstanceOf(Error);
+      expect(err).toEqual(
+        expect.objectContaining({
+          status: status.NOT_FOUND,
+          message: "Event not found",
+        }),
+      );
       expect(mockGetOneEnriched).not.toHaveBeenCalled();
     });
 
@@ -1014,8 +1108,15 @@ describe("EventController", () => {
       mockDelete.mockResolvedValue(false);
       await underTest.delete(req as Request, res as Response, next);
 
-      expect(res.status).toHaveBeenCalledWith(status.NOT_FOUND);
-      expect(res.json).toHaveBeenCalledWith({ error: "Event not found" });
+      expect(next).toHaveBeenCalled();
+      const err = next.mock.calls[0][0];
+      expect(err).toBeInstanceOf(Error);
+      expect(err).toEqual(
+        expect.objectContaining({
+          status: status.NOT_FOUND,
+          message: "Event not found",
+        }),
+      );
     });
 
     it("Call next() in case of error.", async () => {

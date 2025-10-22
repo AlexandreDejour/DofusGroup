@@ -1,4 +1,5 @@
 import status from "http-status";
+import createHttpError from "http-errors";
 import { NextFunction, Request, Response } from "express";
 
 import { Event, EventBodyData, EventEnriched } from "../../types/event.js";
@@ -26,8 +27,8 @@ export class EventController {
       let events: Event[] = await this.repository.getAllPublic();
 
       if (!events.length) {
-        res.status(status.NO_CONTENT).json({ error: "Any event found" });
-        return;
+        const error = createHttpError(status.NO_CONTENT, "Any event found");
+        return next(error);
       }
 
       // Filter passed events
@@ -90,8 +91,8 @@ export class EventController {
       const events: Event[] = await this.repository.getAllRegistered(ids);
 
       if (!events.length) {
-        res.status(status.NO_CONTENT).json({ error: "Any event found" });
-        return;
+        const error = createHttpError(status.NO_CONTENT, "Any event found");
+        return next(error);
       }
 
       events.sort(
@@ -111,8 +112,8 @@ export class EventController {
       const events: Event[] = await this.repository.getAllByUserId(userId);
 
       if (!events.length) {
-        res.status(status.NO_CONTENT).json({ error: "Any event found" });
-        return;
+        const error = createHttpError(status.NO_CONTENT, "Any event found");
+        return next(error);
       }
 
       res.json(events);
@@ -130,8 +131,8 @@ export class EventController {
       const events: EventEnriched[] = await this.repository.getAllEnriched();
 
       if (!events.length) {
-        res.status(status.NO_CONTENT).json({ error: "Any event found" });
-        return;
+        const error = createHttpError(status.NO_CONTENT, "Any event found");
+        return next(error);
       }
 
       res.json(events);
@@ -147,8 +148,8 @@ export class EventController {
       const event: Event | null = await this.repository.getOne(eventId);
 
       if (!event) {
-        res.status(status.NOT_FOUND).json({ error: "Event not found" });
-        return;
+        const error = createHttpError(status.NOT_FOUND, "Event not found");
+        return next(error);
       }
 
       res.json(event);
@@ -165,8 +166,8 @@ export class EventController {
         await this.repository.getOneEnriched(eventId);
 
       if (!event) {
-        res.status(status.NOT_FOUND).json({ error: "Event not found" });
-        return;
+        const error = createHttpError(status.NOT_FOUND, "Event not found");
+        return next(error);
       }
 
       res.json(event);
@@ -178,8 +179,11 @@ export class EventController {
   public async post(req: Request, res: Response, next: NextFunction) {
     try {
       if (!req.params.userId) {
-        res.status(status.BAD_REQUEST).json({ error: "User ID is required" });
-        return;
+        const error = createHttpError(
+          status.BAD_REQUEST,
+          "user ID is required",
+        );
+        return next(error);
       }
 
       const userId: string = req.params.userId;
@@ -204,8 +208,11 @@ export class EventController {
   ) {
     try {
       if (!req.params.eventId) {
-        res.status(status.BAD_REQUEST).json({ error: "Event ID is required" });
-        return;
+        const error = createHttpError(
+          status.BAD_REQUEST,
+          "User ID is required",
+        );
+        return next(error);
       }
 
       const eventId: string = req.params.eventId;
@@ -215,18 +222,19 @@ export class EventController {
         await this.repository.addCharactersToEvent(eventId, charactersIds);
 
       if (!eventUpdated) {
-        res.status(status.NOT_FOUND).json({ error: "Event not found" });
-        return;
+        const error = createHttpError(status.NOT_FOUND, "Event not found");
+        return next(error);
       }
 
       const eventUpdatedEnriched: EventEnriched | null =
         await this.repository.getOneEnriched(eventUpdated.id);
 
       if (!eventUpdatedEnriched) {
-        res
-          .status(status.INTERNAL_SERVER_ERROR)
-          .json({ error: "Failed to retrieve enriched event" });
-        return;
+        const error = createHttpError(
+          status.INTERNAL_SERVER_ERROR,
+          "Failed to retrieve enriched event",
+        );
+        return next(error);
       }
 
       res.json(eventUpdatedEnriched);
@@ -242,8 +250,11 @@ export class EventController {
   ) {
     try {
       if (!req.params.eventId) {
-        res.status(status.BAD_REQUEST).json({ error: "Event ID is required" });
-        return;
+        const error = createHttpError(
+          status.BAD_REQUEST,
+          "User ID is required",
+        );
+        return next(error);
       }
 
       const eventId: string = req.params.eventId;
@@ -253,18 +264,19 @@ export class EventController {
         await this.repository.removeCharacterFromEvent(eventId, characterId);
 
       if (!eventUpdated) {
-        res.status(status.NOT_FOUND).json({ error: "Event not found" });
-        return;
+        const error = createHttpError(status.NOT_FOUND, "Event not found");
+        return next(error);
       }
 
       const eventUpdatedEnriched: EventEnriched | null =
         await this.repository.getOneEnriched(eventUpdated.id);
 
       if (!eventUpdatedEnriched) {
-        res
-          .status(status.INTERNAL_SERVER_ERROR)
-          .json({ error: "Failed to retrieve enriched event" });
-        return;
+        const error = createHttpError(
+          status.INTERNAL_SERVER_ERROR,
+          "Failed to retrieve enriched event",
+        );
+        return next(error);
       }
 
       res.json(eventUpdatedEnriched);
@@ -278,8 +290,8 @@ export class EventController {
     const eventId: string = req.params.eventId;
 
     if (!userId) {
-      res.status(status.BAD_REQUEST).json({ error: "User ID is required" });
-      return;
+      const error = createHttpError(status.BAD_REQUEST, "User ID is required");
+      return next(error);
     }
 
     try {
@@ -292,8 +304,8 @@ export class EventController {
       );
 
       if (!eventUpdated) {
-        res.status(status.NOT_FOUND).json({ error: "Event not found" });
-        return;
+        const error = createHttpError(status.NOT_FOUND, "Event not found");
+        return next(error);
       }
 
       const eventUpdatedEnriched = await this.repository.getOneEnriched(
@@ -309,8 +321,11 @@ export class EventController {
   public async delete(req: Request, res: Response, next: NextFunction) {
     try {
       if (!req.params.eventId) {
-        res.status(status.BAD_REQUEST).json({ error: "Event ID is required" });
-        return;
+        const error = createHttpError(
+          status.BAD_REQUEST,
+          "user ID is required",
+        );
+        return next(error);
       }
 
       const { userId, eventId } = req.params;
@@ -318,8 +333,8 @@ export class EventController {
       const result: boolean = await this.repository.delete(userId, eventId);
 
       if (!result) {
-        res.status(status.NOT_FOUND).json({ error: "Event not found" });
-        return;
+        const error = createHttpError(status.NOT_FOUND, "Event not found");
+        return next(error);
       }
 
       res.status(status.NO_CONTENT).end();

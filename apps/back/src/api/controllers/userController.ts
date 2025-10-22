@@ -1,4 +1,5 @@
 import status from "http-status";
+import createHttpError from "http-errors";
 import { NextFunction, Request, Response } from "express";
 
 import { User, UserBodyData, UserEnriched } from "../../types/user.js";
@@ -16,8 +17,8 @@ export class UserController {
       const users: User[] = await this.repository.getAll();
 
       if (!users.length) {
-        res.status(status.NO_CONTENT).json({ error: "Any user found" });
-        return;
+        const error = createHttpError(status.NO_CONTENT, "Any user found");
+        return next(error);
       }
 
       res.json(users);
@@ -35,8 +36,8 @@ export class UserController {
       const users: UserEnriched[] = await this.repository.getAllEnriched();
 
       if (!users.length) {
-        res.status(status.NO_CONTENT).json({ error: "Any user found" });
-        return;
+        const error = createHttpError(status.NO_CONTENT, "Any user found");
+        return next(error);
       }
       res.json(users);
     } catch (error) {
@@ -51,8 +52,8 @@ export class UserController {
       const user: User | null = await this.repository.getOne(userId);
 
       if (!user) {
-        res.status(status.NOT_FOUND).json({ error: "User not found" });
-        return;
+        const error = createHttpError(status.NOT_FOUND, "User not found");
+        return next(error);
       }
 
       res.json(user);
@@ -69,8 +70,8 @@ export class UserController {
         await this.repository.getOneEnriched(userId);
 
       if (!user) {
-        res.status(status.NOT_FOUND).json({ error: "User not found" });
-        return;
+        const error = createHttpError(status.NOT_FOUND, "User not found");
+        return next(error);
       }
 
       res.json(user);
@@ -82,8 +83,11 @@ export class UserController {
   public async update(req: Request, res: Response, next: NextFunction) {
     try {
       if (!req.params.userId) {
-        res.status(status.BAD_REQUEST).json({ error: "User ID is required" });
-        return;
+        const error = createHttpError(
+          status.BAD_REQUEST,
+          "User ID is required",
+        );
+        return next(error);
       }
 
       const { userId } = req.params;
@@ -95,8 +99,8 @@ export class UserController {
       );
 
       if (!userUpdated) {
-        res.status(status.NOT_FOUND).json({ error: "User not found" });
-        return;
+        const error = createHttpError(status.NOT_FOUND, "User not found");
+        return next(error);
       }
 
       res.json(userUpdated);
@@ -108,8 +112,11 @@ export class UserController {
   public async delete(req: Request, res: Response, next: NextFunction) {
     try {
       if (!req.params.userId) {
-        res.status(status.BAD_REQUEST).json({ error: "User ID is required" });
-        return;
+        const error = createHttpError(
+          status.BAD_REQUEST,
+          "User ID is required",
+        );
+        return next(error);
       }
 
       const { userId } = req.params;
@@ -117,8 +124,8 @@ export class UserController {
       const result: boolean = await this.repository.delete(userId);
 
       if (!result) {
-        res.status(status.NOT_FOUND).json({ error: "User not found" });
-        return;
+        const error = createHttpError(status.NOT_FOUND, "User not found");
+        return next(error);
       }
 
       res.status(status.NO_CONTENT).end();

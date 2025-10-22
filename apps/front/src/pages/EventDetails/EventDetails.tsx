@@ -179,6 +179,12 @@ export default function EventDetails() {
               type="button"
               className="quick button"
               onClick={() => openModal("comment", event)}
+              disabled={!user}
+              style={{
+                background: !user
+                  ? "grey"
+                  : "radial-gradient(circle, rgba(96,186,96,1) 0%, rgba(156,217,92,1) 90%)",
+              }}
             >
               {t("comment.single")}
             </button>

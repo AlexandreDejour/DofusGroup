@@ -2,6 +2,7 @@ import axios from "axios";
 import { t } from "../../i18n/i18n-helper";
 
 import { ApiClient } from "../client";
+import handleApiError from "../utils/handleApiError";
 
 import type { AuthUser } from "../../types/user";
 import type { LoginForm, RegisterForm } from "../../types/form";
@@ -30,12 +31,7 @@ export class AuthService {
       const response = await this.axios.post<AuthUser>("/auth/register", data);
       return response.data;
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        if (error.response?.status === 409) {
-          throw new Error(t("auth.error.credentials.unavailable"));
-        }
-      }
-      throw error;
+      handleApiError(error);
     }
   }
 
@@ -50,15 +46,7 @@ export class AuthService {
       });
       return response.data;
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        if (error.response?.status === 401) {
-          throw new Error(t("auth.error.credentials.invalid"));
-        }
-        if (error.response?.status === 429) {
-          throw new Error(t("system.error.attemps"));
-        }
-      }
-      throw error;
+      handleApiError(error);
     }
   }
 
@@ -70,12 +58,7 @@ export class AuthService {
 
       return response.data;
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        if ([400, 401, 403, 404].includes(error.response?.status ?? 0)) {
-          throw new Error(t("auth.error.user.notFound"));
-        }
-      }
-      throw error;
+      handleApiError(error);
     }
   }
 
@@ -87,10 +70,7 @@ export class AuthService {
 
       return response.data;
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        throw new Error(error.message);
-      }
-      throw error;
+      handleApiError(error);
     }
   }
 }

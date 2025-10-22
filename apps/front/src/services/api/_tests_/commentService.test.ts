@@ -1,15 +1,18 @@
-import { describe, it, beforeEach, expect, vi } from "vitest";
+import { describe, it, beforeEach, expect, vi, Mock } from "vitest";
 
 import axios from "axios";
-import { t } from "../../../i18n/i18n-helper";
 
 import { CreateCommentForm } from "../../../types/form";
-import { Comment } from "../../../types/comment";
 
 import { ApiClient } from "../../client";
 import { CommentService } from "../commentService";
+import handleApiError from "../../utils/handleApiError";
 
 vi.mock("axios");
+
+vi.mock("../../utils/handleApiError", () => ({
+  default: vi.fn(),
+}));
 
 describe("CommentService", () => {
   let apiClientMock: any;
@@ -23,6 +26,7 @@ describe("CommentService", () => {
   };
 
   beforeEach(() => {
+    (handleApiError as unknown as Mock).mockReset();
     apiClientMock = {
       instance: {
         post: vi.fn(),
@@ -31,7 +35,6 @@ describe("CommentService", () => {
       },
     };
     commentService = new CommentService(apiClientMock as ApiClient);
-    vi.mocked(axios.isAxiosError).mockReturnValue(false);
   });
 
   describe("create", () => {
@@ -51,7 +54,7 @@ describe("CommentService", () => {
       expect(result).toEqual(mockResponse.data);
     });
 
-    it("should throw a specific error for a 401 status code", async () => {
+    it("should call handleApiError for a 401 status code and not throw", async () => {
       const axiosError = {
         isAxiosError: true,
         response: { status: 401 },
@@ -59,12 +62,13 @@ describe("CommentService", () => {
       vi.mocked(axios.isAxiosError).mockReturnValue(true);
       apiClientMock.instance.post.mockRejectedValue(axiosError);
 
-      await expect(
-        commentService.create(userId, eventId, validData),
-      ).rejects.toThrow(t("comment.error.loginRequired"));
+      const result = await commentService.create(userId, eventId, validData);
+
+      expect(handleApiError).toHaveBeenCalledWith(axiosError);
+      expect(result).toBeUndefined();
     });
 
-    it("should throw a specific error for a 403 status code", async () => {
+    it("should call handleApiError for a 403 status code and not throw", async () => {
       const axiosError = {
         isAxiosError: true,
         response: { status: 403 },
@@ -72,18 +76,25 @@ describe("CommentService", () => {
       vi.mocked(axios.isAxiosError).mockReturnValue(true);
       apiClientMock.instance.post.mockRejectedValue(axiosError);
 
-      await expect(
-        commentService.create(userId, eventId, validData),
-      ).rejects.toThrow(t("system.error.forbidden"));
+      const result = await commentService.create(userId, eventId, validData);
+
+      expect(handleApiError).toHaveBeenCalledWith(axiosError);
+      expect(result).toBeUndefined();
     });
 
-    it("should rethrow a generic error if not an AxiosError", async () => {
+    it("should rethrow if handleApiError throws (generic error case)", async () => {
       const genericError = new Error("Unknown error");
       apiClientMock.instance.post.mockRejectedValue(genericError);
+
+      (handleApiError as unknown as Mock).mockImplementation(() => {
+        throw genericError;
+      });
 
       await expect(
         commentService.create(userId, eventId, validData),
       ).rejects.toThrow("Unknown error");
+
+      expect(handleApiError).toHaveBeenCalledWith(genericError);
     });
   });
 
@@ -102,7 +113,7 @@ describe("CommentService", () => {
       expect(result).toEqual(mockResponse.data);
     });
 
-    it("should throw a specific error for a 401 status code", async () => {
+    it("should call handleApiError for a 401 status code and not throw", async () => {
       const axiosError = {
         isAxiosError: true,
         response: { status: 401 },
@@ -110,12 +121,13 @@ describe("CommentService", () => {
       vi.mocked(axios.isAxiosError).mockReturnValue(true);
       apiClientMock.instance.patch.mockRejectedValue(axiosError);
 
-      await expect(
-        commentService.update(userId, commentId, validData),
-      ).rejects.toThrow(t("common.action.needLogin"));
+      const result = await commentService.update(userId, commentId, validData);
+
+      expect(handleApiError).toHaveBeenCalledWith(axiosError);
+      expect(result).toBeUndefined();
     });
 
-    it("should throw a specific error for a 403 status code", async () => {
+    it("should call handleApiError for a 403 status code and not throw", async () => {
       const axiosError = {
         isAxiosError: true,
         response: { status: 403 },
@@ -123,12 +135,13 @@ describe("CommentService", () => {
       vi.mocked(axios.isAxiosError).mockReturnValue(true);
       apiClientMock.instance.patch.mockRejectedValue(axiosError);
 
-      await expect(
-        commentService.update(userId, commentId, validData),
-      ).rejects.toThrow(t("system.error.forbidden"));
+      const result = await commentService.update(userId, commentId, validData);
+
+      expect(handleApiError).toHaveBeenCalledWith(axiosError);
+      expect(result).toBeUndefined();
     });
 
-    it("should throw a specific error for a 404 status code", async () => {
+    it("should call handleApiError for a 404 status code and not throw", async () => {
       const axiosError = {
         isAxiosError: true,
         response: { status: 404 },
@@ -136,18 +149,25 @@ describe("CommentService", () => {
       vi.mocked(axios.isAxiosError).mockReturnValue(true);
       apiClientMock.instance.patch.mockRejectedValue(axiosError);
 
-      await expect(
-        commentService.update(userId, commentId, validData),
-      ).rejects.toThrow(t("comment.error.notFound"));
+      const result = await commentService.update(userId, commentId, validData);
+
+      expect(handleApiError).toHaveBeenCalledWith(axiosError);
+      expect(result).toBeUndefined();
     });
 
-    it("should rethrow a generic error if not an AxiosError", async () => {
+    it("should rethrow if handleApiError throws (generic error case)", async () => {
       const genericError = new Error("Unknown error");
-      apiClientMock.instance.post.mockRejectedValue(genericError);
+      apiClientMock.instance.patch.mockRejectedValue(genericError);
+
+      (handleApiError as unknown as Mock).mockImplementation(() => {
+        throw genericError;
+      });
 
       await expect(
-        commentService.create(userId, commentId, validData),
+        commentService.update(userId, commentId, validData),
       ).rejects.toThrow("Unknown error");
+
+      expect(handleApiError).toHaveBeenCalledWith(genericError);
     });
   });
 
@@ -165,23 +185,24 @@ describe("CommentService", () => {
       expect(result).toBe(mockResponse);
     });
 
-    it("Throw specific error if response is 400, 401, or 403", async () => {
+    it("should call handleApiError for response 400, 401, or 403 and not throw", async () => {
       const statusCodes = [400, 401, 403];
-      for (const status of statusCodes) {
+      for (const statusCode of statusCodes) {
         const axiosError = {
           isAxiosError: true,
-          response: { status: status },
+          response: { status: statusCode },
         };
         vi.mocked(axios.isAxiosError).mockReturnValue(true);
         apiClientMock.instance.delete.mockRejectedValue(axiosError);
 
-        await expect(commentService.delete(userId, commentId)).rejects.toThrow(
-          t("system.error.forbidden"),
-        );
+        const result = await commentService.delete(userId, commentId);
+
+        expect(handleApiError).toHaveBeenCalledWith(axiosError);
+        expect(result).toBeUndefined();
       }
     });
 
-    it("Throw specific error if response is 404", async () => {
+    it("should call handleApiError for response 404 and not throw", async () => {
       const axiosError = {
         isAxiosError: true,
         response: { status: 404 },
@@ -189,18 +210,24 @@ describe("CommentService", () => {
       vi.mocked(axios.isAxiosError).mockReturnValue(true);
       apiClientMock.instance.delete.mockRejectedValue(axiosError);
 
-      await expect(commentService.delete(userId, commentId)).rejects.toThrow(
-        t("comment.error.notFound"),
-      );
+      const result = await commentService.delete(userId, commentId);
+
+      expect(handleApiError).toHaveBeenCalledWith(axiosError);
+      expect(result).toBeUndefined();
     });
 
-    it("Throw error if isn't axios error", async () => {
-      const error = new Error("Unknown error");
-      apiClientMock.instance.delete.mockRejectedValue(error);
+    it("should rethrow if handleApiError throws (generic error case)", async () => {
+      const genericError = new Error("Unknown error");
+      apiClientMock.instance.delete.mockRejectedValue(genericError);
+
+      (handleApiError as unknown as Mock).mockImplementation(() => {
+        throw genericError;
+      });
 
       await expect(commentService.delete(userId, commentId)).rejects.toThrow(
         "Unknown error",
       );
+      expect(handleApiError).toHaveBeenCalledWith(genericError);
     });
   });
 });

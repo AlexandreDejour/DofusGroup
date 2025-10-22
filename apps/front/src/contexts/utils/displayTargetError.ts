@@ -76,7 +76,7 @@ export function displayTargetError(
       message = t("character.error.notFound");
     }
 
-    if (targetType === "character" && apiError.status === 404) {
+    if (targetType === "comment" && apiError.status === 404) {
       message = t("comment.error.notFound");
     }
   }

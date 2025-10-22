@@ -50,9 +50,9 @@ export default function EventDetails() {
         showSuccess(t("system.success.deleted"), t("event.error.characterOut"));
       } catch (error) {
         if (error instanceof Error) {
-          showError(t("common.error.default"), error.message);
+          showError(t("system.error.default"), error.message);
         } else {
-          showError(t("common.error.default"), t("common.error.occurred"));
+          showError(t("system.error.default"), t("system.error.occurred"));
         }
       }
     },

@@ -421,7 +421,7 @@ describe("Profile Page", () => {
 
     await waitFor(() => {
       expect(showError).toHaveBeenCalledWith(
-        t("common.error.default"),
+        t("system.error.default"),
         "Axios error",
       );
     });
@@ -435,7 +435,7 @@ describe("Profile Page", () => {
 
     await waitFor(() => {
       expect(showError).toHaveBeenCalledWith(
-        t("common.error.default"),
+        t("system.error.default"),
         t("system.error.occurred"),
       );
     });

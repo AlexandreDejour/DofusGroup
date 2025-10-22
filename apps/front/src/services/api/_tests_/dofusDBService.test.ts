@@ -1,16 +1,20 @@
-import { describe, it, beforeEach, vi, expect } from "vitest";
+import { describe, it, beforeEach, vi, expect, Mock } from "vitest";
 
 import { Dungeon } from "../../../types/dofusDB";
 
 import { DofusDBService } from "../dofusDBService";
+import handleApiError from "../../utils/handleApiError";
 
-vi.mock("axios");
+vi.mock("../../utils/handleApiError", () => ({
+  default: vi.fn(),
+}));
 
 describe("DofusDBService", () => {
   let apiClientMock: any;
   let dofusDBService: DofusDBService;
 
   beforeEach(() => {
+    (handleApiError as unknown as Mock).mockReset();
     apiClientMock = {
       instance: {
         get: vi.fn(),
@@ -56,9 +60,15 @@ describe("DofusDBService", () => {
       const error = new Error("API network error");
       apiClientMock.instance.get.mockRejectedValue(error);
 
+      (handleApiError as unknown as Mock).mockImplementation(() => {
+        throw error;
+      });
+
       await expect(dofusDBService.getAreas()).rejects.toThrow(
         "API network error",
       );
+
+      expect(handleApiError).toHaveBeenCalledWith(error);
     });
   });
 
@@ -87,9 +97,15 @@ describe("DofusDBService", () => {
       const error = new Error("API server error");
       apiClientMock.instance.get.mockRejectedValue(error);
 
+      (handleApiError as unknown as Mock).mockImplementation(() => {
+        throw error;
+      });
+
       await expect(dofusDBService.getSubAreas(areaId)).rejects.toThrow(
         "API server error",
       );
+
+      expect(handleApiError).toHaveBeenCalledWith(error);
     });
   });
 
@@ -151,9 +167,15 @@ describe("DofusDBService", () => {
       const error = new Error("Dungeon API error");
       apiClientMock.instance.get.mockRejectedValue(error);
 
+      (handleApiError as unknown as Mock).mockImplementation(() => {
+        throw error;
+      });
+
       await expect(dofusDBService.getDungeons(1)).rejects.toThrow(
         "Dungeon API error",
       );
+
+      expect(handleApiError).toHaveBeenCalledWith(error);
     });
   });
 });

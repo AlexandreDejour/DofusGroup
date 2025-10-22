@@ -1,4 +1,4 @@
-import { describe, it, beforeEach, expect, vi } from "vitest";
+import { describe, it, beforeEach, expect, vi, Mock } from "vitest";
 
 import axios from "axios";
 import { t } from "../../../i18n/i18n-helper";
@@ -8,8 +8,13 @@ import { Character, CharacterEnriched } from "../../../types/character";
 
 import { ApiClient } from "../../client";
 import { CharacterService } from "../characterService";
+import handleApiError from "../../utils/handleApiError";
 
 vi.mock("axios");
+
+vi.mock("../../utils/handleApiError", () => ({
+  default: vi.fn(),
+}));
 
 describe("CharacterService", () => {
   let apiClientMock: any;
@@ -22,7 +27,6 @@ describe("CharacterService", () => {
     level: 50,
     alignment: "Neutre",
     stuff: "https://d-bk.net/fr/d/1QVjw",
-    default_character: false,
     server_id: "de5a6c69-bc0b-496c-9b62-bd7ea076b8ed",
   };
 
@@ -33,7 +37,6 @@ describe("CharacterService", () => {
     level: 50,
     alignment: "Neutre",
     stuff: "https://d-bk.net/fr/d/1QVjw",
-    default_character: false,
     server_id: "de5a6c69-bc0b-496c-9b62-bd7ea076b8ed",
     server: {
       id: "de5a6c69-bc0b-496c-9b62-bd7ea076b8ed",
@@ -52,6 +55,7 @@ describe("CharacterService", () => {
   };
 
   beforeEach(() => {
+    (handleApiError as unknown as Mock).mockReset();
     apiClientMock = {
       instance: {
         get: vi.fn(),
@@ -61,7 +65,6 @@ describe("CharacterService", () => {
       },
     };
     characterService = new CharacterService(apiClientMock as ApiClient);
-    vi.mocked(axios.isAxiosError).mockReturnValue(false); // Réinitialiser le mock
   });
 
   describe("getAllByUserId", () => {
@@ -79,7 +82,7 @@ describe("CharacterService", () => {
       expect(result).toEqual(mockCharacters);
     });
 
-    it("should throw a specific error for a 204 status code", async () => {
+    it("should call handleApiError for a 204 status code and not throw", async () => {
       const axiosError = {
         isAxiosError: true,
         response: { status: 204 },
@@ -87,18 +90,27 @@ describe("CharacterService", () => {
       vi.mocked(axios.isAxiosError).mockReturnValue(true);
       apiClientMock.instance.get.mockRejectedValue(axiosError);
 
-      await expect(
-        characterService.getAllByUserId("fcdb0dd1-7f7e-44bd-9a9b-c4daf6cb1588"),
-      ).rejects.toThrow(t("character.error.noneOnAccount"));
+      const result = await characterService.getAllByUserId(
+        "fcdb0dd1-7f7e-44bd-9a9b-c4daf6cb1588",
+      );
+
+      expect(handleApiError).toHaveBeenCalledWith(axiosError);
+      expect(result).toBeUndefined();
     });
 
-    it("should rethrow a generic error if not an AxiosError", async () => {
-      const genericError = new Error("Network error");
+    it("should rethrow if handleApiError throws (generic error case)", async () => {
+      const genericError = new Error("Unknown error");
       apiClientMock.instance.get.mockRejectedValue(genericError);
+
+      (handleApiError as unknown as Mock).mockImplementation(() => {
+        throw genericError;
+      });
 
       await expect(
         characterService.getAllByUserId("fcdb0dd1-7f7e-44bd-9a9b-c4daf6cb1588"),
-      ).rejects.toThrow("Network error");
+      ).rejects.toThrow("Unknown error");
+
+      expect(handleApiError).toHaveBeenCalledWith(genericError);
     });
   });
 
@@ -117,16 +129,37 @@ describe("CharacterService", () => {
       expect(result).toEqual(mockData);
     });
 
-    it("should throw specific error on 204", async () => {
-      const axiosError = { isAxiosError: true, response: { status: 204 } };
+    it("should call handleApiError for a 204 status code and not throw", async () => {
+      const axiosError = {
+        isAxiosError: true,
+        response: { status: 204 },
+      };
       vi.mocked(axios.isAxiosError).mockReturnValue(true);
       apiClientMock.instance.get.mockRejectedValue(axiosError);
+
+      const result = await characterService.getAllEnrichedByUserId(
+        "fcdb0dd1-7f7e-44bd-9a9b-c4daf6cb1588",
+      );
+
+      expect(handleApiError).toHaveBeenCalledWith(axiosError);
+      expect(result).toBeUndefined();
+    });
+
+    it("should rethrow if handleApiError throws (generic error case)", async () => {
+      const genericError = new Error("Unknown error");
+      apiClientMock.instance.get.mockRejectedValue(genericError);
+
+      (handleApiError as unknown as Mock).mockImplementation(() => {
+        throw genericError;
+      });
 
       await expect(
         characterService.getAllEnrichedByUserId(
           "fcdb0dd1-7f7e-44bd-9a9b-c4daf6cb1588",
         ),
-      ).rejects.toThrow(t("character.error.noneOnAccount"));
+      ).rejects.toThrow("Unknown error");
+
+      expect(handleApiError).toHaveBeenCalledWith(genericError);
     });
   });
 
@@ -155,9 +188,27 @@ describe("CharacterService", () => {
       vi.mocked(axios.isAxiosError).mockReturnValue(true);
       apiClientMock.instance.get.mockRejectedValue(axiosError);
 
+      const result = await characterService.getOneEnriched(
+        "cfff40b3-9625-4f0a-854b-d8d6d6b4b667",
+      );
+
+      expect(handleApiError).toHaveBeenCalledWith(axiosError);
+      expect(result).toBeUndefined();
+    });
+
+    it("should rethrow if handleApiError throws (generic error case)", async () => {
+      const genericError = new Error("Unknown error");
+      apiClientMock.instance.get.mockRejectedValue(genericError);
+
+      (handleApiError as unknown as Mock).mockImplementation(() => {
+        throw genericError;
+      });
+
       await expect(
         characterService.getOneEnriched("cfff40b3-9625-4f0a-854b-d8d6d6b4b667"),
-      ).rejects.toThrow("Not found");
+      ).rejects.toThrow("Unknown error");
+
+      expect(handleApiError).toHaveBeenCalledWith(genericError);
     });
   });
 
@@ -228,20 +279,7 @@ describe("CharacterService", () => {
       ).resolves.not.toThrow();
     });
 
-    it("should throw a specific error for a 400 status code", async () => {
-      const axiosError = {
-        isAxiosError: true,
-        response: { status: 400 },
-      };
-      vi.mocked(axios.isAxiosError).mockReturnValue(true);
-      apiClientMock.instance.post.mockRejectedValue(axiosError);
-
-      await expect(characterService.create(userId, validData)).rejects.toThrow(
-        t("auth.error.data.incomplete"),
-      );
-    });
-
-    it("should throw a specific error for a 401 status code", async () => {
+    it("should call handleApiError for a 401 status code and not throw", async () => {
       const axiosError = {
         isAxiosError: true,
         response: { status: 401 },
@@ -249,12 +287,13 @@ describe("CharacterService", () => {
       vi.mocked(axios.isAxiosError).mockReturnValue(true);
       apiClientMock.instance.post.mockRejectedValue(axiosError);
 
-      await expect(characterService.create(userId, validData)).rejects.toThrow(
-        t("character.error.loginRequired"),
-      );
+      const result = await characterService.create(userId, validData);
+
+      expect(handleApiError).toHaveBeenCalledWith(axiosError);
+      expect(result).toBeUndefined();
     });
 
-    it("should throw a specific error for a 403 status code", async () => {
+    it("should call handleApiError for a 403 status code and not throw", async () => {
       const axiosError = {
         isAxiosError: true,
         response: { status: 403 },
@@ -262,18 +301,25 @@ describe("CharacterService", () => {
       vi.mocked(axios.isAxiosError).mockReturnValue(true);
       apiClientMock.instance.post.mockRejectedValue(axiosError);
 
-      await expect(characterService.create(userId, validData)).rejects.toThrow(
-        t("system.error.forbidden"),
-      );
+      const result = await characterService.create(userId, validData);
+
+      expect(handleApiError).toHaveBeenCalledWith(axiosError);
+      expect(result).toBeUndefined();
     });
 
-    it("should rethrow a generic error if not an AxiosError", async () => {
+    it("should rethrow if handleApiError throws (generic error case)", async () => {
       const genericError = new Error("Unknown error");
       apiClientMock.instance.post.mockRejectedValue(genericError);
+
+      (handleApiError as unknown as Mock).mockImplementation(() => {
+        throw genericError;
+      });
 
       await expect(characterService.create(userId, validData)).rejects.toThrow(
         "Unknown error",
       );
+
+      expect(handleApiError).toHaveBeenCalledWith(genericError);
     });
   });
 
@@ -318,9 +364,69 @@ describe("CharacterService", () => {
         characterService.update(userId, charId, invalidData),
       ).rejects.toThrow(t("validation.url.rules"));
     });
+
+    it("should call handleApiError for a 401 status code and not throw", async () => {
+      const axiosError = {
+        isAxiosError: true,
+        response: { status: 401 },
+      };
+      vi.mocked(axios.isAxiosError).mockReturnValue(true);
+      apiClientMock.instance.patch.mockRejectedValue(axiosError);
+
+      const result = await characterService.update(userId, charId, validData);
+
+      expect(handleApiError).toHaveBeenCalledWith(axiosError);
+      expect(result).toBeUndefined();
+    });
+
+    it("should call handleApiError for a 403 status code and not throw", async () => {
+      const axiosError = {
+        isAxiosError: true,
+        response: { status: 403 },
+      };
+      vi.mocked(axios.isAxiosError).mockReturnValue(true);
+      apiClientMock.instance.patch.mockRejectedValue(axiosError);
+
+      const result = await characterService.update(userId, charId, validData);
+
+      expect(handleApiError).toHaveBeenCalledWith(axiosError);
+      expect(result).toBeUndefined();
+    });
+
+    it("should call handleApiError for a 404 status code and not throw", async () => {
+      const axiosError = {
+        isAxiosError: true,
+        response: { status: 404 },
+      };
+      vi.mocked(axios.isAxiosError).mockReturnValue(true);
+      apiClientMock.instance.patch.mockRejectedValue(axiosError);
+
+      const result = await characterService.update(userId, charId, validData);
+
+      expect(handleApiError).toHaveBeenCalledWith(axiosError);
+      expect(result).toBeUndefined();
+    });
+
+    it("should rethrow if handleApiError throws (generic error case)", async () => {
+      const genericError = new Error("Unknown error");
+      apiClientMock.instance.patch.mockRejectedValue(genericError);
+
+      (handleApiError as unknown as Mock).mockImplementation(() => {
+        throw genericError;
+      });
+
+      await expect(
+        characterService.update(userId, charId, validData),
+      ).rejects.toThrow("Unknown error");
+
+      expect(handleApiError).toHaveBeenCalledWith(genericError);
+    });
   });
 
   describe("delete", () => {
+    const userId = "15ff46b5-60f3-4e86-98bc-da8fcaa3e29e";
+    const charId = "cfff40b3-9625-4f0a-854b-d8d6d6b4b667";
+
     it("Call axios.delete with correct params", async () => {
       const mockResponse = { status: 200 };
       apiClientMock.instance.delete.mockResolvedValue(mockResponse);
@@ -337,26 +443,24 @@ describe("CharacterService", () => {
       expect(result).toBe(mockResponse);
     });
 
-    it("Throw specific error if response is 400, 401, or 403", async () => {
+    it("should call handleApiError for response 400, 401, or 403 and not throw", async () => {
       const statusCodes = [400, 401, 403];
-      for (const status of statusCodes) {
+      for (const statusCode of statusCodes) {
         const axiosError = {
           isAxiosError: true,
-          response: { status: status },
+          response: { status: statusCode },
         };
         vi.mocked(axios.isAxiosError).mockReturnValue(true);
         apiClientMock.instance.delete.mockRejectedValue(axiosError);
 
-        await expect(
-          characterService.delete(
-            "fcdb0dd1-7f7e-44bd-9a9b-c4daf6cb1588",
-            "character456",
-          ),
-        ).rejects.toThrow(t("system.error.forbidden"));
+        const result = await characterService.delete(userId, charId);
+
+        expect(handleApiError).toHaveBeenCalledWith(axiosError);
+        expect(result).toBeUndefined();
       }
     });
 
-    it("Throw specific error if response is 404", async () => {
+    it("should call handleApiError for response 404 and not throw", async () => {
       const axiosError = {
         isAxiosError: true,
         response: { status: 404 },
@@ -364,24 +468,24 @@ describe("CharacterService", () => {
       vi.mocked(axios.isAxiosError).mockReturnValue(true);
       apiClientMock.instance.delete.mockRejectedValue(axiosError);
 
-      await expect(
-        characterService.delete(
-          "fcdb0dd1-7f7e-44bd-9a9b-c4daf6cb1588",
-          "character456",
-        ),
-      ).rejects.toThrow(t("character.error.notFound"));
+      const result = await characterService.delete(userId, charId);
+
+      expect(handleApiError).toHaveBeenCalledWith(axiosError);
+      expect(result).toBeUndefined();
     });
 
-    it("Throw error if isn't axios error", async () => {
-      const error = new Error("Unknown error");
-      apiClientMock.instance.delete.mockRejectedValue(error);
+    it("should rethrow if handleApiError throws (generic error case)", async () => {
+      const genericError = new Error("Unknown error");
+      apiClientMock.instance.delete.mockRejectedValue(genericError);
 
-      await expect(
-        characterService.delete(
-          "fcdb0dd1-7f7e-44bd-9a9b-c4daf6cb1588",
-          "character456",
-        ),
-      ).rejects.toThrow("Unknown error");
+      (handleApiError as unknown as Mock).mockImplementation(() => {
+        throw genericError;
+      });
+
+      await expect(characterService.delete(userId, charId)).rejects.toThrow(
+        "Unknown error",
+      );
+      expect(handleApiError).toHaveBeenCalledWith(genericError);
     });
   });
 });

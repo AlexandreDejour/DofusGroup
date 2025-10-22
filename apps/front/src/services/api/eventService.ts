@@ -1,6 +1,6 @@
 import qs from "qs";
-import axios from "axios";
 import { t } from "../../i18n/i18n-helper";
+import handleApiError from "../utils/handleApiError";
 
 import { ApiClient } from "../client";
 
@@ -26,12 +26,7 @@ export class EventService {
 
       return response.data;
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        if (error.response?.status === 204) {
-          throw new Error(t("event.error.noneUpcoming"));
-        }
-      }
-      throw error;
+      handleApiError(error);
     }
   }
 
@@ -45,12 +40,7 @@ export class EventService {
 
       return response.data;
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        if (error.response?.status === 204) {
-          throw new Error(t("event.error.noneUpcoming"));
-        }
-      }
-      throw error;
+      handleApiError(error);
     }
   }
 
@@ -60,12 +50,7 @@ export class EventService {
 
       return response.data;
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        if (error.response?.status === 204) {
-          throw new Error(t("event.error.none"));
-        }
-      }
-      throw error;
+      handleApiError(error);
     }
   }
 
@@ -77,12 +62,7 @@ export class EventService {
 
       return response.data;
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        if (error.response?.status) {
-          throw new Error(error.message);
-        }
-      }
-      throw error;
+      handleApiError(error);
     }
   }
 
@@ -106,20 +86,7 @@ export class EventService {
 
       return response.data;
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        if (error.response?.status === 400) {
-          throw new Error(t("auth.error.data.incomplete"));
-        }
-
-        if (error.response?.status === 401) {
-          throw new Error(t("event.prompt.loginRequired"));
-        }
-
-        if (error.response?.status === 403) {
-          throw new Error(t("system.error.forbidden"));
-        }
-      }
-      throw error;
+      handleApiError(error);
     }
   }
 
@@ -143,22 +110,14 @@ export class EventService {
 
       return response.data;
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        if ([400, 401, 403].includes(error.response?.status ?? 0)) {
-          throw new Error(t("system.error.forbidden"));
-        } else if (error.response?.status === 404) {
-          throw new Error(t("event.error.noneFound"));
-        } else if (error.response?.status === 500) {
-          throw new Error(t("system.error.impossible"));
-        }
-      }
-      throw error;
+      handleApiError(error);
     }
   }
 
   public async addCharacters(eventId: string, data: CreateEventForm) {
-    if (!data.characters_id.length)
+    if (!data.characters_id.length) {
       throw new Error(t("validation.playerNumber.min"));
+    }
 
     try {
       const response = await this.axios.post(
@@ -170,14 +129,7 @@ export class EventService {
 
       return response.data;
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        if (error.response?.status === 404) {
-          throw new Error(t("event.error.noneFound"));
-        } else if (error.response?.status === 500) {
-          throw new Error(t("system.error.impossible"));
-        }
-      }
-      throw error;
+      handleApiError(error);
     }
   }
 
@@ -190,14 +142,7 @@ export class EventService {
 
       return response.data;
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        if (error.response?.status === 404) {
-          throw new Error(t("event.error.noneFound"));
-        } else if (error.response?.status === 500) {
-          throw new Error(t("system.error.impossible"));
-        }
-      }
-      throw error;
+      handleApiError(error);
     }
   }
 
@@ -209,14 +154,7 @@ export class EventService {
       );
       return response;
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        if ([400, 401, 403].includes(error.response?.status ?? 0)) {
-          throw new Error(t("system.error.forbidden"));
-        } else if (error.response?.status === 404) {
-          throw new Error(t("event.error.noneFound"));
-        }
-      }
-      throw error;
+      handleApiError(error);
     }
   }
 }

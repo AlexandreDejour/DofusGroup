@@ -1,7 +1,7 @@
-import axios from "axios";
 import { t } from "../../i18n/i18n-helper";
 
 import { ApiClient } from "../client";
+import handleApiError from "../utils/handleApiError";
 
 import { UpdateForm } from "../../types/form";
 import { AuthUser, UserEnriched } from "../../types/user";
@@ -23,12 +23,7 @@ export class UserService {
 
       return response.data;
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        if (error.response?.status === 404) {
-          throw new Error(t("auth.error.user.notFound"));
-        }
-      }
-      throw error;
+      handleApiError(error);
     }
   }
 
@@ -40,12 +35,7 @@ export class UserService {
 
       return response.data;
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        if (error.response?.status === 404) {
-          throw new Error(t("auth.error.user.notFound"));
-        }
-      }
-      throw error;
+      handleApiError(error);
     }
   }
 
@@ -67,18 +57,7 @@ export class UserService {
 
       return response.data;
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        if ([400, 403, 404].includes(error.response?.status ?? 0)) {
-          throw new Error(t("auth.error.user.notFound"));
-        }
-        if (error.response?.status === 401) {
-          throw new Error(t("auth.password.error.oldPassword"));
-        }
-        if (error.response?.status === 429) {
-          throw new Error(t("system.error.attemps"));
-        }
-      }
-      throw error;
+      handleApiError(error);
     }
   }
 
@@ -90,14 +69,7 @@ export class UserService {
 
       return response;
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        if ([400, 401, 403].includes(error.response?.status ?? 0)) {
-          throw new Error(t("system.error.forbidden"));
-        } else if (error.response?.status === 404) {
-          throw new Error(t("auth.error.user.notFound"));
-        }
-      }
-      throw error;
+      handleApiError(error);
     }
   }
 }

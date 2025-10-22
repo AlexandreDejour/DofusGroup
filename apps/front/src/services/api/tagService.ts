@@ -1,5 +1,4 @@
-import axios from "axios";
-import { t } from "../../i18n/i18n-helper";
+import handleApiError from "../utils/handleApiError";
 
 import { Tag } from "../../types/tag";
 
@@ -18,12 +17,7 @@ export class TagService {
 
       return response.data;
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        if (error.response?.status === 204) {
-          throw new Error(t("tag.error.notFound"));
-        }
-      }
-      throw error;
+      handleApiError(error);
     }
   }
 }

@@ -50,9 +50,9 @@ export default function Profile() {
         setUserEnriched(response);
       } catch (error) {
         if (isAxiosError(error)) {
-          showError(t("common.error.default"), error.message);
+          showError(t("system.error.default"), error.message);
         } else if (error instanceof Error) {
-          showError(t("common.error.default"), t("common.error.occurred"));
+          showError(t("system.error.default"), t("system.error.occurred"));
           console.error("General error:", error.message);
         }
       }
@@ -80,9 +80,9 @@ export default function Profile() {
         } else setUpcomingEvents(response);
       } catch (error) {
         if (isAxiosError(error)) {
-          showError(t("common.error.default"), error.message);
+          showError(t("system.error.default"), error.message);
         } else if (error instanceof Error) {
-          showError(t("common.error.default"), t("common.error.occurred"));
+          showError(t("system.error.default"), t("system.error.occurred"));
           console.error("General error:", error.message);
         }
       }

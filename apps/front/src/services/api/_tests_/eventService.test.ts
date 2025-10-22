@@ -1,5 +1,6 @@
-import { describe, it, beforeEach, expect, vi } from "vitest";
+import { describe, it, beforeEach, expect, vi, type Mock } from "vitest";
 
+import qs from "qs";
 import axios from "axios";
 import { t } from "../../../i18n/i18n-helper";
 
@@ -8,8 +9,13 @@ import { Event, EventEnriched, PaginatedEvents } from "../../../types/event";
 
 import { ApiClient } from "../../client";
 import { EventService } from "../eventService";
+import handleApiError from "../../utils/handleApiError";
 
 vi.mock("axios");
+
+vi.mock("../../utils/handleApiError", () => ({
+  default: vi.fn(),
+}));
 
 describe("EventService", () => {
   let apiClientMock: any;
@@ -72,6 +78,7 @@ describe("EventService", () => {
   };
 
   beforeEach(() => {
+    (handleApiError as unknown as Mock).mockReset();
     apiClientMock = {
       instance: {
         get: vi.fn(),
@@ -127,15 +134,24 @@ describe("EventService", () => {
       (axios.isAxiosError as any).mockReturnValue(true);
       apiClientMock.instance.get.mockRejectedValue(axiosError);
 
+      (handleApiError as unknown as Mock).mockImplementation(() => {
+        throw new Error(t("event.error.noneUpcoming"));
+      });
+
       await expect(eventService.getEvents()).rejects.toThrow(
         t("event.error.noneUpcoming"),
       );
+      expect(handleApiError).toHaveBeenCalledWith(axiosError);
     });
 
     it("Throw error if isn't axios error", async () => {
       const error = new Error("Unknown error");
       (axios.isAxiosError as any).mockReturnValue(false);
       apiClientMock.instance.get.mockRejectedValue(error);
+
+      (handleApiError as unknown as Mock).mockImplementation(() => {
+        throw error;
+      });
 
       await expect(eventService.getEvents()).rejects.toThrow("Unknown error");
     });
@@ -171,6 +187,13 @@ describe("EventService", () => {
           paramsSerializer: expect.any(Function),
         },
       );
+
+      const calledSerializer = apiClientMock.instance.get.mock.calls[0][1]
+        .paramsSerializer as Function;
+      expect(calledSerializer({ characterIds: ["a", "b"] })).toEqual(
+        qs.stringify({ characterIds: ["a", "b"] }, { arrayFormat: "repeat" }),
+      );
+
       expect(result).toEqual(mockEvents);
     });
 
@@ -182,9 +205,14 @@ describe("EventService", () => {
       (axios.isAxiosError as any).mockReturnValue(true);
       apiClientMock.instance.get.mockRejectedValue(axiosError);
 
+      (handleApiError as unknown as Mock).mockImplementation(() => {
+        throw new Error(t("event.error.noneUpcoming"));
+      });
+
       await expect(eventService.getRegistered(["char-1"])).rejects.toThrow(
         t("event.error.noneUpcoming"),
       );
+      expect(handleApiError).toHaveBeenCalledWith(axiosError);
     });
   });
 
@@ -225,9 +253,14 @@ describe("EventService", () => {
       (axios.isAxiosError as any).mockReturnValue(true);
       apiClientMock.instance.get.mockRejectedValue(axiosError);
 
+      (handleApiError as unknown as Mock).mockImplementation(() => {
+        throw new Error(t("event.error.none"));
+      });
+
       await expect(eventService.getAllByUserId(userId)).rejects.toThrow(
         t("event.error.none"),
       );
+      expect(handleApiError).toHaveBeenCalledWith(axiosError);
     });
   });
 
@@ -254,9 +287,14 @@ describe("EventService", () => {
       (axios.isAxiosError as any).mockReturnValue(true);
       apiClientMock.instance.get.mockRejectedValue(error);
 
+      (handleApiError as unknown as Mock).mockImplementation(() => {
+        throw new Error(error.message);
+      });
+
       await expect(eventService.getOneEnriched(eventId)).rejects.toThrow(
         "fail",
       );
+      expect(handleApiError).toHaveBeenCalledWith(error);
     });
   });
 
@@ -326,9 +364,14 @@ describe("EventService", () => {
       (axios.isAxiosError as any).mockReturnValue(true);
       apiClientMock.instance.post.mockRejectedValue(axiosError);
 
+      (handleApiError as unknown as Mock).mockImplementation(() => {
+        throw new Error(t("auth.error.data.incomplete"));
+      });
+
       await expect(eventService.create(userId, eventData)).rejects.toThrow(
         t("auth.error.data.incomplete"),
       );
+      expect(handleApiError).toHaveBeenCalledWith(axiosError);
     });
 
     it("Throws a specific error for a 401 status code", async () => {
@@ -339,9 +382,14 @@ describe("EventService", () => {
       (axios.isAxiosError as any).mockReturnValue(true);
       apiClientMock.instance.post.mockRejectedValue(axiosError);
 
+      (handleApiError as unknown as Mock).mockImplementation(() => {
+        throw new Error(t("event.prompt.loginRequired"));
+      });
+
       await expect(eventService.create(userId, eventData)).rejects.toThrow(
         t("event.prompt.loginRequired"),
       );
+      expect(handleApiError).toHaveBeenCalledWith(axiosError);
     });
 
     it("Throws a specific error for a 403 status code", async () => {
@@ -352,15 +400,24 @@ describe("EventService", () => {
       (axios.isAxiosError as any).mockReturnValue(true);
       apiClientMock.instance.post.mockRejectedValue(axiosError);
 
+      (handleApiError as unknown as Mock).mockImplementation(() => {
+        throw new Error(t("system.error.forbidden"));
+      });
+
       await expect(eventService.create(userId, eventData)).rejects.toThrow(
         t("system.error.forbidden"),
       );
+      expect(handleApiError).toHaveBeenCalledWith(axiosError);
     });
 
     it("Throws a generic error for non-Axios or other errors", async () => {
       const error = new Error("Unknown error");
       (axios.isAxiosError as any).mockReturnValue(false);
       apiClientMock.instance.post.mockRejectedValue(error);
+
+      (handleApiError as unknown as Mock).mockImplementation(() => {
+        throw error;
+      });
 
       await expect(eventService.create(userId, eventData)).rejects.toThrow(
         "Unknown error",
@@ -536,9 +593,14 @@ describe("EventService", () => {
       (axios.isAxiosError as any).mockReturnValue(true);
       apiClientMock.instance.delete.mockRejectedValue(axiosError);
 
+      (handleApiError as unknown as Mock).mockImplementation(() => {
+        throw new Error(t("system.error.forbidden"));
+      });
+
       await expect(eventService.delete(userId, eventId)).rejects.toThrow(
         t("system.error.forbidden"),
       );
+      expect(handleApiError).toHaveBeenCalledWith(axiosError);
     });
 
     it("Throw specific error if response if 404", async () => {
@@ -549,15 +611,24 @@ describe("EventService", () => {
       (axios.isAxiosError as any).mockReturnValue(true);
       apiClientMock.instance.delete.mockRejectedValue(axiosError);
 
+      (handleApiError as unknown as Mock).mockImplementation(() => {
+        throw new Error(t("event.error.noneFound"));
+      });
+
       await expect(eventService.delete(userId, eventId)).rejects.toThrow(
         t("event.error.noneFound"),
       );
+      expect(handleApiError).toHaveBeenCalledWith(axiosError);
     });
 
     it("Throw error if isn't axios error", async () => {
       const error = new Error("Unknown error");
       (axios.isAxiosError as any).mockReturnValue(false);
       apiClientMock.instance.delete.mockRejectedValue(error);
+
+      (handleApiError as unknown as Mock).mockImplementation(() => {
+        throw error;
+      });
 
       await expect(eventService.delete(userId, eventId)).rejects.toThrow(
         "Unknown error",

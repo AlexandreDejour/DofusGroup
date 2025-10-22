@@ -4,7 +4,7 @@ import { v4 as uuidv4 } from "uuid";
 
 import type { Notification, NotificationType } from "../types/notification";
 
-interface NotificationContextType {
+export interface NotificationContextType {
   notifications: Notification[];
   addNotification: (
     type: NotificationType,

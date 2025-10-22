@@ -1,5 +1,4 @@
-import axios from "axios";
-import { t } from "../../i18n/i18n-helper";
+import handleApiError from "../utils/handleApiError";
 
 import { Breed } from "../../types/breed";
 
@@ -15,15 +14,12 @@ export class BreedService {
   public async getBreeds(): Promise<Breed[]> {
     try {
       const response = await this.axios.get<Breed[]>("/breeds");
+      console.log(response);
 
       return response.data;
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        if (error.response?.status === 204) {
-          throw new Error(t("breed.error.notFound"));
-        }
-      }
-      throw error;
+      console.log(error);
+      handleApiError(error);
     }
   }
 }

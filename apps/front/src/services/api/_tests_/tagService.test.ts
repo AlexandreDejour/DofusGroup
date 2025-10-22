@@ -1,27 +1,27 @@
-import { describe, it, beforeEach, expect, vi } from "vitest";
-
-import axios from "axios";
-import { t } from "../../../i18n/i18n-helper";
+import { describe, it, beforeEach, expect, vi, Mock } from "vitest";
 
 import { Tag } from "../../../types/tag";
 
 import { ApiClient } from "../../client";
 import { TagService } from "../tagService";
+import handleApiError from "../../utils/handleApiError";
 
-vi.mock("axios");
+vi.mock("../../utils/handleApiError", () => ({
+  default: vi.fn(),
+}));
 
 describe("TagService", () => {
   let apiClientMock: any;
   let tagService: TagService;
 
   beforeEach(() => {
+    (handleApiError as unknown as Mock).mockReset();
     apiClientMock = {
       instance: {
         get: vi.fn(),
       },
     };
     tagService = new TagService(apiClientMock as ApiClient);
-    vi.mocked(axios.isAxiosError).mockReturnValue(false);
   });
 
   describe("getTags", () => {
@@ -38,25 +38,17 @@ describe("TagService", () => {
       expect(result).toEqual(mockTags);
     });
 
-    it("should throw a specific error if response status is 204", async () => {
-      const axiosError = {
-        isAxiosError: true,
-        response: { status: 204 },
-      };
+    it("Throw specific error when any tag found (handleApiError throws)", async () => {
+      const error = new Error("Any tag found.");
+      apiClientMock.instance.get.mockRejectedValue(error);
 
-      vi.mocked(axios.isAxiosError).mockReturnValue(true);
-      apiClientMock.instance.get.mockRejectedValue(axiosError);
+      (handleApiError as unknown as Mock).mockImplementation(() => {
+        throw error;
+      });
 
-      await expect(tagService.getTags()).rejects.toThrow(
-        t("tag.error.notFound"),
-      );
-    });
+      await expect(tagService.getTags()).rejects.toThrow("Any tag found.");
 
-    it("should re-throw a generic error if it's not an AxiosError", async () => {
-      const genericError = new Error("Network error");
-      apiClientMock.instance.get.mockRejectedValue(genericError);
-
-      await expect(tagService.getTags()).rejects.toThrow("Network error");
+      expect(handleApiError).toHaveBeenCalledWith(error);
     });
   });
 });

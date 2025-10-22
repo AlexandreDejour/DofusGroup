@@ -26,10 +26,6 @@
     "duration": "Durée",
     "durationInMin": "Durée en minutes",
     "discussion": "Discussion",
-    "error": {
-      "default": "Erreur",
-      "occurred": "Une erreur est survenue."
-    },
     "home": "Acceuil",
     "join": "Rejoindre",
     "level": "Niveau",
@@ -214,13 +210,16 @@
   "system": {
     "error": {
       "attemps": "Trop de tentatives répétées, veuillez réessayer plus tard.",
+      "badRequest": "Les données fournies sont invalides.",
+      "default": "Erreur",
       "occurred": "Une erreur est survenue.",
       "recoveryFailed": "Récupération de données impossible.",
       "forbidden": "Action interdite.",
       "notFound": "Cette page est introuvable.",
       "impossible": "Action impossible.",
       "profanity": "Contenu inapproprié !",
-      "inappropriate": "Le contenu de certains champs est inapproprié."
+      "inappropriate": "Le contenu de certains champs est inapproprié.",
+      "unauthorized": "Action non authorisée."
     },
     "success": {
       "create": "Création réussie !",

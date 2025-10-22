@@ -1,4 +1,3 @@
-import axios from "axios";
 import { t } from "../../i18n/i18n-helper";
 
 import { ApiClient } from "../client";

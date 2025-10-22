@@ -68,6 +68,8 @@ export function displayModalError(
     if (modalType && isUpdateField(modalType) && apiError.status === 401) {
       message = t("auth.password.error.oldPassword");
     }
+  } else if (error instanceof Error) {
+    message = error.message;
   }
 
   showError(title, message);

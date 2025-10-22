@@ -1,5 +1,4 @@
 import qs from "qs";
-import axios from "axios";
 import { t } from "../../i18n/i18n-helper";
 import handleApiError from "../utils/handleApiError";
 

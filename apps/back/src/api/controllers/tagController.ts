@@ -1,4 +1,5 @@
 import status from "http-status";
+import createHttpError from "http-errors";
 import { NextFunction, Request, Response } from "express";
 
 import { Tag } from "../../types/tag.js";
@@ -16,8 +17,8 @@ export class TagController {
       const tags: Tag[] = await this.repository.getAll();
 
       if (!tags.length) {
-        res.status(status.NO_CONTENT).json({ error: "Any tag found" });
-        return;
+        const error = createHttpError(status.NO_CONTENT, "Any tag found");
+        return next(error);
       }
 
       res.json(tags);
@@ -33,8 +34,8 @@ export class TagController {
       const tag: Tag | null = await this.repository.getOne(id);
 
       if (!tag) {
-        res.status(status.NOT_FOUND).json({ error: "Tag not found" });
-        return;
+        const error = createHttpError(status.NOT_FOUND, "Tag not found");
+        return next(error);
       }
 
       res.json(tag);

@@ -23,13 +23,15 @@ import formDataToObject from "./utils/formDataToObject";
 import { AuthService } from "../services/api/authService";
 import { UserService } from "../services/api/userService";
 import { EventService } from "../services/api/eventService";
+import { displayModalError } from "./utils/displayModalError";
+import { displayTargetError } from "./utils/displayTargetError";
 import { CommentService } from "../services/api/commentService";
 import { CharacterService } from "../services/api/characterService";
 import isUpdateField from "../components/modals/utils/isUpdateField";
 import { cleanProfanity, containsProfanity } from "./utils/profanity";
 
 const config = Config.getInstance();
-const axios = new ApiClient(config.baseUrl);
+const axios = new ApiClient(config.backUrl);
 const authService = new AuthService(axios);
 const userService = new UserService(axios);
 const eventService = new EventService(axios);
@@ -60,6 +62,7 @@ export type ModalType =
   | "login"
   | "mail"
   | "password"
+  | "oldPassword"
   | "confirmPassword"
   | "username"
   | "newCharacter"
@@ -494,11 +497,7 @@ export default function ModalProvider({ children }: ModalProviderProps) {
 
         closeModal();
       } catch (error) {
-        if (error instanceof Error) {
-          showError(t("common.error.default"), error.message);
-        } else {
-          showError(t("common.error.default"), t("system.error.occurred"));
-        }
+        displayModalError(error, t, showError, modalType);
       }
     },
     [modalType, closeModal],
@@ -534,13 +533,49 @@ export default function ModalProvider({ children }: ModalProviderProps) {
 
         if (targetType === "character" && targetId) {
           await characterService.delete(user.id, targetId);
+
+          const userCharacters = await characterService.getAllByUserId(user.id);
+          const events = await eventService.getAllByUserId(user.id);
+
+          if (!userCharacters.length) {
+            await Promise.all(
+              events.map((event) => eventService.delete(user.id, event.id)),
+            );
+
+            showSuccess(
+              t("system.success.deleted"),
+              `${t("character.success.deleted")} ${t(
+                "event.noOwnerCharacter",
+              )}`,
+            );
+          } else {
+            const characterids = userCharacters.flatMap(
+              (character) => character.id,
+            );
+            const eventsWithoutOwnerCharacters = events.filter(
+              (event) =>
+                !event.characters.some((character) =>
+                  characterids.includes(character.id),
+                ),
+            );
+
+            if (eventsWithoutOwnerCharacters) {
+              await Promise.all(
+                eventsWithoutOwnerCharacters.map((event) =>
+                  eventService.delete(user.id, event.id),
+                ),
+              );
+            }
+
+            showSuccess(
+              t("system.success.deleted"),
+              `${t("character.success.deleted")} ${t(
+                "event.noOwnerCharacter",
+              )}`,
+            );
+          }
+
           const response = await userService.getOne(user.id);
-
-          showSuccess(
-            t("system.success.deleted"),
-            t("character.success.deleted"),
-          );
-
           setUser({ ...user, ...response });
         }
 
@@ -575,11 +610,7 @@ export default function ModalProvider({ children }: ModalProviderProps) {
           setUser(null);
         }
       } catch (error) {
-        if (error instanceof Error) {
-          showError(t("common.error.default"), error.message);
-        } else {
-          showError(t("common.error.default"), t("system.error.occurred"));
-        }
+        displayTargetError(error, t, showError, targetType);
       }
     },
     [user, setUser],

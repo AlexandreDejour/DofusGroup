@@ -1,16 +1,20 @@
-import { describe, it, beforeEach, vi, expect } from "vitest";
-import { DofusDBService } from "../dofusDBService";
-import { ApiClient } from "../../client";
-import { Area, Dungeon, SubArea } from "../../../types/dofusDB";
+import { describe, it, beforeEach, vi, expect, Mock } from "vitest";
 
-vi.mock("axios");
+import { Dungeon } from "../../../types/dofusDB";
+
+import { DofusDBService } from "../dofusDBService";
+import handleApiError from "../../utils/handleApiError";
+
+vi.mock("../../utils/handleApiError", () => ({
+  default: vi.fn(),
+}));
 
 describe("DofusDBService", () => {
   let apiClientMock: any;
   let dofusDBService: DofusDBService;
-  const baseUrl = "https://api.dofusdb.fr";
 
   beforeEach(() => {
+    (handleApiError as unknown as Mock).mockReset();
     apiClientMock = {
       instance: {
         get: vi.fn(),
@@ -40,14 +44,12 @@ describe("DofusDBService", () => {
       const areas = await dofusDBService.getAreas();
 
       expect(apiClientMock.instance.get).toHaveBeenCalledTimes(2);
-      expect(apiClientMock.instance.get).toHaveBeenCalledWith(
-        `${baseUrl}/areas`,
-        { params: { $limit: 50, $skip: 0 } },
-      );
-      expect(apiClientMock.instance.get).toHaveBeenCalledWith(
-        `${baseUrl}/areas`,
-        { params: { $limit: 50, $skip: 50 } },
-      );
+      expect(apiClientMock.instance.get).toHaveBeenCalledWith("/areas", {
+        params: { $limit: 50, $skip: 0 },
+      });
+      expect(apiClientMock.instance.get).toHaveBeenCalledWith("/areas", {
+        params: { $limit: 50, $skip: 50 },
+      });
 
       expect(areas.length).toBe(70);
       expect(areas[0].name).toBe("Area 1");
@@ -58,9 +60,15 @@ describe("DofusDBService", () => {
       const error = new Error("API network error");
       apiClientMock.instance.get.mockRejectedValue(error);
 
+      (handleApiError as unknown as Mock).mockImplementation(() => {
+        throw error;
+      });
+
       await expect(dofusDBService.getAreas()).rejects.toThrow(
         "API network error",
       );
+
+      expect(handleApiError).toHaveBeenCalledWith(error);
     });
   });
 
@@ -79,10 +87,9 @@ describe("DofusDBService", () => {
 
       const subAreas = await dofusDBService.getSubAreas(areaId);
 
-      expect(apiClientMock.instance.get).toHaveBeenCalledWith(
-        `${baseUrl}/subareas`,
-        { params: { areaId, $limit: 50 } },
-      );
+      expect(apiClientMock.instance.get).toHaveBeenCalledWith("/subareas", {
+        params: { areaId, $limit: 50 },
+      });
       expect(subAreas).toEqual(mockData);
     });
 
@@ -90,9 +97,15 @@ describe("DofusDBService", () => {
       const error = new Error("API server error");
       apiClientMock.instance.get.mockRejectedValue(error);
 
+      (handleApiError as unknown as Mock).mockImplementation(() => {
+        throw error;
+      });
+
       await expect(dofusDBService.getSubAreas(areaId)).rejects.toThrow(
         "API server error",
       );
+
+      expect(handleApiError).toHaveBeenCalledWith(error);
     });
   });
 
@@ -118,10 +131,9 @@ describe("DofusDBService", () => {
 
       const dungeons = await dofusDBService.getDungeons(dungeonId);
 
-      expect(apiClientMock.instance.get).toHaveBeenCalledWith(
-        `${baseUrl}/dungeons`,
-        { params: { id: dungeonId } },
-      );
+      expect(apiClientMock.instance.get).toHaveBeenCalledWith("/dungeons", {
+        params: { id: dungeonId },
+      });
       expect(dungeons).toEqual(mockDungeon);
     });
 
@@ -142,14 +154,12 @@ describe("DofusDBService", () => {
       const dungeons = await dofusDBService.getDungeons();
 
       expect(apiClientMock.instance.get).toHaveBeenCalledTimes(2);
-      expect(apiClientMock.instance.get).toHaveBeenCalledWith(
-        `${baseUrl}/dungeons`,
-        { params: { $limit: 50, $skip: 0 } },
-      );
-      expect(apiClientMock.instance.get).toHaveBeenCalledWith(
-        `${baseUrl}/dungeons`,
-        { params: { $limit: 50, $skip: 50 } },
-      );
+      expect(apiClientMock.instance.get).toHaveBeenCalledWith("/dungeons", {
+        params: { $limit: 50, $skip: 0 },
+      });
+      expect(apiClientMock.instance.get).toHaveBeenCalledWith("/dungeons", {
+        params: { $limit: 50, $skip: 50 },
+      });
       expect(dungeons.length).toBe(65);
     });
 
@@ -157,9 +167,15 @@ describe("DofusDBService", () => {
       const error = new Error("Dungeon API error");
       apiClientMock.instance.get.mockRejectedValue(error);
 
+      (handleApiError as unknown as Mock).mockImplementation(() => {
+        throw error;
+      });
+
       await expect(dofusDBService.getDungeons(1)).rejects.toThrow(
         "Dungeon API error",
       );
+
+      expect(handleApiError).toHaveBeenCalledWith(error);
     });
   });
 });

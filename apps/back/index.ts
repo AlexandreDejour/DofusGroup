@@ -1,10 +1,13 @@
 import express from "express";
 import { Express } from "express";
+
 import cors from "cors";
+import helmet from "helmet";
 import cookieParser from "cookie-parser";
 
 import { Config } from "./src/config/config.js";
 import router from "./src/api/router/router.js";
+import logger from "./src/middlewares/utils/logger.js";
 import { notFound } from "./src/middlewares/utils/errorHandler.js";
 import { errorHandler } from "./src/middlewares/utils/errorHandler.js";
 
@@ -18,9 +21,23 @@ app.use(
   }),
 );
 
+app.use(
+  helmet({
+    crossOriginOpenerPolicy: false,
+    crossOriginEmbedderPolicy: false,
+    crossOriginResourcePolicy: false,
+    hsts: false,
+  }),
+);
+
 app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+
+app.use((req, res, next) => {
+  logger.info(`${req.method} ${req.url}`);
+  next();
+});
 
 app.use(router);
 app.use(notFound);

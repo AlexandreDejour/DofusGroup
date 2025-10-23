@@ -22,7 +22,7 @@ import { EventService } from "../../services/api/eventService";
 import EventCharacterCard from "../../components/EventCharacterCard/EventCharacterCard";
 
 const config = Config.getInstance();
-const axios = new ApiClient(config.baseUrl);
+const axios = new ApiClient(config.backUrl);
 const eventService = new EventService(axios);
 
 export default function EventDetails() {
@@ -50,9 +50,9 @@ export default function EventDetails() {
         showSuccess(t("system.success.deleted"), t("event.error.characterOut"));
       } catch (error) {
         if (error instanceof Error) {
-          showError(t("common.error.default"), error.message);
+          showError(t("system.error.default"), error.message);
         } else {
-          showError(t("common.error.default"), t("common.error.occurred"));
+          showError(t("system.error.default"), t("system.error.occurred"));
         }
       }
     },
@@ -151,6 +151,12 @@ export default function EventDetails() {
               type="button"
               className="quick button"
               onClick={() => openModal("joinEvent", event)}
+              disabled={!user}
+              style={{
+                background: !user
+                  ? "grey"
+                  : "radial-gradient(circle, rgba(96,186,96,1) 0%, rgba(156,217,92,1) 90%)",
+              }}
             >
               {t("common.join")}
             </button>
@@ -173,6 +179,12 @@ export default function EventDetails() {
               type="button"
               className="quick button"
               onClick={() => openModal("comment", event)}
+              disabled={!user}
+              style={{
+                background: !user
+                  ? "grey"
+                  : "radial-gradient(circle, rgba(96,186,96,1) 0%, rgba(156,217,92,1) 90%)",
+              }}
             >
               {t("comment.single")}
             </button>
@@ -228,6 +240,12 @@ export default function EventDetails() {
               type="button"
               className="button"
               onClick={() => openModal("joinEvent", event)}
+              disabled={!user}
+              style={{
+                background: !user
+                  ? "grey"
+                  : "radial-gradient(circle, rgba(96,186,96,1) 0%, rgba(156,217,92,1) 90%)",
+              }}
             >
               {t("common.join")}
             </button>

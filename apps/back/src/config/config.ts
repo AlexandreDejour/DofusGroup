@@ -1,11 +1,13 @@
 import * as dotenv from "dotenv";
-import path from "path";
 
-dotenv.config({ path: path.resolve(import.meta.dirname, "../../.env") });
+if (process.env.NODE_ENV !== "production") {
+  dotenv.config();
+}
 
 export class Config {
   private static instance: Config;
 
+  readonly environment: string;
   readonly port: number;
   readonly baseUrl: string;
   readonly pgUrl: string;
@@ -14,6 +16,7 @@ export class Config {
   readonly jwtSecret: string;
 
   private constructor() {
+    this.environment = process.env.NODE_ENV as string;
     this.port = Number(process.env.PORT);
     this.baseUrl = process.env.BASE_URL as string;
     this.pgUrl = process.env.PG_URL as string;
@@ -31,6 +34,7 @@ export class Config {
   }
 
   private static check(config: Config) {
+    if (!config.environment) throw new Error("NODE_ENV is required");
     if (!config.port || isNaN(config.port))
       throw new Error("PORT is required and must be a number");
     if (!config.baseUrl) throw new Error("BASE_URL is required");

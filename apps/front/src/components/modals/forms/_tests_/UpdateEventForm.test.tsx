@@ -20,7 +20,8 @@ import UpdateEventForm from "../UpdateEventForm/UpdateEventForm";
 vi.mock("../../../../config/config.ts", () => ({
   Config: {
     getInstance: () => ({
-      baseUrl: "http://localhost",
+      backUrl: "/api",
+      dofusdbUrl: "/dofusdb",
     }),
   },
 }));
@@ -217,7 +218,7 @@ describe("UpdateEventForm", () => {
 
     await waitFor(() => {
       expect(mockShowError).toHaveBeenCalledWith(
-        t("common.error.default"),
+        t("system.error.default"),
         t("system.error.occurred"),
       );
     });
@@ -237,7 +238,7 @@ describe("UpdateEventForm", () => {
 
     await waitFor(() => {
       expect(mockShowError).toHaveBeenCalledWith(
-        t("common.error.default"),
+        t("system.error.default"),
         t("system.error.occurred"),
       );
     });
@@ -257,7 +258,7 @@ describe("UpdateEventForm", () => {
 
     await waitFor(() => {
       expect(mockShowError).toHaveBeenCalledWith(
-        t("common.error.default"),
+        t("system.error.default"),
         t("system.error.occurred"),
       );
     });

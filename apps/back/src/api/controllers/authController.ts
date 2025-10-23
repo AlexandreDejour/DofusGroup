@@ -1,7 +1,8 @@
 import argon2 from "argon2";
 import status from "http-status";
+import createHttpError from "http-errors";
 import jwt, { JwtPayload } from "jsonwebtoken";
-import { NextFunction, Request, Response } from "express";
+import { CookieOptions, NextFunction, Request, Response } from "express";
 
 import { Config } from "../../config/config.js";
 import { AuthenticatedRequest } from "../../middlewares/utils/authService.js";
@@ -14,11 +15,22 @@ export class AuthController {
   private config: Config;
   private service: AuthService;
   private repository: AuthRepository;
+  private cookieOptions: CookieOptions;
 
   public constructor(service: AuthService, repository: AuthRepository) {
     this.config = Config.getInstance();
     this.service = service;
     this.repository = repository;
+    this.cookieOptions = {
+      httpOnly: true,
+      secure: this.config.environment === "production",
+      sameSite: "lax",
+      path: "/",
+      domain:
+        this.config.environment === "production"
+          ? ".dofusgroup.com"
+          : undefined,
+    };
   }
 
   public async register(req: Request, res: Response, next: NextFunction) {
@@ -29,8 +41,8 @@ export class AuthController {
         await this.repository.findOneByUsername(username);
 
       if (isExist) {
-        res.status(status.CONFLICT).json({ error: "Username forbidden" });
-        return;
+        const error = createHttpError(status.CONFLICT, "Username forbidden");
+        return next(error);
       }
 
       const newUser: AuthUser = await this.repository.register(req.body);
@@ -49,32 +61,28 @@ export class AuthController {
         await this.repository.findOneByUsername(username);
 
       if (!user) {
-        res
-          .status(status.UNAUTHORIZED)
-          .json({ error: "Username or password unavailable" });
-        return;
+        const error = createHttpError(
+          status.UNAUTHORIZED,
+          "Username or password unavailable",
+        );
+        return next(error);
       }
 
       const isPasswordMatch = await argon2.verify(user.password, password);
 
       if (!isPasswordMatch) {
-        res
-          .status(status.UNAUTHORIZED)
-          .json({ error: "Username or password unavailable" });
-        return;
+        const error = createHttpError(
+          status.UNAUTHORIZED,
+          "Username or password unavailable",
+        );
+        return next(error);
       }
 
       const accessToken = await this.service.generateAccessToken(user.id);
       const { password: _password, ...userWithoutPassword } = user;
 
       res
-        .cookie("token", accessToken, {
-          httpOnly: true, // Prevents access via JavaScriptt (XSS protection)
-          // TODO swap to true
-          secure: false, // Use HTTPS in production
-          sameSite: "strict", // CRSF protection
-          maxAge: 7200000, // Life time (2h)
-        })
+        .cookie("token", accessToken, this.cookieOptions)
         .json(userWithoutPassword);
     } catch (error) {
       next(error);
@@ -84,26 +92,27 @@ export class AuthController {
   public async apiMe(req: Request, res: Response, next: NextFunction) {
     const token = req.cookies.token;
     if (!token) {
-      res.status(status.UNAUTHORIZED).json({ message: "Unauthorized access" });
-      return;
+      const error = createHttpError(status.UNAUTHORIZED, "Unauthorized access");
+      return next(error);
     }
 
     try {
       const decoded = jwt.verify(token, this.config.jwtSecret);
 
       if (typeof decoded === "string") {
-        res
-          .status(status.BAD_REQUEST)
-          .json({ message: "Invalid token payload" });
-        return;
+        const error = createHttpError(
+          status.BAD_REQUEST,
+          "Invalid token payload",
+        );
+        return next(error);
       }
 
       const payload = decoded as JwtPayload & { id: string };
       const user = await this.repository.findOneById(payload.id);
 
       if (!user) {
-        res.status(status.NOT_FOUND).json({ message: "User not found" });
-        return;
+        const error = createHttpError(status.NOT_FOUND, "User not found");
+        return next(error);
       }
 
       const { password: _password, ...userWithoutPassword } = user;
@@ -132,27 +141,29 @@ export class AuthController {
       });
 
       if (error) {
-        res
-          .status(status.BAD_REQUEST)
-          .json({ message: "Invalid or missing user ID" });
-        return;
+        const error = createHttpError(
+          status.BAD_REQUEST,
+          "Invalid or missing user ID",
+        );
+        return next(error);
       }
 
       const id = value.userId;
       const user: AuthUser | null = await this.repository.findOneById(id);
 
       if (!user) {
-        res.status(status.NOT_FOUND).json({ message: "User not found" });
-        return;
+        const error = createHttpError(status.NOT_FOUND, "User not found");
+        return next(error);
       }
 
       const isPasswordMatch = await argon2.verify(user.password, oldPassword);
 
       if (!isPasswordMatch) {
-        res.status(status.UNAUTHORIZED).json({
-          error: "Old password doesn't match current password",
-        });
-        return;
+        const error = createHttpError(
+          status.UNAUTHORIZED,
+          "Old password doesn't match current password",
+        );
+        return next(error);
       }
 
       next();
@@ -170,10 +181,11 @@ export class AuthController {
       const { value, error } = authUserSchema.validate({ userId: req.userId });
 
       if (error) {
-        res
-          .status(status.BAD_REQUEST)
-          .json({ message: "Invalid or missing user ID" });
-        return;
+        const error = createHttpError(
+          status.BAD_REQUEST,
+          "Invalid or missing user ID",
+        );
+        return next(error);
       }
 
       const id = value.userId;
@@ -181,8 +193,8 @@ export class AuthController {
       const user = await this.repository.findOneById(id);
 
       if (!user) {
-        res.status(status.NOT_FOUND).json({ message: "User not found" });
-        return;
+        const error = createHttpError(status.NOT_FOUND, "User not found");
+        return next(error);
       }
 
       res.json(user);
@@ -192,11 +204,7 @@ export class AuthController {
   }
 
   public logout(_req: Request, res: Response, _next: NextFunction) {
-    res.clearCookie("token", {
-      httpOnly: true,
-      secure: false,
-      sameSite: "strict",
-    });
+    res.clearCookie("token", this.cookieOptions);
     res.json({ message: "Successfully logout" });
   }
 }

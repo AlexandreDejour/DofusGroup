@@ -26,14 +26,12 @@
     "duration": "Durée",
     "durationInMin": "Durée en minutes",
     "discussion": "Discussion",
-    "error": {
-      "default": "Erreur",
-      "occurred": "Une erreur est survenue."
-    },
+    "home": "Acceuil",
     "join": "Rejoindre",
     "level": "Niveau",
     "loading": "Chargement...",
     "maxPlayers": "Joueurs maximum",
+    "minimalCondition": "Condition minimum non remplie !",
     "name": "Nom",
     "new": "Nouveau",
     "ok": "OK",
@@ -116,7 +114,7 @@
   },
 
   "character": {
-    "list": "Personnages",
+    "list": "Vos personnages",
     "create": "Créer un personnage",
     "creation": "Création de personnage",
     "modification": "Modification de personnage",
@@ -128,8 +126,9 @@
       "none": "Aucun personnage.",
       "noneOnAccount": "Vous n'avez créé aucun personnage sur votre compte.",
       "noneOnServer": "Aucun personnage disponible sur ce serveur.",
-      "notFound": "Ce personnage n'existe plus.",
-      "loginRequired": "Vous devez être connecté pour créer un personnage."
+      "notFound": "Personnage introuvable.",
+      "loginRequired": "Vous devez être connecté pour créer un personnage.",
+      "required": "Vous devez avoir au moins un personnage pour créé un évènement."
     },
     "success": {
       "created": "Vous avez créé un nouveau personnage.",
@@ -147,7 +146,7 @@
     "write": "Rédiger un commentaire",
     "error": {
       "none": "Aucun commentaire.",
-      "notFound": "Ce commentaire n'existe plus.",
+      "notFound": "Commentaire introuvable.",
       "loginRequired": "Vous devez être connecté pour ajouter un commentaire."
     },
     "success": {
@@ -164,10 +163,14 @@
     "discussion": "Discussion",
     "modification": "Modification d'évènement",
     "noEvent": "Aucun évènement.",
+    "noOwnerCharacter": "Vos évènement sans personnage propriétaire ont également été supprimés.",
+    "upComing": "Évènements à venir",
+    "your": "Vos évènements",
     "error": {
       "none": "Aucun évènement.",
       "noneUpcoming": "Aucun évènement à venir.",
       "noneFound": "Aucun évènement trouvé.",
+      "notFound": "Évènement introuvable",
       "characterOut": "Ce personnage ne fait plus partie de l'évènement.",
       "disable": "Vous devez créer un personnage avant de pouvoir créer un évènement."
     },
@@ -208,12 +211,16 @@
   "system": {
     "error": {
       "attemps": "Trop de tentatives répétées, veuillez réessayer plus tard.",
+      "badRequest": "Les données fournies sont invalides.",
+      "default": "Erreur",
       "occurred": "Une erreur est survenue.",
       "recoveryFailed": "Récupération de données impossible.",
       "forbidden": "Action interdite.",
+      "notFound": "Cette page est introuvable.",
       "impossible": "Action impossible.",
       "profanity": "Contenu inapproprié !",
-      "inappropriate": "Le contenu de certains champs est inapproprié."
+      "inappropriate": "Le contenu de certains champs est inapproprié.",
+      "unauthorized": "Action non authorisée."
     },
     "success": {
       "create": "Création réussie !",

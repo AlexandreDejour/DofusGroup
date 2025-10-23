@@ -80,6 +80,53 @@ describe("eventRouter", () => {
     });
   });
 
+  describe("GET /events/registered", () => {
+    it("Propagate request to eventController.getAllRegistered", async () => {
+      //GIVEN
+      controller.getAllRegistered = setup.mockSucessCall(status.OK);
+      //WHEN
+      const res = await request(app).get("/events/registered");
+      //THEN
+      expect(controller.getAllRegistered).toHaveBeenCalled();
+      expect(res.status).toBe(status.OK);
+      expect(res.body).toBe("Success!");
+    });
+
+    it("Next is called at end route.", async () => {
+      controller.getAllRegistered = setup.mockNextCall();
+
+      const res = await request(app).get("/events/registered");
+
+      expect(controller.getAllRegistered).toHaveBeenCalled();
+      expect(res.status).toBe(status.NOT_FOUND);
+      expect(res.body).toEqual({ called: "next" });
+    });
+  });
+
+  describe("GET /events/:userId", () => {
+    it("Propagate request to eventController.getAllByUserId", async () => {
+      //GIVEN
+      controller.getAllByUserId = setup.mockSucessCall(status.OK);
+      //WHEN
+      const res = await request(app).get(`/user/${userId}/events`);
+      //THEN
+      expect(controller.getAllByUserId).toHaveBeenCalled();
+      expect(receivedReq?.params.userId).toBe(userId);
+      expect(res.status).toBe(status.OK);
+      expect(res.body).toBe("Success!");
+    });
+
+    it("Next is called at end route.", async () => {
+      controller.getAllByUserId = setup.mockNextCall();
+
+      const res = await request(app).get(`/user/${userId}/events`);
+
+      expect(controller.getAllByUserId).toHaveBeenCalled();
+      expect(res.status).toBe(status.NOT_FOUND);
+      expect(res.body).toEqual({ called: "next" });
+    });
+  });
+
   describe("GET /event/:eventId", () => {
     it("Propagate request to eventController.getOne", async () => {
       //GIVEN

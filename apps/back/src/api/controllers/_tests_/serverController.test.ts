@@ -57,8 +57,15 @@ describe("ServerController", () => {
       mockGetAll.mockResolvedValue(mockServers);
       await underTest.getAll(req as Request, res as Response, next);
 
-      expect(res.status).toHaveBeenCalledWith(status.NO_CONTENT);
-      expect(res.json).toHaveBeenCalledWith({ error: "Any server found" });
+      expect(next).toHaveBeenCalled();
+      const err = next.mock.calls[0][0];
+      expect(err).toBeInstanceOf(Error);
+      expect(err).toEqual(
+        expect.objectContaining({
+          status: status.NO_CONTENT,
+          message: "Any server found",
+        }),
+      );
     });
 
     it("Call next() in case of error.", async () => {
@@ -92,8 +99,15 @@ describe("ServerController", () => {
       mockGetOne.mockResolvedValue(null);
       await underTest.getOne(req as Request, res as Response, next);
 
-      expect(res.status).toHaveBeenCalledWith(status.NOT_FOUND);
-      expect(res.json).toHaveBeenCalledWith({ error: "Server not found" });
+      expect(next).toHaveBeenCalled();
+      const err = next.mock.calls[0][0];
+      expect(err).toBeInstanceOf(Error);
+      expect(err).toEqual(
+        expect.objectContaining({
+          status: status.NOT_FOUND,
+          message: "Server not found",
+        }),
+      );
     });
 
     it("Call next() in case of error.", async () => {

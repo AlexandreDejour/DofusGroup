@@ -67,14 +67,21 @@ describe("CommentController", () => {
       expect(res.status).not.toHaveBeenCalledWith(status.NOT_FOUND);
     });
 
-    it("Return 404 if any character found.", async () => {
+    it("Return 204 if any character found.", async () => {
       const mockComments: Comment[] = [];
 
       mockGetAll.mockResolvedValue(mockComments);
       await underTest.getAllByUserId(req as Request, res as Response, next);
 
-      expect(res.status).toHaveBeenCalledWith(status.NO_CONTENT);
-      expect(res.json).toHaveBeenCalledWith({ error: "Any comment found" });
+      expect(next).toHaveBeenCalled();
+      const err = next.mock.calls[0][0];
+      expect(err).toBeInstanceOf(Error);
+      expect(err).toEqual(
+        expect.objectContaining({
+          status: status.NO_CONTENT,
+          message: "Any comment found",
+        }),
+      );
     });
 
     it("Call next() in case of error.", async () => {
@@ -106,12 +113,19 @@ describe("CommentController", () => {
       expect(res.json).toHaveBeenCalledWith(mockComment);
     });
 
-    it("Call next() if comment doesn't exists.", async () => {
+    it("Return 404 if any comment found.", async () => {
       mockGetOne.mockResolvedValue(null);
       await underTest.getOneByUserId(req as Request, res as Response, next);
 
-      expect(res.status).toHaveBeenCalledWith(status.NOT_FOUND);
-      expect(res.json).toHaveBeenCalledWith({ error: "Comment not found" });
+      expect(next).toHaveBeenCalled();
+      const err = next.mock.calls[0][0];
+      expect(err).toBeInstanceOf(Error);
+      expect(err).toEqual(
+        expect.objectContaining({
+          status: status.NOT_FOUND,
+          message: "Comment not found",
+        }),
+      );
     });
 
     it("Call next() in case of error.", async () => {
@@ -149,6 +163,9 @@ describe("CommentController", () => {
             description: "donjon full succès",
             max_players: 8,
             status: "public",
+            user_id: "fe0c9489-1bc7-468f-80eb-e5b0d7cb4ab8",
+            tag_id: "b9c849f7-27e2-4bff-86ed-a651bd25d35a",
+            server_id: "5c75471f-f33d-46ba-a179-c127d052e4ad",
           },
         },
       ];
@@ -166,7 +183,7 @@ describe("CommentController", () => {
       expect(res.status).not.toHaveBeenCalledWith(status.NOT_FOUND);
     });
 
-    it("Return 404 if any comment found.", async () => {
+    it("Return 204 if any comment found.", async () => {
       const mockCommentsEnriched: CommentEnriched[] = [];
 
       mockGetAllEnriched.mockResolvedValue(mockCommentsEnriched);
@@ -176,8 +193,15 @@ describe("CommentController", () => {
         next,
       );
 
-      expect(res.status).toHaveBeenCalledWith(status.NO_CONTENT);
-      expect(res.json).toHaveBeenCalledWith({ error: "Any comment found" });
+      expect(next).toHaveBeenCalled();
+      const err = next.mock.calls[0][0];
+      expect(err).toBeInstanceOf(Error);
+      expect(err).toEqual(
+        expect.objectContaining({
+          status: status.NO_CONTENT,
+          message: "Any comment found",
+        }),
+      );
     });
 
     it("Call next() in case of error.", async () => {
@@ -201,7 +225,7 @@ describe("CommentController", () => {
       commentId: "0f309e32-2281-4b46-bb2e-bc2a7248e39b",
     };
 
-    it("Return character if exists", async () => {
+    it("Return comment if exists", async () => {
       const mockCommentEnriched: CommentEnriched = {
         id: "0f309e32-2281-4b46-bb2e-bc2a7248e39b",
         content: "Ready to fight",
@@ -220,6 +244,9 @@ describe("CommentController", () => {
           description: "donjon full succès",
           max_players: 8,
           status: "public",
+          user_id: "fe0c9489-1bc7-468f-80eb-e5b0d7cb4ab8",
+          tag_id: "b9c849f7-27e2-4bff-86ed-a651bd25d35a",
+          server_id: "5c75471f-f33d-46ba-a179-c127d052e4ad",
         },
       };
 
@@ -233,7 +260,7 @@ describe("CommentController", () => {
       expect(res.json).toHaveBeenCalledWith(mockCommentEnriched);
     });
 
-    it("Call next() if comment doesn't exists.", async () => {
+    it("Return 404 if any comment found.", async () => {
       mockGetOneEnriched.mockResolvedValue(null);
       await underTest.getOneEnrichedByUserId(
         req as Request,
@@ -241,8 +268,15 @@ describe("CommentController", () => {
         next,
       );
 
-      expect(res.status).toHaveBeenCalledWith(status.NOT_FOUND);
-      expect(res.json).toHaveBeenCalledWith({ error: "Comment not found" });
+      expect(next).toHaveBeenCalled();
+      const err = next.mock.calls[0][0];
+      expect(err).toBeInstanceOf(Error);
+      expect(err).toEqual(
+        expect.objectContaining({
+          status: status.NOT_FOUND,
+          message: "Comment not found",
+        }),
+      );
     });
 
     it("Call next() in case of error.", async () => {
@@ -283,6 +317,9 @@ describe("CommentController", () => {
           description: "donjon full succès",
           max_players: 8,
           status: "public",
+          user_id: "fe0c9489-1bc7-468f-80eb-e5b0d7cb4ab8",
+          tag_id: "b9c849f7-27e2-4bff-86ed-a651bd25d35a",
+          server_id: "5c75471f-f33d-46ba-a179-c127d052e4ad",
         },
       };
 
@@ -333,11 +370,18 @@ describe("CommentController", () => {
 
       await underTest.update(req as Request, res as Response, next);
 
-      expect(res.status).toHaveBeenCalledWith(status.BAD_REQUEST);
-      expect(res.json).toHaveBeenCalledWith({ error: "User ID is required" });
+      expect(next).toHaveBeenCalled();
+      const err = next.mock.calls[0][0];
+      expect(err).toBeInstanceOf(Error);
+      expect(err).toEqual(
+        expect.objectContaining({
+          status: status.BAD_REQUEST,
+          message: "User ID is required",
+        }),
+      );
     });
 
-    it("Call next() if character doesn't exists.", async () => {
+    it("Return 404 if any comment found.", async () => {
       req.params = {
         userId: "436d798e-b084-454c-8f78-593e966a9a66",
         commentId: "3aa64b38-e41c-44ae-94ea-3b75082fb8fb",
@@ -349,8 +393,15 @@ describe("CommentController", () => {
       mockUpdate.mockResolvedValue(null);
       await underTest.update(req as Request, res as Response, next);
 
-      expect(res.status).toHaveBeenCalledWith(status.NOT_FOUND);
-      expect(res.json).toHaveBeenCalledWith({ error: "Comment not found" });
+      expect(next).toHaveBeenCalled();
+      const err = next.mock.calls[0][0];
+      expect(err).toBeInstanceOf(Error);
+      expect(err).toEqual(
+        expect.objectContaining({
+          status: status.NOT_FOUND,
+          message: "Comment not found",
+        }),
+      );
     });
 
     it("Call next() in case of error.", async () => {
@@ -385,12 +436,19 @@ describe("CommentController", () => {
       expect(res.status).not.toHaveBeenCalledWith(status.NOT_FOUND);
     });
 
-    it("Call next() if comment doesn't exists.", async () => {
+    it("Return 404 if any comment found.", async () => {
       mockDelete.mockResolvedValue(false);
       await underTest.delete(req as Request, res as Response, next);
 
-      expect(res.status).toHaveBeenCalledWith(status.NOT_FOUND);
-      expect(res.json).toHaveBeenCalledWith({ error: "Comment not found" });
+      expect(next).toHaveBeenCalled();
+      const err = next.mock.calls[0][0];
+      expect(err).toBeInstanceOf(Error);
+      expect(err).toEqual(
+        expect.objectContaining({
+          status: status.NOT_FOUND,
+          message: "Comment not found",
+        }),
+      );
     });
 
     it("Call next() in case of error.", async () => {

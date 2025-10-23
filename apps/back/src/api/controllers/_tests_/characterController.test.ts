@@ -59,27 +59,33 @@ describe("CharacterController", () => {
           level: 190,
           alignment: "Bonta",
           stuff: "https://d-bk.net/fr/d/1EFhw",
-          default_character: true,
         },
       ];
 
       mockGetAll.mockResolvedValue(mockCharacters);
       // WHEN
       await underTest.getAllByUserId(req as Request, res as Response, next);
-      //THEN
+      // THEN
       expect(mockGetAll).toHaveBeenCalled();
       expect(res.json).toHaveBeenCalledWith(mockCharacters);
-      expect(res.status).not.toHaveBeenCalledWith(status.NOT_FOUND);
+      expect(res.status).not.toHaveBeenCalledWith(status.NO_CONTENT);
     });
 
-    it("Return 404 if any character found.", async () => {
+    it("Return 204 if any character found.", async () => {
       const mockCharacters: Character[] = [];
 
       mockGetAll.mockResolvedValue(mockCharacters);
       await underTest.getAllByUserId(req as Request, res as Response, next);
 
-      expect(res.status).toHaveBeenCalledWith(status.NO_CONTENT);
-      expect(res.json).toHaveBeenCalledWith({ error: "Any character found" });
+      expect(next).toHaveBeenCalled();
+      const err = next.mock.calls[0][0];
+      expect(err).toBeInstanceOf(Error);
+      expect(err).toEqual(
+        expect.objectContaining({
+          status: status.NO_CONTENT,
+          message: "Any character found",
+        }),
+      );
     });
 
     it("Call next() in case of error.", async () => {
@@ -93,7 +99,7 @@ describe("CharacterController", () => {
   });
 
   // --- GET ONE ---
-  describe("getOneByUserId", () => {
+  describe("getOne", () => {
     req.params = {
       userId: "436d798e-b084-454c-8f78-593e966a9a66",
       characterId: "0f309e32-2281-4b46-bb2e-bc2a7248e39b",
@@ -107,7 +113,6 @@ describe("CharacterController", () => {
         level: 190,
         alignment: "Bonta",
         stuff: "https://d-bk.net/fr/d/1EFhw",
-        default_character: true,
       };
 
       mockGetOne.mockResolvedValue(mockCharacter);
@@ -116,12 +121,19 @@ describe("CharacterController", () => {
       expect(res.json).toHaveBeenCalledWith(mockCharacter);
     });
 
-    it("Call next() if character doesn't exists.", async () => {
+    it("Return 404 if any character found.", async () => {
       mockGetOne.mockResolvedValue(null);
       await underTest.getOne(req as Request, res as Response, next);
 
-      expect(res.status).toHaveBeenCalledWith(status.NOT_FOUND);
-      expect(res.json).toHaveBeenCalledWith({ error: "Character not found" });
+      expect(next).toHaveBeenCalled();
+      const err = next.mock.calls[0][0];
+      expect(err).toBeInstanceOf(Error);
+      expect(err).toEqual(
+        expect.objectContaining({
+          status: status.NOT_FOUND,
+          message: "Character not found",
+        }),
+      );
     });
 
     it("Call next() in case of error.", async () => {
@@ -148,7 +160,6 @@ describe("CharacterController", () => {
           level: 190,
           alignment: "Bonta",
           stuff: "https://d-bk.net/fr/d/1EFhw",
-          default_character: true,
           user: {
             id: "436d798e-b084-454c-8f78-593e966a9a66",
             username: "Goldorak",
@@ -176,7 +187,7 @@ describe("CharacterController", () => {
       expect(res.status).not.toHaveBeenCalledWith(status.NOT_FOUND);
     });
 
-    it("Return 404 if any character found.", async () => {
+    it("Return 204 if any character found.", async () => {
       const mockCharactersEnriched: CharacterEnriched[] = [];
 
       mockGetAllEnriched.mockResolvedValue(mockCharactersEnriched);
@@ -186,8 +197,15 @@ describe("CharacterController", () => {
         next,
       );
 
-      expect(res.status).toHaveBeenCalledWith(status.NO_CONTENT);
-      expect(res.json).toHaveBeenCalledWith({ error: "Any character found" });
+      expect(next).toHaveBeenCalled();
+      const err = next.mock.calls[0][0];
+      expect(err).toBeInstanceOf(Error);
+      expect(err).toEqual(
+        expect.objectContaining({
+          status: status.NO_CONTENT,
+          message: "Any character found",
+        }),
+      );
     });
 
     it("Call next() in case of error.", async () => {
@@ -219,7 +237,6 @@ describe("CharacterController", () => {
         level: 190,
         alignment: "Bonta",
         stuff: "https://d-bk.net/fr/d/1EFhw",
-        default_character: true,
         user: {
           id: "436d798e-b084-454c-8f78-593e966a9a66",
           username: "Goldorak",
@@ -239,12 +256,19 @@ describe("CharacterController", () => {
       expect(res.json).toHaveBeenCalledWith(mockCharacterEnriched);
     });
 
-    it("Call next() if character doesn't exists.", async () => {
+    it("Return 204 if any character found.", async () => {
       mockGetOneEnriched.mockResolvedValue(null);
       await underTest.getOneEnriched(req as Request, res as Response, next);
 
-      expect(res.status).toHaveBeenCalledWith(status.NOT_FOUND);
-      expect(res.json).toHaveBeenCalledWith({ error: "Character not found" });
+      expect(next).toHaveBeenCalled();
+      const err = next.mock.calls[0][0];
+      expect(err).toBeInstanceOf(Error);
+      expect(err).toEqual(
+        expect.objectContaining({
+          status: status.NO_CONTENT,
+          message: "Any character found",
+        }),
+      );
     });
 
     it("Call next() in case of error.", async () => {
@@ -283,7 +307,6 @@ describe("CharacterController", () => {
         level: 190,
         alignment: "Bonta",
         stuff: "https://d-bk.net/fr/d/1EFhw",
-        default_character: true,
       };
       const mockNewCharacterEnriched: CharacterEnriched = {
         id: "0f309e32-2281-4b46-bb2e-bc2a7248e39b",
@@ -292,7 +315,6 @@ describe("CharacterController", () => {
         level: 190,
         alignment: "Bonta",
         stuff: "https://d-bk.net/fr/d/1EFhw",
-        default_character: true,
         user: {
           id: "436d798e-b084-454c-8f78-593e966a9a66",
           username: "Goldorak",
@@ -338,7 +360,6 @@ describe("CharacterController", () => {
         level: 190,
         alignment: "Bonta",
         stuff: "https://d-bk.net/fr/d/1EFhw",
-        default_character: true,
         user: {
           id: "436d798e-b084-454c-8f78-593e966a9a66",
           username: "Goldorak",
@@ -360,7 +381,6 @@ describe("CharacterController", () => {
       //THEN
       expect(mockUpdatedCharacter.level).toBe(200);
       expect(mockUpdatedCharacter.alignment).toBe("Brakmar");
-      expect(mockUpdatedCharacter.default_character).toBe(false);
       expect(mockUpdate).toHaveBeenCalledWith(
         req.params.userId,
         req.params.characterId,
@@ -375,11 +395,18 @@ describe("CharacterController", () => {
 
       await underTest.update(req as Request, res as Response, next);
 
-      expect(res.status).toHaveBeenCalledWith(status.BAD_REQUEST);
-      expect(res.json).toHaveBeenCalledWith({ error: "User ID is required" });
+      expect(next).toHaveBeenCalled();
+      const err = next.mock.calls[0][0];
+      expect(err).toBeInstanceOf(Error);
+      expect(err).toEqual(
+        expect.objectContaining({
+          status: status.BAD_REQUEST,
+          message: "User ID is required",
+        }),
+      );
     });
 
-    it("Call next() if character doesn't exists.", async () => {
+    it("Return 404 if any character found.", async () => {
       req.params = {
         userId: "436d798e-b084-454c-8f78-593e966a9a66",
         characterId: "3aa64b38-e41c-44ae-94ea-3b75082fb8fb",
@@ -393,8 +420,15 @@ describe("CharacterController", () => {
       mockUpdate.mockResolvedValue(null);
       await underTest.update(req as Request, res as Response, next);
 
-      expect(res.status).toHaveBeenCalledWith(status.NOT_FOUND);
-      expect(res.json).toHaveBeenCalledWith({ error: "Character not found" });
+      expect(next).toHaveBeenCalled();
+      const err = next.mock.calls[0][0];
+      expect(err).toBeInstanceOf(Error);
+      expect(err).toEqual(
+        expect.objectContaining({
+          status: status.NOT_FOUND,
+          message: "Character not found",
+        }),
+      );
     });
 
     it("Call next() in case of error.", async () => {
@@ -435,8 +469,15 @@ describe("CharacterController", () => {
       mockDelete.mockResolvedValue(false);
       await underTest.delete(req as Request, res as Response, next);
 
-      expect(res.status).toHaveBeenCalledWith(status.NOT_FOUND);
-      expect(res.json).toHaveBeenCalledWith({ error: "Character not found" });
+      expect(next).toHaveBeenCalled();
+      const err = next.mock.calls[0][0];
+      expect(err).toBeInstanceOf(Error);
+      expect(err).toEqual(
+        expect.objectContaining({
+          status: status.NOT_FOUND,
+          message: "Character not found",
+        }),
+      );
     });
 
     it("Call next() in case of error.", async () => {

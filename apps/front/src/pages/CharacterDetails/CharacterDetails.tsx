@@ -15,7 +15,7 @@ import { ApiClient } from "../../services/client";
 import { CharacterService } from "../../services/api/characterService";
 
 const config = Config.getInstance();
-const axios = new ApiClient(config.baseUrl);
+const axios = new ApiClient(config.backUrl);
 const characterService = new CharacterService(axios);
 
 export default function CharacterDetails() {
@@ -95,7 +95,11 @@ export default function CharacterDetails() {
               <p>
                 <span>{t("common.sex")}:</span> {character.sex}
               </p>
-              <a href={character.stuff ? character.stuff : ""}>
+              <a
+                href={character.stuff ? character.stuff : ""}
+                target="_blank"
+                rel="noreferrer"
+              >
                 <span>{t("common.stuff")}:</span> {character.stuff}
               </a>
             </div>

@@ -9,6 +9,8 @@ import gcuEN from "./locales/en/gcu.json";
 import gcuFR from "./locales/fr/gcu.json";
 import aboutEN from "./locales/en/about.json";
 import aboutFR from "./locales/fr/about.json";
+import cookiesEN from "./locales/en/cookies.json";
+import cookiesFR from "./locales/fr/cookies.json";
 import privacyPolicyEN from "./locales/en/privacyPolicy.json";
 import privacyPolicyFR from "./locales/fr/privacyPolicy.json";
 
@@ -21,12 +23,14 @@ i18n
         translation: en,
         gcu: gcuEN,
         about: aboutEN,
+        cookies: cookiesEN,
         privacyPolicy: privacyPolicyEN,
       },
       fr: {
         translation: fr,
         gcu: gcuFR,
         about: aboutFR,
+        cookies: cookiesFR,
         privacyPolicy: privacyPolicyFR,
       },
     },

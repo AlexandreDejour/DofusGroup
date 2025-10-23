@@ -1,6 +1,5 @@
-import { describe, it, beforeEach, expect, vi } from "vitest";
+import { describe, it, beforeEach, expect, vi, type Mock } from "vitest";
 
-import axios from "axios";
 import { t } from "../../../i18n/i18n-helper";
 
 import { UpdateForm } from "../../../types/form";
@@ -8,21 +7,56 @@ import { AuthUser, UserEnriched } from "../../../types/user";
 
 import { ApiClient } from "../../client";
 import { UserService } from "../userService";
+import handleApiError from "../../utils/handleApiError";
 
-vi.mock("axios");
+vi.mock("../../utils/handleApiError", () => ({
+  default: vi.fn(),
+}));
 
 describe("UserService", () => {
   let apiClientMock: any;
   let userService: UserService;
 
   beforeEach(() => {
+    (handleApiError as unknown as Mock).mockReset();
     apiClientMock = {
       instance: {
         get: vi.fn(),
         patch: vi.fn(),
+        delete: vi.fn(),
       },
     };
     userService = new UserService(apiClientMock as ApiClient);
+  });
+
+  describe("getOne", () => {
+    it("Return authUser data when request succeed", async () => {
+      const mockUser: AuthUser = {
+        id: "123",
+        username: "John",
+      } as AuthUser;
+      apiClientMock.instance.get.mockResolvedValue({ data: mockUser });
+
+      const result = await userService.getOne("123");
+
+      expect(apiClientMock.instance.get).toHaveBeenCalledWith("/user/123");
+      expect(result).toEqual(mockUser);
+    });
+
+    it("Throw specific error when user isn't found (handleApiError throws)", async () => {
+      const error = new Error("User not found.");
+      apiClientMock.instance.get.mockRejectedValue(error);
+
+      (handleApiError as unknown as Mock).mockImplementation(() => {
+        throw error;
+      });
+
+      await expect(userService.getOne("123")).rejects.toThrow(
+        "User not found.",
+      );
+
+      expect(handleApiError).toHaveBeenCalledWith(error);
+    });
   });
 
   describe("getOneEnriched", () => {
@@ -42,27 +76,19 @@ describe("UserService", () => {
       expect(result).toEqual(mockUser);
     });
 
-    it("Throw specific error when user isn't found (404)", async () => {
-      const axiosError = {
-        isAxiosError: true,
-        response: { status: 404 },
-      };
-      (axios.isAxiosError as any).mockReturnValue(true);
-      apiClientMock.instance.get.mockRejectedValue(axiosError);
-
-      await expect(userService.getOneEnriched("123")).rejects.toThrow(
-        t("auth.error.user.notFound"),
-      );
-    });
-
-    it("Throw error if isn't axios error", async () => {
-      const error = new Error("Unknown error");
-      (axios.isAxiosError as any).mockReturnValue(false);
+    it("Throw specific error when user isn't found (handleApiError throws)", async () => {
+      const error = new Error("User not found.");
       apiClientMock.instance.get.mockRejectedValue(error);
 
+      (handleApiError as unknown as Mock).mockImplementation(() => {
+        throw error;
+      });
+
       await expect(userService.getOneEnriched("123")).rejects.toThrow(
-        "Unknown error",
+        "User not found.",
       );
+
+      expect(handleApiError).toHaveBeenCalledWith(error);
     });
   });
 
@@ -98,6 +124,7 @@ describe("UserService", () => {
       );
 
       expect(apiClientMock.instance.patch).not.toHaveBeenCalled();
+      expect(handleApiError).not.toHaveBeenCalled();
     });
 
     it("Reject immediately when password and confirmPassword differ", async () => {
@@ -111,29 +138,57 @@ describe("UserService", () => {
       );
 
       expect(apiClientMock.instance.patch).not.toHaveBeenCalled();
+      expect(handleApiError).not.toHaveBeenCalled();
     });
 
-    it("Throw specific error if response is 400/401/403/404", async () => {
-      const axiosError = {
-        isAxiosError: true,
-        response: { status: 400 },
-      };
-      (axios.isAxiosError as any).mockReturnValue(true);
-      apiClientMock.instance.patch.mockRejectedValue(axiosError);
+    it("Call handleApiError when axios.patch rejects (and does not rethrow)", async () => {
+      const error = new Error("Request failed");
+      apiClientMock.instance.patch.mockRejectedValue(error);
+
+      await userService.update("123", { username: "Johnny" });
+
+      expect(handleApiError).toHaveBeenCalledWith(error);
+    });
+
+    it("Throw error when handleApiError itself throws", async () => {
+      const error = new Error("User not found.");
+      apiClientMock.instance.patch.mockRejectedValue(error);
+
+      (handleApiError as unknown as Mock).mockImplementation(() => {
+        throw error;
+      });
 
       await expect(
         userService.update("123", { username: "Johnny" }),
       ).rejects.toThrow("User not found.");
+
+      expect(handleApiError).toHaveBeenCalledWith(error);
+    });
+  });
+
+  describe("delete", () => {
+    it("Call delete endpoint and return response when succeed", async () => {
+      const mockResponse = { data: "ok" };
+      apiClientMock.instance.delete.mockResolvedValue(mockResponse);
+
+      const result = await userService.delete("user-1");
+
+      expect(apiClientMock.instance.delete).toHaveBeenCalledWith(
+        "/user/user-1",
+        {
+          withCredentials: true,
+        },
+      );
+      expect(result).toEqual(mockResponse);
     });
 
-    it("Throw error if isn't axios error", async () => {
-      const error = new Error("Unknown error");
-      (axios.isAxiosError as any).mockReturnValue(false);
-      apiClientMock.instance.patch.mockRejectedValue(error);
+    it("Call handleApiError when delete fails", async () => {
+      const error = new Error("Delete failed");
+      apiClientMock.instance.delete.mockRejectedValue(error);
 
-      await expect(
-        userService.update("123", { username: "Johnny" }),
-      ).rejects.toThrow("Unknown error");
+      await userService.delete("user-1");
+
+      expect(handleApiError).toHaveBeenCalledWith(error);
     });
   });
 });

@@ -58,14 +58,21 @@ describe("UserController", () => {
       expect(res.status).not.toHaveBeenCalledWith(status.NOT_FOUND);
     });
 
-    it("Return 404 if any character found.", async () => {
+    it("Return 204 if any character found.", async () => {
       const mockUsers: User[] = [];
 
       mockGetAll.mockResolvedValue(mockUsers);
       await underTest.getAll(req as Request, res as Response, next);
 
-      expect(res.status).toHaveBeenCalledWith(status.NO_CONTENT);
-      expect(res.json).toHaveBeenCalledWith({ error: "Any user found" });
+      expect(next).toHaveBeenCalled();
+      const err = next.mock.calls[0][0];
+      expect(err).toBeInstanceOf(Error);
+      expect(err).toEqual(
+        expect.objectContaining({
+          status: status.NO_CONTENT,
+          message: "Any user found",
+        }),
+      );
     });
 
     it("Call next() in case of error.", async () => {
@@ -96,12 +103,19 @@ describe("UserController", () => {
       expect(res.json).toHaveBeenCalledWith(mockUser);
     });
 
-    it("Call next() if user doesn't exists.", async () => {
+    it("Return 404 if user doesn't exists.", async () => {
       mockGetOne.mockResolvedValue(null);
       await underTest.getOne(req as Request, res as Response, next);
 
-      expect(res.status).toHaveBeenCalledWith(status.NOT_FOUND);
-      expect(res.json).toHaveBeenCalledWith({ error: "User not found" });
+      expect(next).toHaveBeenCalled();
+      const err = next.mock.calls[0][0];
+      expect(err).toBeInstanceOf(Error);
+      expect(err).toEqual(
+        expect.objectContaining({
+          status: status.NOT_FOUND,
+          message: "User not found",
+        }),
+      );
     });
 
     it("Call next() in case of error.", async () => {
@@ -145,15 +159,22 @@ describe("UserController", () => {
       expect(res.status).not.toHaveBeenCalledWith(status.NOT_FOUND);
     });
 
-    it("Return 404 if any user found.", async () => {
+    it("Return 204 if any user found.", async () => {
       req.params = { userId: "07a3cd78-3a4a-4aae-a681-7634d72197c2" };
       const mockUsersEnriched: UserEnriched[] = [];
 
       mockGetAllEnriched.mockResolvedValue(mockUsersEnriched);
       await underTest.getAllEnriched(req as Request, res as Response, next);
 
-      expect(res.status).toHaveBeenCalledWith(status.NO_CONTENT);
-      expect(res.json).toHaveBeenCalledWith({ error: "Any user found" });
+      expect(next).toHaveBeenCalled();
+      const err = next.mock.calls[0][0];
+      expect(err).toBeInstanceOf(Error);
+      expect(err).toEqual(
+        expect.objectContaining({
+          status: status.NO_CONTENT,
+          message: "Any user found",
+        }),
+      );
     });
 
     it("Call next() in case of error.", async () => {
@@ -195,12 +216,19 @@ describe("UserController", () => {
       expect(res.json).toHaveBeenCalledWith(mockUserEnriched);
     });
 
-    it("Call next() if user doesn't exists.", async () => {
+    it("Return 404 if user doesn't exists.", async () => {
       mockGetOneEnriched.mockResolvedValue(null);
       await underTest.getOneEnriched(req as Request, res as Response, next);
 
-      expect(res.status).toHaveBeenCalledWith(status.NOT_FOUND);
-      expect(res.json).toHaveBeenCalledWith({ error: "User not found" });
+      expect(next).toHaveBeenCalled();
+      const err = next.mock.calls[0][0];
+      expect(err).toBeInstanceOf(Error);
+      expect(err).toEqual(
+        expect.objectContaining({
+          status: status.NOT_FOUND,
+          message: "User not found",
+        }),
+      );
     });
 
     it("Call next() in case of error.", async () => {
@@ -259,8 +287,15 @@ describe("UserController", () => {
 
       await underTest.update(req as Request, res as Response, next);
 
-      expect(res.status).toHaveBeenCalledWith(status.BAD_REQUEST);
-      expect(res.json).toHaveBeenCalledWith({ error: "User ID is required" });
+      expect(next).toHaveBeenCalled();
+      const err = next.mock.calls[0][0];
+      expect(err).toBeInstanceOf(Error);
+      expect(err).toEqual(
+        expect.objectContaining({
+          status: status.BAD_REQUEST,
+          message: "User ID is required",
+        }),
+      );
     });
 
     it("Call next() if user doesn't exists.", async () => {
@@ -275,8 +310,15 @@ describe("UserController", () => {
       mockUpdate.mockResolvedValue(null);
       await underTest.update(req as Request, res as Response, next);
 
-      expect(res.status).toHaveBeenCalledWith(status.NOT_FOUND);
-      expect(res.json).toHaveBeenCalledWith({ error: "User not found" });
+      expect(next).toHaveBeenCalled();
+      const err = next.mock.calls[0][0];
+      expect(err).toBeInstanceOf(Error);
+      expect(err).toEqual(
+        expect.objectContaining({
+          status: status.NOT_FOUND,
+          message: "User not found",
+        }),
+      );
     });
 
     it("Call next() in case of error.", async () => {
@@ -312,12 +354,19 @@ describe("UserController", () => {
       expect(res.status).not.toHaveBeenCalledWith(status.NOT_FOUND);
     });
 
-    it("Call next() if character doesn't exists.", async () => {
+    it("Return 404 if user doesn't exists.", async () => {
       mockDelete.mockResolvedValue(false);
       await underTest.delete(req as Request, res as Response, next);
 
-      expect(res.status).toHaveBeenCalledWith(status.NOT_FOUND);
-      expect(res.json).toHaveBeenCalledWith({ error: "User not found" });
+      expect(next).toHaveBeenCalled();
+      const err = next.mock.calls[0][0];
+      expect(err).toBeInstanceOf(Error);
+      expect(err).toEqual(
+        expect.objectContaining({
+          status: status.NOT_FOUND,
+          message: "User not found",
+        }),
+      );
     });
 
     it("Call next() in case of error.", async () => {

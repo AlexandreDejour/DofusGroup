@@ -15,6 +15,7 @@ export type Event = {
   description?: string;
   max_players: number;
   status: string;
+  user_id: string;
   tag_id: string;
   server_id: string;
   tag?: Tag;

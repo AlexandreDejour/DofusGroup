@@ -1,7 +1,5 @@
-import axios from "axios";
-import { t } from "../../i18n/i18n-helper";
-
 import { ApiClient } from "../client";
+import handleApiError from "../utils/handleApiError";
 
 import { Area, Dungeon, SubArea } from "../../types/dofusDB";
 
@@ -20,7 +18,7 @@ export class DofusDBService {
 
     try {
       while (hasMore) {
-        const response = await this.axios.get("https://api.dofusdb.fr/areas", {
+        const response = await this.axios.get("/areas", {
           params: {
             $limit: limit,
             $skip: skip,
@@ -41,10 +39,7 @@ export class DofusDBService {
 
       return allAreas;
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        throw new Error(t("system.error.recoveryFailed"));
-      }
-      throw error;
+      handleApiError(error);
     }
   }
 
@@ -54,7 +49,7 @@ export class DofusDBService {
     params["$limit"] = 50;
 
     try {
-      const response = await this.axios.get("https://api.dofusdb.fr/subareas", {
+      const response = await this.axios.get("/subareas", {
         params,
       });
 
@@ -68,10 +63,7 @@ export class DofusDBService {
 
       return subAreas;
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        throw new Error(t("system.error.recoveryFailed"));
-      }
-      throw error;
+      handleApiError(error);
     }
   }
 
@@ -83,14 +75,11 @@ export class DofusDBService {
 
     try {
       if (dungeonId) {
-        const response = await this.axios.get(
-          "https://api.dofusdb.fr/dungeons",
-          {
-            params: {
-              id: dungeonId,
-            },
+        const response = await this.axios.get("/dungeons", {
+          params: {
+            id: dungeonId,
           },
-        );
+        });
 
         const dungeons: Dungeon[] = response.data.data.map((d: Dungeon) => ({
           id: d.id,
@@ -101,15 +90,12 @@ export class DofusDBService {
       }
 
       while (hasMore) {
-        const response = await this.axios.get(
-          "https://api.dofusdb.fr/dungeons",
-          {
-            params: {
-              $limit: limit,
-              $skip: skip,
-            },
+        const response = await this.axios.get("/dungeons", {
+          params: {
+            $limit: limit,
+            $skip: skip,
           },
-        );
+        });
 
         const dungeons: Dungeon[] = response.data.data.map((d: Dungeon) => ({
           id: d.id,
@@ -125,10 +111,7 @@ export class DofusDBService {
 
       return allDungeons;
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        throw new Error(t("system.error.recoveryFailed"));
-      }
-      throw error;
+      handleApiError(error);
     }
   }
 }

@@ -1,4 +1,5 @@
 import status from "http-status";
+import createHttpError from "http-errors";
 import { NextFunction, Request, Response } from "express";
 
 import {
@@ -22,8 +23,8 @@ export class CommentController {
       const comments: Comment[] = await this.repository.getAllByUserId(userId);
 
       if (!comments.length) {
-        res.status(status.NO_CONTENT).json({ error: "Any comment found" });
-        return;
+        const error = createHttpError(status.NO_CONTENT, "Any comment found");
+        return next(error);
       }
 
       res.json(comments);
@@ -44,8 +45,8 @@ export class CommentController {
         await this.repository.getAllEnrichedByUserId(userId);
 
       if (!comments.length) {
-        res.status(status.NO_CONTENT).json({ error: "Any comment found" });
-        return;
+        const error = createHttpError(status.NO_CONTENT, "Any comment found");
+        return next(error);
       }
       res.json(comments);
     } catch (error) {
@@ -63,8 +64,8 @@ export class CommentController {
       );
 
       if (!comment) {
-        res.status(status.NOT_FOUND).json({ error: "Comment not found" });
-        return;
+        const error = createHttpError(status.NOT_FOUND, "Comment not found");
+        return next(error);
       }
 
       res.json(comment);
@@ -85,8 +86,8 @@ export class CommentController {
         await this.repository.getOneEnrichedByUserId(userId, commentId);
 
       if (!comment) {
-        res.status(status.NOT_FOUND).json({ error: "Comment not found" });
-        return;
+        const error = createHttpError(status.NOT_FOUND, "Comment not found");
+        return next(error);
       }
 
       res.json(comment);
@@ -98,8 +99,11 @@ export class CommentController {
   public async post(req: Request, res: Response, next: NextFunction) {
     try {
       if (!req.params.userId) {
-        res.status(status.BAD_REQUEST).json({ error: "User ID is required" });
-        return;
+        const error = createHttpError(
+          status.BAD_REQUEST,
+          "user ID is required",
+        );
+        return next(error);
       }
 
       const commentData: CommentBodyData = req.body;
@@ -116,8 +120,11 @@ export class CommentController {
   public async update(req: Request, res: Response, next: NextFunction) {
     try {
       if (!req.params.userId) {
-        res.status(status.BAD_REQUEST).json({ error: "User ID is required" });
-        return;
+        const error = createHttpError(
+          status.BAD_REQUEST,
+          "User ID is required",
+        );
+        return next(error);
       }
 
       const { userId, commentId } = req.params;
@@ -130,8 +137,8 @@ export class CommentController {
       );
 
       if (!commentUpdated) {
-        res.status(status.NOT_FOUND).json({ error: "Comment not found" });
-        return;
+        const error = createHttpError(status.NOT_FOUND, "Comment not found");
+        return next(error);
       }
 
       res.json(commentUpdated);
@@ -143,8 +150,11 @@ export class CommentController {
   public async delete(req: Request, res: Response, next: NextFunction) {
     try {
       if (!req.params.userId) {
-        res.status(status.BAD_REQUEST).json({ error: "User ID is required" });
-        return;
+        const error = createHttpError(
+          status.BAD_REQUEST,
+          "user ID is required",
+        );
+        return next(error);
       }
 
       const { userId, commentId } = req.params;
@@ -152,8 +162,8 @@ export class CommentController {
       const result: boolean = await this.repository.delete(userId, commentId);
 
       if (!result) {
-        res.status(status.NOT_FOUND).json({ error: "Comment not found" });
-        return;
+        const error = createHttpError(status.NOT_FOUND, "Comment not found");
+        return next(error);
       }
 
       res.status(status.NO_CONTENT).end();

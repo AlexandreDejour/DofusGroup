@@ -1,15 +1,26 @@
+import { describe, it, beforeEach, expect, vi, Mock } from "vitest";
+
+import axios from "axios";
 import { t } from "../../../i18n/i18n-helper";
 
 import type { LoginForm, RegisterForm } from "../../../types/form";
 import type { AuthUser } from "../../../types/user";
 
 import { AuthService } from "../authService";
+import handleApiError from "../../utils/handleApiError";
+
+vi.mock("axios");
+
+vi.mock("../../utils/handleApiError", () => ({
+  default: vi.fn(),
+}));
 
 describe("AuthService", () => {
   let axiosMock: any;
   let authService: AuthService;
 
   beforeEach(() => {
+    (handleApiError as unknown as Mock).mockReset();
     axiosMock = {
       post: vi.fn(),
       get: vi.fn(),
@@ -68,12 +79,15 @@ describe("AuthService", () => {
       expect(axiosMock.post).toHaveBeenCalledWith("/auth/register", data);
     });
 
-    it("Reject with special message if server return code 409", async () => {
-      axiosMock.post.mockRejectedValue({
+    it("Call handleApiError and return undefined when server returns 409", async () => {
+      const axiosError = {
         isAxiosError: true,
         response: { status: 409 },
         message: "Conflit",
-      });
+      };
+      vi.mocked(axios.isAxiosError).mockReturnValue(true);
+      axiosMock.post.mockRejectedValue(axiosError);
+
       const data: RegisterForm = {
         username: "user",
         mail: "user@mail.com",
@@ -81,22 +95,30 @@ describe("AuthService", () => {
         confirmPassword: "Abcd1234!",
       };
 
-      await expect(authService.register(data)).rejects.toThrow(
-        t("auth.error.credentials.unavailable"),
-      );
+      const result = await authService.register(data);
+
+      expect(handleApiError).toHaveBeenCalledWith(axiosError);
+      expect(result).toBeUndefined();
     });
 
-    it("Reject with error's origin for other errors", async () => {
+    it("Rethrow when handleApiError throws", async () => {
       const error = new Error("Network error");
       axiosMock.post.mockRejectedValue(error);
-      const data: RegisterForm = {
-        username: "user",
-        mail: "user@mail.com",
-        password: "Abcd1234!",
-        confirmPassword: "Abcd1234!",
-      };
 
-      await expect(authService.register(data)).rejects.toThrow("Network error");
+      (handleApiError as unknown as Mock).mockImplementation(() => {
+        throw error;
+      });
+
+      await expect(
+        authService.register({
+          username: "user",
+          mail: "user@mail.com",
+          password: "Abcd1234!",
+          confirmPassword: "Abcd1234!",
+        }),
+      ).rejects.toThrow("Network error");
+
+      expect(handleApiError).toHaveBeenCalledWith(error);
     });
   });
 
@@ -134,31 +156,39 @@ describe("AuthService", () => {
       });
     });
 
-    it("Reject with special message if server returns 401", async () => {
-      axiosMock.post.mockRejectedValue({
+    it("Call handleApiError and return undefined when server returns 401", async () => {
+      const axiosError = {
         isAxiosError: true,
         response: { status: 401 },
         message: "Unauthorized",
-      });
+      };
+      axiosMock.post.mockRejectedValue(axiosError);
       const data: LoginForm = {
         username: "toto",
         password: "Abcd1234!",
       };
 
-      await expect(authService.login(data)).rejects.toThrow(
-        t("auth.error.credentials.invalid"),
-      );
+      const result = await authService.login(data);
+
+      expect(handleApiError).toHaveBeenCalledWith(axiosError);
+      expect(result).toBeUndefined();
     });
 
-    it("Reject with error's origin for other errors", async () => {
+    it("Rethrow when handleApiError throws", async () => {
       const error = new Error("Network error");
       axiosMock.post.mockRejectedValue(error);
+
+      (handleApiError as unknown as Mock).mockImplementation(() => {
+        throw error;
+      });
+
       const data: LoginForm = {
         username: "toto",
         password: "Abcd1234!",
       };
 
       await expect(authService.login(data)).rejects.toThrow("Network error");
+      expect(handleApiError).toHaveBeenCalledWith(error);
     });
   });
 
@@ -179,25 +209,32 @@ describe("AuthService", () => {
       });
     });
 
-    it("Reject with unknown user if server returns 400, 401 or 404", async () => {
+    it("Call handleApiError and return undefined for 400, 401 or 404", async () => {
       for (const status of [400, 401, 404]) {
-        axiosMock.get.mockRejectedValueOnce({
+        const axiosError = {
           isAxiosError: true,
-          response: { status: status },
+          response: { status },
           message: "Unauthorized",
-        });
+        };
+        axiosMock.get.mockRejectedValueOnce(axiosError);
 
-        await expect(authService.apiMe()).rejects.toThrow(
-          t("auth.error.user.notFound"),
-        );
+        const result = await authService.apiMe();
+
+        expect(handleApiError).toHaveBeenCalledWith(axiosError);
+        expect(result).toBeUndefined();
       }
     });
 
-    it("Reject with error's origin for other errors", async () => {
+    it("Rethrow when handleApiError throws", async () => {
       const error = new Error("Network error");
       axiosMock.get.mockRejectedValue(error);
 
+      (handleApiError as unknown as Mock).mockImplementation(() => {
+        throw error;
+      });
+
       await expect(authService.apiMe()).rejects.toThrow("Network error");
+      expect(handleApiError).toHaveBeenCalledWith(error);
     });
   });
 
@@ -212,20 +249,29 @@ describe("AuthService", () => {
       });
     });
 
-    it("Reject with error message if axios error", async () => {
-      axiosMock.post.mockRejectedValue({
+    it("Call handleApiError and return undefined when axios error", async () => {
+      const axiosError = {
         isAxiosError: true,
         message: "Session expired",
-      });
+      };
+      axiosMock.post.mockRejectedValue(axiosError);
 
-      await expect(authService.logout()).rejects.toThrow("Session expired");
+      const result = await authService.logout();
+
+      expect(handleApiError).toHaveBeenCalledWith(axiosError);
+      expect(result).toBeUndefined();
     });
 
-    it("Reject with error's origin for other errors", async () => {
+    it("Rethrow when handleApiError throws", async () => {
       const error = new Error("Network error");
       axiosMock.post.mockRejectedValue(error);
 
+      (handleApiError as unknown as Mock).mockImplementation(() => {
+        throw error;
+      });
+
       await expect(authService.logout()).rejects.toThrow("Network error");
+      expect(handleApiError).toHaveBeenCalledWith(error);
     });
   });
 });

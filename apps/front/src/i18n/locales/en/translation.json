@@ -26,14 +26,12 @@
     "duration": "Duration",
     "durationInMin": "Duration in minutes",
     "discussion": "Discussion",
-    "error": {
-      "default": "Error",
-      "occurred": "An error occurred."
-    },
+    "home": "Home",
     "join": "Join",
     "level": "Level",
     "loading": "Loading...",
     "maxPlayers": "Max players",
+    "minimalCondition": "Minimum condition not met !",
     "name": "Name",
     "new": "New",
     "ok": "OK",
@@ -126,14 +124,15 @@
     "selection": "Character selection",
     "default": "Default character",
     "noCharacter": "No character.",
-    "your": "Your Characters",
+    "your": "Your characters",
 
     "error": {
       "none": "No character.",
       "noneOnAccount": "You have not created any character on your account.",
       "noneOnServer": "No character available on this server.",
-      "notFound": "This character no longer exists.",
-      "loginRequired": "You must be logged in to create character."
+      "notFound": "Character not found.",
+      "loginRequired": "You must be logged in to create character.",
+      "required": "You must have at least one character to create an event."
     },
 
     "success": {
@@ -153,7 +152,7 @@
 
     "error": {
       "none": "No comment.",
-      "notFound": "This comment no longer exists.",
+      "notFound": "Comment not found.",
       "loginRequired": "You must be logged in to add a comment."
     },
 
@@ -171,11 +170,15 @@
     "discussion": "Discussion",
     "modification": "Event modification",
     "noEvent": "No event.",
+    "noOwnerCharacter": "Your events without an owner character have also been deleted.",
+    "upComing": "Upcoming events",
+    "your": "Your events",
 
     "error": {
       "none": "No event.",
       "noneUpcoming": "No upcoming event.",
       "noneFound": "No event found.",
+      "notFound": "Event not found.",
       "characterOut": "This character is no longer part of the event.",
       "disable": "You need to create character before create event."
     },
@@ -219,12 +222,16 @@
   "system": {
     "error": {
       "attemps": "Too many failed attemps, please try again later.",
-      "forbidden": "Action forbidden.",
-      "impossible": "Action impossible.",
+      "badRequest": "Invalid data.",
+      "default": "Error",
+      "forbidden": "Forbidden action.",
+      "impossible": "impossible action.",
       "inappropriate": "The content of some fields is inappropriate.",
+      "notFound": "This page can't be found.",
       "occurred": "An error occurred.",
       "recoveryFailed": "Data recovery failed.",
-      "profanity": "Inappropriate content !"
+      "profanity": "Inappropriate content !",
+      "unauthorized": "Unauthorized action."
     },
 
     "success": {

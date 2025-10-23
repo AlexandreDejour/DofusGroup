@@ -54,8 +54,15 @@ describe("BreedController", () => {
       mockGetAll.mockResolvedValue(mockBreeds);
       await underTest.getAll(req as Request, res as Response, next);
 
-      expect(res.status).toHaveBeenCalledWith(status.NO_CONTENT);
-      expect(res.json).toHaveBeenCalledWith({ error: "Any breed found" });
+      expect(next).toHaveBeenCalled();
+      const err = next.mock.calls[0][0];
+      expect(err).toBeInstanceOf(Error);
+      expect(err).toEqual(
+        expect.objectContaining({
+          status: status.NO_CONTENT,
+          message: "Any breed found",
+        }),
+      );
     });
 
     it("Call next() in case of error.", async () => {
@@ -87,8 +94,15 @@ describe("BreedController", () => {
       mockGetOne.mockResolvedValue(null);
       await underTest.getOne(req as Request, res as Response, next);
 
-      expect(res.status).toHaveBeenCalledWith(status.NOT_FOUND);
-      expect(res.json).toHaveBeenCalledWith({ error: "Breed not found" });
+      expect(next).toHaveBeenCalled();
+      const err = next.mock.calls[0][0];
+      expect(err).toBeInstanceOf(Error);
+      expect(err).toEqual(
+        expect.objectContaining({
+          status: status.NOT_FOUND,
+          message: "Breed not found",
+        }),
+      );
     });
 
     it("Call next() in case of error.", async () => {

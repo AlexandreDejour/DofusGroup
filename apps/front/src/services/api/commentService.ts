@@ -1,5 +1,6 @@
 import axios from "axios";
 import { t } from "../../i18n/i18n-helper";
+import handleApiError from "../utils/handleApiError";
 
 import { Comment } from "../../types/comment";
 
@@ -27,16 +28,7 @@ export class CommentService {
 
       return response.data;
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        if (error.response?.status === 401) {
-          throw new Error(t("comment.error.loginRequired"));
-        }
-
-        if (error.response?.status === 403) {
-          throw new Error(t("system.error.forbidden"));
-        }
-      }
-      throw error;
+      handleApiError(error);
     }
   }
 
@@ -54,20 +46,7 @@ export class CommentService {
 
       return response.data;
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        if (error.response?.status === 401) {
-          throw new Error(t("common.action.needLogin"));
-        }
-
-        if (error.response?.status === 403) {
-          throw new Error(t("system.error.forbidden"));
-        }
-
-        if (error.response?.status === 404) {
-          throw new Error(t("comment.error.notFound"));
-        }
-      }
-      throw error;
+      handleApiError(error);
     }
   }
 
@@ -82,14 +61,7 @@ export class CommentService {
 
       return response;
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        if ([400, 401, 403].includes(error.response?.status ?? 0)) {
-          throw new Error(t("system.error.forbidden"));
-        } else if (error.response?.status === 404) {
-          throw new Error(t("comment.error.notFound"));
-        }
-      }
-      throw error;
+      handleApiError(error);
     }
   }
 }

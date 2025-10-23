@@ -13,7 +13,7 @@ import { TargetType } from "../../contexts/modalContext";
 
 interface ProfileEventCardProps {
   event: Event;
-  handleDelete: (targetType: TargetType, targetId: string) => Promise<void>;
+  handleDelete?: (targetType: TargetType, targetId: string) => Promise<void>;
 }
 
 export default function ProfileEventCard({
@@ -71,13 +71,16 @@ export default function ProfileEventCard({
         >
           {t("common.details")}
         </button>
-        <button
-          className="profile_event_card_buttons_delete button delete"
-          aria-label={`Delete event ${event.title}`}
-          onClick={() => handleDelete("event", event.id)}
-        >
-          <FontAwesomeIcon icon={faTrash} />
-        </button>
+
+        {handleDelete ? (
+          <button
+            className="profile_event_card_buttons_delete button delete"
+            aria-label={`Delete event ${event.title}`}
+            onClick={() => handleDelete("event", event.id)}
+          >
+            <FontAwesomeIcon icon={faTrash} />
+          </button>
+        ) : null}
       </div>
     </article>
   );

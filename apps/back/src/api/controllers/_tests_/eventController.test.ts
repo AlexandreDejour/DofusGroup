@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
 import status from "http-status";
-import type { NextFunction, Request, Response } from "express";
+import type { Request, Response } from "express";
 
 import {
   Event,
@@ -16,10 +16,18 @@ import { EventUtils } from "../../../middlewares/repository/utils/eventUtils.js"
 describe("EventController", () => {
   let req: Partial<Request>;
   let res: Partial<Response>;
-  let next: NextFunction;
+  let next = vi.fn();
 
   vi.mock("../../../middlewares/repository/eventRepository.js");
   const mockGetAllPublic = vi.spyOn(EventRepository.prototype, "getAllPublic");
+  const mockGetAllRegistered = vi.spyOn(
+    EventRepository.prototype,
+    "getAllRegistered",
+  );
+  const mockGetAllByUserId = vi.spyOn(
+    EventRepository.prototype,
+    "getAllByUserId",
+  );
   const mockGetAllEnriched = vi.spyOn(
     EventRepository.prototype,
     "getAllEnriched",
@@ -71,6 +79,7 @@ describe("EventController", () => {
       description: "donjon full succès",
       max_players: 8,
       status: "public",
+      user_id: "1905dae9-c572-4d9e-9baa-d8d72bc83fc4",
       tag_id: "tag-1",
       server_id: "server-1",
     };
@@ -101,8 +110,15 @@ describe("EventController", () => {
       mockGetAllPublic.mockResolvedValue([]);
       await underTest.getAll(req as Request, res as Response, next);
 
-      expect(res.status).toHaveBeenCalledWith(status.NO_CONTENT);
-      expect(res.json).toHaveBeenCalledWith({ error: "Any event found" });
+      expect(next).toHaveBeenCalled();
+      const err = next.mock.calls[0][0];
+      expect(err).toBeInstanceOf(Error);
+      expect(err).toEqual(
+        expect.objectContaining({
+          status: status.NO_CONTENT,
+          message: "Any event found",
+        }),
+      );
     });
 
     it("Filters by tagId if provided", async () => {
@@ -168,6 +184,123 @@ describe("EventController", () => {
     });
   });
 
+  // --- GET ALL REGISTERED ---
+  describe("getAllRegistered", () => {
+    beforeEach(() => {
+      req.query = {};
+    });
+
+    it("Return events if exist for registered characters", async () => {
+      req.query = { characterIds: ["char-1", "char-2"] };
+
+      const baseEvent: Event = {
+        id: "923a9fe0-1395-4f4e-8d18-4a9ac183b924",
+        title: "Donjon minotot",
+        date: new Date("2026-01-01"),
+        duration: 60,
+        area: "Amakna",
+        sub_area: "Ile des taures",
+        donjon_name: "Labyrinthe du minotoror",
+        description: "donjon full succès",
+        max_players: 8,
+        status: "public",
+        user_id: "1905dae9-c572-4d9e-9baa-d8d72bc83fc4",
+        tag_id: "tag-1",
+        server_id: "server-1",
+      };
+
+      mockGetAllRegistered.mockResolvedValue([baseEvent]);
+
+      await underTest.getAllRegistered(req as Request, res as Response, next);
+
+      expect(mockGetAllRegistered).toHaveBeenCalledWith(["char-1", "char-2"]);
+      expect(res.json).toHaveBeenCalledWith([baseEvent]);
+    });
+
+    it("Return 204 if no registered events", async () => {
+      req.query = { characterIds: ["char-1"] };
+      mockGetAllRegistered.mockResolvedValue([]);
+      await underTest.getAllRegistered(req as Request, res as Response, next);
+
+      expect(next).toHaveBeenCalled();
+      const err = next.mock.calls[0][0];
+      expect(err).toBeInstanceOf(Error);
+      expect(err).toEqual(
+        expect.objectContaining({
+          status: status.NO_CONTENT,
+          message: "Any event found",
+        }),
+      );
+    });
+
+    it("Call next() in case of error", async () => {
+      const error = new Error();
+      mockGetAllRegistered.mockRejectedValue(error);
+      req.query = { characterIds: ["char-1"] };
+      await underTest.getAllRegistered(req as Request, res as Response, next);
+      expect(next).toHaveBeenCalledWith(error);
+    });
+  });
+
+  // --- GET ALL BY USER ID ---
+  describe("getAllByUserId", () => {
+    it("Return events for given userId", async () => {
+      const userId = "1905dae9-c572-4d9e-9baa-d8d72bc83fc4";
+      req.params = { userId };
+
+      const userEvent: Event = {
+        id: "923a9fe0-1395-4f4e-8d18-4a9ac183b924",
+        title: "Donjon minotot",
+        date: new Date("2026-01-01"),
+        duration: 60,
+        area: "Amakna",
+        sub_area: "Ile des taures",
+        donjon_name: "Labyrinthe du minotoror",
+        description: "donjon full succès",
+        max_players: 8,
+        status: "public",
+        user_id: "1905dae9-c572-4d9e-9baa-d8d72bc83fc4",
+        tag_id: "tag-1",
+        server_id: "server-1",
+      };
+
+      mockGetAllByUserId.mockResolvedValue([userEvent]);
+
+      await underTest.getAllByUserId(req as Request, res as Response, next);
+
+      expect(mockGetAllByUserId).toHaveBeenCalledWith(userId);
+      expect(res.json).toHaveBeenCalledWith([userEvent]);
+    });
+
+    it("Return 204 if no event for user", async () => {
+      const userId = "user-456";
+      req.params = { userId };
+      mockGetAllByUserId.mockResolvedValue([]);
+
+      await underTest.getAllByUserId(req as Request, res as Response, next);
+
+      expect(next).toHaveBeenCalled();
+      const err = next.mock.calls[0][0];
+      expect(err).toBeInstanceOf(Error);
+      expect(err).toEqual(
+        expect.objectContaining({
+          status: status.NO_CONTENT,
+          message: "Any event found",
+        }),
+      );
+    });
+
+    it("Call next() in case of error", async () => {
+      const error = new Error();
+      const userId = "user-789";
+      req.params = { userId };
+      mockGetAllByUserId.mockRejectedValue(error);
+
+      await underTest.getAllByUserId(req as Request, res as Response, next);
+      expect(next).toHaveBeenCalledWith(error);
+    });
+  });
+
   // --- GET ONE ---
   describe("getOne", () => {
     beforeEach(() => {
@@ -186,6 +319,7 @@ describe("EventController", () => {
         description: "donjon full succès",
         max_players: 8,
         status: "public",
+        user_id: "1905dae9-c572-4d9e-9baa-d8d72bc83fc4",
         tag_id: "b8c145a0-c68a-4adb-a33b-ae6f0ec89ee1",
         server_id: "5f076e0a-60a0-42d5-a18e-853a46ddc335",
       };
@@ -198,12 +332,19 @@ describe("EventController", () => {
       expect(res.status).not.toHaveBeenCalledWith(status.NOT_FOUND);
     });
 
-    it("Call next() if event doesn't exists.", async () => {
+    it("Return 404 if event doesn't exists.", async () => {
       mockGetOne.mockResolvedValue(null);
       await underTest.getOne(req as Request, res as Response, next);
 
-      expect(res.status).toHaveBeenCalledWith(status.NOT_FOUND);
-      expect(res.json).toHaveBeenCalledWith({ error: "Event not found" });
+      expect(next).toHaveBeenCalled();
+      const err = next.mock.calls[0][0];
+      expect(err).toBeInstanceOf(Error);
+      expect(err).toEqual(
+        expect.objectContaining({
+          status: status.NOT_FOUND,
+          message: "Event not found",
+        }),
+      );
     });
 
     it("Call next() in case of error.", async () => {
@@ -232,6 +373,7 @@ describe("EventController", () => {
           description: "donjon full succès",
           max_players: 8,
           status: "public",
+          user_id: "07a3cd78-3a4a-4aae-a681-7634d72197c2",
           tag_id: "f7a34554-d2d7-48d5-8bc2-1f7e4b06c8f8",
           server_id: "6c19c76b-cbc1-4a58-bdeb-b336eaf6f51c",
           tag: {
@@ -261,14 +403,21 @@ describe("EventController", () => {
       expect(res.status).not.toHaveBeenCalledWith(status.NOT_FOUND);
     });
 
-    it("Return 404 if any event found.", async () => {
+    it("Return 204 if any event found.", async () => {
       const mockEventsEnriched: EventEnriched[] = [];
 
       mockGetAllEnriched.mockResolvedValue(mockEventsEnriched);
       await underTest.getAllEnriched(req as Request, res as Response, next);
 
-      expect(res.status).toHaveBeenCalledWith(status.NO_CONTENT);
-      expect(res.json).toHaveBeenCalledWith({ error: "Any event found" });
+      expect(next).toHaveBeenCalled();
+      const err = next.mock.calls[0][0];
+      expect(err).toBeInstanceOf(Error);
+      expect(err).toEqual(
+        expect.objectContaining({
+          status: status.NO_CONTENT,
+          message: "Any event found",
+        }),
+      );
     });
 
     it("Call next() in case of error.", async () => {
@@ -299,6 +448,7 @@ describe("EventController", () => {
         description: "donjon full succès",
         max_players: 8,
         status: "public",
+        user_id: "07a3cd78-3a4a-4aae-a681-7634d72197c2",
         tag_id: "f7a34554-d2d7-48d5-8bc2-1f7e4b06c8f8",
         server_id: "6c19c76b-cbc1-4a58-bdeb-b336eaf6f51c",
         tag: {
@@ -330,8 +480,15 @@ describe("EventController", () => {
       mockGetOneEnriched.mockResolvedValue(null);
       await underTest.getOneEnriched(req as Request, res as Response, next);
 
-      expect(res.status).toHaveBeenCalledWith(status.NOT_FOUND);
-      expect(res.json).toHaveBeenCalledWith({ error: "Event not found" });
+      expect(next).toHaveBeenCalled();
+      const err = next.mock.calls[0][0];
+      expect(err).toBeInstanceOf(Error);
+      expect(err).toEqual(
+        expect.objectContaining({
+          status: status.NOT_FOUND,
+          message: "Event not found",
+        }),
+      );
     });
 
     it("Call next() in case of error.", async () => {
@@ -378,6 +535,7 @@ describe("EventController", () => {
         description: "donjon full succès",
         max_players: 8,
         status: "public",
+        user_id: "07a3cd78-3a4a-4aae-a681-7634d72197c2",
         tag_id: "f7a34554-d2d7-48d5-8bc2-1f7e4b06c8f8",
         server_id: "6c19c76b-cbc1-4a58-bdeb-b336eaf6f51c",
       };
@@ -392,6 +550,7 @@ describe("EventController", () => {
         description: "donjon full succès",
         max_players: 8,
         status: "public",
+        user_id: "07a3cd78-3a4a-4aae-a681-7634d72197c2",
         tag_id: "f7a34554-d2d7-48d5-8bc2-1f7e4b06c8f8",
         server_id: "6c19c76b-cbc1-4a58-bdeb-b336eaf6f51c",
         tag: {
@@ -447,6 +606,7 @@ describe("EventController", () => {
         description: "donjon full succès",
         max_players: 8,
         status: "public",
+        user_id: "07a3cd78-3a4a-4aae-a681-7634d72197c2",
         tag_id: "f7a34554-d2d7-48d5-8bc2-1f7e4b06c8f8",
         server_id: "6c19c76b-cbc1-4a58-bdeb-b336eaf6f51c",
       };
@@ -514,8 +674,15 @@ describe("EventController", () => {
         next,
       );
 
-      expect(res.status).toHaveBeenCalledWith(status.BAD_REQUEST);
-      expect(res.json).toHaveBeenCalledWith({ error: "Event ID is required" });
+      expect(next).toHaveBeenCalled();
+      const err = next.mock.calls[0][0];
+      expect(err).toBeInstanceOf(Error);
+      expect(err).toEqual(
+        expect.objectContaining({
+          status: status.BAD_REQUEST,
+          message: "User ID is required",
+        }),
+      );
     });
 
     it("Return 404 if event doesn't exist.", async () => {
@@ -537,8 +704,15 @@ describe("EventController", () => {
         next,
       );
 
-      expect(res.status).toHaveBeenCalledWith(status.NOT_FOUND);
-      expect(res.json).toHaveBeenCalledWith({ error: "Event not found" });
+      expect(next).toHaveBeenCalled();
+      const err = next.mock.calls[0][0];
+      expect(err).toBeInstanceOf(Error);
+      expect(err).toEqual(
+        expect.objectContaining({
+          status: status.NOT_FOUND,
+          message: "Event not found",
+        }),
+      );
     });
 
     it("Return 500 if enriched event cannot be retrieved.", async () => {
@@ -563,6 +737,7 @@ describe("EventController", () => {
         description: "donjon full succès",
         max_players: 8,
         status: "public",
+        user_id: "1905dae9-c572-4d9e-9baa-d8d72bc83fc4",
         tag_id: "f7a34554-d2d7-48d5-8bc2-1f7e4b06c8f8",
         server_id: "6c19c76b-cbc1-4a58-bdeb-b336eaf6f51c",
       };
@@ -576,10 +751,15 @@ describe("EventController", () => {
         next,
       );
 
-      expect(res.status).toHaveBeenCalledWith(status.INTERNAL_SERVER_ERROR);
-      expect(res.json).toHaveBeenCalledWith({
-        error: "Failed to retrieve enriched event",
-      });
+      expect(next).toHaveBeenCalled();
+      const err = next.mock.calls[0][0];
+      expect(err).toBeInstanceOf(Error);
+      expect(err).toEqual(
+        expect.objectContaining({
+          status: status.INTERNAL_SERVER_ERROR,
+          message: "Failed to retrieve enriched event",
+        }),
+      );
     });
 
     it("Call next() in case of error.", async () => {
@@ -625,6 +805,7 @@ describe("EventController", () => {
         description: "donjon full succès",
         max_players: 8,
         status: "public",
+        user_id: "07a3cd78-3a4a-4aae-a681-7634d72197c2",
         tag_id: "f7a34554-d2d7-48d5-8bc2-1f7e4b06c8f8",
         server_id: "6c19c76b-cbc1-4a58-bdeb-b336eaf6f51c",
       };
@@ -675,8 +856,15 @@ describe("EventController", () => {
         next,
       );
 
-      expect(res.status).toHaveBeenCalledWith(status.BAD_REQUEST);
-      expect(res.json).toHaveBeenCalledWith({ error: "Event ID is required" });
+      expect(next).toHaveBeenCalled();
+      const err = next.mock.calls[0][0];
+      expect(err).toBeInstanceOf(Error);
+      expect(err).toEqual(
+        expect.objectContaining({
+          status: status.BAD_REQUEST,
+          message: "User ID is required",
+        }),
+      );
     });
 
     it("Return 404 if event doesn't exist.", async () => {
@@ -695,8 +883,15 @@ describe("EventController", () => {
         next,
       );
 
-      expect(res.status).toHaveBeenCalledWith(status.NOT_FOUND);
-      expect(res.json).toHaveBeenCalledWith({ error: "Event not found" });
+      expect(next).toHaveBeenCalled();
+      const err = next.mock.calls[0][0];
+      expect(err).toBeInstanceOf(Error);
+      expect(err).toEqual(
+        expect.objectContaining({
+          status: status.NOT_FOUND,
+          message: "Event not found",
+        }),
+      );
     });
 
     it("Return 500 if enriched event cannot be retrieved.", async () => {
@@ -714,6 +909,7 @@ describe("EventController", () => {
         description: "donjon full succès",
         max_players: 8,
         status: "public",
+        user_id: "1905dae9-c572-4d9e-9baa-d8d72bc83fc4",
         tag_id: "f7a34554-d2d7-48d5-8bc2-1f7e4b06c8f8",
         server_id: "6c19c76b-cbc1-4a58-bdeb-b336eaf6f51c",
       };
@@ -727,10 +923,55 @@ describe("EventController", () => {
         next,
       );
 
-      expect(res.status).toHaveBeenCalledWith(status.INTERNAL_SERVER_ERROR);
-      expect(res.json).toHaveBeenCalledWith({
-        error: "Failed to retrieve enriched event",
-      });
+      expect(next).toHaveBeenCalled();
+      const err = next.mock.calls[0][0];
+      expect(err).toBeInstanceOf(Error);
+      expect(err).toEqual(
+        expect.objectContaining({
+          status: status.INTERNAL_SERVER_ERROR,
+          message: "Failed to retrieve enriched event",
+        }),
+      );
+    });
+
+    it("Return 500 if enriched event cannot be retrieved.", async () => {
+      req.params = { eventId: "182a492c-feb7-4af8-910c-e61dc2536754" };
+      req.body = { character_id: "1b4a318a-d991-4ec9-8178-38e6bbb5c322" };
+
+      const mockEvent: Event = {
+        id: "182a492c-feb7-4af8-910c-e61dc2536754",
+        title: "Donjon minotot",
+        date: new Date("2026-01-01"),
+        duration: 60,
+        area: "Amakna",
+        sub_area: "Ile des taures",
+        donjon_name: "Labyrinthe du minotoror",
+        description: "donjon full succès",
+        max_players: 8,
+        status: "public",
+        user_id: "1905dae9-c572-4d9e-9baa-d8d72bc83fc4",
+        tag_id: "f7a34554-d2d7-48d5-8bc2-1f7e4b06c8f8",
+        server_id: "6c19c76b-cbc1-4a58-bdeb-b336eaf6f51c",
+      };
+
+      mockRemoveCharacter.mockResolvedValue(mockEvent);
+      mockGetOneEnriched.mockResolvedValue(null);
+
+      await underTest.removeCharacterFromEvent(
+        req as Request,
+        res as Response,
+        next,
+      );
+
+      expect(next).toHaveBeenCalled();
+      const err = next.mock.calls[0][0];
+      expect(err).toBeInstanceOf(Error);
+      expect(err).toEqual(
+        expect.objectContaining({
+          status: status.INTERNAL_SERVER_ERROR,
+          message: "Failed to retrieve enriched event",
+        }),
+      );
     });
 
     it("Call next() in case of error.", async () => {
@@ -780,6 +1021,7 @@ describe("EventController", () => {
         description: "donjon full succès",
         max_players: 8,
         status: "public",
+        user_id: "07a3cd78-3a4a-4aae-a681-7634d72197c2",
         tag_id: "f7a34554-d2d7-48d5-8bc2-1f7e4b06c8f8",
         server_id: "6c19c76b-cbc1-4a58-bdeb-b336eaf6f51c",
       };
@@ -824,8 +1066,15 @@ describe("EventController", () => {
 
       await underTest.update(req as Request, res as Response, next);
 
-      expect(res.status).toHaveBeenCalledWith(status.BAD_REQUEST);
-      expect(res.json).toHaveBeenCalledWith({ error: "User ID is required" });
+      expect(next).toHaveBeenCalled();
+      const err = next.mock.calls[0][0];
+      expect(err).toBeInstanceOf(Error);
+      expect(err).toEqual(
+        expect.objectContaining({
+          status: status.BAD_REQUEST,
+          message: "User ID is required",
+        }),
+      );
     });
 
     it("Return 404 if event doesn't exist.", async () => {
@@ -843,8 +1092,15 @@ describe("EventController", () => {
 
       await underTest.update(req as Request, res as Response, next);
 
-      expect(res.status).toHaveBeenCalledWith(status.NOT_FOUND);
-      expect(res.json).toHaveBeenCalledWith({ error: "Event not found" });
+      expect(next).toHaveBeenCalled();
+      const err = next.mock.calls[0][0];
+      expect(err).toBeInstanceOf(Error);
+      expect(err).toEqual(
+        expect.objectContaining({
+          status: status.NOT_FOUND,
+          message: "Event not found",
+        }),
+      );
       expect(mockGetOneEnriched).not.toHaveBeenCalled();
     });
 
@@ -892,8 +1148,15 @@ describe("EventController", () => {
       mockDelete.mockResolvedValue(false);
       await underTest.delete(req as Request, res as Response, next);
 
-      expect(res.status).toHaveBeenCalledWith(status.NOT_FOUND);
-      expect(res.json).toHaveBeenCalledWith({ error: "Event not found" });
+      expect(next).toHaveBeenCalled();
+      const err = next.mock.calls[0][0];
+      expect(err).toBeInstanceOf(Error);
+      expect(err).toEqual(
+        expect.objectContaining({
+          status: status.NOT_FOUND,
+          message: "Event not found",
+        }),
+      );
     });
 
     it("Call next() in case of error.", async () => {

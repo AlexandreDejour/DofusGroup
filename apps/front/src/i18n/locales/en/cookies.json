@@ -1,0 +1,32 @@
+{
+  "title": "We use cookies",
+  "message": "This website uses cookies to enhance your experience.",
+  "buttonText": "Accept",
+  "declineButtonText": "Decline",
+  "manageButtonText": "Manage Cookies",
+  "privacyPolicyText": "Privacy Policy",
+
+  "manageTitle": "Cookie Preferences",
+  "manageMessage": "Manage your cookie preferences below. Essential cookies are always enabled as they are necessary for the website to function properly.",
+
+  "manageEssentialTitle": "Essential",
+  "manageEssentialSubtitle": "Required for the website to function properly",
+  "manageEssentialStatus": "Status: Always enabled",
+  "manageEssentialStatusButtonText": "Always On",
+
+  "manageAnalyticsTitle": "Analytics",
+  "manageAnalyticsSubtitle": "Help us understand how visitors interact with our website",
+
+  "manageSocialTitle": "Social",
+  "manageSocialSubtitle": "Enable social media features and sharing",
+
+  "manageAdvertTitle": "Advertising",
+  "manageAdvertSubtitle": "Personalize advertisements and measure their performance",
+
+  "manageCookiesStatus": "Status: {{status}} on {{date}}",
+  "manageCookiesStatusConsented": "Consented",
+  "manageCookiesStatusDeclined": "Declined",
+
+  "manageCancelButtonText": "Cancel",
+  "manageSaveButtonText": "Save Preferences"
+}

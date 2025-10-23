@@ -26,11 +26,12 @@ import SelectOptions from "../../formComponents/Options/SelectOptions";
 import CharactersOptions from "../../formComponents/Options/CharactersOptions";
 
 const config = Config.getInstance();
-const axios = new ApiClient(config.baseUrl);
-const tagService = new TagService(axios);
-const serverService = new ServerService(axios);
-const dofusDBService = new DofusDBService(axios);
-const characterService = new CharacterService(axios);
+const axiosBack = new ApiClient(config.backUrl);
+const axiosDofusDB = new ApiClient(config.dofusdbUrl);
+const tagService = new TagService(axiosBack);
+const serverService = new ServerService(axiosBack);
+const dofusDBService = new DofusDBService(axiosDofusDB);
+const characterService = new CharacterService(axiosBack);
 
 interface NewEventFormProps {
   handleSubmit: (event: React.FormEvent<HTMLFormElement>) => void;

@@ -1,4 +1,5 @@
 import status from "http-status";
+import createHttpError from "http-errors";
 import { NextFunction, Request, Response } from "express";
 
 import { Breed } from "../../types/breed.js";
@@ -16,8 +17,8 @@ export class BreedController {
       const breeds: Breed[] = await this.repository.getAll();
 
       if (!breeds.length) {
-        res.status(status.NO_CONTENT).json({ error: "Any breed found" });
-        return;
+        const error = createHttpError(status.NO_CONTENT, "Any breed found");
+        return next(error);
       }
 
       res.json(breeds);
@@ -33,8 +34,8 @@ export class BreedController {
       const breed: Breed | null = await this.repository.getOne(id);
 
       if (!breed) {
-        res.status(status.NOT_FOUND).json({ error: "Breed not found" });
-        return;
+        const error = createHttpError(status.NOT_FOUND, "Breed not found");
+        return next(error);
       }
 
       res.json(breed);

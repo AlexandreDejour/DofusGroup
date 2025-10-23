@@ -5,7 +5,8 @@
   "main": "index.ts",
   "type": "module",
   "scripts": {
-    "start": "tsx index.ts",
+    "start": "node dist/index.js",
+    "build": "tsc",
     "dev": "tsx watch index.ts",
     "test": "npx vitest",
     "db:migrate": "npx sequelize-cli db:migrate",
@@ -47,12 +48,14 @@
     "vitest": "^3.2.3"
   },
   "dependencies": {
+    "sequelize-cli": "^6.6.3",
     "argon2": "^0.43.1",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
     "dotenv": "^16.5.0",
     "express": "^5.1.0",
     "express-rate-limit": "^8.1.0",
+    "helmet": "^8.1.0",
     "http-errors": "^2.0.0",
     "http-status": "^2.1.0",
     "joi": "^17.13.3",
@@ -63,6 +66,8 @@
     "sanitize-html": "^2.17.0",
     "sequelize": "^6.37.7",
     "ts-node": "^10.9.2",
-    "tsx": "^4.20.1"
+    "tsx": "^4.20.1",
+    "winston": "^3.18.3",
+    "winston-daily-rotate-file": "^5.0.0"
   }
 }

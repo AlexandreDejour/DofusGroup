@@ -1,5 +1,6 @@
 node_modules/
 apps/back/node_modules/
+apps/back/logs
 apps/front/app/node_modules/
 
 dist/

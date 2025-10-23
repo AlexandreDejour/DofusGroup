@@ -5,6 +5,7 @@ COPY package*.json ./
 RUN npm install
 COPY . .
 RUN npm run build
+RUN rm -rf node_modules package-lock.json
 
 # Étape 2 : runtime (nginx)
 FROM nginx:stable-alpine

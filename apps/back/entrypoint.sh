@@ -13,11 +13,11 @@ done
 
 # --- Migrations ---
 echo "🚀 Executing migrations..."
-npx sequelize-cli db:migrate
+npx sequelize-cli db:migrate --url "$PG_URL"
 
 # --- Seeds (executed if .seeded not exist) ---
 echo "🌱 Executing initial seeds..."
-npx sequelize-cli db:seed:all
+npx sequelize-cli db:seed:all --url "$PG_URL"
 
 if [ "$NODE_ENV" = "production" ]; then
   echo "🚀 Creating app user role if not exists..."
@@ -50,6 +50,5 @@ fi
 echo "Link : http://localhost:8080"
 echo "🌍 Environnement : $NODE_ENV"
 echo "🚀 Launching process : $@"
-echo "🔎 PG_URL: $PG_URL"
 
 exec "$@"

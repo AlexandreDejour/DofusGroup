@@ -14,7 +14,6 @@ export class BreedService {
   public async getBreeds(): Promise<Breed[]> {
     try {
       const response = await this.axios.get<Breed[]>("/breeds");
-      console.log(response);
 
       return response.data;
     } catch (error) {

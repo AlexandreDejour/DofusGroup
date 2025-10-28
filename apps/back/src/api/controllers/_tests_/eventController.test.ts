@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
 import status from "http-status";
-import type { NextFunction, Request, Response } from "express";
+import type { Request, Response } from "express";
 
 import {
   Event,
@@ -890,6 +890,46 @@ describe("EventController", () => {
         expect.objectContaining({
           status: status.NOT_FOUND,
           message: "Event not found",
+        }),
+      );
+    });
+
+    it("Return 500 if enriched event cannot be retrieved.", async () => {
+      req.params = { eventId: "182a492c-feb7-4af8-910c-e61dc2536754" };
+      req.body = { character_id: "1b4a318a-d991-4ec9-8178-38e6bbb5c322" };
+
+      const mockEvent: Event = {
+        id: "182a492c-feb7-4af8-910c-e61dc2536754",
+        title: "Donjon minotot",
+        date: new Date("2026-01-01"),
+        duration: 60,
+        area: "Amakna",
+        sub_area: "Ile des taures",
+        donjon_name: "Labyrinthe du minotoror",
+        description: "donjon full succès",
+        max_players: 8,
+        status: "public",
+        user_id: "1905dae9-c572-4d9e-9baa-d8d72bc83fc4",
+        tag_id: "f7a34554-d2d7-48d5-8bc2-1f7e4b06c8f8",
+        server_id: "6c19c76b-cbc1-4a58-bdeb-b336eaf6f51c",
+      };
+
+      mockRemoveCharacter.mockResolvedValue(mockEvent);
+      mockGetOneEnriched.mockResolvedValue(null);
+
+      await underTest.removeCharacterFromEvent(
+        req as Request,
+        res as Response,
+        next,
+      );
+
+      expect(next).toHaveBeenCalled();
+      const err = next.mock.calls[0][0];
+      expect(err).toBeInstanceOf(Error);
+      expect(err).toEqual(
+        expect.objectContaining({
+          status: status.INTERNAL_SERVER_ERROR,
+          message: "Failed to retrieve enriched event",
         }),
       );
     });

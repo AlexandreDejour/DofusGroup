@@ -218,7 +218,7 @@ describe("UpdateEventForm", () => {
 
     await waitFor(() => {
       expect(mockShowError).toHaveBeenCalledWith(
-        t("common.error.default"),
+        t("system.error.default"),
         t("system.error.occurred"),
       );
     });
@@ -238,7 +238,7 @@ describe("UpdateEventForm", () => {
 
     await waitFor(() => {
       expect(mockShowError).toHaveBeenCalledWith(
-        t("common.error.default"),
+        t("system.error.default"),
         t("system.error.occurred"),
       );
     });
@@ -258,7 +258,7 @@ describe("UpdateEventForm", () => {
 
     await waitFor(() => {
       expect(mockShowError).toHaveBeenCalledWith(
-        t("common.error.default"),
+        t("system.error.default"),
         t("system.error.occurred"),
       );
     });

@@ -27,9 +27,7 @@ export class AuthController {
       sameSite: "lax",
       path: "/",
       domain:
-        this.config.environment === "production"
-          ? ".dofusgroup.com"
-          : undefined,
+        this.config.environment === "production" ? ".dofusgroup.fr" : undefined,
     };
   }
 

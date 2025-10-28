@@ -29,6 +29,7 @@ services:
       context: ./apps/back
       dockerfile: Dockerfile
     env_file: .env
+    # command: sh -c "npx sequelize-cli db:migrate && npx sequelize-cli db:seed:all && npm run start"
     volumes:
       - ./apps/back:/app
       - logs-data:/app/logs

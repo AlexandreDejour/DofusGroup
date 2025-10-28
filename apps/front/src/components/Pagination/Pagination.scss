@@ -3,7 +3,8 @@
 .pagination_list {
   padding: 0;
   display: flex;
-  justify-content: space-evenly;
+  justify-content: center;
+  gap: 1%;
 
   @media (max-width: 1023px) {
     margin-top: 2%;

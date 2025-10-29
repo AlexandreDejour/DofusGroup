@@ -21,11 +21,11 @@ describe("authRouter", () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    app = setup.App<AuthController, [AuthService, DataEncryptionService]>(
+    app = setup.App<AuthController, [AuthService]>(
       controller,
       createAuthRouter,
       {
-        routerFactoryArgs: [service, encrypter],
+        routerFactoryArgs: [service],
       },
     );
   });
@@ -82,7 +82,7 @@ describe("authRouter", () => {
       const res = await request(app)
         .post("/auth/login")
         .send({
-          username: "toto",
+          mail: "toto@mail.com",
           password: "!SuperS3cr3t",
         })
         .set("Content-Type", "application/json");
@@ -98,7 +98,7 @@ describe("authRouter", () => {
       const res = await request(app)
         .post("/auth/login")
         .send({
-          username: "toto",
+          mail: "toto@mail.com",
           password: "!SuperS3cr3t",
         })
         .set("Content-Type", "application/json");

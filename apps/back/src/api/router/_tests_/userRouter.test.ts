@@ -25,12 +25,13 @@ describe("userRouter", () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    app = setup.App<
-      UserController,
-      [AuthController, AuthService, DataEncryptionService]
-    >(controller, createUserRouter, {
-      routerFactoryArgs: [authController, service, encrypter],
-    });
+    app = setup.App<UserController, [AuthController, AuthService]>(
+      controller,
+      createUserRouter,
+      {
+        routerFactoryArgs: [authController, service],
+      },
+    );
   });
 
   const config = Config.getInstance();

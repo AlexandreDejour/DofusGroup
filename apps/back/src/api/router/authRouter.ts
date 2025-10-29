@@ -5,7 +5,6 @@ import hashPassword from "../../middlewares/utils/hashPassword.js";
 import htmlSanitizer from "../../middlewares/utils/htmlSanitizer.js";
 import validateSchema from "../../middlewares/joi/validateSchema.js";
 import { AuthService } from "../../middlewares/utils/authService.js";
-import { DataEncryptionService } from "../../middlewares/utils/dataEncryptionService.js";
 import { AuthController } from "../controllers/authController.js";
 import { createUserSchema } from "../../middlewares/joi/schemas/user.js";
 import { loginSchema } from "../../middlewares/joi/schemas/auth.js";
@@ -14,7 +13,6 @@ import { requestLimiter } from "../../middlewares/utils/requestLimiter.js";
 export function createAuthRouter(
   controller: AuthController,
   authService: AuthService,
-  encrypter: DataEncryptionService,
 ): Router {
   const router: Router = Router();
 
@@ -22,7 +20,6 @@ export function createAuthRouter(
     "/auth/register",
     htmlSanitizer,
     validateSchema(createUserSchema),
-    encrypter.encryptData,
     hashPassword,
     (req, res, next) => {
       controller.register(req, res, next);

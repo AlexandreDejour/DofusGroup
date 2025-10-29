@@ -4,6 +4,8 @@ services:
       context: ./apps/front
       dockerfile: Dockerfile.prod
     container_name: nginx
+    environment:
+      - PRERENDER_TOKEN=${PRERENDER_TOKEN}
     ports:
       - "80:80"
       - "443:443"

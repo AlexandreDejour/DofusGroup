@@ -52,11 +52,10 @@ export class AuthController {
   }
 
   public async login(req: Request, res: Response, next: NextFunction) {
-    const { username, password } = req.body;
+    const { mail, password } = req.body;
 
     try {
-      const user: AuthUser | null =
-        await this.repository.findOneByUsername(username);
+      const user: AuthUser | null = await this.repository.findOneByMail(mail);
 
       if (!user) {
         const error = createHttpError(

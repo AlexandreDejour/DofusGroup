@@ -60,7 +60,7 @@ export class AuthController {
       if (!user) {
         const error = createHttpError(
           status.UNAUTHORIZED,
-          "Username or password unavailable",
+          "Email or password unavailable",
         );
         return next(error);
       }
@@ -70,7 +70,7 @@ export class AuthController {
       if (!isPasswordMatch) {
         const error = createHttpError(
           status.UNAUTHORIZED,
-          "Username or password unavailable",
+          "Email or password unavailable",
         );
         return next(error);
       }

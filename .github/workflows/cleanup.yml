@@ -14,7 +14,6 @@ jobs:
       - name: Setup SSH
         uses: webfactory/ssh-agent@v0.9.1
         with:
-          # TODO Add secrets in GitHub
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
       - name: Checkout repository
@@ -26,7 +25,6 @@ jobs:
           node-version: 22:alpine
 
       - name: Run cleanup script
-        # TODO Update user and server
-        run: ssh user@your-server 'cd /path/to/project && npm ci && node dist/database/cleanup.js'
+        run: ssh debian@51.210.5.143 'cd /path/to/project && npm ci && node dist/database/cleanup.js'
         env:
           PG_URL: postgresql://${{ secrets.POSTGRES_USER }}:${{ secrets.POSTGRES_PASSWORD }}@${{ secrets.POSTGRES_HOST }}:5432/${{ secrets.POSTGRES_DB }}

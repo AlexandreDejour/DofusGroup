@@ -14,13 +14,13 @@ export default function LoginForm({ handleSubmit }: LoginFormProps) {
       <h3 className="content_modal_title">{t("auth.login")}</h3>
       <form onSubmit={handleSubmit} className="content_modal_form" role="form">
         <label htmlFor="mail" className="content_modal_form_label">
-          <span>{t("auth.email")}:</span>
+          <span>{t("auth.email.default")}:</span>
           <input
             type="email"
             name="mail"
             id="mail"
             required
-            placeholder={t("auth.email")}
+            placeholder={t("auth.email.default")}
             className="content_modal_form_label_input"
           />
         </label>

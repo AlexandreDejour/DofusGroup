@@ -24,14 +24,10 @@ describe("AuthController", () => {
     AuthRepository.prototype,
     "findOneByUsername",
   );
+  const mockFindByMail = vi.spyOn(AuthRepository.prototype, "findOneByMail");
   const mockRegister = vi.spyOn(AuthRepository.prototype, "register");
 
   vi.mock("../../../middlewares/utils/authService.js");
-  const mockSetRequest = vi.spyOn(AuthService.prototype, "setAuthUserRequest");
-  const mockCheckPermission = vi.spyOn(
-    AuthService.prototype,
-    "checkPermission",
-  );
   const mockGenerateAcessToken = vi.spyOn(
     AuthService.prototype,
     "generateAccessToken",
@@ -136,7 +132,7 @@ describe("AuthController", () => {
     it("Return user and cookie if login.", async () => {
       // GIVEN
       req.body = {
-        username: "toto",
+        mail: "toto@mail.com",
         password: "secret",
       };
 
@@ -145,7 +141,7 @@ describe("AuthController", () => {
         username: "toto",
         password:
           "$argon2id$v=19$m=65536,t=3,p=4$PBffc9eGthziVC938nRg+Q$8dpZXWhHPGfBj0tEp/vwSpfsm2pZK1dYRb8OSObg4gE",
-        mail: "b4abae35a472f9eaffc89dbc:c5658303f02fa2ea7f7d6a0650af502e:9dcdd7b46a2907c4635293da74621854",
+        mail: "toto@mail.com",
       };
 
       const mockToken =
@@ -155,11 +151,11 @@ describe("AuthController", () => {
 
       (argon2.verify as Mock).mockResolvedValue(true);
       mockGenerateAcessToken.mockResolvedValue(mockToken);
-      mockFindByUsername.mockResolvedValue(mockUser);
+      mockFindByMail.mockResolvedValue(mockUser);
       // WHEN
       await underTest.login(req as Request, res as Response, next);
       //THEN
-      expect(mockFindByUsername).toHaveBeenCalledWith("toto");
+      expect(mockFindByMail).toHaveBeenCalledWith("toto@mail.com");
       expect(res.cookie).toHaveBeenCalledWith(
         "token",
         mockToken,
@@ -169,44 +165,44 @@ describe("AuthController", () => {
       expect(res.status).not.toHaveBeenCalledWith(status.NOT_FOUND);
     });
 
-    it("Return 401 if username not found.", async () => {
+    it("Return 401 if mail not found.", async () => {
       req.body = {
-        username: "tata",
+        mail: "tata@mail.com",
         password: "secret",
       };
 
-      mockFindByUsername.mockResolvedValue(null);
+      mockFindByMail.mockResolvedValue(null);
       await underTest.login(req as Request, res as Response, next);
 
-      expect(mockFindByUsername).toHaveBeenCalledWith("tata");
+      expect(mockFindByMail).toHaveBeenCalledWith("tata@mail.com");
       expect(next).toHaveBeenCalled();
       const err = next.mock.calls[0][0];
       expect(err).toBeInstanceOf(Error);
       expect(err).toEqual(
         expect.objectContaining({
           status: status.UNAUTHORIZED,
-          message: "Username or password unavailable",
+          message: "Email or password unavailable",
         }),
       );
     });
 
     it("Return 401 if password not match.", async () => {
       req.body = {
-        username: "tata",
+        mail: "tata@mail.com",
         password: "secret",
       };
 
       (argon2.verify as Mock).mockResolvedValue(false);
       await underTest.login(req as Request, res as Response, next);
 
-      expect(mockFindByUsername).toHaveBeenCalledWith("tata");
+      expect(mockFindByMail).toHaveBeenCalledWith("tata@mail.com");
       expect(next).toHaveBeenCalled();
       const err = next.mock.calls[0][0];
       expect(err).toBeInstanceOf(Error);
       expect(err).toEqual(
         expect.objectContaining({
           status: status.UNAUTHORIZED,
-          message: "Username or password unavailable",
+          message: "Email or password unavailable",
         }),
       );
     });

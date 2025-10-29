@@ -5,7 +5,7 @@ export type RegisterForm = {
   confirmPassword: string;
 };
 
-export type LoginForm = Omit<RegisterForm, "mail" | "confirmPassword">;
+export type LoginForm = Omit<RegisterForm, "username" | "confirmPassword">;
 
 export type UpdateForm = Partial<RegisterForm> & {
   oldPassword?: string;

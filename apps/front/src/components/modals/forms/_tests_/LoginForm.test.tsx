@@ -8,7 +8,9 @@ import LoginForm from "../Forms/LoginForm";
 describe("LoginForm", () => {
   it("Display all form fields and button", () => {
     render(<LoginForm handleSubmit={vi.fn()} />);
-    expect(screen.getByLabelText(`${t("auth.username")}:`)).toBeInTheDocument();
+    expect(
+      screen.getByLabelText(`${t("auth.email.default")}:`),
+    ).toBeInTheDocument();
     expect(
       screen.getByLabelText(`${t("auth.password.default")}:`),
     ).toBeInTheDocument();

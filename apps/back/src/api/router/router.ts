@@ -56,17 +56,8 @@ router.use((req, res, next) => {
 router.use((req, res, next) => profanityCleaner(req, res, next));
 
 router.use(createTagRouter(tagController));
-router.use(
-  createAuthRouter(authController, authService, dataEncryptionService),
-);
-router.use(
-  createUserRouter(
-    userController,
-    authController,
-    authService,
-    dataEncryptionService,
-  ),
-);
+router.use(createAuthRouter(authController, authService));
+router.use(createUserRouter(userController, authController, authService));
 router.use(createEventRouter(eventController, authService));
 router.use(createBreedRouter(breedController));
 router.use(createServerRouter(serverController));

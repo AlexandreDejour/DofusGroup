@@ -38,6 +38,24 @@ export class AuthRepository {
     }
   }
 
+  public async findOneByMail(mail: string): Promise<AuthUser | null> {
+    try {
+      const result: UserEntity | null = await UserEntity.findOne({
+        where: { mail: mail },
+      });
+
+      if (!result) {
+        return null;
+      }
+
+      const user = result.get({ plain: true });
+
+      return user;
+    } catch (error) {
+      throw error;
+    }
+  }
+
   public async register(userData: UserBodyData): Promise<AuthUser> {
     try {
       const result: UserEntity = await UserEntity.create(userData);

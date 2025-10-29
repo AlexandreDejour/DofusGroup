@@ -52,16 +52,15 @@ export class AuthController {
   }
 
   public async login(req: Request, res: Response, next: NextFunction) {
-    const { username, password } = req.body;
+    const { mail, password } = req.body;
 
     try {
-      const user: AuthUser | null =
-        await this.repository.findOneByUsername(username);
+      const user: AuthUser | null = await this.repository.findOneByMail(mail);
 
       if (!user) {
         const error = createHttpError(
           status.UNAUTHORIZED,
-          "Username or password unavailable",
+          "Email or password unavailable",
         );
         return next(error);
       }
@@ -71,7 +70,7 @@ export class AuthController {
       if (!isPasswordMatch) {
         const error = createHttpError(
           status.UNAUTHORIZED,
-          "Username or password unavailable",
+          "Email or password unavailable",
         );
         return next(error);
       }

@@ -156,7 +156,7 @@ export default function ModalProvider({ children }: ModalProviderProps) {
         }
 
         if (modalType === "login") {
-          const keys: (keyof LoginForm)[] = ["username", "password"];
+          const keys: (keyof LoginForm)[] = ["mail", "password"];
           const data = formDataToObject<LoginForm>(formData, { keys });
           const response = await authService.login(data);
 

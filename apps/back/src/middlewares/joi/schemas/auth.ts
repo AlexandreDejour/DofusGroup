@@ -5,7 +5,7 @@ const passwordRegex = new RegExp(
 );
 
 export const loginSchema: Joi.ObjectSchema = Joi.object({
-  username: Joi.string().required().messages({
+  mail: Joi.string().email().required().messages({
     "string.empty": "Mail can't be empty.",
     "any.required": "Mail is required.",
   }),

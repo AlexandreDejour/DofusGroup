@@ -22,9 +22,8 @@ COPY entrypoint.sh ./entrypoint.sh
 
 RUN npm i --omit=dev
 
-RUN apk add --no-cache postgresql-client
-
-RUN chmod +x entrypoint.sh
+RUN apk add --no-cache postgresql-client && \
+    chmod +x entrypoint.sh
 
 ENV NODE_ENV=production
 

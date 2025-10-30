@@ -1,9 +1,9 @@
-import { Request, Response, NextFunction } from "express";
+import { Request, Response, NextFunction, CookieOptions } from "express";
 import jwt from "jsonwebtoken";
+import status from "http-status";
 
 import { jwtSchema } from "../joi/schemas/auth.js";
 import { Config } from "../../config/config.js";
-import status from "http-status";
 
 export interface AuthenticatedRequest extends Request {
   userId?: string;
@@ -13,16 +13,25 @@ export class AuthService {
   private config = Config.getInstance();
   private jwtSecret: string;
   private refreshSecret: string;
+  private cookieOptions: CookieOptions;
 
   constructor() {
     this.config = Config.getInstance();
     this.jwtSecret = this.config.jwtSecret;
     this.refreshSecret = this.config.refreshSecret;
+    this.cookieOptions = {
+      httpOnly: true,
+      secure: this.config.environment === "production",
+      sameSite: "lax",
+      path: "/",
+      domain:
+        this.config.environment === "production" ? ".dofusgroup.fr" : undefined,
+    };
   }
 
   public async setAuthUserRequest(
     req: AuthenticatedRequest,
-    _res: Response,
+    res: Response,
     next: NextFunction,
   ) {
     const token = req.cookies.access_token;
@@ -43,7 +52,15 @@ export class AuthService {
       req.userId = value.id;
       next();
     } catch (error) {
-      next(error);
+      if (error instanceof jwt.TokenExpiredError) {
+        res
+          .clearCookie("access_token", this.cookieOptions)
+          .clearCookie("refresh_token", this.cookieOptions)
+          .status(status.UNAUTHORIZED)
+          .json({ message: "Token expired, please login." });
+      } else {
+        next(error);
+      }
     }
   }
 

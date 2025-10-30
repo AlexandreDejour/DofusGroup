@@ -25,7 +25,7 @@ export class AuthService {
     _res: Response,
     next: NextFunction,
   ) {
-    const token = req.cookies.token;
+    const token = req.cookies.access_token;
 
     if (!token) {
       return next();

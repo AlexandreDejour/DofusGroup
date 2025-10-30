@@ -29,14 +29,11 @@ import { CharacterController } from "../controllers/characterController.js";
 import { CharacterRepository } from "../../middlewares/repository/characterRepository.js";
 import { EventUtils } from "../../middlewares/repository/utils/eventUtils.js";
 import { AuthService } from "../../middlewares/utils/authService.js";
-import { CryptoService } from "../../middlewares/utils/cryptoService.js";
-import { DataEncryptionService } from "../../middlewares/utils/dataEncryptionService.js";
 import { profanityCleaner } from "../../middlewares/profanity/profanity.js";
 
 initAssociations(models);
 
 const authService = new AuthService();
-const dataEncryptionService = new DataEncryptionService(new CryptoService());
 
 const tagController = new TagController(new TagRepository());
 const authController = new AuthController(authService, new AuthRepository());

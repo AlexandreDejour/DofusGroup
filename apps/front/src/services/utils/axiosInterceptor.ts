@@ -17,7 +17,9 @@ export default function axiosInterceptor(axios: AxiosInstance) {
         originalRequest._retry = true;
 
         try {
-          await axios.post("/auth/refresh-token", { withCredentials: true });
+          await axios.post("/auth/refresh-token", null, {
+            withCredentials: true,
+          });
           // Relaunch original request
           return axios(originalRequest);
         } catch (refreshError) {

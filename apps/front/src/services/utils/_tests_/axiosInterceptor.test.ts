@@ -64,7 +64,7 @@ describe("axiosInterceptor", () => {
 
     const result = await capturedOnRejected(error);
 
-    expect(axiosMock.post).toHaveBeenCalledWith("/auth/refresh-token", {
+    expect(axiosMock.post).toHaveBeenCalledWith("/auth/refresh-token", null, {
       withCredentials: true,
     });
     expect(axiosMock.request).toHaveBeenCalledWith(originalRequest);
@@ -88,6 +88,7 @@ describe("axiosInterceptor", () => {
     // premier appel = refresh attempt, second appel = logout
     expect(axiosMock.post.mock.calls[0]).toEqual([
       "/auth/refresh-token",
+      null,
       { withCredentials: true },
     ]);
     expect(axiosMock.post.mock.calls[1]).toEqual([

@@ -113,6 +113,7 @@ export class AuthController {
 
       if (!user) {
         res
+          .status(status.NOT_FOUND)
           .clearCookie("access_token", this.cookieOptions)
           .clearCookie("refresh_token", this.cookieOptions)
           .json({ message: "User not found" });
@@ -146,7 +147,7 @@ export class AuthController {
 
       const decoded = jwt.verify(refreshToken, this.config.refreshSecret);
       const payload = decoded as JwtPayload & { id: string };
-      const newAccessToken = this.service.generateAccessToken(payload.id);
+      const newAccessToken = await this.service.generateAccessToken(payload.id);
 
       res.cookie("access_token", newAccessToken, this.cookieOptions);
       res.json({ message: "Access token renewed" });

@@ -12,10 +12,12 @@ export interface AuthenticatedRequest extends Request {
 export class AuthService {
   private config = Config.getInstance();
   private jwtSecret: string;
+  private refreshSecret: string;
 
   constructor() {
     this.config = Config.getInstance();
     this.jwtSecret = this.config.jwtSecret;
+    this.refreshSecret = this.config.refreshSecret;
   }
 
   public async setAuthUserRequest(
@@ -73,6 +75,16 @@ export class AuthService {
 
     return jwt.sign({ id: userId }, this.jwtSecret, {
       expiresIn: "2h",
+    });
+  }
+
+  public async generateRefreshToken(userId: string) {
+    if (!this.jwtSecret) {
+      throw new Error("JWT_SECRET is not set");
+    }
+
+    return jwt.sign({ id: userId }, this.refreshSecret, {
+      expiresIn: "7d",
     });
   }
 }

@@ -21,6 +21,7 @@ export default function Pagination({
     <ul className="pagination_list">
       {pages.map((page) => (
         <li
+          key={page}
           className={`pagination_list_item link ${
             page === currentPage ? "active" : ""
           }`}
@@ -29,7 +30,6 @@ export default function Pagination({
             type="button"
             aria-label={`To page ${page}`}
             className="pagination_list_item_button"
-            key={page}
             onClick={() => onPageChange(page)}
           >
             {page}

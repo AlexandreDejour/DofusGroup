@@ -1,19 +1,28 @@
 @use "../../assets/styles/variables";
 
 .pagination_list {
+  width: 100%;
   padding: 0;
   display: flex;
   justify-content: center;
   gap: 1%;
+  list-style: none;
 
   @media (max-width: 1023px) {
     margin-top: 2%;
   }
 
   &_item {
-    all: unset;
-    cursor: pointer;
-    padding: 1% 2%;
+    width: 5%;
+    padding: 0;
+    border: none;
     border-radius: 0.5rem;
+    cursor: pointer;
+
+    &_button {
+      all: unset;
+      width: 100%;
+      margin: 10% 0%;
+    }
   }
 }

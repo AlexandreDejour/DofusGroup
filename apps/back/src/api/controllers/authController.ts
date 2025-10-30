@@ -80,7 +80,7 @@ export class AuthController {
       const { password: _password, ...userWithoutPassword } = user;
 
       res
-        .cookie("token", accessToken, this.cookieOptions)
+        .cookie("access_token", accessToken, this.cookieOptions)
         .cookie("refresh_token", refreshToken, this.cookieOptions)
         .json(userWithoutPassword);
     } catch (error) {
@@ -89,7 +89,7 @@ export class AuthController {
   }
 
   public async apiMe(req: Request, res: Response, next: NextFunction) {
-    const token = req.cookies.token;
+    const token = req.cookies.access_token;
     if (!token) {
       res
         .status(status.UNAUTHORIZED)
@@ -113,7 +113,8 @@ export class AuthController {
 
       if (!user) {
         res
-          .clearCookie("token", this.cookieOptions)
+          .clearCookie("access_token", this.cookieOptions)
+          .clearCookie("refresh_token", this.cookieOptions)
           .json({ message: "User not found" });
         return;
       }
@@ -124,7 +125,8 @@ export class AuthController {
     } catch (error) {
       if (error instanceof jwt.TokenExpiredError) {
         res
-          .clearCookie("token", this.cookieOptions)
+          .clearCookie("access_token", this.cookieOptions)
+          .clearCookie("refresh_token", this.cookieOptions)
           .status(status.UNAUTHORIZED)
           .json({ message: "Token expired, please login." });
       } else {
@@ -136,7 +138,6 @@ export class AuthController {
   public async refreshToken(req: Request, res: Response) {
     try {
       const refreshToken = req.cookies.refresh_token;
-      console.log("refreshToken", refreshToken);
 
       if (!refreshToken) {
         res.status(status.UNAUTHORIZED).json({ message: "No refresh token" });
@@ -238,8 +239,8 @@ export class AuthController {
 
   public logout(_req: Request, res: Response, _next: NextFunction) {
     res
-      .clearCookie("token", this.cookieOptions)
-      .clearCookie("resh_token", this.cookieOptions)
+      .clearCookie("access_token", this.cookieOptions)
+      .clearCookie("refresh_token", this.cookieOptions)
       .json({ message: "Successfully logout" });
   }
 }

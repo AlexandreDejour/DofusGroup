@@ -166,7 +166,7 @@ describe("characterRouter", () => {
       //WHEN
       const res = await request(app)
         .post(`/user/${userId}/character`)
-        .set("Cookie", [`token=${token}`]);
+        .set("Cookie", [`access_token=${token}`]);
       //THEN
       expect(controller.post).toHaveBeenCalled();
       expect(receivedReq?.params.userId).toBe(userId);
@@ -179,7 +179,7 @@ describe("characterRouter", () => {
 
       const res = await request(app)
         .post(`/user/${userId}/character`)
-        .set("Cookie", [`token=${token}`]);
+        .set("Cookie", [`access_token=${token}`]);
 
       expect(controller.post).toHaveBeenCalled();
       expect(res.status).toBe(status.NOT_FOUND);
@@ -189,7 +189,7 @@ describe("characterRouter", () => {
     it("Excluded bad request when id isn't a UUID.", async () => {
       const res = await request(app)
         .post("/user/1234/character")
-        .set("Cookie", [`token=${token}`]);
+        .set("Cookie", [`access_token=${token}`]);
 
       expect(controller.post).not.toHaveBeenCalled();
       expect(res.status).toBe(status.BAD_REQUEST);
@@ -200,7 +200,7 @@ describe("characterRouter", () => {
 
       const res = await request(app)
         .post(`/user/${otherUserId}/character`)
-        .set("Cookie", [`token=${token}`]);
+        .set("Cookie", [`access_token=${token}`]);
 
       expect(controller.post).not.toHaveBeenCalled();
       expect(res.status).toBe(status.FORBIDDEN);
@@ -215,7 +215,7 @@ describe("characterRouter", () => {
       //WHEN
       const res = await request(app)
         .patch(`/user/${userId}/character/${characterId}`)
-        .set("Cookie", [`token=${token}`]);
+        .set("Cookie", [`access_token=${token}`]);
       //THEN
       expect(controller.update).toHaveBeenCalled();
       expect(receivedReq?.params.userId).toBe(userId);
@@ -229,7 +229,7 @@ describe("characterRouter", () => {
 
       const res = await request(app)
         .patch(`/user/${userId}/character/${characterId}`)
-        .set("Cookie", [`token=${token}`]);
+        .set("Cookie", [`access_token=${token}`]);
 
       expect(controller.update).toHaveBeenCalled();
       expect(res.status).toBe(status.NOT_FOUND);
@@ -239,7 +239,7 @@ describe("characterRouter", () => {
     it("Excluded bad request when id isn't a UUID.", async () => {
       const res = await request(app)
         .patch("/user/1234/character/toto")
-        .set("Cookie", [`token=${token}`]);
+        .set("Cookie", [`access_token=${token}`]);
 
       expect(controller.update).not.toHaveBeenCalled();
       expect(res.status).toBe(status.BAD_REQUEST);
@@ -250,7 +250,7 @@ describe("characterRouter", () => {
 
       const res = await request(app)
         .patch(`/user/${otherUserId}/character/${characterId}`)
-        .set("Cookie", [`token=${token}`]);
+        .set("Cookie", [`access_token=${token}`]);
 
       expect(controller.update).not.toHaveBeenCalled();
       expect(res.status).toBe(status.FORBIDDEN);
@@ -265,7 +265,7 @@ describe("characterRouter", () => {
       //WHEN
       const res = await request(app)
         .delete(`/user/${userId}/character/${characterId}`)
-        .set("Cookie", [`token=${token}`]);
+        .set("Cookie", [`access_token=${token}`]);
       //THEN
       expect(controller.delete).toHaveBeenCalled();
       expect(receivedReq?.params.userId).toBe(userId);
@@ -279,7 +279,7 @@ describe("characterRouter", () => {
 
       const res = await request(app)
         .delete(`/user/${userId}/character/${characterId}`)
-        .set("Cookie", [`token=${token}`]);
+        .set("Cookie", [`access_token=${token}`]);
 
       expect(controller.delete).toHaveBeenCalled();
       expect(res.status).toBe(status.NOT_FOUND);
@@ -289,7 +289,7 @@ describe("characterRouter", () => {
     it("Excluded bad request when id isn't a UUID.", async () => {
       const res = await request(app)
         .delete("/user/1234/character/toto")
-        .set("Cookie", [`token=${token}`]);
+        .set("Cookie", [`access_token=${token}`]);
 
       expect(controller.delete).not.toHaveBeenCalled();
       expect(res.status).toBe(status.BAD_REQUEST);
@@ -300,7 +300,7 @@ describe("characterRouter", () => {
 
       const res = await request(app)
         .delete(`/user/${otherUserId}/character/${characterId}`)
-        .set("Cookie", [`token=${token}`]);
+        .set("Cookie", [`access_token=${token}`]);
 
       expect(controller.delete).not.toHaveBeenCalled();
       expect(res.status).toBe(status.FORBIDDEN);

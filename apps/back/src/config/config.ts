@@ -14,6 +14,7 @@ export class Config {
   readonly cryptoAlgorithm: string;
   readonly cryptoKey: string;
   readonly jwtSecret: string;
+  readonly refreshSecret: string;
 
   private constructor() {
     this.environment = process.env.NODE_ENV as string;
@@ -23,6 +24,7 @@ export class Config {
     this.cryptoAlgorithm = process.env.CRYPTO_ALGORITHM as string;
     this.cryptoKey = process.env.CRYPTO_KEY as string;
     this.jwtSecret = process.env.JWT_SECRET as string;
+    this.refreshSecret = process.env.REFRESH_SECRET as string;
   }
 
   public static getInstance(): Config {
@@ -42,5 +44,7 @@ export class Config {
     if (!config.cryptoAlgorithm)
       throw new Error("CRYPTO_ALGORITHM is required");
     if (!config.cryptoKey) throw new Error("CRYPTO_KEY is required");
+    if (!config.jwtSecret) throw new Error("JWT_SECRET is required");
+    if (!config.refreshSecret) throw new Error("REFRESH_SECRET is required");
   }
 }

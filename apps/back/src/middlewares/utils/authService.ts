@@ -79,8 +79,8 @@ export class AuthService {
   }
 
   public async generateRefreshToken(userId: string) {
-    if (!this.jwtSecret) {
-      throw new Error("JWT_SECRET is not set");
+    if (!this.refreshSecret) {
+      throw new Error("REFRESH_SECRET is not set");
     }
 
     return jwt.sign({ id: userId }, this.refreshSecret, {

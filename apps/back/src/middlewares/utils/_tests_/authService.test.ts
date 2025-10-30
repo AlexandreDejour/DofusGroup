@@ -10,6 +10,7 @@ vi.mock("../../../config/config.js", () => ({
   Config: {
     getInstance: () => ({
       jwtSecret: "test-secret",
+      refreshSecret: "test-refresh",
     }),
   },
 }));
@@ -47,7 +48,7 @@ describe("AuthService", () => {
 
     it("Define req.userId if token is valid", async () => {
       const token = jwt.sign({ id: "user123" }, "test-secret");
-      req.cookies.token = token;
+      req.cookies.access_token = token;
 
       await authService.setAuthUserRequest(req, res, next);
 
@@ -57,7 +58,7 @@ describe("AuthService", () => {
 
     it("Call next(error) if Joi schema returns error", async () => {
       const token = jwt.sign({ id: "user123" }, "test-secret");
-      req.cookies.token = token;
+      req.cookies.access_token = token;
       // Joi schema return error
       const { jwtSchema } = await import("../../joi/schemas/auth.js");
       jwtSchema.validate = vi.fn(() => ({
@@ -75,7 +76,7 @@ describe("AuthService", () => {
     });
 
     it("Call next(error) if jwt.verify throw errro", async () => {
-      req.cookies.token = "invalid.token";
+      req.cookies.access_token = "invalid.token";
       vi.spyOn(jwt, "verify").mockImplementation(() => {
         throw new Error("jwt error");
       });
@@ -131,6 +132,23 @@ describe("AuthService", () => {
 
       await expect(authService.generateAccessToken("user123")).rejects.toThrow(
         "JWT_SECRET is not set",
+      );
+    });
+  });
+
+  describe("generateRefreshToken", () => {
+    it("Generate valid token", async () => {
+      const token = await authService.generateRefreshToken("user123");
+      const payload = jwt.verify(token, "test-refresh");
+
+      expect(payload).toMatchObject({ id: "user123" });
+    });
+
+    it("throw error if refreshSecret is missing", async () => {
+      authService["refreshSecret"] = undefined as any;
+
+      await expect(authService.generateRefreshToken("user123")).rejects.toThrow(
+        "REFRESH_SECRET is not set",
       );
     });
   });

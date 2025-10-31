@@ -21,4 +21,7 @@ export type AuthUser = User & {
 export type UserBodyData = Omit<User, "id"> & {
   password: string;
   mail: string;
+  is_verified: boolean;
+  verification_token: string;
+  verification_expires_at: Date;
 };

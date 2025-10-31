@@ -5,23 +5,30 @@ import createHttpError from "http-errors";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import { CookieOptions, NextFunction, Request, Response } from "express";
 
-import { Config } from "../../config/config.js";
-import { AuthenticatedRequest } from "../../middlewares/utils/authService.js";
 import { AuthUser } from "../../types/user.js";
-import { authUserSchema } from "../../middlewares/joi/schemas/auth.js";
-import { AuthRepository } from "../../middlewares/repository/authRepository.js";
+import { Config } from "../../config/config.js";
 import { AuthService } from "../../middlewares/utils/authService.js";
+import { authUserSchema } from "../../middlewares/joi/schemas/auth.js";
+import { MailService } from "../../middlewares/nodemailer/nodemailer.js";
+import { AuthenticatedRequest } from "../../middlewares/utils/authService.js";
+import { AuthRepository } from "../../middlewares/repository/authRepository.js";
 
 export class AuthController {
   private config: Config;
   private service: AuthService;
+  private mailService: MailService;
   private repository: AuthRepository;
   private cookieOptions: CookieOptions;
 
-  public constructor(service: AuthService, repository: AuthRepository) {
+  public constructor(
+    service: AuthService,
+    repository: AuthRepository,
+    mailService: MailService,
+  ) {
     this.config = Config.getInstance();
     this.service = service;
     this.repository = repository;
+    this.mailService = mailService;
     this.cookieOptions = {
       httpOnly: true,
       secure: this.config.environment === "production",
@@ -33,6 +40,7 @@ export class AuthController {
   }
 
   public async register(req: Request, res: Response, next: NextFunction) {
+    const language = req.headers["accept-language"]?.split(",")[0] || "fr";
     const username = req.body.username;
 
     try {
@@ -50,7 +58,11 @@ export class AuthController {
 
       const newUser: AuthUser = await this.repository.register(userData);
 
-      res.status(status.CREATED).json(newUser);
+      await this.mailService.sendVerificationMail(
+        newUser.mail,
+        language,
+        token,
+      );
     } catch (error) {
       next(error);
     }

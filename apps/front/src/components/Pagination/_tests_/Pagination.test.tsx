@@ -43,8 +43,9 @@ describe("Pagination", () => {
 
   it("Display active page with right properties", () => {
     renderPagination({ totalPages: 5, currentPage: 3 });
-    const activePage = screen.getByText("3");
-    expect(activePage).toHaveClass("active");
+    const activeButton = screen.getByRole("button", { name: "To page 3" });
+    const liElement = activeButton.closest("li");
+    expect(liElement).toHaveClass("active");
   });
 
   it("Call onPageChange with the right page number on click", () => {
@@ -63,8 +64,9 @@ describe("Pagination", () => {
 
   it("Work with different totalPages and current pages", () => {
     renderPagination({ totalPages: 7, currentPage: 5 });
-    const activePage = screen.getByText("5");
-    expect(activePage).toHaveClass("active");
+    const activeButton = screen.getByRole("button", { name: "To page 5" });
+    const liElement = activeButton.closest("li");
+    expect(liElement).toHaveClass("active");
     expect(screen.getAllByRole("button")).toHaveLength(7);
   });
 });

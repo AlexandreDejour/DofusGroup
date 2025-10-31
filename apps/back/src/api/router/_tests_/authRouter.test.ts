@@ -139,7 +139,7 @@ describe("authRouter", () => {
       // WHEN
       const res = await request(app)
         .get("/auth/me")
-        .set("Cookie", [`token=${token}`]);
+        .set("Cookie", [`access_token=${token}`]);
       // THEN
       expect(controller.apiMe).toHaveBeenCalled();
       expect(res.status).toBe(status.OK);
@@ -151,7 +151,7 @@ describe("authRouter", () => {
 
       const res = await request(app)
         .get("/auth/me")
-        .set("Cookie", [`token=${token}`]);
+        .set("Cookie", [`access_token=${token}`]);
 
       expect(controller.apiMe).toHaveBeenCalled();
       expect(res.status).toBe(status.NOT_FOUND);
@@ -166,7 +166,7 @@ describe("authRouter", () => {
       //WHEN
       const res = await request(app)
         .get(`/auth/${userId}/account`)
-        .set("Cookie", [`token=${token}`]);
+        .set("Cookie", [`access_token=${token}`]);
       //THEN
       expect(controller.getAccount).toHaveBeenCalled();
       expect(receivedReq?.params.userId).toBe(userId);
@@ -179,7 +179,7 @@ describe("authRouter", () => {
 
       const res = await request(app)
         .get(`/auth/${userId}/account`)
-        .set("Cookie", [`token=${token}`]);
+        .set("Cookie", [`access_token=${token}`]);
 
       expect(controller.getAccount).toHaveBeenCalled();
       expect(res.status).toBe(status.NOT_FOUND);

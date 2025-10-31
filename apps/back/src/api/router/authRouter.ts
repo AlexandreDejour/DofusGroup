@@ -44,6 +44,10 @@ export function createAuthRouter(
     controller.apiMe(req, res, next);
   });
 
+  router.post("/auth/refresh-token", (req, res) => {
+    controller.refreshToken(req, res);
+  });
+
   router.get(
     "/auth/:userId/account",
     validateUUID,

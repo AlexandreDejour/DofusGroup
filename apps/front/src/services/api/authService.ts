@@ -49,11 +49,13 @@ export class AuthService {
     }
   }
 
-  public async apiMe(): Promise<AuthUser> {
+  public async apiMe(): Promise<AuthUser | null> {
     try {
       const response = await this.axios.get<AuthUser>("/auth/me", {
         withCredentials: true,
       });
+
+      if (response.status === 401) return null;
 
       return response.data;
     } catch (error) {

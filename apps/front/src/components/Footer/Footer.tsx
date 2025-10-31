@@ -100,6 +100,7 @@ export default function Footer() {
         >
           <ReactCountryFlag
             countryCode="FR"
+            alt={t("common.flag.french")}
             svg
             style={{ width: "50%", height: "100%" }}
           />
@@ -113,6 +114,7 @@ export default function Footer() {
         >
           <ReactCountryFlag
             countryCode="GB"
+            alt={t("common.flag.english")}
             svg
             style={{ width: "50%", height: "100%" }}
           />

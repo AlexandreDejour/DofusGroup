@@ -20,17 +20,21 @@ export default function Pagination({
   return (
     <ul className="pagination_list">
       {pages.map((page) => (
-        <button
-          type="button"
-          aria-label={`To page ${page}`}
+        <li
+          key={page}
           className={`pagination_list_item link ${
             page === currentPage ? "active" : ""
           }`}
-          key={page}
-          onClick={() => onPageChange(page)}
         >
-          {page}
-        </button>
+          <button
+            type="button"
+            aria-label={`To page ${page}`}
+            className="pagination_list_item_button"
+            onClick={() => onPageChange(page)}
+          >
+            {page}
+          </button>
+        </li>
       ))}
     </ul>
   );

@@ -76,10 +76,12 @@ export class AuthController {
       }
 
       const accessToken = await this.service.generateAccessToken(user.id);
+      const refreshToken = await this.service.generateRefreshToken(user.id);
       const { password: _password, ...userWithoutPassword } = user;
 
       res
-        .cookie("token", accessToken, this.cookieOptions)
+        .cookie("access_token", accessToken, this.cookieOptions)
+        .cookie("refresh_token", refreshToken, this.cookieOptions)
         .json(userWithoutPassword);
     } catch (error) {
       next(error);
@@ -87,10 +89,12 @@ export class AuthController {
   }
 
   public async apiMe(req: Request, res: Response, next: NextFunction) {
-    const token = req.cookies.token;
+    const token = req.cookies.access_token;
     if (!token) {
-      const error = createHttpError(status.UNAUTHORIZED, "Unauthorized access");
-      return next(error);
+      res
+        .status(status.UNAUTHORIZED)
+        .json({ user: null, message: "No token, please login" });
+      return;
     }
 
     try {
@@ -108,22 +112,56 @@ export class AuthController {
       const user = await this.repository.findOneById(payload.id);
 
       if (!user) {
-        const error = createHttpError(status.NOT_FOUND, "User not found");
-        return next(error);
+        res
+          .status(status.NOT_FOUND)
+          .clearCookie("access_token", this.cookieOptions)
+          .clearCookie("refresh_token", this.cookieOptions)
+          .json({ message: "User not found" });
+        return;
       }
 
       const { password: _password, ...userWithoutPassword } = user;
 
       res.json(userWithoutPassword);
-      return;
     } catch (error) {
-      next(error);
+      if (error instanceof jwt.TokenExpiredError) {
+        res
+          .clearCookie("access_token", this.cookieOptions)
+          .clearCookie("refresh_token", this.cookieOptions)
+          .status(status.UNAUTHORIZED)
+          .json({ message: "Token expired, please login." });
+      } else {
+        next(error);
+      }
+    }
+  }
+
+  public async refreshToken(req: Request, res: Response) {
+    try {
+      const refreshToken = req.cookies.refresh_token;
+
+      if (!refreshToken) {
+        res.status(status.UNAUTHORIZED).json({ message: "No refresh token" });
+        return;
+      }
+
+      const decoded = jwt.verify(refreshToken, this.config.refreshSecret);
+      const payload = decoded as JwtPayload & { id: string };
+      const newAccessToken = await this.service.generateAccessToken(payload.id);
+
+      res.cookie("access_token", newAccessToken, this.cookieOptions);
+      res.json({ message: "Access token renewed" });
+    } catch (error) {
+      res.clearCookie("refresh_token", this.cookieOptions);
+      res
+        .status(status.UNAUTHORIZED)
+        .json({ message: "Invalid or expired refresh token" });
     }
   }
 
   public async isPasswordMatch(
     req: AuthenticatedRequest,
-    res: Response,
+    _res: Response,
     next: NextFunction,
   ) {
     if (!req.body.password) {
@@ -201,7 +239,9 @@ export class AuthController {
   }
 
   public logout(_req: Request, res: Response, _next: NextFunction) {
-    res.clearCookie("token", this.cookieOptions);
-    res.json({ message: "Successfully logout" });
+    res
+      .clearCookie("access_token", this.cookieOptions)
+      .clearCookie("refresh_token", this.cookieOptions)
+      .json({ message: "Successfully logout" });
   }
 }

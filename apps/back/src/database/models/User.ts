@@ -22,8 +22,8 @@ export default class UserEntity extends Model<
   declare public password: string;
   declare public mail: string;
   declare public is_verified: boolean;
-  declare public verification_token: string;
-  declare public verification_expires_at: Date;
+  declare public verification_token: string | null;
+  declare public verification_expires_at: Date | null;
 
   declare public events?: Event[];
   declare public comments?: Comment[];

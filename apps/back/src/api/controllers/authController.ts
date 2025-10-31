@@ -1,3 +1,4 @@
+import crypto from "crypto";
 import argon2 from "argon2";
 import status from "http-status";
 import createHttpError from "http-errors";
@@ -43,7 +44,11 @@ export class AuthController {
         return next(error);
       }
 
-      const newUser: AuthUser = await this.repository.register(req.body);
+      const token = crypto.randomBytes(32).toString("hex");
+      const expirationDate = new Date(Date.now() + 24 * 60 * 60 * 1000); //24h
+      const userData = { token, expirationDate, ...req.body };
+
+      const newUser: AuthUser = await this.repository.register(userData);
 
       res.status(status.CREATED).json(newUser);
     } catch (error) {

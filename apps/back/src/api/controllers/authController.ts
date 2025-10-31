@@ -12,23 +12,27 @@ import { authUserSchema } from "../../middlewares/joi/schemas/auth.js";
 import { MailService } from "../../middlewares/nodemailer/nodemailer.js";
 import { AuthenticatedRequest } from "../../middlewares/utils/authService.js";
 import { AuthRepository } from "../../middlewares/repository/authRepository.js";
+import { UserRepository } from "../../middlewares/repository/userRepository.js";
 
 export class AuthController {
   private config: Config;
   private service: AuthService;
   private mailService: MailService;
   private repository: AuthRepository;
+  private userRepository: UserRepository;
   private cookieOptions: CookieOptions;
 
   public constructor(
     service: AuthService,
     repository: AuthRepository,
+    userRepository: UserRepository,
     mailService: MailService,
   ) {
     this.config = Config.getInstance();
     this.service = service;
-    this.repository = repository;
     this.mailService = mailService;
+    this.repository = repository;
+    this.userRepository = userRepository;
     this.cookieOptions = {
       httpOnly: true,
       secure: this.config.environment === "production",
@@ -63,6 +67,42 @@ export class AuthController {
         language,
         token,
       );
+
+      res.status(status.CREATED).json(newUser);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  public async verifyEmail(req: Request, res: Response, next: NextFunction) {
+    const token = req.query.token as string;
+
+    try {
+      if (!token)
+        return res
+          .status(status.BAD_REQUEST)
+          .json({ message: "Token not found" });
+
+      const user = await this.repository.findOneByToken(token);
+
+      if (!user)
+        return res.status(status.NOT_FOUND).json({ message: "User not found" });
+
+      if (
+        user.verification_expires_at &&
+        user.verification_expires_at < new Date()
+      )
+        return res
+          .status(status.BAD_REQUEST)
+          .json({ message: "Token expired" });
+
+      user.is_verified = true;
+      user.verification_token = null;
+      user.verification_expires_at = null;
+
+      await this.userRepository.update(user.id, user);
+
+      res.redirect("https://dofusgroup.fr/email-verified");
     } catch (error) {
       next(error);
     }

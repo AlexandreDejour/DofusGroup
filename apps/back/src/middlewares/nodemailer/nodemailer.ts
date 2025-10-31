@@ -18,6 +18,10 @@ export class MailService {
         user: this.config.smtpUser,
         pass: this.config.smtpPassword,
       },
+      tls: {
+        // ⚡ ignore auto signed certs in dev
+        rejectUnauthorized: this.config.environment !== "development",
+      },
     });
   }
 

@@ -16,12 +16,9 @@ export type UserEnriched = User & {
 export type AuthUser = User & {
   password: string;
   mail: string;
+  is_verified: boolean;
+  verification_token: string | null;
+  verification_expires_at: Date | null;
 };
 
-export type UserBodyData = Omit<User, "id"> & {
-  password: string;
-  mail: string;
-  is_verified: boolean;
-  verification_token: string;
-  verification_expires_at: Date;
-};
+export type UserBodyData = Omit<AuthUser, "id">;

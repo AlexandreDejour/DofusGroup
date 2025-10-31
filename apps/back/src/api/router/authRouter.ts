@@ -26,6 +26,10 @@ export function createAuthRouter(
     },
   );
 
+  router.get("/auth/verify-email", (req, res, next) =>
+    controller.verifyEmail(req, res, next),
+  );
+
   router.post(
     "/auth/login",
     requestLimiter,

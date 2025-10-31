@@ -71,6 +71,7 @@ services:
       - MAIL_DOMAIN=dofusgroup.fr
       # SMTP account
       - SMTP_USER=${SMTP_USER}
+      - ALLOWED_SENDER_DOMAINS=dofusgroup.fr
     ports:
       - "465:465" # SMTP for send secure: true
       - "25:25" # SMTP standard (optionnel)

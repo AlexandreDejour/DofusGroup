@@ -26,6 +26,10 @@
     "duration": "Durée",
     "durationInMin": "Durée en minutes",
     "discussion": "Discussion",
+    "flag": {
+      "english": "Drapeau anglais",
+      "french": "Drapeau français"
+    },
     "home": "Acceuil",
     "join": "Rejoindre",
     "level": "Niveau",

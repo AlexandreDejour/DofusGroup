@@ -27,7 +27,7 @@ export async function up(queryInterface, Sequelize) {
       {
         id: Sequelize.literal("gen_random_uuid()"),
         name: "XP",
-        color: "#3498db",
+        color: "#135480",
         created_at: new Date(),
         updated_at: new Date(),
       },

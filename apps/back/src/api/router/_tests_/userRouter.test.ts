@@ -162,7 +162,7 @@ describe("userRouter", () => {
           mail: "mail@example.com",
         })
         .set("Content-Type", "application/json")
-        .set("Cookie", [`token=${token}`]);
+        .set("Cookie", [`access_token=${token}`]);
       //THEN
       expect(controller.update).toHaveBeenCalled();
       expect(receivedReq?.params.userId).toBe(userId);
@@ -183,7 +183,7 @@ describe("userRouter", () => {
           mail: "mail@example.com",
         })
         .set("Content-Type", "application/json")
-        .set("Cookie", [`token=${token}`]);
+        .set("Cookie", [`access_token=${token}`]);
 
       expect(controller.update).toHaveBeenCalled();
       expect(res.status).toBe(status.NOT_FOUND);
@@ -204,7 +204,7 @@ describe("userRouter", () => {
 
       const res = await request(app)
         .patch(`/user/${otherUserId}`)
-        .set("Cookie", [`token=${token}`]);
+        .set("Cookie", [`access_token=${token}`]);
 
       expect(controller.update).not.toHaveBeenCalled();
       expect(res.status).toBe(status.FORBIDDEN);
@@ -219,7 +219,7 @@ describe("userRouter", () => {
       //WHEN
       const res = await request(app)
         .delete(`/user/${userId}`)
-        .set("Cookie", [`token=${token}`]);
+        .set("Cookie", [`access_token=${token}`]);
       //THEN
       expect(controller.delete).toHaveBeenCalled();
       expect(receivedReq?.params.userId).toBe(userId);
@@ -232,7 +232,7 @@ describe("userRouter", () => {
 
       const res = await request(app)
         .delete(`/user/${userId}`)
-        .set("Cookie", [`token=${token}`]);
+        .set("Cookie", [`access_token=${token}`]);
 
       expect(controller.delete).toHaveBeenCalled();
       expect(res.status).toBe(status.NOT_FOUND);
@@ -242,7 +242,7 @@ describe("userRouter", () => {
     it("Excluded bad request when id isn't a UUID.", async () => {
       const res = await request(app)
         .delete("/user/1234")
-        .set("Cookie", [`token=${token}`]);
+        .set("Cookie", [`access_token=${token}`]);
 
       expect(controller.delete).not.toHaveBeenCalled();
       expect(res.status).toBe(status.BAD_REQUEST);
@@ -253,7 +253,7 @@ describe("userRouter", () => {
 
       const res = await request(app)
         .delete(`/user/${otherUserId}`)
-        .set("Cookie", [`token=${token}`]);
+        .set("Cookie", [`access_token=${token}`]);
 
       expect(controller.delete).not.toHaveBeenCalled();
       expect(res.status).toBe(status.FORBIDDEN);

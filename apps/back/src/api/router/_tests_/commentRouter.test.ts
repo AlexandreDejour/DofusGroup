@@ -179,7 +179,7 @@ describe("commentRouter", () => {
       //WHEN
       const res = await request(app)
         .post(`/user/${userId}/comment`)
-        .set("Cookie", [`token=${token}`]);
+        .set("Cookie", [`access_token=${token}`]);
       //THEN
       expect(controller.post).toHaveBeenCalled();
       expect(receivedReq?.params.userId).toBe(userId);
@@ -192,7 +192,7 @@ describe("commentRouter", () => {
 
       const res = await request(app)
         .post(`/user/${userId}/comment`)
-        .set("Cookie", [`token=${token}`]);
+        .set("Cookie", [`access_token=${token}`]);
 
       expect(controller.post).toHaveBeenCalled();
       expect(res.status).toBe(status.NOT_FOUND);
@@ -202,7 +202,7 @@ describe("commentRouter", () => {
     it("Excluded bad request when id isn't a UUID.", async () => {
       const res = await request(app)
         .post("/user/1234/comment")
-        .set("Cookie", [`token=${token}`]);
+        .set("Cookie", [`access_token=${token}`]);
 
       expect(controller.post).not.toHaveBeenCalled();
       expect(res.status).toBe(status.BAD_REQUEST);
@@ -213,7 +213,7 @@ describe("commentRouter", () => {
 
       const res = await request(app)
         .post(`/user/${otherUserId}/comment`)
-        .set("Cookie", [`token=${token}`]);
+        .set("Cookie", [`access_token=${token}`]);
 
       expect(controller.post).not.toHaveBeenCalled();
       expect(res.status).toBe(status.FORBIDDEN);
@@ -228,7 +228,7 @@ describe("commentRouter", () => {
       //WHEN
       const res = await request(app)
         .patch(`/user/${userId}/comment/${commentId}`)
-        .set("Cookie", [`token=${token}`]);
+        .set("Cookie", [`access_token=${token}`]);
       //THEN
       expect(controller.update).toHaveBeenCalled();
       expect(receivedReq?.params.userId).toBe(userId);
@@ -242,7 +242,7 @@ describe("commentRouter", () => {
 
       const res = await request(app)
         .patch(`/user/${userId}/comment/${commentId}`)
-        .set("Cookie", [`token=${token}`]);
+        .set("Cookie", [`access_token=${token}`]);
 
       expect(controller.update).toHaveBeenCalled();
       expect(res.status).toBe(status.NOT_FOUND);
@@ -252,7 +252,7 @@ describe("commentRouter", () => {
     it("Excluded bad request when id isn't a UUID.", async () => {
       const res = await request(app)
         .patch("/user/1234/comment/toto")
-        .set("Cookie", [`token=${token}`]);
+        .set("Cookie", [`access_token=${token}`]);
 
       expect(controller.update).not.toHaveBeenCalled();
       expect(res.status).toBe(status.BAD_REQUEST);
@@ -263,7 +263,7 @@ describe("commentRouter", () => {
 
       const res = await request(app)
         .patch(`/user/${otherUserId}/comment/${commentId}`)
-        .set("Cookie", [`token=${token}`]);
+        .set("Cookie", [`access_token=${token}`]);
 
       expect(controller.update).not.toHaveBeenCalled();
       expect(res.status).toBe(status.FORBIDDEN);
@@ -278,7 +278,7 @@ describe("commentRouter", () => {
       //WHEN
       const res = await request(app)
         .delete(`/user/${userId}/comment/${commentId}`)
-        .set("Cookie", [`token=${token}`]);
+        .set("Cookie", [`access_token=${token}`]);
       //THEN
       expect(controller.delete).toHaveBeenCalled();
       expect(receivedReq?.params.userId).toBe(userId);
@@ -292,7 +292,7 @@ describe("commentRouter", () => {
 
       const res = await request(app)
         .delete(`/user/${userId}/comment/${commentId}`)
-        .set("Cookie", [`token=${token}`]);
+        .set("Cookie", [`access_token=${token}`]);
 
       expect(controller.delete).toHaveBeenCalled();
       expect(res.status).toBe(status.NOT_FOUND);
@@ -302,7 +302,7 @@ describe("commentRouter", () => {
     it("Excluded bad request when id isn't a UUID.", async () => {
       const res = await request(app)
         .delete("/user/1234/comment/toto")
-        .set("Cookie", [`token=${token}`]);
+        .set("Cookie", [`access_token=${token}`]);
 
       expect(controller.delete).not.toHaveBeenCalled();
       expect(res.status).toBe(status.BAD_REQUEST);
@@ -313,7 +313,7 @@ describe("commentRouter", () => {
 
       const res = await request(app)
         .delete(`/user/${otherUserId}/comment/${commentId}`)
-        .set("Cookie", [`token=${token}`]);
+        .set("Cookie", [`access_token=${token}`]);
 
       expect(controller.delete).not.toHaveBeenCalled();
       expect(res.status).toBe(status.FORBIDDEN);

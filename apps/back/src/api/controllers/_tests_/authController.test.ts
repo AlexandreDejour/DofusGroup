@@ -28,9 +28,13 @@ describe("AuthController", () => {
   const mockRegister = vi.spyOn(AuthRepository.prototype, "register");
 
   vi.mock("../../../middlewares/utils/authService.js");
-  const mockGenerateAcessToken = vi.spyOn(
+  const mockGenerateAccessToken = vi.spyOn(
     AuthService.prototype,
     "generateAccessToken",
+  );
+  const mockGenerateRefreshToken = vi.spyOn(
+    AuthService.prototype,
+    "generateRefreshToken",
   );
 
   vi.mock("../../../middlewares/joi/schemas/auth.js", () => ({
@@ -49,7 +53,7 @@ describe("AuthController", () => {
   req = {};
   res = {
     cookie: vi.fn().mockReturnThis(),
-    clearCookie: vi.fn(),
+    clearCookie: vi.fn().mockReturnThis(),
     json: vi.fn(),
     status: vi.fn().mockReturnThis(),
   };
@@ -150,14 +154,14 @@ describe("AuthController", () => {
       const { password: _password, ...userWithoutPassword } = mockUser;
 
       (argon2.verify as Mock).mockResolvedValue(true);
-      mockGenerateAcessToken.mockResolvedValue(mockToken);
+      mockGenerateAccessToken.mockResolvedValue(mockToken);
       mockFindByMail.mockResolvedValue(mockUser);
       // WHEN
       await underTest.login(req as Request, res as Response, next);
       //THEN
       expect(mockFindByMail).toHaveBeenCalledWith("toto@mail.com");
       expect(res.cookie).toHaveBeenCalledWith(
-        "token",
+        "access_token",
         mockToken,
         expect.any(Object),
       );
@@ -227,19 +231,15 @@ describe("AuthController", () => {
 
       await underTest.apiMe(req as Request, res as Response, next);
 
-      expect(next).toHaveBeenCalled();
-      const err = next.mock.calls[0][0];
-      expect(err).toBeInstanceOf(Error);
-      expect(err).toEqual(
-        expect.objectContaining({
-          status: status.UNAUTHORIZED,
-          message: "Unauthorized access",
-        }),
-      );
+      expect(res.status).toHaveBeenCalledWith(status.UNAUTHORIZED);
+      expect(res.json).toHaveBeenCalledWith({
+        user: null,
+        message: "No token, please login",
+      });
     });
 
     it("Return 400 in case of invalid token (payload string)", async () => {
-      req.cookies = { token: "invalid.token" };
+      req.cookies = { access_token: "invalid.token" };
 
       jwtVerifyMock.mockReturnValue("invalid_payload");
 
@@ -257,7 +257,7 @@ describe("AuthController", () => {
     });
 
     it("Return 404 if user not found", async () => {
-      req.cookies = { token: "valid.token" };
+      req.cookies = { access_token: "valid.token" };
 
       jwtVerifyMock.mockReturnValue({
         id: "3521dd0c-c303-4239-a545-10e5476abe2a",
@@ -266,19 +266,23 @@ describe("AuthController", () => {
 
       await underTest.apiMe(req as Request, res as Response, next);
 
-      expect(next).toHaveBeenCalled();
-      const err = next.mock.calls[0][0];
-      expect(err).toBeInstanceOf(Error);
-      expect(err).toEqual(
-        expect.objectContaining({
-          status: status.NOT_FOUND,
-          message: "User not found",
-        }),
-      );
+      expect(res.clearCookie).toHaveBeenCalledWith("access_token", {
+        httpOnly: true,
+        secure: false,
+        sameSite: "lax",
+        path: "/",
+      });
+      expect(res.clearCookie).toHaveBeenCalledWith("refresh_token", {
+        httpOnly: true,
+        secure: false,
+        sameSite: "lax",
+        path: "/",
+      });
+      expect(res.json).toHaveBeenCalledWith({ message: "User not found" });
     });
 
     it("Return user without password in case of valid token", async () => {
-      req.cookies = { token: "valid.token" };
+      req.cookies = { access_token: "valid.token" };
 
       jwtVerifyMock.mockReturnValue({
         id: "3521dd0c-c303-4239-a545-10e5476abe2a",
@@ -294,7 +298,7 @@ describe("AuthController", () => {
     });
 
     it("Call next(error) in case of exception", async () => {
-      req.cookies = { token: "valid.token" };
+      req.cookies = { access_token: "valid.token" };
       const error = new Error("jwt error");
 
       jwtVerifyMock.mockImplementation(() => {
@@ -307,260 +311,57 @@ describe("AuthController", () => {
     });
   });
 
-  // --- IS PASSWORD MATCH ---
-  describe("isPasswordMatch", () => {
-    const userId = "3521dd0c-c303-4239-a545-10e5476abe2a";
-    const mockUser: AuthUser = {
-      id: userId,
-      username: "user",
-      password: "hashedpass",
-      mail: "user@mail.com",
-    };
-
-    it("Call next() directly if password not provided", async () => {
-      const req: Partial<AuthenticatedRequest> = {
-        body: {},
-      };
-
-      await underTest.isPasswordMatch(
-        req as AuthenticatedRequest,
-        res as Response,
-        next,
-      );
-
-      expect(next).toHaveBeenCalled();
-      expect(res.status).not.toHaveBeenCalled();
-    });
-
-    it("Return 400 if userId invalid", async () => {
-      const req: Partial<AuthenticatedRequest> = {
-        body: { password: "newpass", oldPassword: "oldpass" },
-        userId: "invalid-id",
-      };
-
-      (authUserSchema.validate as Mock).mockReturnValue({
-        value: {},
-        error: { message: "Invalid or missing user ID" },
-      });
-
-      await underTest.isPasswordMatch(
-        req as AuthenticatedRequest,
-        res as Response,
-        next,
-      );
-
-      expect(next).toHaveBeenCalled();
-      const err = next.mock.calls[0][0];
-      expect(err).toBeInstanceOf(Error);
-      expect(err).toEqual(
-        expect.objectContaining({
-          status: status.BAD_REQUEST,
-          message: "Invalid or missing user ID",
-        }),
-      );
-    });
-
-    it("Return 404 if user not found", async () => {
-      const req: Partial<AuthenticatedRequest> = {
-        body: { password: "newpass", oldPassword: "oldpass" },
-        userId,
-      };
-
-      (authUserSchema.validate as Mock).mockReturnValue({
-        value: { userId },
-        error: undefined,
-      });
-      mockFindById.mockResolvedValue(null);
-
-      await underTest.isPasswordMatch(
-        req as AuthenticatedRequest,
-        res as Response,
-        next,
-      );
-
-      expect(next).toHaveBeenCalled();
-      const err = next.mock.calls[0][0];
-      expect(err).toBeInstanceOf(Error);
-      expect(err).toEqual(
-        expect.objectContaining({
-          status: status.NOT_FOUND,
-          message: "User not found",
-        }),
-      );
-    });
-
-    it("Return 401 if old password doesn't match", async () => {
-      const req: Partial<AuthenticatedRequest> = {
-        body: { password: "newpass", oldPassword: "wrongpass" },
-        userId,
-      };
-
-      (authUserSchema.validate as Mock).mockReturnValue({
-        value: { userId },
-        error: undefined,
-      });
-      mockFindById.mockResolvedValue(mockUser);
-      (argon2.verify as Mock).mockResolvedValue(false);
-
-      await underTest.isPasswordMatch(
-        req as AuthenticatedRequest,
-        res as Response,
-        next,
-      );
-
-      expect(next).toHaveBeenCalled();
-      const err = next.mock.calls[0][0];
-      expect(err).toBeInstanceOf(Error);
-      expect(err).toEqual(
-        expect.objectContaining({
-          status: status.UNAUTHORIZED,
-          message: "Old password doesn't match current password",
-        }),
-      );
-    });
-
-    it("Call next() if old password matches", async () => {
-      const req: Partial<AuthenticatedRequest> = {
-        body: { password: "newpass", oldPassword: "correctpass" },
-        userId,
-      };
-
-      (authUserSchema.validate as Mock).mockReturnValue({
-        value: { userId },
-        error: undefined,
-      });
-      mockFindById.mockResolvedValue(mockUser);
-      (argon2.verify as Mock).mockResolvedValue(true);
-
-      await underTest.isPasswordMatch(
-        req as AuthenticatedRequest,
-        res as Response,
-        next,
-      );
-
-      expect(next).toHaveBeenCalled();
-      expect(res.status).not.toHaveBeenCalled();
-    });
-
-    it("Call next(error) if exception thrown", async () => {
-      const req: Partial<AuthenticatedRequest> = {
-        body: { password: "newpass", oldPassword: "correctpass" },
-        userId,
-      };
-      const error = new Error("DB error");
-
-      (authUserSchema.validate as Mock).mockReturnValue({
-        value: { userId },
-        error: undefined,
-      });
-      mockFindById.mockRejectedValue(error);
-
-      await underTest.isPasswordMatch(
-        req as AuthenticatedRequest,
-        res as Response,
-        next,
-      );
-
-      expect(next).toHaveBeenCalledWith(error);
-    });
-  });
-
-  // --- API ME ---
-  describe("apiMe", () => {
-    const mockUser = {
-      id: "3521dd0c-c303-4239-a545-10e5476abe2a",
-      username: "user",
-      password: "hashedpass",
-      mail: "user@mail.com",
-    };
-    const userWithoutPassword = {
-      id: "3521dd0c-c303-4239-a545-10e5476abe2a",
-      username: "user",
-      mail: "user@mail.com",
-    };
-
-    it("Return 401 any token exist", async () => {
+  // --- REFRESH TOKEN ---
+  describe("refreshToken", () => {
+    it("Return 401 if refresh token missing", async () => {
       req.cookies = {};
 
-      await underTest.apiMe(req as Request, res as Response, next);
+      await underTest.refreshToken(req as Request, res as Response);
 
-      expect(next).toHaveBeenCalled();
-      const err = next.mock.calls[0][0];
-      expect(err).toBeInstanceOf(Error);
-      expect(err).toEqual(
-        expect.objectContaining({
-          status: status.UNAUTHORIZED,
-          message: "Unauthorized access",
-        }),
-      );
+      expect(res.status).toHaveBeenCalledWith(status.UNAUTHORIZED);
+      expect(res.json).toHaveBeenCalledWith({ message: "No refresh token" });
     });
 
-    it("Return 400 in case of invalid token (payload string)", async () => {
-      req.cookies = { token: "invalid.token" };
+    it("Renew access token and set cookie when refresh token valid", async () => {
+      const mockToken =
+        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxNWZmNDZiNS02MGYzLTRlODYtOThiYy1kYThmY2FhM2UyOWUiLCJpYXQiOjE3NTM2MzgxMjEsImV4cCI6MTc1MzY0NTMyMX0.L2D0FnDtNKSyv0_TaHXyznnD_08MJWeJaOw35BxWAUg";
 
-      jwtVerifyMock.mockReturnValue("invalid_payload");
+      const userId = "user-123";
+      req.cookies = { refresh_token: "valid.token" };
 
-      await underTest.apiMe(req as Request, res as Response, next);
+      jwtVerifyMock.mockReturnValue({ id: userId });
+      mockGenerateAccessToken.mockResolvedValue(mockToken);
 
-      expect(next).toHaveBeenCalled();
-      const err = next.mock.calls[0][0];
-      expect(err).toBeInstanceOf(Error);
-      expect(err).toEqual(
-        expect.objectContaining({
-          status: status.BAD_REQUEST,
-          message: "Invalid token payload",
-        }),
+      await underTest.refreshToken(req as Request, res as Response);
+
+      expect(mockGenerateAccessToken).toHaveBeenCalledWith(userId);
+      expect(res.cookie).toHaveBeenCalledWith(
+        "access_token",
+        mockToken,
+        expect.any(Object),
       );
-    });
-
-    it("Return 404 if user not found", async () => {
-      req.cookies = { token: "valid.token" };
-
-      jwtVerifyMock.mockReturnValue({
-        id: "3521dd0c-c303-4239-a545-10e5476abe2a",
+      expect(res.json).toHaveBeenCalledWith({
+        message: "Access token renewed",
       });
-      mockFindById.mockResolvedValue(null);
-
-      await underTest.apiMe(req as Request, res as Response, next);
-
-      expect(next).toHaveBeenCalled();
-      const err = next.mock.calls[0][0];
-      expect(err).toBeInstanceOf(Error);
-      expect(err).toEqual(
-        expect.objectContaining({
-          status: status.NOT_FOUND,
-          message: "User not found",
-        }),
-      );
     });
 
-    it("Return user without password in case of valid token", async () => {
-      req.cookies = { token: "valid.token" };
-
-      jwtVerifyMock.mockReturnValue({
-        id: "3521dd0c-c303-4239-a545-10e5476abe2a",
-      });
-      mockFindById.mockResolvedValue(mockUser);
-
-      await underTest.apiMe(req as Request, res as Response, next);
-
-      expect(res.json).toHaveBeenCalledWith(userWithoutPassword);
-      expect(res.status).not.toHaveBeenCalledWith(status.NOT_FOUND);
-      expect(res.status).not.toHaveBeenCalledWith(status.BAD_REQUEST);
-      expect(res.status).not.toHaveBeenCalledWith(status.UNAUTHORIZED);
-    });
-
-    it("Call next(error) in case of exception", async () => {
-      req.cookies = { token: "valid.token" };
-      const error = new Error("jwt error");
+    it("Clear refresh cookie and return 401 when token invalid/expired", async () => {
+      req.cookies = { refresh_token: "bad.token" };
 
       jwtVerifyMock.mockImplementation(() => {
-        throw error;
+        throw new Error("Invalid token");
       });
 
-      await underTest.apiMe(req as Request, res as Response, next);
+      await underTest.refreshToken(req as Request, res as Response);
 
-      expect(next).toHaveBeenCalledWith(error);
+      expect(res.clearCookie).toHaveBeenCalledWith(
+        "refresh_token",
+        expect.any(Object),
+      );
+      expect(res.status).toHaveBeenCalledWith(status.UNAUTHORIZED);
+      expect(res.json).toHaveBeenCalledWith({
+        message: "Invalid or expired refresh token",
+      });
     });
   });
 
@@ -830,7 +631,13 @@ describe("AuthController", () => {
     it("Return empty cookie", () => {
       underTest.logout(req as Request, res as Response, next);
 
-      expect(res.clearCookie).toHaveBeenCalledWith("token", {
+      expect(res.clearCookie).toHaveBeenCalledWith("access_token", {
+        httpOnly: true,
+        secure: false,
+        sameSite: "lax",
+        path: "/",
+      });
+      expect(res.clearCookie).toHaveBeenCalledWith("refresh_token", {
         httpOnly: true,
         secure: false,
         sameSite: "lax",

@@ -26,6 +26,10 @@
     "duration": "Duration",
     "durationInMin": "Duration in minutes",
     "discussion": "Discussion",
+    "flag": {
+      "english": "English flag",
+      "french": "French flag"
+    },
     "home": "Home",
     "join": "Join",
     "level": "Level",

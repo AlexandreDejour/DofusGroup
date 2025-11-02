@@ -57,8 +57,10 @@ export class AuthService {
       const response = await this.axios.post<AuthUser>("/auth/login", data, {
         withCredentials: true,
       });
+
       return response.data;
     } catch (error) {
+      console.log(error);
       handleApiError(error);
     }
   }

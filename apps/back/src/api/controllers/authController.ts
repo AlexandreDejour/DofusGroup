@@ -106,7 +106,7 @@ export class AuthController {
 
       await this.userRepository.update(user.id, user);
 
-      res.redirect("https://dofusgroup.fr/email-verified");
+      res.json({ message: "Validated email" });
     } catch (error) {
       next(error);
     }

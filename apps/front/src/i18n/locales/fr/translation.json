@@ -103,7 +103,7 @@
       "disconnected": "Vous avez été déconnecté(e)."
     },
     "prompt": {
-      "connect": "Votre compte a été créé avec succès. Veuillez vous connecter.",
+      "validateEmail": "Votre compte a été créé avec succès. Veuillez valider votre email.",
       "loginRequired": "Connexion requise !",
       "loginRequiredAction": "Cette action nécessite d'être connecté(e)."
     }

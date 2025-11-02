@@ -1,0 +1,10 @@
+{
+  "header": {
+    "title": "Validation d'email"
+  },
+  "message": {
+    "verified": "Votre email a été vérifié! Vous pouvez maintenant vous connecter.",
+    "notVerified": "Le lien de validation est invalide ou expiré.",
+    "waiting": "Vérification en cours..."
+  }
+}

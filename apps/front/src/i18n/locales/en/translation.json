@@ -106,7 +106,7 @@
     },
 
     "prompt": {
-      "connect": "Your account has been successfully created. Please log in.",
+      "validateEmail": "Your account has been successfully created. Please validate your email.",
       "loginRequired": "Login required !",
       "loginRequiredAction": "This action need to be login."
     }

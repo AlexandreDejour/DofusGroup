@@ -150,8 +150,8 @@ export default function ModalProvider({ children }: ModalProviderProps) {
 
           showSuccess(
             t("auth.success.register"),
-            t("auth.prompt.connect"),
-            6000,
+            t("auth.prompt.validateEmail"),
+            30000,
           );
         }
 

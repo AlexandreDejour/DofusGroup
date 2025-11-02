@@ -1,0 +1,10 @@
+{
+  "header": {
+    "title": "Email validation"
+  },
+  "message": {
+    "verified": "Your email has been checked! You can now login.",
+    "notVerified": "Validation link is unvalid or expired.",
+    "waiting": "Verification in progress..."
+  }
+}

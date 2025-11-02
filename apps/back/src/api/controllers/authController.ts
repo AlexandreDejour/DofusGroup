@@ -45,14 +45,22 @@ export class AuthController {
 
   public async register(req: Request, res: Response, next: NextFunction) {
     const language = req.headers["accept-language"]?.split(",")[0] || "fr";
-    const username = req.body.username;
+    const { username, mail } = req.body;
 
     try {
-      const isExist: AuthUser | null =
+      const isUsernameExist: AuthUser | null =
         await this.repository.findOneByUsername(username);
 
-      if (isExist) {
+      if (isUsernameExist) {
         const error = createHttpError(status.CONFLICT, "Username forbidden");
+        return next(error);
+      }
+
+      const isEmailExist: AuthUser | null =
+        await this.repository.findOneByMail(mail);
+
+      if (isEmailExist) {
+        const error = createHttpError(status.CONFLICT, "Email forbidden");
         return next(error);
       }
 

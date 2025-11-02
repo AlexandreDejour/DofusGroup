@@ -1,7 +1,8 @@
 import { describe, it, expect, vi, beforeEach, Mock } from "vitest";
 
-import status from "http-status";
+import crypto from "crypto";
 import argon2 from "argon2";
+import status from "http-status";
 import type { Request, Response } from "express";
 
 import { AuthUser } from "../../../types/user.js";
@@ -12,6 +13,8 @@ import {
 import { authUserSchema } from "../../../middlewares/joi/schemas/auth.js";
 import { AuthController } from "../authController.js";
 import { AuthRepository } from "../../../middlewares/repository/authRepository.js";
+import { UserRepository } from "../../../middlewares/repository/userRepository.js";
+import { MailService } from "../../../middlewares/nodemailer/nodemailer.js";
 
 describe("AuthController", () => {
   let req: Partial<Request>;
@@ -25,7 +28,17 @@ describe("AuthController", () => {
     "findOneByUsername",
   );
   const mockFindByMail = vi.spyOn(AuthRepository.prototype, "findOneByMail");
+  const mockFindByToken = vi.spyOn(AuthRepository.prototype, "findOneByToken");
   const mockRegister = vi.spyOn(AuthRepository.prototype, "register");
+
+  vi.mock("../../../middlewares/repository/userRepository.js");
+  const mockUpdate = vi.spyOn(UserRepository.prototype, "update");
+
+  vi.mock("../../../middlewares/nodemailer/nodemail.js");
+  const mockSendVerificationMail = vi.spyOn(
+    MailService.prototype,
+    "sendVerificationMail",
+  );
 
   vi.mock("../../../middlewares/utils/authService.js");
   const mockGenerateAccessToken = vi.spyOn(
@@ -42,6 +55,28 @@ describe("AuthController", () => {
       validate: vi.fn(),
     },
   }));
+
+  const fixedToken =
+    "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef";
+  vi.spyOn(crypto, "randomBytes").mockImplementation((size: number) => {
+    return Buffer.from(fixedToken, "hex"); // retourne toujours ton token fixe
+  });
+
+  const fixedNow = new Date("2025-11-03T14:18:43.000Z");
+  vi.spyOn(Date, "now").mockReturnValue(fixedNow.getTime());
+
+  vi.stubGlobal(
+    "Date",
+    class extends Date {
+      constructor(...args: any[]) {
+        if (args.length === 0) {
+          super(fixedNow.getTime());
+        } else {
+          super(...(args as [any])); // ou as any
+        }
+      }
+    },
+  );
 
   vi.mock("argon2", () => ({
     default: {
@@ -69,6 +104,8 @@ describe("AuthController", () => {
   const underTest: AuthController = new AuthController(
     new AuthService(),
     new AuthRepository(),
+    new UserRepository(),
+    new MailService(),
   );
 
   // --- REGISTER ---
@@ -76,26 +113,50 @@ describe("AuthController", () => {
     it("Return user if create.", async () => {
       // GIVEN
       req.body = {
-        username: "toto",
-        mail: "toto@exemple.com",
-        password: "secret",
+        username: "testuser",
+        mail: "test@example.com",
+        password: "password123",
+      };
+      req.headers = { "accept-language": "fr-FR" };
+
+      const expirationDate = new Date(Date.now() + 24 * 60 * 60 * 1000);
+
+      mockFindByUsername.mockResolvedValue(null);
+      mockFindByMail.mockResolvedValue(null);
+
+      const mockData = {
+        ...req.body,
+        verification_token: fixedToken,
+        verification_expires_at: expirationDate,
       };
 
       const mockNewUser: AuthUser = {
-        id: "07a3cd78-3a4a-4aae-a681-7634d72197c2",
+        id: "some-id",
         username: "toto",
-        password:
-          "$argon2id$v=19$m=65536,t=3,p=4$PBffc9eGthziVC938nRg+Q$8dpZXWhHPGfBj0tEp/vwSpfsm2pZK1dYRb8OSObg4gE",
-        mail: "b4abae35a472f9eaffc89dbc:c5658303f02fa2ea7f7d6a0650af502e:9dcdd7b46a2907c4635293da74621854",
+        password: "hashedpass",
+        mail: "user@mail.com",
+        is_verified: false,
+        verification_token: fixedToken,
+        verification_expires_at: expirationDate,
       };
 
+      mockFindByUsername.mockResolvedValue(null);
+      mockFindByMail.mockResolvedValue(null);
       mockRegister.mockResolvedValue(mockNewUser);
+
       // WHEN
       await underTest.register(req as Request, res as Response, next);
-      //THEN
-      expect(mockRegister).toHaveBeenCalledWith(req.body);
-      expect(res.json).toHaveBeenCalledWith(mockNewUser);
-      expect(res.status).not.toHaveBeenCalledWith(status.NOT_FOUND);
+
+      // THEN
+      expect(mockRegister).toHaveBeenCalledWith(mockData);
+      expect(mockRegister).toHaveBeenCalledWith(
+        expect.objectContaining({
+          username: "testuser",
+          mail: "test@example.com",
+          password: "password123",
+          verification_token: fixedToken,
+        }),
+      );
     });
 
     it("Return 409 if username ever exists.", async () => {
@@ -111,6 +172,9 @@ describe("AuthController", () => {
         password:
           "$argon2id$v=19$m=65536,t=3,p=4$PBffc9eGthziVC938nRg+Q$8dpZXWhHPGfBj0tEp/vwSpfsm2pZK1dYRb8OSObg4gE",
         mail: "b4abae35a472f9eaffc89dbc:c5658303f02fa2ea7f7d6a0650af502e:9dcdd7b46a2907c4635293da74621854",
+        is_verified: true,
+        verification_token: null,
+        verification_expires_at: null,
       };
 
       mockFindByUsername.mockResolvedValue(mockEverExist);
@@ -131,6 +195,91 @@ describe("AuthController", () => {
     });
   });
 
+  // --- VERIFY EMAIL ---
+  describe("verifyEmail", () => {
+    const token = fixedToken;
+    const mockUser: AuthUser = {
+      id: "user-123",
+      username: "testuser",
+      mail: "test@mail.com",
+      password: "hashedpass",
+      is_verified: false,
+      verification_token: token,
+      verification_expires_at: new Date(fixedNow.getTime() + 1000 * 60 * 60), // 1h future
+    };
+    console.log(mockUser);
+
+    beforeEach(() => {
+      vi.clearAllMocks();
+    });
+
+    it("Return 400 if token missing", async () => {
+      req.query = {};
+
+      await underTest.verifyEmail(req as Request, res as Response, next);
+
+      expect(res.status).toHaveBeenCalledWith(status.BAD_REQUEST);
+      expect(res.json).toHaveBeenCalledWith({ message: "Token not found" });
+    });
+
+    it("Return 404 if user not found", async () => {
+      req.query = { token };
+      mockFindByToken.mockResolvedValue(null);
+
+      await underTest.verifyEmail(req as Request, res as Response, next);
+
+      expect(mockFindByToken).toHaveBeenCalledWith(token);
+      expect(res.status).toHaveBeenCalledWith(status.NOT_FOUND);
+      expect(res.json).toHaveBeenCalledWith({ message: "User not found" });
+    });
+
+    it("Return 400 if token expired", async () => {
+      req.query = { token };
+      const expiredUser = {
+        ...mockUser,
+        verification_expires_at: new Date(fixedNow.getTime() - 1000), // expired
+      };
+      console.log(expiredUser);
+
+      mockFindByToken.mockResolvedValue(expiredUser);
+
+      await underTest.verifyEmail(req as Request, res as Response, next);
+
+      expect(mockFindByToken).toHaveBeenCalledWith(token);
+      expect(res.status).toHaveBeenCalledWith(status.BAD_REQUEST);
+      expect(res.json).toHaveBeenCalledWith({ message: "Token expired" });
+    });
+
+    it("Validate email if token valid", async () => {
+      req.query = { token };
+      mockFindByToken.mockResolvedValue(mockUser);
+      mockUpdate.mockResolvedValue({ ...mockUser, is_verified: true });
+
+      await underTest.verifyEmail(req as Request, res as Response, next);
+
+      expect(mockFindByToken).toHaveBeenCalledWith(token);
+      expect(mockUpdate).toHaveBeenCalledWith(
+        mockUser.id,
+        expect.objectContaining({
+          is_verified: true,
+          verification_token: null,
+          verification_expires_at: null,
+        }),
+      );
+      expect(res.json).toHaveBeenCalledWith({ message: "Validated email" });
+    });
+
+    it("Call next(error) if repository throws", async () => {
+      req.query = { token };
+      const error = new Error("DB error");
+      mockFindByToken.mockRejectedValue(error);
+
+      await underTest.verifyEmail(req as Request, res as Response, next);
+
+      expect(next).toHaveBeenCalledWith(error);
+    });
+  });
+
   // --- LOGIN   ---
   describe("login", () => {
     it("Return user and cookie if login.", async () => {
@@ -146,6 +295,9 @@ describe("AuthController", () => {
         password:
           "$argon2id$v=19$m=65536,t=3,p=4$PBffc9eGthziVC938nRg+Q$8dpZXWhHPGfBj0tEp/vwSpfsm2pZK1dYRb8OSObg4gE",
         mail: "toto@mail.com",
+        is_verified: true,
+        verification_token: null,
+        verification_expires_at: null,
       };
 
       const mockToken =
@@ -219,11 +371,17 @@ describe("AuthController", () => {
       username: "user",
       password: "hashedpass",
       mail: "user@mail.com",
+      is_verified: true,
+      verification_token: null,
+      verification_expires_at: null,
     };
     const userWithoutPassword = {
       id: "3521dd0c-c303-4239-a545-10e5476abe2a",
       username: "user",
       mail: "user@mail.com",
+      is_verified: true,
+      verification_token: null,
+      verification_expires_at: null,
     };
 
     it("Return 401 any token exist", async () => {
@@ -373,6 +531,9 @@ describe("AuthController", () => {
       username: "user",
       password: "hashedpass",
       mail: "user@mail.com",
+      is_verified: true,
+      verification_token: null,
+      verification_expires_at: null,
     };
 
     it("Call next() directly if password not provided", async () => {
@@ -535,6 +696,9 @@ describe("AuthController", () => {
         username: "user1",
         password: "hashedpass",
         mail: "user1@example.com",
+        is_verified: true,
+        verification_token: null,
+        verification_expires_at: null,
       };
 
       (authUserSchema.validate as Mock).mockReturnValue({

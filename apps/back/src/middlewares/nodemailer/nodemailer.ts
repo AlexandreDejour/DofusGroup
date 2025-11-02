@@ -33,11 +33,11 @@ export class MailService {
     const templates: Record<string, { subject: string; html: string }> = {
       fr: {
         subject: "Vérifie ton email",
-        html: `<p>Bienvenue sur DofusGroup! Clique <a href="https://dofusgroup.fr/verify-email?token=${token}">ici</a> pour vérifier ton email.</p>`,
+        html: `<p>Bienvenue sur DofusGroup! Clique <a href="https://dofusgroup.fr/verify_email?token=${token}">ici</a> pour vérifier ton email.</p>`,
       },
       en: {
         subject: "Verify your email",
-        html: `<p>Welcome on DofusGroup! Click <a href="https://dofusgroup.fr/verify-email?token=${token}">ici</a> to verify your email:</p>`,
+        html: `<p>Welcome on DofusGroup! Click <a href="https://dofusgroup.fr/verify_email?token=${token}">ici</a> to verify your email.</p>`,
       },
     };
 

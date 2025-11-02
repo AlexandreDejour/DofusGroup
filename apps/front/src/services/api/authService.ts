@@ -34,6 +34,20 @@ export class AuthService {
     }
   }
 
+  public async validateEmail(token: string) {
+    try {
+      const response = await this.axios.get(
+        `/auth/verify-email?token=${token}`,
+      );
+
+      if (response.status !== 200) return "error";
+
+      return "success";
+    } catch (error) {
+      handleApiError(error);
+    }
+  }
+
   public async login(data: LoginForm): Promise<AuthUser> {
     if (!this.passwordRegex.test(data.password)) {
       throw new Error(t("auth.error.credentials.unavailable"));

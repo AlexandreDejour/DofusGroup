@@ -126,6 +126,14 @@ export class AuthController {
         return next(error);
       }
 
+      if (user.is_verified !== true) {
+        const error = createHttpError(
+          status.UNAUTHORIZED,
+          "Unverified account",
+        );
+        return next(error);
+      }
+
       const isPasswordMatch = await argon2.verify(user.password, password);
 
       if (!isPasswordMatch) {

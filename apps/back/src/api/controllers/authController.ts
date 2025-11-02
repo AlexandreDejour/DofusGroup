@@ -58,7 +58,11 @@ export class AuthController {
 
       const token = crypto.randomBytes(32).toString("hex");
       const expirationDate = new Date(Date.now() + 24 * 60 * 60 * 1000); //24h
-      const userData = { token, expirationDate, ...req.body };
+      const userData = {
+        verification_token: token,
+        verification_expires_at: expirationDate,
+        ...req.body,
+      };
 
       const newUser: AuthUser = await this.repository.register(userData);
 

@@ -135,7 +135,8 @@
       "noneOnServer": "Aucun personnage disponible sur ce serveur.",
       "notFound": "Personnage introuvable.",
       "loginRequired": "Vous devez être connecté pour créer un personnage.",
-      "required": "Vous devez avoir au moins un personnage pour créé un évènement."
+      "required": "Vous devez avoir au moins un personnage pour créé un évènement.",
+      "disable": "Vous devez avoir au moins un personnage pour rejoindre un évènement."
     },
     "success": {
       "created": "Vous avez créé un nouveau personnage.",
@@ -154,7 +155,8 @@
     "error": {
       "none": "Aucun commentaire.",
       "notFound": "Commentaire introuvable.",
-      "loginRequired": "Vous devez être connecté pour ajouter un commentaire."
+      "loginRequired": "Vous devez être connecté pour ajouter un commentaire.",
+      "disable": "Vous devez être connecté pour commenter."
     },
     "success": {
       "added": "Vous avez ajouté un nouveau commentaire.",

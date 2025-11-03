@@ -139,7 +139,8 @@
       "noneOnServer": "No character available on this server.",
       "notFound": "Character not found.",
       "loginRequired": "You must be logged in to create character.",
-      "required": "You must have at least one character to create an event."
+      "required": "You must have at least one character to create an event.",
+      "disable": "You need at least one character to join event."
     },
 
     "success": {
@@ -160,7 +161,8 @@
     "error": {
       "none": "No comment.",
       "notFound": "Comment not found.",
-      "loginRequired": "You must be logged in to add a comment."
+      "loginRequired": "You must be logged in to add a comment.",
+      "disable": "You must be login to comment."
     },
 
     "success": {

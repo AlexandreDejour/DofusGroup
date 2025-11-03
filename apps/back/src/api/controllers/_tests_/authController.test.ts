@@ -207,7 +207,6 @@ describe("AuthController", () => {
       verification_token: token,
       verification_expires_at: new Date(fixedNow.getTime() + 1000 * 60 * 60), // 1h future
     };
-    console.log(mockUser);
 
     beforeEach(() => {
       vi.clearAllMocks();
@@ -239,7 +238,6 @@ describe("AuthController", () => {
         ...mockUser,
         verification_expires_at: new Date(fixedNow.getTime() - 1000), // expired
       };
-      console.log(expiredUser);
 
       mockFindByToken.mockResolvedValue(expiredUser);
 
@@ -275,6 +273,87 @@ describe("AuthController", () => {
       mockFindByToken.mockRejectedValue(error);
 
       await underTest.verifyEmail(req as Request, res as Response, next);
+
+      expect(next).toHaveBeenCalledWith(error);
+    });
+  });
+
+  // --- RESEND MAIL TOKEN ---
+  describe("resendMailToken", () => {
+    const email = "user@mail.com";
+
+    beforeEach(() => {
+      req.body = { mail: email };
+      req.headers = { "accept-language": "fr-FR" };
+      vi.clearAllMocks();
+    });
+
+    it("Should update user, send email and return 200 if user exists", async () => {
+      const mockUser: AuthUser = {
+        id: "user-123",
+        username: "testuser",
+        mail: email,
+        password: "hashedpass",
+        is_verified: false,
+        verification_token: null,
+        verification_expires_at: null,
+      };
+
+      mockFindByMail.mockResolvedValue(mockUser);
+      mockUpdate.mockResolvedValue({
+        ...mockUser,
+        verification_token: fixedToken,
+      });
+      mockSendVerificationMail.mockResolvedValue({
+        accepted: [email],
+        rejected: [],
+        envelopeTime: 0,
+        messageTime: 0,
+        messageSize: 0,
+        response: "250 Message accepted",
+        envelope: { from: "no-reply@dofusgroup.fr", to: [email] },
+        messageId: "<1234@test.com>",
+      } as any);
+
+      await underTest.resendMailToken(req as Request, res as Response, next);
+
+      expect(mockFindByMail).toHaveBeenCalledWith(email);
+      expect(mockUpdate).toHaveBeenCalledWith(
+        mockUser.id,
+        expect.objectContaining({
+          verification_token: fixedToken,
+          verification_expires_at: expect.any(Date),
+        }),
+      );
+      expect(mockSendVerificationMail).toHaveBeenCalledWith(
+        email,
+        "fr-FR",
+        expect.any(String),
+      );
+      expect(res.status).toHaveBeenCalledWith(status.OK);
+      expect(res.json).toHaveBeenCalledWith({
+        message: "A new verification email has been sent.",
+      });
+    });
+
+    it("Should return generic message if user does not exist", async () => {
+      mockFindByMail.mockResolvedValue(null);
+
+      await underTest.resendMailToken(req as Request, res as Response, next);
+
+      expect(mockFindByMail).toHaveBeenCalledWith(email);
+      expect(mockUpdate).not.toHaveBeenCalled();
+      expect(mockSendVerificationMail).not.toHaveBeenCalled();
+      expect(res.json).toHaveBeenCalledWith({
+        message: "If this email exists, a new validation email has been sent",
+      });
+    });
+
+    it("Should call next(error) if repository throws", async () => {
+      const error = new Error("DB error");
+      mockFindByMail.mockRejectedValue(error);
+
+      await underTest.resendMailToken(req as Request, res as Response, next);
 
       expect(next).toHaveBeenCalledWith(error);
     });

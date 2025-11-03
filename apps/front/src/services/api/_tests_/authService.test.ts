@@ -3,7 +3,7 @@ import { describe, it, beforeEach, expect, vi, Mock } from "vitest";
 import axios from "axios";
 import { t } from "../../../i18n/i18n-helper";
 
-import type { LoginForm, RegisterForm } from "../../../types/form";
+import type { LoginForm, RegisterForm, UpdateForm } from "../../../types/form";
 import type { AuthUser } from "../../../types/user";
 
 import { AuthService } from "../authService";
@@ -166,6 +166,30 @@ describe("AuthService", () => {
       await expect(authService.validateEmail("token_rethrow")).rejects.toThrow(
         "Critical error",
       );
+      expect(handleApiError).toHaveBeenCalledWith(error);
+    });
+  });
+
+  describe("resendMailToken", () => {
+    it("should call axios.post with correct data", async () => {
+      const data: UpdateForm = { mail: "user@mail.com" };
+      axiosMock.post.mockResolvedValue({});
+
+      await authService.resendMailToken(data);
+
+      expect(axiosMock.post).toHaveBeenCalledWith(
+        "/auth/resend-email-token",
+        data,
+      );
+    });
+
+    it("should call handleApiError if axios.post rejects", async () => {
+      const data: UpdateForm = { mail: "user@mail.com" };
+      const error = new Error("Network error");
+      axiosMock.post.mockRejectedValue(error);
+
+      await authService.resendMailToken(data);
+
       expect(handleApiError).toHaveBeenCalledWith(error);
     });
   });

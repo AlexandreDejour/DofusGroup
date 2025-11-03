@@ -120,6 +120,42 @@ export class AuthController {
     }
   }
 
+  public async resendMailToken(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) {
+    const language = req.headers["accept-language"]?.split(",")[0] || "fr";
+    const { mail } = req.body;
+
+    try {
+      const user: AuthUser | null = await this.repository.findOneByMail(mail);
+
+      if (!user) {
+        return res.json({
+          message: "If this email exists, a new validation email has been sent",
+        });
+      }
+
+      const token = crypto.randomBytes(32).toString("hex");
+      const expirationDate = new Date(Date.now() + 24 * 60 * 60 * 1000); //24h
+      const userData = {
+        verification_token: token,
+        verification_expires_at: expirationDate,
+      };
+
+      await this.userRepository.update(user.id, userData);
+
+      await this.mailService.sendVerificationMail(mail, language, token);
+
+      res
+        .status(status.OK)
+        .json({ message: "A new verification email has been sent." });
+    } catch (error) {
+      next(error);
+    }
+  }
+
   public async login(req: Request, res: Response, next: NextFunction) {
     const { mail, password } = req.body;
 

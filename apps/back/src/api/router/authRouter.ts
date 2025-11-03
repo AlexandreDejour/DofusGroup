@@ -30,6 +30,10 @@ export function createAuthRouter(
     controller.verifyEmail(req, res, next),
   );
 
+  router.post("/auth/resend-email-token", htmlSanitizer, (req, res, next) =>
+    controller.resendMailToken(req, res, next),
+  );
+
   router.post(
     "/auth/login",
     requestLimiter,

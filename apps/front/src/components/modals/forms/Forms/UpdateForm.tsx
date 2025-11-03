@@ -33,11 +33,13 @@ export default function UpdateForm({ field, handleSubmit }: UpdateFormProps) {
       )}
       <form onSubmit={handleSubmit} className="content_modal_form" role="form">
         <label htmlFor={field} className="content_modal_form_label">
-          <span>
-            {field === "mail" && modalType === "mailToken"
-              ? `${label}`
-              : `${t("common.new")} {label}`}
-          </span>
+          {field === "mail" && modalType === "mailToken" ? (
+            <span>{label}</span>
+          ) : (
+            <span>
+              {t("common.new")} {label}
+            </span>
+          )}
           <input
             type={type}
             name={field}

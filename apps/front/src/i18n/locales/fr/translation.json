@@ -49,6 +49,7 @@
     "return": "Retour",
     "search": "Rechercher",
     "select": "Sélectionner",
+    "send": "Envoyer",
     "sex": "Sexe",
     "status": "Statut",
     "stuff": "Stuff",
@@ -56,6 +57,7 @@
     "team": "Groupe",
     "title": "Titre",
     "usefulSites": "Sites utiles",
+    "validation": "Validation",
     "visibility": "Visibilité",
     "welcome": "Bienvenue.",
     "allRightsReserved": "Tous droits réservés.",
@@ -78,8 +80,9 @@
       }
     },
     "email": {
+      "change": "Modifier l'email",
       "default": "Email",
-      "change": "Modifier l'email"
+      "ifExist": "Si votre email existe, un nouvel email de validation vous a été renvoyé."
     },
     "usernameChange": "Modifier le nom d'utilisateur",
     "error": {
@@ -228,10 +231,11 @@
     },
     "success": {
       "create": "Création réussie !",
+      "dataUpdated": "Mise à jour réussie !",
+      "deleted": "Suppression réussie !",
       "disconnected": "Vous avez été déconnecté avec succès.",
       "updated": "Vos informations ont été mises à jour avec succès.",
-      "deleted": "Suppression réussie !",
-      "dataUpdated": "Mise à jour réussie !"
+      "mail": "Email envoyé !"
     },
     "data": {
       "deletion": "Suppression de données !"

@@ -5,6 +5,7 @@
   "message": {
     "verified": "Votre email a été vérifié! Vous pouvez maintenant vous connecter.",
     "notVerified": "Le lien de validation est invalide ou expiré.",
+    "resend": "Renvoyer",
     "waiting": "Vérification en cours..."
   }
 }

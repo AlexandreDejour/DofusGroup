@@ -5,6 +5,7 @@
   "message": {
     "verified": "Your email has been checked! You can now login.",
     "notVerified": "Validation link is unvalid or expired.",
+    "resend": "Resend",
     "waiting": "Verification in progress..."
   }
 }

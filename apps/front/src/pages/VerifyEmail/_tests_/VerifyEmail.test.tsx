@@ -6,6 +6,17 @@ vi.mock("../../../config/config.ts", () => ({
   },
 }));
 
+const openModal = vi.fn();
+const handleDelete = vi.fn();
+vi.mock("../../../contexts/modalContext", () => ({
+  __esModule: true,
+  default: ({ children }: { children: React.ReactNode }) => children,
+  useModal: () => ({
+    openModal,
+    handleDelete,
+  }),
+}));
+
 vi.mock("../../../services/api/authService", () => {
   return {
     AuthService: vi.fn().mockImplementation(() => ({

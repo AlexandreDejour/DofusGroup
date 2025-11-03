@@ -28,6 +28,7 @@ export class AuthService {
 
     try {
       const response = await this.axios.post<AuthUser>("/auth/register", data);
+
       return response.data;
     } catch (error) {
       handleApiError(error);

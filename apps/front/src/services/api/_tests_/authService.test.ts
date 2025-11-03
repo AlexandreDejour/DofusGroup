@@ -122,10 +122,58 @@ describe("AuthService", () => {
     });
   });
 
+  describe("validateEmail", () => {
+    it("Return 'success' when response status is 200", async () => {
+      axiosMock.get.mockResolvedValue({ status: 200 });
+
+      const result = await authService.validateEmail("valid_token");
+
+      expect(result).toBe("success");
+      expect(axiosMock.get).toHaveBeenCalledWith(
+        "/auth/verify-email?token=valid_token",
+      );
+    });
+
+    it("Return 'error' when response status is not 200", async () => {
+      axiosMock.get.mockResolvedValue({ status: 400 });
+
+      const result = await authService.validateEmail("invalid_token");
+
+      expect(result).toBe("error");
+      expect(axiosMock.get).toHaveBeenCalledWith(
+        "/auth/verify-email?token=invalid_token",
+      );
+    });
+
+    it("Call handleApiError and return undefined when request fails", async () => {
+      const error = new Error("Network error");
+      axiosMock.get.mockRejectedValue(error);
+
+      const result = await authService.validateEmail("token_error");
+
+      expect(handleApiError).toHaveBeenCalledWith(error);
+      expect(result).toBeUndefined();
+    });
+
+    it("Rethrow when handleApiError throws", async () => {
+      const error = new Error("Critical error");
+      axiosMock.get.mockRejectedValue(error);
+
+      (handleApiError as unknown as Mock).mockImplementation(() => {
+        throw error;
+      });
+
+      await expect(authService.validateEmail("token_rethrow")).rejects.toThrow(
+        "Critical error",
+      );
+      expect(handleApiError).toHaveBeenCalledWith(error);
+    });
+  });
+
   describe("login", () => {
     it("Reject if password is too weak", async () => {
       const data: LoginForm = {
-        username: "toto",
+        mail: "toto@mail.com",
         password: "abc",
       };
 
@@ -145,7 +193,7 @@ describe("AuthService", () => {
       };
       axiosMock.post.mockResolvedValue({ data: user });
       const data: LoginForm = {
-        username: "toto",
+        mail: "toto@mail.com",
         password: "Abcd1234!",
       };
 
@@ -164,7 +212,7 @@ describe("AuthService", () => {
       };
       axiosMock.post.mockRejectedValue(axiosError);
       const data: LoginForm = {
-        username: "toto",
+        mail: "toto@mail.com",
         password: "Abcd1234!",
       };
 
@@ -183,7 +231,7 @@ describe("AuthService", () => {
       });
 
       const data: LoginForm = {
-        username: "toto",
+        mail: "toto@mail.com",
         password: "Abcd1234!",
       };
 

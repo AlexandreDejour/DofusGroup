@@ -38,22 +38,10 @@ export default function Footer() {
           <h3>{t("common.otherLinks")}</h3>
           <ul>
             <li>
-              <a
-                href="https://discord.com/channels/1430577831599149099/1430586314520133703"
-                target="_blank"
-                rel="noreferrer"
-              >
-                {t("settings.reportBug")}
-              </a>
+              <a href="#">{t("settings.reportBug")}</a>
             </li>
             <li>
-              <a
-                href="https://discord.com/channels/1430577831599149099/1430577832249262192"
-                target="_blank"
-                rel="noreferrer"
-              >
-                {t("settings.contact")}
-              </a>
+              <a href="#">{t("settings.contact")}</a>
             </li>
             <li>
               <Link to="/privacy_policy">{t("settings.privacyPolicy")}</Link>

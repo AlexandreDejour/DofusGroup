@@ -151,7 +151,6 @@ export default function EventDetails() {
               type="button"
               className="quick button"
               onClick={() => openModal("joinEvent", event)}
-              title={!user ? t("character.error.disable") : ""}
               disabled={!user}
               style={{
                 background: !user
@@ -180,7 +179,6 @@ export default function EventDetails() {
               type="button"
               className="quick button"
               onClick={() => openModal("comment", event)}
-              title={!user ? t("comment.error.disable") : ""}
               disabled={!user}
               style={{
                 background: !user
@@ -242,7 +240,6 @@ export default function EventDetails() {
               type="button"
               className="button"
               onClick={() => openModal("joinEvent", event)}
-              title={!user ? t("character.error.disable") : ""}
               disabled={!user}
               style={{
                 background: !user
@@ -257,13 +254,6 @@ export default function EventDetails() {
               type="button"
               className="button"
               onClick={() => openModal("comment", event)}
-              title={!user ? t("comment.error.disable") : ""}
-              disabled={!user}
-              style={{
-                background: !user
-                  ? "grey"
-                  : "radial-gradient(circle, rgba(96,186,96,1) 0%, rgba(156,217,92,1) 90%)",
-              }}
             >
               {t("comment.single")}
             </button>

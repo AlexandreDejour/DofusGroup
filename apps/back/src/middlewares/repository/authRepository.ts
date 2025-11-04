@@ -56,24 +56,6 @@ export class AuthRepository {
     }
   }
 
-  public async findOneByToken(token: string): Promise<AuthUser | null> {
-    try {
-      const result: UserEntity | null = await UserEntity.findOne({
-        where: { verification_token: token },
-      });
-
-      if (!result) {
-        return null;
-      }
-
-      const user = result.get({ plain: true });
-
-      return user;
-    } catch (error) {
-      throw error;
-    }
-  }
-
   public async register(userData: UserBodyData): Promise<AuthUser> {
     try {
       const result: UserEntity = await UserEntity.create(userData);

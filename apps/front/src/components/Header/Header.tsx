@@ -17,18 +17,14 @@ export default function Header() {
   return (
     <header className="header">
       {isDesktop ? (
-        <Link to="/" className="header_link">
-          <div className="header_link_logo">
-            <h1>DofusGroup</h1>
-          </div>
-        </Link>
+        <div className="header_logo">
+          <h1>DofusGroup</h1>
+        </div>
       ) : (
-        <Link to="/" className="header_link">
-          <div className="header_link_container">
-            <div className="header_link_container_logo"></div>
-            <h1>DofusGroup</h1>
-          </div>
-        </Link>
+        <div className="header_container">
+          <div className="header_container_logo"></div>
+          <h1>DofusGroup</h1>
+        </div>
       )}
       <nav className="header_nav">
         <ul className="header_nav_list">

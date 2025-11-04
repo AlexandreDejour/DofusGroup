@@ -26,14 +26,6 @@ export function createAuthRouter(
     },
   );
 
-  router.get("/auth/verify-email", (req, res, next) =>
-    controller.verifyEmail(req, res, next),
-  );
-
-  router.post("/auth/resend-email-token", htmlSanitizer, (req, res, next) =>
-    controller.resendMailToken(req, res, next),
-  );
-
   router.post(
     "/auth/login",
     requestLimiter,

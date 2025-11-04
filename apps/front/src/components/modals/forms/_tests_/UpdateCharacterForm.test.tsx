@@ -224,7 +224,7 @@ describe("UpdateCharacterForm", () => {
     );
     await waitFor(() => {
       expect(mockShowError).toHaveBeenCalledWith(
-        t("system.error.default"),
+        t("common.error.default"),
         t("system.error.occurred"),
       );
     });
@@ -242,7 +242,7 @@ describe("UpdateCharacterForm", () => {
     );
     await waitFor(() => {
       expect(mockShowError).toHaveBeenCalledWith(
-        t("system.error.default"),
+        t("common.error.default"),
         t("system.error.occurred"),
       );
     });

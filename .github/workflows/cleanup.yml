@@ -22,7 +22,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 22:alpine
 
       - name: Run cleanup script
         run: ssh debian@51.210.5.143 'cd /path/to/project && npm ci && node dist/database/cleanup.js'

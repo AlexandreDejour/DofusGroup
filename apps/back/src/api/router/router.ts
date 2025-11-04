@@ -9,7 +9,6 @@ import { TagRepository } from "../../middlewares/repository/tagRepository.js";
 import { createAuthRouter } from "./authRouter.js";
 import { AuthController } from "../controllers/authController.js";
 import { AuthRepository } from "../../middlewares/repository/authRepository.js";
-import { MailService } from "../../middlewares/nodemailer/nodemailer.js";
 import { createUserRouter } from "./userRouter.js";
 import { UserController } from "../controllers/userController.js";
 import { UserRepository } from "../../middlewares/repository/userRepository.js";
@@ -37,12 +36,7 @@ initAssociations(models);
 const authService = new AuthService();
 
 const tagController = new TagController(new TagRepository());
-const authController = new AuthController(
-  authService,
-  new AuthRepository(),
-  new UserRepository(),
-  new MailService(),
-);
+const authController = new AuthController(authService, new AuthRepository());
 const userController = new UserController(new UserRepository());
 const eventController = new EventController(
   new EventRepository(new EventUtils()),

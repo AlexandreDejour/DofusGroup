@@ -15,8 +15,6 @@ export class Config {
   readonly cryptoKey: string;
   readonly jwtSecret: string;
   readonly refreshSecret: string;
-  readonly smtpUser: string;
-  readonly smtpPassword: string;
 
   private constructor() {
     this.environment = process.env.NODE_ENV as string;
@@ -27,8 +25,6 @@ export class Config {
     this.cryptoKey = process.env.CRYPTO_KEY as string;
     this.jwtSecret = process.env.JWT_SECRET as string;
     this.refreshSecret = process.env.REFRESH_SECRET as string;
-    this.smtpUser = process.env.SMTP_USER as string;
-    this.smtpPassword = process.env.SMTP_PASSWORD as string;
   }
 
   public static getInstance(): Config {
@@ -50,7 +46,5 @@ export class Config {
     if (!config.cryptoKey) throw new Error("CRYPTO_KEY is required");
     if (!config.jwtSecret) throw new Error("JWT_SECRET is required");
     if (!config.refreshSecret) throw new Error("REFRESH_SECRET is required");
-    if (!config.smtpUser) throw new Error("SMTP_USER is required");
-    if (!config.smtpPassword) throw new Error("SMTP_PASSWORD is required");
   }
 }

@@ -23,8 +23,6 @@ jobs:
       CRYPTO_ALGORITHM: ${{ secrets.CRYPTO_ALGORITHM }}
       JWT_SECRET: ${{ secrets.JWT_SECRET }}
       REFRESH_SECRET: ${{ secrets.REFRESH_SECRET }}
-      SMTP_USER: ${{ secrets.SMTP_USER }}
-      SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3

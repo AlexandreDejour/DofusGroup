@@ -26,15 +26,17 @@ i18n.on("languageChanged", (lng) => {
 });
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
-  <BrowserRouter>
-    <ScreenProvider>
-      <NotificationProvider>
-        <AuthProvider>
-          <ModalProvider>
-            <App />
-          </ModalProvider>
-        </AuthProvider>
-      </NotificationProvider>
-    </ScreenProvider>
-  </BrowserRouter>,
+  <React.StrictMode>
+    <BrowserRouter>
+      <ScreenProvider>
+        <NotificationProvider>
+          <AuthProvider>
+            <ModalProvider>
+              <App />
+            </ModalProvider>
+          </AuthProvider>
+        </NotificationProvider>
+      </ScreenProvider>
+    </BrowserRouter>
+  </React.StrictMode>,
 );

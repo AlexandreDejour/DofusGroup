@@ -3,7 +3,7 @@ import { describe, it, beforeEach, expect, vi, Mock } from "vitest";
 import axios from "axios";
 import { t } from "../../../i18n/i18n-helper";
 
-import type { LoginForm, RegisterForm, UpdateForm } from "../../../types/form";
+import type { LoginForm, RegisterForm } from "../../../types/form";
 import type { AuthUser } from "../../../types/user";
 
 import { AuthService } from "../authService";
@@ -122,82 +122,10 @@ describe("AuthService", () => {
     });
   });
 
-  describe("validateEmail", () => {
-    it("Return 'success' when response status is 200", async () => {
-      axiosMock.get.mockResolvedValue({ status: 200 });
-
-      const result = await authService.validateEmail("valid_token");
-
-      expect(result).toBe("success");
-      expect(axiosMock.get).toHaveBeenCalledWith(
-        "/auth/verify-email?token=valid_token",
-      );
-    });
-
-    it("Return 'error' when response status is not 200", async () => {
-      axiosMock.get.mockResolvedValue({ status: 400 });
-
-      const result = await authService.validateEmail("invalid_token");
-
-      expect(result).toBe("error");
-      expect(axiosMock.get).toHaveBeenCalledWith(
-        "/auth/verify-email?token=invalid_token",
-      );
-    });
-
-    it("Call handleApiError and return undefined when request fails", async () => {
-      const error = new Error("Network error");
-      axiosMock.get.mockRejectedValue(error);
-
-      const result = await authService.validateEmail("token_error");
-
-      expect(handleApiError).toHaveBeenCalledWith(error);
-      expect(result).toBeUndefined();
-    });
-
-    it("Rethrow when handleApiError throws", async () => {
-      const error = new Error("Critical error");
-      axiosMock.get.mockRejectedValue(error);
-
-      (handleApiError as unknown as Mock).mockImplementation(() => {
-        throw error;
-      });
-
-      await expect(authService.validateEmail("token_rethrow")).rejects.toThrow(
-        "Critical error",
-      );
-      expect(handleApiError).toHaveBeenCalledWith(error);
-    });
-  });
-
-  describe("resendMailToken", () => {
-    it("should call axios.post with correct data", async () => {
-      const data: UpdateForm = { mail: "user@mail.com" };
-      axiosMock.post.mockResolvedValue({});
-
-      await authService.resendMailToken(data);
-
-      expect(axiosMock.post).toHaveBeenCalledWith(
-        "/auth/resend-email-token",
-        data,
-      );
-    });
-
-    it("should call handleApiError if axios.post rejects", async () => {
-      const data: UpdateForm = { mail: "user@mail.com" };
-      const error = new Error("Network error");
-      axiosMock.post.mockRejectedValue(error);
-
-      await authService.resendMailToken(data);
-
-      expect(handleApiError).toHaveBeenCalledWith(error);
-    });
-  });
-
   describe("login", () => {
     it("Reject if password is too weak", async () => {
       const data: LoginForm = {
-        mail: "toto@mail.com",
+        username: "toto",
         password: "abc",
       };
 
@@ -217,7 +145,7 @@ describe("AuthService", () => {
       };
       axiosMock.post.mockResolvedValue({ data: user });
       const data: LoginForm = {
-        mail: "toto@mail.com",
+        username: "toto",
         password: "Abcd1234!",
       };
 
@@ -236,7 +164,7 @@ describe("AuthService", () => {
       };
       axiosMock.post.mockRejectedValue(axiosError);
       const data: LoginForm = {
-        mail: "toto@mail.com",
+        username: "toto",
         password: "Abcd1234!",
       };
 
@@ -255,7 +183,7 @@ describe("AuthService", () => {
       });
 
       const data: LoginForm = {
-        mail: "toto@mail.com",
+        username: "toto",
         password: "Abcd1234!",
       };
 

@@ -8,19 +8,23 @@ import { setup, receivedReq } from "./mock-tools.js";
 import { createUserRouter } from "../userRouter.js";
 import { UserController } from "../../controllers/userController.js";
 import { AuthService } from "../../../middlewares/utils/authService.js";
-import { DataEncryptionService } from "../../../middlewares/utils/dataEncryptionService.js";
-import { CryptoService } from "../../../middlewares/utils/cryptoService.js";
 import { UserRepository } from "../../../middlewares/repository/userRepository.js";
 import { AuthController } from "../../controllers/authController.js";
 import { AuthRepository } from "../../../middlewares/repository/authRepository.js";
+import { MailService } from "../../../middlewares/nodemailer/nodemailer.js";
 
 describe("userRouter", () => {
   const repository = {} as UserRepository;
   const authRepository = {} as AuthRepository;
   const service = new AuthService();
   const controller = new UserController(repository);
-  const authController = new AuthController(service, authRepository);
-  const encrypter = new DataEncryptionService(new CryptoService());
+  const mailService = new MailService();
+  const authController = new AuthController(
+    service,
+    authRepository,
+    repository,
+    mailService,
+  );
   let app: ReturnType<typeof setup.App>;
 
   beforeEach(() => {

@@ -11,20 +11,13 @@ import { AuthService } from "../../../middlewares/utils/authService.js";
 import { UserRepository } from "../../../middlewares/repository/userRepository.js";
 import { AuthController } from "../../controllers/authController.js";
 import { AuthRepository } from "../../../middlewares/repository/authRepository.js";
-import { MailService } from "../../../middlewares/nodemailer/nodemailer.js";
 
 describe("userRouter", () => {
   const repository = {} as UserRepository;
   const authRepository = {} as AuthRepository;
   const service = new AuthService();
   const controller = new UserController(repository);
-  const mailService = new MailService();
-  const authController = new AuthController(
-    service,
-    authRepository,
-    repository,
-    mailService,
-  );
+  const authController = new AuthController(service, authRepository);
   let app: ReturnType<typeof setup.App>;
 
   beforeEach(() => {

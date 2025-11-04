@@ -4,7 +4,7 @@ import { ApiClient } from "../client";
 import handleApiError from "../utils/handleApiError";
 
 import type { AuthUser } from "../../types/user";
-import type { LoginForm, RegisterForm } from "../../types/form";
+import type { LoginForm, RegisterForm, UpdateForm } from "../../types/form";
 
 export class AuthService {
   private axios;
@@ -28,7 +28,30 @@ export class AuthService {
 
     try {
       const response = await this.axios.post<AuthUser>("/auth/register", data);
+
       return response.data;
+    } catch (error) {
+      handleApiError(error);
+    }
+  }
+
+  public async validateEmail(token: string) {
+    try {
+      const response = await this.axios.get(
+        `/auth/verify-email?token=${token}`,
+      );
+
+      if (response.status !== 200) return "error";
+
+      return "success";
+    } catch (error) {
+      handleApiError(error);
+    }
+  }
+
+  public async resendMailToken(data: UpdateForm) {
+    try {
+      await this.axios.post("/auth/resend-email-token", data);
     } catch (error) {
       handleApiError(error);
     }
@@ -43,8 +66,10 @@ export class AuthService {
       const response = await this.axios.post<AuthUser>("/auth/login", data, {
         withCredentials: true,
       });
+
       return response.data;
     } catch (error) {
+      console.log(error);
       handleApiError(error);
     }
   }

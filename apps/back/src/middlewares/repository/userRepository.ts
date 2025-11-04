@@ -2,7 +2,12 @@ import CharacterEntity from "../../database/models/Character.js";
 import CommentEntity from "../../database/models/Comment.js";
 import EventEntity from "../../database/models/Event.js";
 import UserEntity from "../../database/models/User.js";
-import { User, UserBodyData, UserEnriched } from "../../types/user.js";
+import {
+  AuthUser,
+  User,
+  UserBodyData,
+  UserEnriched,
+} from "../../types/user.js";
 
 export class UserRepository {
   public async getAll(): Promise<User[]> {
@@ -88,7 +93,7 @@ export class UserRepository {
   public async update(
     userId: string,
     userData: Partial<UserBodyData>,
-  ): Promise<User | null> {
+  ): Promise<AuthUser | null> {
     try {
       const userToUpdate: UserEntity | null = await UserEntity.findByPk(userId);
 

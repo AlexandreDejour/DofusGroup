@@ -21,6 +21,9 @@ export default class UserEntity extends Model<
   declare public username: string;
   declare public password: string;
   declare public mail: string;
+  declare public is_verified: boolean;
+  declare public verification_token: string | null;
+  declare public verification_expires_at: Date | null;
 
   declare public events?: Event[];
   declare public comments?: Comment[];
@@ -67,6 +70,18 @@ UserEntity.init(
       type: DataTypes.STRING,
       allowNull: false,
       unique: true,
+    },
+    is_verified: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: false,
+    },
+    verification_token: {
+      type: DataTypes.STRING,
+      unique: true,
+    },
+    verification_expires_at: {
+      type: DataTypes.DATE,
     },
   },
   {

@@ -2,7 +2,12 @@ import status from "http-status";
 import createHttpError from "http-errors";
 import { NextFunction, Request, Response } from "express";
 
-import { User, UserBodyData, UserEnriched } from "../../types/user.js";
+import {
+  AuthUser,
+  User,
+  UserBodyData,
+  UserEnriched,
+} from "../../types/user.js";
 import { UserRepository } from "../../middlewares/repository/userRepository.js";
 
 export class UserController {
@@ -92,9 +97,8 @@ export class UserController {
 
       const { userId } = req.params;
       const userData: Partial<UserBodyData> = req.body;
-      console.log(userData);
 
-      const userUpdated: User | null = await this.repository.update(
+      const userUpdated: AuthUser | null = await this.repository.update(
         userId,
         userData,
       );

@@ -59,6 +59,22 @@ services:
       timeout: 5s
       retries: 5
 
+  smtp:
+    image: boky/postfix:latest
+    container_name: smtp
+    restart: always
+    environment:
+      # Mail domain
+      - MAIL_DOMAIN=dofusgroup.fr
+      # SMTP account
+      - SMTP_USER=${SMTP_USER}
+      - ALLOWED_SENDER_DOMAINS=dofusgroup.fr
+      - DISABLE_TLS=true
+      - ALLOW_EMPTY_SENDER_DOMAINS=true
+    ports:
+      - "587:587" # SMTP for send secure: false
+      - "25:25" # SMTP standard (optionnel)
+
 volumes:
   pgdata:
   logs-data:

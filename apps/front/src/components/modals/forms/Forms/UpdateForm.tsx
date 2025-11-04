@@ -1,5 +1,6 @@
 import "./Form.scss";
 
+import { useModal } from "../../../../contexts/modalContext";
 import { useTypedTranslation } from "../../../../i18n/i18n-helper";
 
 interface UpdateFormProps {
@@ -9,6 +10,7 @@ interface UpdateFormProps {
 
 export default function UpdateForm({ field, handleSubmit }: UpdateFormProps) {
   const t = useTypedTranslation();
+  const { modalType } = useModal();
 
   const FIELD_MAP: Record<string, { label: string; type: string }> = {
     mail: { label: t("auth.email.default"), type: "email" },
@@ -20,20 +22,34 @@ export default function UpdateForm({ field, handleSubmit }: UpdateFormProps) {
 
   return (
     <div className="content_modal">
-      <h3 className="content_modal_title">
-        {t("common.change")} {label}
-      </h3>
+      {field === "mail" && modalType === "mailToken" ? (
+        <h3 className="content_modal_title">
+          {t("common.validation")} {label}
+        </h3>
+      ) : (
+        <h3 className="content_modal_title">
+          {t("common.change")} {label}
+        </h3>
+      )}
       <form onSubmit={handleSubmit} className="content_modal_form" role="form">
         <label htmlFor={field} className="content_modal_form_label">
-          <span>
-            {t("common.new")} {label}
-          </span>
+          {field === "mail" && modalType === "mailToken" ? (
+            <span>{label}</span>
+          ) : (
+            <span>
+              {t("common.new")} {label}
+            </span>
+          )}
           <input
             type={type}
             name={field}
             id={field}
             required
-            placeholder={`${t("common.new")} ${label}`}
+            placeholder={
+              field === "mail" && modalType === "mailToken"
+                ? `${label}`
+                : `${t("common.new")} ${label}`
+            }
             className="content_modal_form_label_input"
           />
         </label>
@@ -80,13 +96,23 @@ export default function UpdateForm({ field, handleSubmit }: UpdateFormProps) {
           </>
         )}
 
-        <button
-          type="submit"
-          aria-label="Update"
-          className="content_modal_form_button button"
-        >
-          {t("common.change")}
-        </button>
+        {field === "mail" && modalType === "mailToken" ? (
+          <button
+            type="submit"
+            aria-label="Update"
+            className="content_modal_form_button button"
+          >
+            {t("common.send")}
+          </button>
+        ) : (
+          <button
+            type="submit"
+            aria-label="Update"
+            className="content_modal_form_button button"
+          >
+            {t("common.change")}
+          </button>
+        )}
       </form>
     </div>
   );

@@ -51,10 +51,6 @@ export default function ModalsManager() {
             <UpdateForm field={modalType} handleSubmit={handleSubmit} />
           )}
 
-          {modalType === "mailToken" && (
-            <UpdateForm field="mail" handleSubmit={handleSubmit} />
-          )}
-
           {modalType === "newCharacter" && (
             <NewCharacterForm handleSubmit={(event) => handleSubmit(event)} />
           )}

@@ -11,8 +11,6 @@ import aboutEN from "./locales/en/about.json";
 import aboutFR from "./locales/fr/about.json";
 import cookiesEN from "./locales/en/cookies.json";
 import cookiesFR from "./locales/fr/cookies.json";
-import verifyEmailEN from "./locales/en/verifyEmail.json";
-import verifyEmailFR from "./locales/fr/verifyEmail.json";
 import privacyPolicyEN from "./locales/en/privacyPolicy.json";
 import privacyPolicyFR from "./locales/fr/privacyPolicy.json";
 
@@ -26,7 +24,6 @@ i18n
         gcu: gcuEN,
         about: aboutEN,
         cookies: cookiesEN,
-        verifyEmail: verifyEmailEN,
         privacyPolicy: privacyPolicyEN,
       },
       fr: {
@@ -34,7 +31,6 @@ i18n
         gcu: gcuFR,
         about: aboutFR,
         cookies: cookiesFR,
-        verifyEmail: verifyEmailFR,
         privacyPolicy: privacyPolicyFR,
       },
     },

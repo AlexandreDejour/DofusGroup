@@ -51,18 +51,6 @@ export async function up(queryInterface, Sequelize) {
       allowNull: false,
       unique: true,
     },
-    is_verified: {
-      type: Sequelize.DataTypes.BOOLEAN,
-      allowNull: false,
-      defaultValue: false,
-    },
-    verification_token: {
-      type: Sequelize.DataTypes.STRING,
-      unique: true,
-    },
-    verification_expires_at: {
-      type: Sequelize.DataTypes.DATE,
-    },
     created_at: {
       type: Sequelize.DataTypes.DATE,
       allowNull: false,

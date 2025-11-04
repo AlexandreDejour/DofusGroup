@@ -65,7 +65,6 @@ export type ModalType =
   | "oldPassword"
   | "confirmPassword"
   | "username"
-  | "mailToken"
   | "newCharacter"
   | "updateCharacter"
   | "newEvent"
@@ -151,8 +150,8 @@ export default function ModalProvider({ children }: ModalProviderProps) {
 
           showSuccess(
             t("auth.success.register"),
-            t("auth.prompt.validateEmail"),
-            30000,
+            t("auth.prompt.connect"),
+            6000,
           );
         }
 
@@ -185,15 +184,6 @@ export default function ModalProvider({ children }: ModalProviderProps) {
             t("system.success.dataUpdated"),
             t("system.success.updated"),
           );
-        }
-
-        if (modalType === "mailToken") {
-          const keys: (keyof UpdateForm)[] = ["mail"];
-          const data = formDataToObject<UpdateForm>(formData, { keys });
-
-          await authService.resendMailToken(data);
-
-          showSuccess(t("system.success.mail"), t("auth.email.ifExist"));
         }
 
         if (modalType === "newCharacter") {

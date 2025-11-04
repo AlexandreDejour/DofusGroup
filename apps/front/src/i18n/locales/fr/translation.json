@@ -49,7 +49,6 @@
     "return": "Retour",
     "search": "Rechercher",
     "select": "Sélectionner",
-    "send": "Envoyer",
     "sex": "Sexe",
     "status": "Statut",
     "stuff": "Stuff",
@@ -57,7 +56,6 @@
     "team": "Groupe",
     "title": "Titre",
     "usefulSites": "Sites utiles",
-    "validation": "Validation",
     "visibility": "Visibilité",
     "welcome": "Bienvenue.",
     "allRightsReserved": "Tous droits réservés.",
@@ -80,9 +78,8 @@
       }
     },
     "email": {
-      "change": "Modifier l'email",
       "default": "Email",
-      "ifExist": "Si votre email existe, un nouvel email de validation vous a été renvoyé."
+      "change": "Modifier l'email"
     },
     "usernameChange": "Modifier le nom d'utilisateur",
     "error": {
@@ -106,7 +103,7 @@
       "disconnected": "Vous avez été déconnecté(e)."
     },
     "prompt": {
-      "validateEmail": "Votre compte a été créé avec succès. Veuillez valider votre email.",
+      "connect": "Votre compte a été créé avec succès. Veuillez vous connecter.",
       "loginRequired": "Connexion requise !",
       "loginRequiredAction": "Cette action nécessite d'être connecté(e)."
     }
@@ -135,8 +132,7 @@
       "noneOnServer": "Aucun personnage disponible sur ce serveur.",
       "notFound": "Personnage introuvable.",
       "loginRequired": "Vous devez être connecté pour créer un personnage.",
-      "required": "Vous devez avoir au moins un personnage pour créé un évènement.",
-      "disable": "Vous devez avoir au moins un personnage pour rejoindre un évènement."
+      "required": "Vous devez avoir au moins un personnage pour créé un évènement."
     },
     "success": {
       "created": "Vous avez créé un nouveau personnage.",
@@ -155,8 +151,7 @@
     "error": {
       "none": "Aucun commentaire.",
       "notFound": "Commentaire introuvable.",
-      "loginRequired": "Vous devez être connecté pour ajouter un commentaire.",
-      "disable": "Vous devez être connecté pour commenter."
+      "loginRequired": "Vous devez être connecté pour ajouter un commentaire."
     },
     "success": {
       "added": "Vous avez ajouté un nouveau commentaire.",
@@ -233,11 +228,10 @@
     },
     "success": {
       "create": "Création réussie !",
-      "dataUpdated": "Mise à jour réussie !",
-      "deleted": "Suppression réussie !",
       "disconnected": "Vous avez été déconnecté avec succès.",
       "updated": "Vos informations ont été mises à jour avec succès.",
-      "mail": "Email envoyé !"
+      "deleted": "Suppression réussie !",
+      "dataUpdated": "Mise à jour réussie !"
     },
     "data": {
       "deletion": "Suppression de données !"

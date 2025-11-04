@@ -48,7 +48,6 @@
     "profile": "Profile",
     "return": "Return",
     "search": "Search",
-    "send": "Send",
     "select": "Select",
     "sex": "Sex",
     "status": "Status",
@@ -57,7 +56,6 @@
     "team": "Team",
     "title": "Title",
     "usefulSites": "Useful sites",
-    "validation": "Validation",
     "visibility": "visibility",
     "welcome": "Welcome.",
     "allRightsReserved": "All rights reserved.",
@@ -80,9 +78,8 @@
       }
     },
     "email": {
-      "change": "Change email",
       "default": "Email",
-      "ifExist": "If your email exists, a new validation email have been send."
+      "change": "Change email"
     },
     "usernameChange": "Change username",
 
@@ -109,7 +106,7 @@
     },
 
     "prompt": {
-      "validateEmail": "Your account has been successfully created. Please validate your email.",
+      "connect": "Your account has been successfully created. Please log in.",
       "loginRequired": "Login required !",
       "loginRequiredAction": "This action need to be login."
     }
@@ -139,8 +136,7 @@
       "noneOnServer": "No character available on this server.",
       "notFound": "Character not found.",
       "loginRequired": "You must be logged in to create character.",
-      "required": "You must have at least one character to create an event.",
-      "disable": "You need at least one character to join event."
+      "required": "You must have at least one character to create an event."
     },
 
     "success": {
@@ -161,8 +157,7 @@
     "error": {
       "none": "No comment.",
       "notFound": "Comment not found.",
-      "loginRequired": "You must be logged in to add a comment.",
-      "disable": "You must be login to comment."
+      "loginRequired": "You must be logged in to add a comment."
     },
 
     "success": {
@@ -245,11 +240,10 @@
 
     "success": {
       "create": "Create successful !",
-      "dataUpdated": "Update successful !",
-      "deleted": "Deletion successful !",
       "disconnected": "You have been successfully logged out.",
       "updated": "Your information has been successfully updated.",
-      "mail": "Email sended !"
+      "deleted": "Deletion successful !",
+      "dataUpdated": "Update successful !"
     },
 
     "data": {

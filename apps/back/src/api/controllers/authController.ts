@@ -1,38 +1,26 @@
-import crypto from "crypto";
 import argon2 from "argon2";
 import status from "http-status";
 import createHttpError from "http-errors";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import { CookieOptions, NextFunction, Request, Response } from "express";
 
-import { AuthUser } from "../../types/user.js";
 import { Config } from "../../config/config.js";
-import { AuthService } from "../../middlewares/utils/authService.js";
-import { authUserSchema } from "../../middlewares/joi/schemas/auth.js";
-import { MailService } from "../../middlewares/nodemailer/nodemailer.js";
 import { AuthenticatedRequest } from "../../middlewares/utils/authService.js";
+import { AuthUser } from "../../types/user.js";
+import { authUserSchema } from "../../middlewares/joi/schemas/auth.js";
 import { AuthRepository } from "../../middlewares/repository/authRepository.js";
-import { UserRepository } from "../../middlewares/repository/userRepository.js";
+import { AuthService } from "../../middlewares/utils/authService.js";
 
 export class AuthController {
   private config: Config;
   private service: AuthService;
-  private mailService: MailService;
   private repository: AuthRepository;
-  private userRepository: UserRepository;
   private cookieOptions: CookieOptions;
 
-  public constructor(
-    service: AuthService,
-    repository: AuthRepository,
-    userRepository: UserRepository,
-    mailService: MailService,
-  ) {
+  public constructor(service: AuthService, repository: AuthRepository) {
     this.config = Config.getInstance();
     this.service = service;
-    this.mailService = mailService;
     this.repository = repository;
-    this.userRepository = userRepository;
     this.cookieOptions = {
       httpOnly: true,
       secure: this.config.environment === "production",
@@ -44,113 +32,20 @@ export class AuthController {
   }
 
   public async register(req: Request, res: Response, next: NextFunction) {
-    const language = req.headers["accept-language"]?.split(",")[0] || "fr";
-    const { username, mail } = req.body;
+    const username = req.body.username;
 
     try {
-      const isUsernameExist: AuthUser | null =
+      const isExist: AuthUser | null =
         await this.repository.findOneByUsername(username);
 
-      if (isUsernameExist) {
+      if (isExist) {
         const error = createHttpError(status.CONFLICT, "Username forbidden");
         return next(error);
       }
 
-      const isEmailExist: AuthUser | null =
-        await this.repository.findOneByMail(mail);
-
-      if (isEmailExist) {
-        const error = createHttpError(status.CONFLICT, "Email forbidden");
-        return next(error);
-      }
-
-      const token = crypto.randomBytes(32).toString("hex");
-      const expirationDate = new Date(Date.now() + 24 * 60 * 60 * 1000); //24h
-      const userData = {
-        verification_token: token,
-        verification_expires_at: expirationDate,
-        ...req.body,
-      };
-
-      const newUser: AuthUser = await this.repository.register(userData);
-
-      await this.mailService.sendVerificationMail(
-        newUser.mail,
-        language,
-        token,
-      );
+      const newUser: AuthUser = await this.repository.register(req.body);
 
       res.status(status.CREATED).json(newUser);
-    } catch (error) {
-      next(error);
-    }
-  }
-
-  public async verifyEmail(req: Request, res: Response, next: NextFunction) {
-    const token = req.query.token as string;
-
-    try {
-      if (!token)
-        return res
-          .status(status.BAD_REQUEST)
-          .json({ message: "Token not found" });
-
-      const user = await this.repository.findOneByToken(token);
-
-      if (!user)
-        return res.status(status.NOT_FOUND).json({ message: "User not found" });
-
-      if (
-        user.verification_expires_at &&
-        user.verification_expires_at < new Date()
-      )
-        return res
-          .status(status.BAD_REQUEST)
-          .json({ message: "Token expired" });
-
-      user.is_verified = true;
-      user.verification_token = null;
-      user.verification_expires_at = null;
-
-      await this.userRepository.update(user.id, user);
-
-      res.json({ message: "Validated email" });
-    } catch (error) {
-      next(error);
-    }
-  }
-
-  public async resendMailToken(
-    req: Request,
-    res: Response,
-    next: NextFunction,
-  ) {
-    const language = req.headers["accept-language"]?.split(",")[0] || "fr";
-    const { mail } = req.body;
-
-    try {
-      const user: AuthUser | null = await this.repository.findOneByMail(mail);
-
-      if (!user) {
-        return res.json({
-          message: "If this email exists, a new validation email has been sent",
-        });
-      }
-
-      const token = crypto.randomBytes(32).toString("hex");
-      const expirationDate = new Date(Date.now() + 24 * 60 * 60 * 1000); //24h
-      const userData = {
-        verification_token: token,
-        verification_expires_at: expirationDate,
-      };
-
-      await this.userRepository.update(user.id, userData);
-
-      await this.mailService.sendVerificationMail(mail, language, token);
-
-      res
-        .status(status.OK)
-        .json({ message: "A new verification email has been sent." });
     } catch (error) {
       next(error);
     }
@@ -166,14 +61,6 @@ export class AuthController {
         const error = createHttpError(
           status.UNAUTHORIZED,
           "Email or password unavailable",
-        );
-        return next(error);
-      }
-
-      if (user.is_verified !== true) {
-        const error = createHttpError(
-          status.UNAUTHORIZED,
-          "Unverified account",
         );
         return next(error);
       }

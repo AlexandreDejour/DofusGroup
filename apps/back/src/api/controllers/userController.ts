@@ -97,6 +97,7 @@ export class UserController {
 
       const { userId } = req.params;
       const userData: Partial<UserBodyData> = req.body;
+      console.log(userData);
 
       const userUpdated: AuthUser | null = await this.repository.update(
         userId,

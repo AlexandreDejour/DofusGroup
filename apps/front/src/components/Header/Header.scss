@@ -26,18 +26,33 @@
     height: 17.5vh;
   }
 
-  &_logo {
+  &_link {
     width: 17.5%;
     height: 100%;
-    margin-right: 2.5%;
-    background-image: url("/dofusgroup_logo_plein.webp");
-    background-size: contain;
-    background-position: center;
-    background-repeat: no-repeat;
-    font-size: 80%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+
+    &_logo {
+      width: 100%;
+      height: 100%;
+      margin-right: 2.5%;
+      background-image: url("/dofusgroup_logo_plein.webp");
+      background-size: contain;
+      background-position: center;
+      background-repeat: no-repeat;
+      font-size: 90%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    @media (max-width: 1023px) {
+      width: 50%;
+
+      margin-bottom: 2%;
+    }
+
+    @media (max-width: 1280px) {
+      font-size: 80%;
+    }
 
     @media (min-width: 1920px) {
       width: 20%;
@@ -51,6 +66,28 @@
 
     h1 {
       background-color: var(--primary-bg);
+    }
+
+    &_container {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+
+      @media (max-width: 600px) {
+        width: 80%;
+        height: 50%;
+      }
+
+      &_logo {
+        width: 40%;
+        height: 100%;
+        background-image: url("/dofusgroup_logo_plein.webp");
+        background-size: contain;
+        background-position: center;
+        background-repeat: no-repeat;
+      }
     }
   }
 
@@ -116,29 +153,6 @@
           padding: 7.5% 15%;
         }
       }
-    }
-  }
-
-  &_container {
-    width: 50%;
-    height: 100%;
-    margin-bottom: 2%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-
-    @media (max-width: 600px) {
-      width: 80%;
-      height: 50%;
-    }
-
-    &_logo {
-      width: 40%;
-      height: 100%;
-      background-image: url("/dofusgroup_logo_plein.webp");
-      background-size: contain;
-      background-position: center;
-      background-repeat: no-repeat;
     }
   }
 }

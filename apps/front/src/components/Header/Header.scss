@@ -15,7 +15,9 @@
 
   @media (max-width: 600px) {
     width: 100%;
-    height: 175px;
+    height: 150px;
+    margin: 0;
+    justify-content: space-evenly;
   }
 
   @media (min-width: 1920px) {

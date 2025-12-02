@@ -110,12 +110,7 @@ export default function Profile() {
               </p>
             </div>
 
-            <div
-              className="profile_section_actions"
-              title={
-                !userEnriched.characters?.length ? t("event.error.disable") : ""
-              }
-            >
+            <div className="profile_section_actions">
               <button
                 type="button"
                 className="profile_section_actions_button button"
@@ -148,6 +143,11 @@ export default function Profile() {
                 type="button"
                 className="profile_section_actions_button button"
                 onClick={() => openModal("newEvent")}
+                title={
+                  !userEnriched.characters?.length
+                    ? t("event.error.disable")
+                    : ""
+                }
                 disabled={!userEnriched.characters?.length}
                 style={{
                   background: !userEnriched.characters?.length
@@ -204,14 +204,19 @@ export default function Profile() {
             <h2 className="profile_section_title">{t("character.your")}</h2>
             {userEnriched.characters && userEnriched.characters.length ? (
               <ul className="profile_section_list">
-                {userEnriched.characters.map((character) => (
-                  <li key={character.id} className="profile_section_list_item">
-                    <CharacterCard
-                      character={character}
-                      handleDelete={handleDelete}
-                    />
-                  </li>
-                ))}
+                {userEnriched.characters
+                  .sort((a, b) => a.name.localeCompare(b.name))
+                  .map((character) => (
+                    <li
+                      key={character.id}
+                      className="profile_section_list_item"
+                    >
+                      <CharacterCard
+                        character={character}
+                        handleDelete={handleDelete}
+                      />
+                    </li>
+                  ))}
               </ul>
             ) : (
               <p>{t("character.noCharacter")}</p>

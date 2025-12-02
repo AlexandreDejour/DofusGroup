@@ -15,6 +15,8 @@ export class ServerService {
     try {
       const response = await this.axios.get<Server[]>("/servers");
 
+      response.data.sort((a, b) => a.name.localeCompare(b.name));
+
       return response.data;
     } catch (error) {
       handleApiError(error);

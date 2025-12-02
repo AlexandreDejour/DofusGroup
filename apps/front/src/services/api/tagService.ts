@@ -15,6 +15,8 @@ export class TagService {
     try {
       const response = await this.axios.get<Tag[]>("/tags");
 
+      response.data.sort((a, b) => a.name.localeCompare(b.name));
+
       return response.data;
     } catch (error) {
       handleApiError(error);

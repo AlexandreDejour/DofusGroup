@@ -82,6 +82,7 @@ export default function Home() {
               const hasCharacters = await checkUserCharacters();
               if (hasCharacters) openModal("newEvent");
             }}
+            title={!user ? t("event.error.disable") : ""}
             disabled={!user}
             style={{
               background: !user

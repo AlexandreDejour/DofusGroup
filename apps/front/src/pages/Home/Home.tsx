@@ -1,7 +1,6 @@
 import "./Home.scss";
 
-import { isAxiosError } from "axios";
-import { useCallback, useEffect, useState } from "react";
+import { useState } from "react";
 import { useTypedTranslation } from "../../i18n/i18n-helper";
 
 import { Event } from "../../types/event";
@@ -12,24 +11,14 @@ import { useScreen } from "../../contexts/screenContext";
 import { useNotification } from "../../contexts/notificationContext";
 
 import useFetchTags from "./hooks/useFetchTags";
+import useFetchEvents from "./hooks/useFetchEvents";
 import useFetchServers from "./hooks/useFetchServers";
-
-import { Config } from "../../config/config";
-import { ApiClient } from "../../services/client";
-import { UserService } from "../../services/api/userService";
-import { EventService } from "../../services/api/eventService";
+import useSearchHandler from "./hooks/useSearchHandler";
 
 import EventCard from "../../components/EventCard/EventCard";
 import Pagination from "../../components/Pagination/Pagination";
 import EventFilter from "../../components/EventFilter/EventFilter";
-import formDataToObject from "../../contexts/utils/formDataToObject";
-import { SearchForm } from "../../types/form";
-import useFetchEvents from "./hooks/useFetchEvents";
-
-const config = Config.getInstance();
-const axios = new ApiClient(config.backUrl);
-const userService = new UserService(axios);
-const eventService = new EventService(axios);
+import useUserCharactersChecker from "./hooks/useUserCharactersChecker";
 
 export default function Home() {
   const t = useTypedTranslation();
@@ -61,56 +50,8 @@ export default function Home() {
     setTotalPages,
   );
 
-  const checkUserCharacters = useCallback(async () => {
-    if (!user) return;
-
-    try {
-      const response = await userService.getOneEnriched(user.id);
-
-      if (!response.characters?.length) {
-        showError(t("common.minimalCondition"), t("character.error.required"));
-        return false;
-      }
-
-      return true;
-    } catch (error) {
-      if (isAxiosError(error)) {
-        console.error("Axios error:", error.message);
-      } else if (error instanceof Error) {
-        console.error("General error:", error.message);
-      }
-    }
-  }, [user]);
-
-  const handleSearch = useCallback(
-    async (event: React.FormEvent<HTMLFormElement>) => {
-      event.preventDefault();
-
-      const form = event.currentTarget as HTMLFormElement;
-      const formData = new FormData(form);
-
-      try {
-        const keys: (keyof SearchForm)[] = ["title", "tag_id", "server_id"];
-        const filters = formDataToObject<SearchForm>(formData, { keys });
-
-        const filteredEvents = await eventService.getEvents(
-          10,
-          currentPage,
-          filters,
-        );
-
-        setEvents(filteredEvents.events);
-        setTotalPages(filteredEvents.totalPages);
-      } catch (error) {
-        if (isAxiosError(error)) {
-          console.error("Axios error:", error.message);
-        } else if (error instanceof Error) {
-          console.error("General error:", error.message);
-        }
-      }
-    },
-    [],
-  );
+  const checkUserCharacters = useUserCharactersChecker(user, showError, t);
+  const handleSearch = useSearchHandler(currentPage, setEvents, setTotalPages);
 
   return (
     <main className="home">

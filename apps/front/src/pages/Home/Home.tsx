@@ -4,34 +4,32 @@ import { isAxiosError } from "axios";
 import { useCallback, useEffect, useState } from "react";
 import { useTypedTranslation } from "../../i18n/i18n-helper";
 
-import { Tag } from "../../types/tag";
 import { Event } from "../../types/event";
-import { Server } from "../../types/server";
 
 import { useAuth } from "../../contexts/authContext";
 import { useModal } from "../../contexts/modalContext";
 import { useScreen } from "../../contexts/screenContext";
 import { useNotification } from "../../contexts/notificationContext";
 
+import useFetchTags from "./hooks/useFetchTags";
+import useFetchServers from "./hooks/useFetchServers";
+
 import { Config } from "../../config/config";
 import { ApiClient } from "../../services/client";
-import { TagService } from "../../services/api/tagService";
 import { UserService } from "../../services/api/userService";
 import { EventService } from "../../services/api/eventService";
-import { ServerService } from "../../services/api/serverService";
 
 import EventCard from "../../components/EventCard/EventCard";
 import Pagination from "../../components/Pagination/Pagination";
 import EventFilter from "../../components/EventFilter/EventFilter";
 import formDataToObject from "../../contexts/utils/formDataToObject";
 import { SearchForm } from "../../types/form";
+import useFetchEvents from "./hooks/useFetchEvents";
 
 const config = Config.getInstance();
 const axios = new ApiClient(config.backUrl);
-const tagService = new TagService(axios);
 const userService = new UserService(axios);
 const eventService = new EventService(axios);
-const serverService = new ServerService(axios);
 
 export default function Home() {
   const t = useTypedTranslation();
@@ -44,13 +42,24 @@ export default function Home() {
   const [totalPages, setTotalPages] = useState(1);
   const [currentPage, setCurrentPage] = useState(1);
 
-  const [tags, setTags] = useState<Tag[]>([]);
   const [events, setEvents] = useState<Event[]>([]);
-  const [servers, setServers] = useState<Server[]>([]);
 
   const [tag, setTag] = useState<string>("");
   const [title, setTitle] = useState<string>("");
   const [server, setServer] = useState<string>("");
+
+  const { tags, isLoading: tagsLoading, error: tagsError } = useFetchTags();
+  const {
+    servers,
+    isLoading: serversLoading,
+    error: serversError,
+  } = useFetchServers();
+  const { isLoading: eventsLoading, error: eventsError } = useFetchEvents(
+    events,
+    setEvents,
+    currentPage,
+    setTotalPages,
+  );
 
   const checkUserCharacters = useCallback(async () => {
     if (!user) return;
@@ -72,55 +81,6 @@ export default function Home() {
       }
     }
   }, [user]);
-
-  useEffect(() => {
-    const fetchEvents = async () => {
-      try {
-        const eventsData = await eventService.getEvents(10, currentPage);
-
-        setEvents(eventsData.events);
-        setTotalPages(eventsData.totalPages);
-      } catch (error) {
-        if (isAxiosError(error)) {
-          console.error("Axios error:", error.message);
-        } else if (error instanceof Error) {
-          console.error("General error:", error.message);
-        }
-      }
-    };
-
-    const fetchTags = async () => {
-      try {
-        const tagsData = await tagService.getTags();
-
-        setTags(tagsData);
-      } catch (error) {
-        if (isAxiosError(error)) {
-          console.error("Axios error:", error.message);
-        } else if (error instanceof Error) {
-          console.error("General error:", error.message);
-        }
-      }
-    };
-
-    const fetchServers = async () => {
-      try {
-        const serversData = await serverService.getServers();
-
-        setServers(serversData);
-      } catch (error) {
-        if (isAxiosError(error)) {
-          console.error("Axios error:", error.message);
-        } else if (error instanceof Error) {
-          console.error("General error:", error.message);
-        }
-      }
-    };
-
-    fetchTags();
-    fetchEvents();
-    fetchServers();
-  }, [currentPage, checkUserCharacters]);
 
   const handleSearch = useCallback(
     async (event: React.FormEvent<HTMLFormElement>) => {

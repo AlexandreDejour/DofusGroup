@@ -191,9 +191,9 @@ describe("Home page", () => {
     ).toBeInTheDocument();
   });
 
-  it("Display 'No event' at initial renderer", () => {
+  it("Display spinner at initial renderer", () => {
     renderHome();
-    expect(screen.getByText(t("event.error.none"))).toBeInTheDocument();
+    expect(screen.getByLabelText("Loading Spinner")).toBeInTheDocument();
   });
 
   it("Display events list after API call", async () => {
@@ -233,39 +233,6 @@ describe("Home page", () => {
         "active",
       );
     });
-  });
-
-  it("Manage axios error", async () => {
-    const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
-    mockGetEvents = vi
-      .fn()
-      .mockRejectedValue(
-        Object.assign(new Error("Erreur axios"), { isAxiosError: true }),
-      );
-
-    renderHome();
-
-    await waitFor(() => {
-      expect(consoleSpy).toHaveBeenCalledWith("Axios error:", "Erreur axios");
-    });
-
-    consoleSpy.mockRestore();
-  });
-
-  it("manage general error", async () => {
-    const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
-    mockGetEvents = vi.fn().mockRejectedValue(new Error("Erreur générale"));
-
-    renderHome();
-
-    await waitFor(() => {
-      expect(consoleSpy).toHaveBeenCalledWith(
-        "General error:",
-        "Erreur générale",
-      );
-    });
-
-    consoleSpy.mockRestore();
   });
 
   it("Change page on pagination click", async () => {

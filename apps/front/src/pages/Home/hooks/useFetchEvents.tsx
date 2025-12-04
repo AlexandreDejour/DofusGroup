@@ -39,7 +39,7 @@ export default function useFetchEvents(
     };
 
     fetchEvents();
-  }, [currentPage, setEvents, setTotalPages]);
+  }, [currentPage]);
 
   return { events, isLoading, error };
 }

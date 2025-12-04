@@ -15,6 +15,7 @@ import useFetchEvents from "./hooks/useFetchEvents";
 import useFetchServers from "./hooks/useFetchServers";
 import useSearchHandler from "./hooks/useSearchHandler";
 
+import Spinner from "../../components/Spinner/Spinner";
 import EventCard from "../../components/EventCard/EventCard";
 import Pagination from "../../components/Pagination/Pagination";
 import EventFilter from "../../components/EventFilter/EventFilter";
@@ -37,13 +38,9 @@ export default function Home() {
   const [title, setTitle] = useState<string>("");
   const [server, setServer] = useState<string>("");
 
-  const { tags, isLoading: tagsLoading, error: tagsError } = useFetchTags();
-  const {
-    servers,
-    isLoading: serversLoading,
-    error: serversError,
-  } = useFetchServers();
-  const { isLoading: eventsLoading, error: eventsError } = useFetchEvents(
+  const { tags } = useFetchTags();
+  const { servers } = useFetchServers();
+  const { isLoading: eventsLoading } = useFetchEvents(
     events,
     setEvents,
     currentPage,
@@ -95,16 +92,20 @@ export default function Home() {
         </header>
       )}
 
-      {events && events.length ? (
-        <ul className="home_events">
-          {events.map((event) => (
-            <li key={event.id}>
-              <EventCard event={event} />
-            </li>
-          ))}
-        </ul>
+      {!eventsLoading ? (
+        events && events.length ? (
+          <ul className="home_events">
+            {events.map((event) => (
+              <li key={event.id}>
+                <EventCard event={event} />
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p className="fallback">{t("event.error.none")}</p>
+        )
       ) : (
-        <p className="fallback">{t("event.error.none")}</p>
+        <Spinner size={50} color="#808080" loading={eventsLoading} />
       )}
 
       {totalPages ? (

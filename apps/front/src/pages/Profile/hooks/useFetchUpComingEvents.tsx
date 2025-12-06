@@ -15,7 +15,9 @@ const config = Config.getInstance();
 const axios = new ApiClient(config.backUrl);
 const eventService = new EventService(axios);
 
-export default function useUpComingEvents(userEnriched: UserEnriched | null) {
+export default function useFetchUpComingEvents(
+  userEnriched: UserEnriched | null,
+) {
   const t = useTypedTranslation();
 
   const { showError } = useNotification();

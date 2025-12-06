@@ -6,7 +6,7 @@ import { useAuth } from "../../contexts/authContext";
 import { useModal } from "../../contexts/modalContext";
 
 import useUserEnriched from "./hooks/useFetchUserEnriched";
-import useUpComingEvents from "./hooks/useFetchIncomingEvents";
+import useFetchUpComingEvents from "./hooks/useFetchUpComingEvents";
 
 import Spinner from "../../components/Spinner/Spinner";
 import CharacterCard from "../../components/CharacterCard/CharacterCard";
@@ -20,7 +20,7 @@ export default function Profile() {
 
   const { userEnriched, isLoading: userEnrichedLoading } = useUserEnriched();
   const { upComingEvents, isLoading: upComingEventsLoading } =
-    useUpComingEvents(userEnriched);
+    useFetchUpComingEvents(userEnriched);
 
   return (
     <>

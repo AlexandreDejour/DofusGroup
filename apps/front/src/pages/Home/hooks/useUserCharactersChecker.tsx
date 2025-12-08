@@ -3,20 +3,21 @@ import { isAxiosError } from "axios";
 
 import { User } from "../../../types/user";
 
+import { useTypedTranslation } from "../../../i18n/i18n-helper";
+import { useNotification } from "../../../contexts/notificationContext";
+
 import { Config } from "../../../config/config";
 import { ApiClient } from "../../../services/client";
 import { UserService } from "../../../services/api/userService";
-import { TranslationKeys } from "../../../i18n/i18n-helper";
 
 const config = Config.getInstance();
 const axios = new ApiClient(config.backUrl);
 const userService = new UserService(axios);
 
-export default function useUserCharactersChecker(
-  user: User | null,
-  showError: (title: string, message: string) => void,
-  t: (key: TranslationKeys, options?: Record<string, unknown>) => string,
-) {
+export default function useUserCharactersChecker(user: User | null) {
+  const t = useTypedTranslation();
+  const { showError } = useNotification();
+
   const checkUserCharacters = useCallback(async () => {
     if (!user) return;
 

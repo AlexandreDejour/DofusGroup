@@ -14,6 +14,7 @@ const axios = new ApiClient(config.backUrl);
 const eventService = new EventService(axios);
 
 export default function useCharacterRemover(
+  event: EventEnriched | null,
   setEvent: Dispatch<SetStateAction<EventEnriched | null>>,
 ) {
   const t = useTypedTranslation();

@@ -1,7 +1,6 @@
 import "./EventDetails.scss";
 
-import { isAxiosError } from "axios";
-import { useCallback, useEffect, useState } from "react";
+import { useState } from "react";
 import { useTypedTranslation } from "../../i18n/i18n-helper";
 import { Navigate, useNavigate, useParams } from "react-router";
 
@@ -13,17 +12,11 @@ import { EventEnriched } from "../../types/event";
 
 import { useAuth } from "../../contexts/authContext";
 import { useModal } from "../../contexts/modalContext";
-import { useNotification } from "../../contexts/notificationContext";
 
-import { Config } from "../../config/config";
-import { ApiClient } from "../../services/client";
-import { EventService } from "../../services/api/eventService";
+import useFetchEvent from "./hooks/useFetchEvent";
+import useCharacterRemover from "./hooks/useCharacterRemover";
 
 import EventCharacterCard from "../../components/EventCharacterCard/EventCharacterCard";
-
-const config = Config.getInstance();
-const axios = new ApiClient(config.backUrl);
-const eventService = new EventService(axios);
 
 export default function EventDetails() {
   const navigate = useNavigate();
@@ -31,54 +24,15 @@ export default function EventDetails() {
 
   const { id } = useParams();
   const { user } = useAuth();
-  const { showSuccess, showError } = useNotification();
   const { updateTarget, openModal, handleDelete } = useModal();
 
   const [event, setEvent] = useState<EventEnriched | null>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
 
-  const removeCharacter = useCallback(
-    async (eventId: string, characterId: string) => {
-      try {
-        const response = await eventService.removeCharacter(
-          eventId,
-          characterId,
-        );
-
-        setEvent(response);
-
-        showSuccess(t("system.success.deleted"), t("event.error.characterOut"));
-      } catch (error) {
-        if (error instanceof Error) {
-          showError(t("system.error.default"), error.message);
-        } else {
-          showError(t("system.error.default"), t("system.error.occurred"));
-        }
-      }
-    },
-    [event],
-  );
+  const removeCharacter = useCharacterRemover(setEvent);
 
   if (!id) return <Navigate to="/not-found" replace />;
 
-  useEffect(() => {
-    const fetchEvent = async () => {
-      try {
-        const response = await eventService.getOneEnriched(id);
-
-        setEvent(response);
-      } catch (error) {
-        if (isAxiosError(error)) {
-          console.error("Axios error:", error.message);
-        } else if (error instanceof Error) {
-          console.error("General error:", error.message);
-        }
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    fetchEvent();
-  }, [id, updateTarget]);
+  const { isLoading } = useFetchEvent(id, updateTarget, setEvent);
 
   if (!isLoading && event === null) return <Navigate to="/not-found" replace />;
 

@@ -28,29 +28,26 @@ export default function Comment({ comment, setEvent }: CommentProps) {
 
   return (
     <>
-      <p className="event_section_comments_list_item_content">
+      <p className="content">
         {comment.content}
         {isCommentUpdated(comment) && (
-          <em className="event_section_comments_list_item_content_updated">
-            {" "}
-            ({t("common.updated")})
-          </em>
+          <em className="content_updated"> ({t("common.updated")})</em>
         )}
       </p>
-      <p className="event_section_comments_list_item_author">
+      <p className="author">
         {t("common.author")}: {comment.user.username}
       </p>
       {user?.id === comment.user.id && (
-        <div className="event_section_comments_list_item_buttons">
+        <div className="buttons">
           <button
-            className="event_section_comments_list_item_buttons_update button"
+            className="buttons_update button"
             aria-label={`Update comment ${comment.id}`}
             onClick={() => openModal("updateComment", comment)}
           >
             <FontAwesomeIcon icon={faPen} />
           </button>
           <button
-            className="event_section_comments_list_item_buttons_delete button delete"
+            className="buttons_delete button delete"
             aria-label={`Delete comment ${comment.id}`}
             onClick={() => {
               handleDelete("comment", comment.id);

@@ -9,12 +9,12 @@ import { faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import { EventEnriched } from "../../types/event";
-import { Comment } from "../../types/comment";
 
 import { useAuth } from "../../contexts/authContext";
 import { useModal } from "../../contexts/modalContext";
 
 import useFetchEvent from "./hooks/useFetchEvent";
+import isCommentUpdated from "./utils/isCommentUpdated";
 import useCharacterRemover from "./hooks/useCharacterRemover";
 
 import EventCharacterCard from "../../components/EventCharacterCard/EventCharacterCard";
@@ -36,17 +36,6 @@ export default function EventDetails() {
   const { isLoading } = useFetchEvent(id, updateTarget, setEvent);
 
   if (!isLoading && event === null) return <Navigate to="/not-found" replace />;
-
-  function isCommentUpdated(comment: Comment) {
-    const created = new Date(comment.createdAt);
-    const updated = new Date(comment.updatedAt);
-
-    if (Number.isNaN(created.getTime()) || Number.isNaN(updated.getTime())) {
-      return false;
-    }
-
-    return created.getTime() !== updated.getTime();
-  }
 
   return (
     <main className="event">

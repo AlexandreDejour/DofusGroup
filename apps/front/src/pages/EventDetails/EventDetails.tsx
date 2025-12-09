@@ -9,6 +9,7 @@ import { faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import { EventEnriched } from "../../types/event";
+import { Comment } from "../../types/comment";
 
 import { useAuth } from "../../contexts/authContext";
 import { useModal } from "../../contexts/modalContext";
@@ -35,6 +36,17 @@ export default function EventDetails() {
   const { isLoading } = useFetchEvent(id, updateTarget, setEvent);
 
   if (!isLoading && event === null) return <Navigate to="/not-found" replace />;
+
+  function isCommentUpdated(comment: Comment) {
+    const created = new Date(comment.createdAt);
+    const updated = new Date(comment.updatedAt);
+
+    if (Number.isNaN(created.getTime()) || Number.isNaN(updated.getTime())) {
+      return false;
+    }
+
+    return created.getTime() !== updated.getTime();
+  }
 
   return (
     <main className="event">
@@ -152,6 +164,12 @@ export default function EventDetails() {
                 >
                   <p className="event_section_comments_list_item_content">
                     {comment.content}
+                    {isCommentUpdated(comment) && (
+                      <em className="event_section_comments_list_item_content_updated">
+                        {" "}
+                        ({t("common.updated")})
+                      </em>
+                    )}
                   </p>
                   <p className="event_section_comments_list_item_author">
                     {t("common.author")}: {comment.user.username}

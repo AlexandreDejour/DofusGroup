@@ -40,5 +40,5 @@ export default function useFetchEvent(
     fetchEvent();
   }, [id, updateTarget]);
 
-  return { event, isLoading, error };
+  return { isLoading, error };
 }

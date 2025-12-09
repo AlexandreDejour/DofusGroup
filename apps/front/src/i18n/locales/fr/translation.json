@@ -55,6 +55,7 @@
     "subArea": "Sous-zone",
     "team": "Groupe",
     "title": "Titre",
+    "updated": "modifié",
     "usefulSites": "Sites utiles",
     "visibility": "Visibilité",
     "welcome": "Bienvenue.",
@@ -144,7 +145,7 @@
   },
 
   "comment": {
-    "single": "Commentaire",
+    "single": "Commenter",
     "add": "Ajouter un commentaire !",
     "new": "Nouveau commentaire !",
     "change": "Modifier un commentaire",

@@ -28,7 +28,7 @@ export default function EventDetails() {
 
   const [event, setEvent] = useState<EventEnriched | null>(null);
 
-  const removeCharacter = useCharacterRemover(setEvent);
+  const removeCharacter = useCharacterRemover(event, setEvent);
 
   if (!id) return <Navigate to="/not-found" replace />;
 

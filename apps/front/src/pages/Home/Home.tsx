@@ -8,7 +8,6 @@ import { Event } from "../../types/event";
 import { useAuth } from "../../contexts/authContext";
 import { useModal } from "../../contexts/modalContext";
 import { useScreen } from "../../contexts/screenContext";
-import { useNotification } from "../../contexts/notificationContext";
 
 import useFetchTags from "./hooks/useFetchTags";
 import useFetchEvents from "./hooks/useFetchEvents";
@@ -27,7 +26,6 @@ export default function Home() {
   const { user } = useAuth();
   const { openModal } = useModal();
   const { isDesktop } = useScreen();
-  const { showError } = useNotification();
 
   const [totalPages, setTotalPages] = useState(1);
   const [currentPage, setCurrentPage] = useState(1);
@@ -47,7 +45,7 @@ export default function Home() {
     setTotalPages,
   );
 
-  const checkUserCharacters = useUserCharactersChecker(user, showError, t);
+  const checkUserCharacters = useUserCharactersChecker(user);
   const handleSearch = useSearchHandler(currentPage, setEvents, setTotalPages);
 
   return (

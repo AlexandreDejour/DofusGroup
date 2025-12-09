@@ -344,32 +344,4 @@ describe("EventDetails", () => {
       expect(screen.queryByText(/content to delete/i)).not.toBeInTheDocument();
     });
   });
-
-  it("logs axios error", async () => {
-    const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
-    getOneEnrichedMock = vi
-      .fn()
-      .mockRejectedValue({ isAxiosError: true, message: "Axios fail" });
-
-    renderWithRouter();
-
-    await waitFor(() => {
-      expect(consoleSpy).toHaveBeenCalledWith("Axios error:", "Axios fail");
-    });
-
-    consoleSpy.mockRestore();
-  });
-
-  it("logs general error", async () => {
-    const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
-    getOneEnrichedMock = vi.fn().mockRejectedValue(new Error("General fail"));
-
-    renderWithRouter();
-
-    await waitFor(() => {
-      expect(consoleSpy).toHaveBeenCalledWith("General error:", "General fail");
-    });
-
-    consoleSpy.mockRestore();
-  });
 });

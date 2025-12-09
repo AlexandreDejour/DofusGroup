@@ -32,6 +32,19 @@ vi.mock("../../../../config/config.ts", () => ({
   },
 }));
 
+const showError = vi.fn();
+vi.mock("../../../../contexts/notificationContext", () => ({
+  __esModule: true,
+  default: ({ children }: { children: React.ReactNode }) => children,
+  useNotification: () => ({
+    showError,
+  }),
+}));
+
+vi.mock("../../../i18n/i18n-helper", () => ({
+  useTypedTranslation: () => (key: string) => key,
+}));
+
 let mockGetOneEnriched: any;
 
 vi.mock("../../../../services/api/userService", () => ({
@@ -43,12 +56,8 @@ vi.mock("../../../../services/api/userService", () => ({
 function setupHook(user: any) {
   const ref = { current: null as any };
 
-  const showError = vi.fn();
-  const t = vi.fn((key: string) => key);
-
   function TestComponent() {
-    ref.current = useUserCharactersChecker(user, showError, t);
-    ref.current._mocks = { showError, t };
+    ref.current = useUserCharactersChecker(user);
     return null;
   }
 
@@ -68,7 +77,7 @@ describe("useUserCharactersChecker hook", () => {
 
     expect(result).toBeUndefined(); // no return, no error
     expect(mockGetOneEnriched).toBeUndefined(); // never called
-    expect(ref.current._mocks.showError).not.toHaveBeenCalled();
+    expect(showError).not.toHaveBeenCalled();
   });
 
   it("Calls showError if user has no characters", async () => {
@@ -83,9 +92,9 @@ describe("useUserCharactersChecker hook", () => {
     expect(mockGetOneEnriched).toHaveBeenCalledWith(42);
     expect(result).toBe(false);
 
-    expect(ref.current._mocks.showError).toHaveBeenCalledWith(
-      "common.minimalCondition",
-      "character.error.required",
+    expect(showError).toHaveBeenCalledWith(
+      "Minimum condition not met !",
+      "You must have at least one character to create an event.",
     );
   });
 
@@ -101,7 +110,7 @@ describe("useUserCharactersChecker hook", () => {
     expect(mockGetOneEnriched).toHaveBeenCalledWith(88);
     expect(result).toBe(true);
 
-    expect(ref.current._mocks.showError).not.toHaveBeenCalled();
+    expect(showError).not.toHaveBeenCalled();
   });
 
   it("Handles axios error gracefully", async () => {
@@ -112,7 +121,7 @@ describe("useUserCharactersChecker hook", () => {
 
     await expect(ref.current()).resolves.not.toThrow();
 
-    expect(ref.current._mocks.showError).not.toHaveBeenCalled();
+    expect(showError).not.toHaveBeenCalled();
   });
 
   it("Handles non-axios error gracefully", async () => {
@@ -123,6 +132,6 @@ describe("useUserCharactersChecker hook", () => {
 
     await expect(ref.current()).resolves.not.toThrow();
 
-    expect(ref.current._mocks.showError).not.toHaveBeenCalled();
+    expect(showError).not.toHaveBeenCalled();
   });
 });

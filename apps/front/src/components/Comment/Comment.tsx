@@ -12,8 +12,8 @@ import { CommentEnriched } from "../../types/comment";
 import { useAuth } from "../../contexts/authContext";
 import { useModal } from "../../contexts/modalContext";
 
+import isCommentUpdated from "./utils/isCommentUpdated";
 import { useTypedTranslation } from "../../i18n/i18n-helper";
-import isCommentUpdated from "../../pages/EventDetails/utils/isCommentUpdated";
 
 interface CommentProps {
   comment: CommentEnriched;

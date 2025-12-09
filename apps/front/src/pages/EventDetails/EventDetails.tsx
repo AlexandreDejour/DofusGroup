@@ -4,19 +4,15 @@ import { useState } from "react";
 import { useTypedTranslation } from "../../i18n/i18n-helper";
 import { Navigate, useNavigate, useParams } from "react-router";
 
-import { faPen } from "@fortawesome/free-solid-svg-icons";
-import { faTrash } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-
 import { EventEnriched } from "../../types/event";
 
 import { useAuth } from "../../contexts/authContext";
 import { useModal } from "../../contexts/modalContext";
 
 import useFetchEvent from "./hooks/useFetchEvent";
-import isCommentUpdated from "./utils/isCommentUpdated";
 import useCharacterRemover from "./hooks/useCharacterRemover";
 
+import Comment from "../../components/Comment/Comment";
 import EventCharacterCard from "../../components/EventCharacterCard/EventCharacterCard";
 
 export default function EventDetails() {
@@ -151,48 +147,7 @@ export default function EventDetails() {
                   key={comment.id}
                   className="event_section_comments_list_item"
                 >
-                  <p className="event_section_comments_list_item_content">
-                    {comment.content}
-                    {isCommentUpdated(comment) && (
-                      <em className="event_section_comments_list_item_content_updated">
-                        {" "}
-                        ({t("common.updated")})
-                      </em>
-                    )}
-                  </p>
-                  <p className="event_section_comments_list_item_author">
-                    {t("common.author")}: {comment.user.username}
-                  </p>
-                  {user?.id === comment.user.id && (
-                    <div className="event_section_comments_list_item_buttons">
-                      <button
-                        className="event_section_comments_list_item_buttons_update button"
-                        aria-label={`Update comment ${comment.id}`}
-                        onClick={() => openModal("updateComment", comment)}
-                      >
-                        <FontAwesomeIcon icon={faPen} />
-                      </button>
-                      <button
-                        className="event_section_comments_list_item_buttons_delete button delete"
-                        aria-label={`Delete comment ${comment.id}`}
-                        onClick={() => {
-                          handleDelete("comment", comment.id);
-                          setEvent((prev) =>
-                            prev
-                              ? {
-                                  ...prev,
-                                  comments: prev.comments.filter(
-                                    (c) => c.id !== comment.id,
-                                  ),
-                                }
-                              : prev,
-                          );
-                        }}
-                      >
-                        <FontAwesomeIcon icon={faTrash} />
-                      </button>
-                    </div>
-                  )}
+                  <Comment comment={comment} setEvent={setEvent} />
                 </li>
               ))}
             </ul>

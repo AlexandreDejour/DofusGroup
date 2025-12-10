@@ -8,6 +8,8 @@ import { useModal } from "../../contexts/modalContext";
 
 import useFetchCharacter from "./hooks/useFetchCharacter";
 
+import Spinner from "../../components/Spinner/Spinner";
+
 export default function CharacterDetails() {
   const navigate = useNavigate();
   const t = useTypedTranslation();
@@ -95,7 +97,7 @@ export default function CharacterDetails() {
           ) : null}
         </section>
       ) : (
-        <p>{t("common.loading")}</p>
+        <Spinner size={50} color="#808080" loading={isLoading} />
       )}
       <button
         type="button"

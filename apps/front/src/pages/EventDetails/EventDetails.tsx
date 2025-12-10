@@ -12,6 +12,7 @@ import { useModal } from "../../contexts/modalContext";
 import useFetchEvent from "./hooks/useFetchEvent";
 import useCharacterRemover from "./hooks/useCharacterRemover";
 
+import Spinner from "../../components/Spinner/Spinner";
 import Comment from "../../components/Comment/Comment";
 import EventCharacterCard from "../../components/EventCharacterCard/EventCharacterCard";
 
@@ -204,7 +205,7 @@ export default function EventDetails() {
           </div>
         </section>
       ) : (
-        <p>{t("common.loading")}</p>
+        <Spinner size={50} color="#808080" loading={isLoading} />
       )}
       <button
         type="button"

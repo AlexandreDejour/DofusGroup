@@ -21,7 +21,7 @@ export default function EventDetails() {
 
   const { id } = useParams();
   const { user } = useAuth();
-  const { updateTarget, openModal, handleDelete } = useModal();
+  const { openModal, handleDelete } = useModal();
 
   const [event, setEvent] = useState<EventEnriched | null>(null);
 
@@ -29,7 +29,7 @@ export default function EventDetails() {
 
   if (!id) return <Navigate to="/not-found" replace />;
 
-  const { isLoading } = useFetchEvent(id, updateTarget, setEvent);
+  const { isLoading } = useFetchEvent(id, setEvent);
 
   if (!isLoading && event === null) return <Navigate to="/not-found" replace />;
 

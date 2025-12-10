@@ -96,9 +96,9 @@ const mockEvent = {
 
 function renderWithRouter() {
   return render(
-    <MemoryRouter initialEntries={["/events/evt-1"]}>
+    <MemoryRouter initialEntries={["/event/evt-1"]}>
       <Routes>
-        <Route path="/events/:id" element={<EventDetails />} />
+        <Route path="/event/:id" element={<EventDetails />} />
         <Route path="/not-found" element={<p>Not Found Page</p>} />
       </Routes>
     </MemoryRouter>,
@@ -119,17 +119,17 @@ describe("EventDetails", () => {
     vi.clearAllMocks();
   });
 
-  it("renders loading state initially", async () => {
+  it("Display spinner at initial renderer", async () => {
     getOneEnrichedMock = vi
       .fn()
       .mockImplementation(() => new Promise(() => {}));
 
     renderWithRouter();
 
-    expect(screen.getByText(t("common.loading"))).toBeInTheDocument();
+    expect(screen.getByLabelText("Loading Spinner")).toBeInTheDocument();
   });
 
-  it("renders event details after successful fetch", async () => {
+  it("Renders event details after successful fetch", async () => {
     renderWithRouter();
 
     await waitFor(() => {
@@ -147,7 +147,7 @@ describe("EventDetails", () => {
     expect(screen.getByText(/description test/i)).toBeInTheDocument();
   });
 
-  it("shows action buttons if user owns the event", async () => {
+  it("Shows action buttons if user owns the event", async () => {
     renderWithRouter();
 
     await waitFor(() => screen.getByText(/titre test/i));
@@ -160,7 +160,7 @@ describe("EventDetails", () => {
     ).toBeInTheDocument();
   });
 
-  it("calls openModal when clicking Modifier", async () => {
+  it("Calls openModal when clicking Modifier", async () => {
     renderWithRouter();
 
     await waitFor(() => screen.getByText(/titre test/i));
@@ -183,7 +183,7 @@ describe("EventDetails", () => {
     );
   });
 
-  it("calls openModal when clicking Rejoindre", async () => {
+  it("Calls openModal when clicking Rejoindre", async () => {
     renderWithRouter();
 
     await waitFor(() => screen.getByText(/titre test/i));
@@ -195,7 +195,7 @@ describe("EventDetails", () => {
     expect(openModal).toHaveBeenCalledWith("joinEvent", mockEvent);
   });
 
-  it("navigates back when clicking Retour", async () => {
+  it("Navigates back when clicking Retour", async () => {
     renderWithRouter();
 
     await waitFor(() => screen.getByText(/titre test/i));
@@ -204,7 +204,7 @@ describe("EventDetails", () => {
     expect(navigateMock).toHaveBeenCalledWith(-1);
   });
 
-  it("renders nothing and navigates to /not-found if event is null", async () => {
+  it("Renders nothing and navigates to /not-found if event is null", async () => {
     getOneEnrichedMock = vi.fn().mockResolvedValue(null);
 
     renderWithRouter();
@@ -214,7 +214,7 @@ describe("EventDetails", () => {
     });
   });
 
-  it("renders comments with author and content", async () => {
+  it("Renders comments with author and content", async () => {
     const mockEventWithComments = {
       ...mockEvent,
       comments: [
@@ -240,7 +240,7 @@ describe("EventDetails", () => {
     });
   });
 
-  it("shows update and delete buttons only for user's own comment", async () => {
+  it("Shows update and delete buttons only for user's own comment", async () => {
     const mockEventWithComments = {
       ...mockEvent,
       comments: [
@@ -290,7 +290,7 @@ describe("EventDetails", () => {
     });
   });
 
-  it("calls openModal with updateComment when clicking modifier", async () => {
+  it("Calls openModal with updateComment when clicking modifier", async () => {
     const comment = {
       id: "7999dc4e-8760-47ab-92c9-dcde2a6a3e90",
       content: "À modifier",
@@ -313,7 +313,7 @@ describe("EventDetails", () => {
     expect(openModal).toHaveBeenCalledWith("updateComment", comment);
   });
 
-  it("calls handleDelete and removes comment when clicking supprimer", async () => {
+  it("Calls handleDelete and removes comment when clicking supprimer", async () => {
     const comment = {
       id: "7999dc4e-8760-47ab-92c9-dcde2a6a3e90",
       content: "content to delete",

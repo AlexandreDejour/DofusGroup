@@ -2,8 +2,9 @@ import { vi, Mock } from "vitest";
 import { render, act } from "@testing-library/react";
 import { isAxiosError } from "axios";
 
-import useFetchEvent from "../useFetchEvent";
+import useFetchCharacter from "../useFetchCharacter";
 
+// --- Mock axios instance inside ApiClient ---
 vi.mock("axios", () => {
   const axiosInstance = {
     get: vi.fn(),
@@ -22,31 +23,33 @@ vi.mock("axios", () => {
   };
 });
 
-vi.mock("../../../../config/config.ts", () => ({
+// --- Mock Config.getInstance() ---
+vi.mock("../../../../config/config", () => ({
   Config: { getInstance: () => ({ backUrl: "http://localhost" }) },
 }));
 
 let mockGetOneEnriched: any;
 
-vi.mock("../../../../services/api/eventService", () => ({
-  EventService: vi.fn().mockImplementation(() => ({
+// --- Mock CharacterService ---
+vi.mock("../../../../services/api/characterService", () => ({
+  CharacterService: vi.fn().mockImplementation(() => ({
     getOneEnriched: (...args: any[]) => mockGetOneEnriched(...args),
   })),
 }));
 
+// --- Mock modal context ---
 vi.mock("../../../../contexts/modalContext", () => ({
   useModal: () => ({
     updateTarget: null,
   }),
 }));
 
+// Helper to render hook inside a dummy component
 function setupHook(id: string) {
   const ref = { current: null as any };
-  const setEvent = vi.fn();
 
   function TestComponent() {
-    ref.current = useFetchEvent(id, setEvent);
-    ref.current._internal = { setEvent };
+    ref.current = useFetchCharacter(id);
     return null;
   }
 
@@ -54,7 +57,7 @@ function setupHook(id: string) {
   return ref;
 }
 
-describe("useFetchEvent hook", () => {
+describe("useFetchCharacter hook", () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
@@ -62,40 +65,42 @@ describe("useFetchEvent hook", () => {
   it("should initialize with loading true & error null", () => {
     mockGetOneEnriched = vi
       .fn()
-      .mockResolvedValue({ id: "event-1", title: "Test Event" });
+      .mockResolvedValue({ id: "char-1", name: "John Doe" });
 
-    const ref = setupHook("event-1");
+    const ref = setupHook("char-1");
 
     expect(ref.current.isLoading).toBe(true);
     expect(ref.current.error).toBeNull();
+    expect(ref.current.character).toBeNull();
   });
 
-  it("should fetch event successfully", async () => {
-    const mockEvent = { id: "event-1", title: "Test Event" };
-    mockGetOneEnriched = vi.fn().mockResolvedValue(mockEvent);
+  it("should fetch character successfully", async () => {
+    const mockCharacter = { id: "char-1", name: "John Doe" };
+    mockGetOneEnriched = vi.fn().mockResolvedValue(mockCharacter);
 
-    const ref = setupHook("event-1");
-
-    await act(async () => {
-      await Promise.resolve(); // allow useEffect to run
-    });
-
-    expect(ref.current._internal.setEvent).toHaveBeenCalledWith(mockEvent);
-    expect(ref.current.isLoading).toBe(false);
-    expect(ref.current.error).toBeNull();
-  });
-
-  it("should handle axios error", async () => {
-    const errorMessage = "Axios error thrown";
-    mockGetOneEnriched = vi.fn().mockRejectedValue(new Error(errorMessage));
-    (isAxiosError as unknown as Mock).mockReturnValueOnce(true);
-
-    const ref = setupHook("event-1");
+    const ref = setupHook("char-1");
 
     await act(async () => {
       await Promise.resolve();
     });
 
+    expect(ref.current.character).toEqual(mockCharacter);
+    expect(ref.current.isLoading).toBe(false);
+    expect(ref.current.error).toBeNull();
+  });
+
+  it("should handle axios error", async () => {
+    const errorMessage = "Axios error occurred";
+    mockGetOneEnriched = vi.fn().mockRejectedValue(new Error(errorMessage));
+    (isAxiosError as unknown as Mock).mockReturnValueOnce(true);
+
+    const ref = setupHook("char-1");
+
+    await act(async () => {
+      await Promise.resolve();
+    });
+
+    expect(ref.current.character).toBeNull();
     expect(ref.current.isLoading).toBe(false);
     expect(ref.current.error).toBe(errorMessage);
   });
@@ -105,12 +110,13 @@ describe("useFetchEvent hook", () => {
     mockGetOneEnriched = vi.fn().mockRejectedValue(new Error(errorMessage));
     (isAxiosError as unknown as Mock).mockReturnValueOnce(false);
 
-    const ref = setupHook("event-1");
+    const ref = setupHook("char-1");
 
     await act(async () => {
       await Promise.resolve();
     });
 
+    expect(ref.current.character).toBeNull();
     expect(ref.current.isLoading).toBe(false);
     expect(ref.current.error).toBe(errorMessage);
   });

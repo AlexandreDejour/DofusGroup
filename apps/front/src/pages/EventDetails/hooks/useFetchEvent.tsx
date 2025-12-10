@@ -1,13 +1,12 @@
 import { isAxiosError } from "axios";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 
-import { CommentEnriched } from "../../../types/comment";
-import { Event, EventEnriched } from "../../../types/event";
-import { CharacterEnriched } from "../../../types/character";
+import { EventEnriched } from "../../../types/event";
 
 import { Config } from "../../../config/config";
 import { ApiClient } from "../../../services/client";
 import { EventService } from "../../../services/api/eventService";
+import { useModal } from "../../../contexts/modalContext";
 
 const config = Config.getInstance();
 const axios = new ApiClient(config.backUrl);
@@ -15,9 +14,10 @@ const eventService = new EventService(axios);
 
 export default function useFetchEvent(
   id: string,
-  updateTarget: Event | CharacterEnriched | CommentEnriched | null,
   setEvent: Dispatch<SetStateAction<EventEnriched | null>>,
 ) {
+  const { updateTarget } = useModal();
+
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -37,6 +37,7 @@ export default function useFetchEvent(
         setIsLoading(false);
       }
     };
+
     fetchEvent();
   }, [id, updateTarget]);
 

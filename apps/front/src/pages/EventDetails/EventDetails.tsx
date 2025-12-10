@@ -12,6 +12,7 @@ import { useModal } from "../../contexts/modalContext";
 import useFetchEvent from "./hooks/useFetchEvent";
 import useCharacterRemover from "./hooks/useCharacterRemover";
 
+import Spinner from "../../components/Spinner/Spinner";
 import Comment from "../../components/Comment/Comment";
 import EventCharacterCard from "../../components/EventCharacterCard/EventCharacterCard";
 
@@ -21,7 +22,7 @@ export default function EventDetails() {
 
   const { id } = useParams();
   const { user } = useAuth();
-  const { updateTarget, openModal, handleDelete } = useModal();
+  const { openModal, handleDelete } = useModal();
 
   const [event, setEvent] = useState<EventEnriched | null>(null);
 
@@ -29,7 +30,7 @@ export default function EventDetails() {
 
   if (!id) return <Navigate to="/not-found" replace />;
 
-  const { isLoading } = useFetchEvent(id, updateTarget, setEvent);
+  const { isLoading } = useFetchEvent(id, setEvent);
 
   if (!isLoading && event === null) return <Navigate to="/not-found" replace />;
 
@@ -204,7 +205,7 @@ export default function EventDetails() {
           </div>
         </section>
       ) : (
-        <p>{t("common.loading")}</p>
+        <Spinner size={50} color="#808080" loading={isLoading} />
       )}
       <button
         type="button"

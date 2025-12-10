@@ -1,22 +1,14 @@
 import "./CharacterDetails.scss";
 
-import { isAxiosError } from "axios";
-import { useEffect, useState } from "react";
 import { useTypedTranslation } from "../../i18n/i18n-helper";
 import { Navigate, useNavigate, useParams } from "react-router";
-
-import { CharacterEnriched } from "../../types/character";
 
 import { useAuth } from "../../contexts/authContext";
 import { useModal } from "../../contexts/modalContext";
 
-import { Config } from "../../config/config";
-import { ApiClient } from "../../services/client";
-import { CharacterService } from "../../services/api/characterService";
+import useFetchCharacter from "./hooks/useFetchCharacter";
 
-const config = Config.getInstance();
-const axios = new ApiClient(config.backUrl);
-const characterService = new CharacterService(axios);
+import Spinner from "../../components/Spinner/Spinner";
 
 export default function CharacterDetails() {
   const navigate = useNavigate();
@@ -24,31 +16,11 @@ export default function CharacterDetails() {
 
   const { id } = useParams();
   const { user } = useAuth();
-  const { updateTarget, openModal, handleDelete } = useModal();
-
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [character, setCharacter] = useState<CharacterEnriched | null>(null);
+  const { openModal, handleDelete } = useModal();
 
   if (!id) return <Navigate to="/not-found" replace />;
 
-  useEffect(() => {
-    const fetchCharacter = async () => {
-      try {
-        const response = await characterService.getOneEnriched(id);
-
-        setCharacter(response);
-      } catch (error) {
-        if (isAxiosError(error)) {
-          console.error("Axios error:", error.message);
-        } else if (error instanceof Error) {
-          console.error("General error:", error.message);
-        }
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    fetchCharacter();
-  }, [id, updateTarget]);
+  const { character, isLoading } = useFetchCharacter(id);
 
   if (!isLoading && character === null)
     return <Navigate to="/not-found" replace />;
@@ -125,7 +97,7 @@ export default function CharacterDetails() {
           ) : null}
         </section>
       ) : (
-        <p>{t("common.loading")}</p>
+        <Spinner size={50} color="#808080" loading={isLoading} />
       )}
       <button
         type="button"

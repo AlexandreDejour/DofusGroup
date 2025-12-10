@@ -21,7 +21,7 @@ export default function useFetchCharacter(id: string) {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchEvent = async () => {
+    const fetchCharacter = async () => {
       setIsLoading(true);
       setError(null);
 
@@ -36,7 +36,8 @@ export default function useFetchCharacter(id: string) {
         setIsLoading(false);
       }
     };
-    fetchEvent();
+
+    fetchCharacter();
   }, [id, updateTarget]);
 
   return { character, isLoading, error };

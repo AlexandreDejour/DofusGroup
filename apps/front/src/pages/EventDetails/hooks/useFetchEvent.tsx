@@ -37,6 +37,7 @@ export default function useFetchEvent(
         setIsLoading(false);
       }
     };
+
     fetchEvent();
   }, [id, updateTarget]);
 

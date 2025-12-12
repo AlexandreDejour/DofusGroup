@@ -1,13 +1,13 @@
 import { Dispatch, SetStateAction, useCallback } from "react";
 
-import { Event } from "../../../types/event";
-import { SearchForm } from "../../../types/form";
+import { Event } from "../types/event";
+import { SearchForm } from "../types/form";
 
-import { Config } from "../../../config/config";
-import { ApiClient } from "../../../services/client";
-import { EventService } from "../../../services/api/eventService";
+import { Config } from "../config/config";
+import { ApiClient } from "../services/client";
+import { EventService } from "../services/api/eventService";
 
-import formDataToObject from "../../../contexts/utils/formDataToObject";
+import formDataToObject from "../contexts/utils/formDataToObject";
 
 const config = Config.getInstance();
 const axios = new ApiClient(config.backUrl);

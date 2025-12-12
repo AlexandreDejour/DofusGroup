@@ -1,14 +1,14 @@
 import { useCallback } from "react";
 import { isAxiosError } from "axios";
 
-import { User } from "../../../types/user";
+import { User } from "../types/user";
 
-import { useTypedTranslation } from "../../../i18n/i18n-helper";
-import { useNotification } from "../../../contexts/notificationContext";
+import { useTypedTranslation } from "../i18n/i18n-helper";
+import { useNotification } from "../contexts/notificationContext";
 
-import { Config } from "../../../config/config";
-import { ApiClient } from "../../../services/client";
-import { UserService } from "../../../services/api/userService";
+import { Config } from "../config/config";
+import { ApiClient } from "../services/client";
+import { UserService } from "../services/api/userService";
 
 const config = Config.getInstance();
 const axios = new ApiClient(config.backUrl);

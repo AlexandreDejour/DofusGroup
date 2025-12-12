@@ -1,30 +1,30 @@
 import { isAxiosError } from "axios";
 import { useEffect, useState } from "react";
 
-import { Tag } from "../../../types/tag";
+import { Server } from "../types/server";
 
-import { Config } from "../../../config/config";
-import { ApiClient } from "../../../services/client";
-import { TagService } from "../../../services/api/tagService";
+import { Config } from "../config/config";
+import { ApiClient } from "../services/client";
+import { ServerService } from "../services/api/serverService";
 
 const config = Config.getInstance();
 const axios = new ApiClient(config.backUrl);
-const tagService = new TagService(axios);
+const serverService = new ServerService(axios);
 
-export default function useFetchTags() {
-  const [tags, setTags] = useState<Tag[]>([]);
+export default function useFetchServers() {
+  const [servers, setServers] = useState<Server[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchTags = async () => {
+    const fetchServers = async () => {
       setIsLoading(true);
       setError(null);
 
       try {
-        const tagsData = await tagService.getTags();
+        const serversData = await serverService.getServers();
 
-        setTags(tagsData);
+        setServers(serversData);
       } catch (error) {
         if (isAxiosError(error)) setError(error.message);
         else if (error instanceof Error) setError(error.message);
@@ -33,8 +33,8 @@ export default function useFetchTags() {
       }
     };
 
-    fetchTags();
+    fetchServers();
   }, []);
 
-  return { tags, isLoading, error };
+  return { servers, isLoading, error };
 }

@@ -30,7 +30,7 @@ vi.mock("axios", () => {
   };
 });
 
-vi.mock("../../../../config/config.ts", () => ({
+vi.mock("../../config/config.ts", () => ({
   Config: {
     getInstance: () => ({
       baseUrl: "http://localhost",
@@ -40,7 +40,7 @@ vi.mock("../../../../config/config.ts", () => ({
 
 let mockGetTags: any;
 
-vi.mock("../../../../services/api/tagService", () => {
+vi.mock("../../services/api/tagService", () => {
   return {
     TagService: vi.fn().mockImplementation(() => ({
       getTags: (...args: any[]) => mockGetTags(...args),

@@ -24,7 +24,7 @@ vi.mock("axios", () => {
   };
 });
 
-vi.mock("../../../../config/config.ts", () => ({
+vi.mock("../../config/config.ts", () => ({
   Config: {
     getInstance: () => ({
       backUrl: "http://localhost",
@@ -33,7 +33,7 @@ vi.mock("../../../../config/config.ts", () => ({
 }));
 
 const showError = vi.fn();
-vi.mock("../../../../contexts/notificationContext", () => ({
+vi.mock("../../contexts/notificationContext", () => ({
   __esModule: true,
   default: ({ children }: { children: React.ReactNode }) => children,
   useNotification: () => ({
@@ -47,7 +47,7 @@ vi.mock("../../../i18n/i18n-helper", () => ({
 
 let mockGetOneEnriched: any;
 
-vi.mock("../../../../services/api/userService", () => ({
+vi.mock("../../services/api/userService", () => ({
   UserService: vi.fn().mockImplementation(() => ({
     getOneEnriched: (...args: any[]) => mockGetOneEnriched(...args),
   })),

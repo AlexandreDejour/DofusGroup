@@ -1,11 +1,11 @@
 import { isAxiosError } from "axios";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 
-import { Event } from "../../../types/event";
+import { Event } from "../types/event";
 
-import { Config } from "../../../config/config";
-import { ApiClient } from "../../../services/client";
-import { EventService } from "../../../services/api/eventService";
+import { Config } from "../config/config";
+import { ApiClient } from "../services/client";
+import { EventService } from "../services/api/eventService";
 
 const config = Config.getInstance();
 const axios = new ApiClient(config.backUrl);

@@ -25,7 +25,7 @@ vi.mock("axios", () => {
   };
 });
 
-vi.mock("../../../../config/config.ts", () => ({
+vi.mock("../../config/config.ts", () => ({
   Config: {
     getInstance: () => ({
       backUrl: "http://localhost",
@@ -35,7 +35,7 @@ vi.mock("../../../../config/config.ts", () => ({
 
 let mockGetEvents: any;
 
-vi.mock("../../../../services/api/eventService", () => {
+vi.mock("../../services/api/eventService", () => {
   return {
     EventService: vi.fn().mockImplementation(() => ({
       getEvents: (...args: any[]) => mockGetEvents(...args),

@@ -9,16 +9,16 @@ import { useAuth } from "../../contexts/authContext";
 import { useModal } from "../../contexts/modalContext";
 import { useScreen } from "../../contexts/screenContext";
 
-import useFetchTags from "./hooks/useFetchTags";
-import useFetchEvents from "./hooks/useFetchEvents";
-import useFetchServers from "./hooks/useFetchServers";
-import useSearchHandler from "./hooks/useSearchHandler";
+import useFetchTags from "../../hooks/useFetchTags";
+import useFetchEvents from "../../hooks/useFetchEvents";
+import useFetchServers from "../../hooks/useFetchServers";
+import useSearchHandler from "../../hooks/useSearchHandler";
 
 import Spinner from "../../components/Spinner/Spinner";
 import EventCard from "../../components/EventCard/EventCard";
 import Pagination from "../../components/Pagination/Pagination";
 import EventFilter from "../../components/EventFilter/EventFilter";
-import useUserCharactersChecker from "./hooks/useUserCharactersChecker";
+import useUserCharactersChecker from "../../hooks/useUserCharactersChecker";
 
 export default function Home() {
   const t = useTypedTranslation();

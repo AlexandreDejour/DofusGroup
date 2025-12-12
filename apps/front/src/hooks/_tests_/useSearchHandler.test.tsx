@@ -3,7 +3,7 @@ import { render } from "@testing-library/react";
 import useSearchHandler from "../useSearchHandler";
 
 const mockFormDataToObject = vi.fn();
-vi.mock("../../../../contexts/utils/formDataToObject", () => ({
+vi.mock("../../contexts/utils/formDataToObject", () => ({
   default: (...args: any[]) => mockFormDataToObject(...args),
 }));
 
@@ -26,7 +26,7 @@ vi.mock("axios", () => {
   };
 });
 
-vi.mock("../../../../config/config.ts", () => ({
+vi.mock("../../config/config.ts", () => ({
   Config: {
     getInstance: () => ({
       backUrl: "http://localhost",
@@ -36,7 +36,7 @@ vi.mock("../../../../config/config.ts", () => ({
 
 let mockGetEvents: any;
 
-vi.mock("../../../../services/api/eventService", () => ({
+vi.mock("../../services/api/eventService", () => ({
   EventService: vi.fn().mockImplementation(() => ({
     getEvents: (...args: any[]) => mockGetEvents(...args),
   })),

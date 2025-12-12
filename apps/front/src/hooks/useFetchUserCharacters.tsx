@@ -11,7 +11,7 @@ const config = Config.getInstance();
 const axios = new ApiClient(config.backUrl);
 const characterService = new CharacterService(axios);
 
-export default function useFetchUserCharacters(id: string) {
+export default function useFetchUserCharacters(id: string, server: string) {
   const [characters, setCharacters] = useState<Character[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -22,9 +22,15 @@ export default function useFetchUserCharacters(id: string) {
       setError(null);
 
       try {
-        const charactersData = await characterService.getAllByUserId(id);
+        const response = await characterService.getAllByUserId(id);
 
-        setCharacters(charactersData);
+        if (server !== "") {
+          const characters = response.filter(
+            (character) => character.server_id === server,
+          );
+
+          setCharacters(characters);
+        } else setCharacters(response);
       } catch (error) {
         if (isAxiosError(error)) setError(error.message);
         else if (error instanceof Error) setError(error.message);
@@ -34,7 +40,7 @@ export default function useFetchUserCharacters(id: string) {
     };
 
     fetchCharacters();
-  }, []);
+  }, [server]);
 
   return { characters, isLoading, error };
 }

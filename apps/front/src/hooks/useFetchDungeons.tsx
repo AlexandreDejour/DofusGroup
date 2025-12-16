@@ -36,6 +36,7 @@ export default function useFetchDungeons(
         if (!selectedTag || selectedTag.name !== "Donjon") {
           setIsDungeon(false);
           setDungeons([]); // Réinitialisation
+          setIsLoading(false);
           return;
         }
 

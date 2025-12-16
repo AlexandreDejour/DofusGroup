@@ -26,7 +26,11 @@ export default function useFetchSubAreas(areas: Area[], area: string) {
 
       const selectedArea = areas.find((a) => a.name[lang] === area);
 
-      if (!selectedArea) return;
+      if (!selectedArea) {
+        setSubAreas([]);
+        setIsLoading(false);
+        return;
+      }
 
       try {
         const subAreasData = await dofusDBService.getSubAreas(selectedArea.id);

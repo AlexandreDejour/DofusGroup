@@ -5,27 +5,22 @@ import { render, act } from "@testing-library/react";
 import useFetchUserCharacters from "../useFetchUserCharacters";
 
 vi.mock("axios", () => {
-  // fake axiosInstance return by axios.create()
   const axiosInstance = {
     get: vi.fn(),
     post: vi.fn(),
     put: vi.fn(),
     delete: vi.fn(),
 
-    // interceptors fully functional to avoid errors
     interceptors: {
       request: { use: vi.fn(), eject: vi.fn() },
       response: { use: vi.fn(), eject: vi.fn() },
     },
   };
 
-  // complete axios mock
   return {
     default: {
       create: vi.fn(() => axiosInstance),
     },
-
-    // named mock
     isAxiosError: vi.fn(),
   };
 });
@@ -33,89 +28,64 @@ vi.mock("axios", () => {
 vi.mock("../../config/config.ts", () => ({
   Config: {
     getInstance: () => ({
-      baseUrl: "http://localhost",
+      backUrl: "http://localhost",
     }),
   },
 }));
 
-let mockGetCharacters: any;
+let mockGetAllByUserId: any;
 
 vi.mock("../../services/api/characterService", () => {
   return {
     CharacterService: vi.fn().mockImplementation(() => ({
-      getAllByUserId: (...args: any[]) => mockGetCharacters(...args),
+      getAllByUserId: (...args: any[]) => mockGetAllByUserId(...args),
     })),
   };
 });
 
-vi.mock("../../contexts/authContext", () => ({
-  __esModule: true,
-  useAuth: () => ({
-    user: {
-      id: "15ff46b5-60f3-4e86-98bc-da8fcaa3e29e",
-      username: "toto",
-      characters: [
-        {
-          id: "9f0eaa8c-eec1-4e85-9365-7653c1330325",
-          name: "Chronos",
-        },
-      ],
-      events: [
-        {
-          id: "ef9891a6-dcab-4846-8f9c-2044efe2096c",
-          title: "Rafle perco",
-        },
-      ],
-    },
-    setUser: vi.fn(),
-    isAuthLoading: false,
-  }),
-}));
-
-const mockUser = {
-  id: "15ff46b5-60f3-4e86-98bc-da8fcaa3e29e",
-  username: "toto",
-};
-
 // Utility function to test hook
-function setupHook() {
+function setupHook(userId = "user-1", server = "") {
   const ref = { current: null as any };
 
-  function TestComponent() {
-    ref.current = useFetchUserCharacters(mockUser.id);
+  function TestComponent({ server }: { server: string }) {
+    ref.current = useFetchUserCharacters(userId, server);
     return null;
   }
 
-  render(<TestComponent />);
-  return ref;
+  const renderResult = render(<TestComponent server={server} />);
+
+  return {
+    ref,
+    rerender: (newServer: string) =>
+      renderResult.rerender(<TestComponent server={newServer} />),
+  };
 }
 
-describe("useFetchCharacters hook", () => {
+describe("useFetchUserCharacters hook", () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
-  it("Must be init with void state and isLoading true", () => {
-    mockGetCharacters = vi.fn().mockResolvedValue([]);
-    const ref = setupHook();
+  it("Must init with empty characters and isLoading true", () => {
+    mockGetAllByUserId = vi.fn().mockResolvedValue([]);
+
+    const { ref } = setupHook();
 
     expect(ref.current.characters).toEqual([]);
     expect(ref.current.isLoading).toBe(true);
     expect(ref.current.error).toBeNull();
   });
 
-  it("Must successfully fetch characters", async () => {
+  it("Must fetch all characters when server is empty", async () => {
     const mockCharacters = [
-      {
-        id: "9f0eaa8c-eec1-4e85-9365-7653c1330325",
-        name: "Chronos",
-      },
+      { id: 1, name: "char1", server_id: "server1" },
+      { id: 2, name: "char2", server_id: "server2" },
     ];
-    mockGetCharacters = vi.fn().mockResolvedValue(mockCharacters);
 
-    const ref = setupHook();
+    mockGetAllByUserId = vi.fn().mockResolvedValue(mockCharacters);
 
-    // await async effect
+    const { ref } = setupHook("user-1", "");
+
     await act(async () => {
       await Promise.resolve();
     });
@@ -125,14 +95,67 @@ describe("useFetchCharacters hook", () => {
     expect(ref.current.error).toBeNull();
   });
 
+  it("Must filter characters by server when server is provided", async () => {
+    const mockCharacters = [
+      { id: 1, name: "char1", server_id: "server1" },
+      { id: 2, name: "char2", server_id: "server2" },
+      { id: 3, name: "char3", server_id: "server1" },
+    ];
+
+    mockGetAllByUserId = vi.fn().mockResolvedValue(mockCharacters);
+
+    const { ref } = setupHook("user-1", "server1");
+
+    await act(async () => {
+      await Promise.resolve();
+    });
+
+    expect(ref.current.characters).toEqual([
+      { id: 1, name: "char1", server_id: "server1" },
+      { id: 3, name: "char3", server_id: "server1" },
+    ]);
+
+    expect(ref.current.isLoading).toBe(false);
+    expect(ref.current.error).toBeNull();
+  });
+
+  it("Must refetch characters when server changes", async () => {
+    const mockCharacters = [
+      { id: 1, name: "char1", server_id: "server1" },
+      { id: 2, name: "char2", server_id: "server2" },
+    ];
+
+    mockGetAllByUserId = vi.fn().mockResolvedValue(mockCharacters);
+
+    const { ref, rerender } = setupHook("user-1", "server1");
+
+    await act(async () => {
+      await Promise.resolve();
+    });
+
+    expect(ref.current.characters).toEqual([
+      { id: 1, name: "char1", server_id: "server1" },
+    ]);
+
+    await act(async () => {
+      rerender("server2");
+      await Promise.resolve();
+    });
+
+    expect(ref.current.characters).toEqual([
+      { id: 2, name: "char2", server_id: "server2" },
+    ]);
+
+    expect(mockGetAllByUserId).toHaveBeenCalledTimes(2);
+  });
+
   it("Must handle axios error", async () => {
     const errorMessage = "Axios error";
-    mockGetCharacters = vi.fn().mockRejectedValue(new Error(errorMessage));
+    mockGetAllByUserId = vi.fn().mockRejectedValue(new Error(errorMessage));
 
-    // force isAxiosError to be true
     (isAxiosError as unknown as Mock).mockReturnValueOnce(true);
 
-    const ref = setupHook();
+    const { ref } = setupHook();
 
     await act(async () => {
       await Promise.resolve();
@@ -144,13 +167,12 @@ describe("useFetchCharacters hook", () => {
   });
 
   it("Must handle general error", async () => {
-    const errorMessage = "Some error";
-    mockGetCharacters = vi.fn().mockRejectedValue(new Error(errorMessage));
+    const errorMessage = "Unknown error";
+    mockGetAllByUserId = vi.fn().mockRejectedValue(new Error(errorMessage));
 
-    // force isAxiosError to be false
     (isAxiosError as unknown as Mock).mockReturnValueOnce(false);
 
-    const ref = setupHook();
+    const { ref } = setupHook();
 
     await act(async () => {
       await Promise.resolve();

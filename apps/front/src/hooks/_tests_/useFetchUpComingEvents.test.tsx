@@ -7,7 +7,7 @@ import { UserEnriched } from "../../types/user";
 import useFetchUpComingEvents from "../useFetchUpComingEvents";
 
 // mock i18n so t(...) returns key
-vi.mock("../../../../i18n/i18n-helper", () => ({
+vi.mock("../../i18n/i18n-helper", () => ({
   useTypedTranslation: () => (k: string) => k,
 }));
 
@@ -95,7 +95,7 @@ vi.mock("axios", () => {
   };
 });
 
-vi.mock("../../../../config/config.ts", () => ({
+vi.mock("../../config/config.ts", () => ({
   Config: {
     getInstance: () => ({
       baseUrl: "http://localhost",
@@ -105,7 +105,7 @@ vi.mock("../../../../config/config.ts", () => ({
 
 // replace previous serverService mock by EventService mock used in the hook
 let mockGetRegistered: any;
-vi.mock("../../../../services/api/eventService", () => {
+vi.mock("../../services/api/eventService", () => {
   return {
     EventService: vi.fn().mockImplementation(() => ({
       getRegistered: (...args: any[]) => mockGetRegistered(...args),
@@ -115,7 +115,7 @@ vi.mock("../../../../services/api/eventService", () => {
 
 // Mock useNotification
 const showError = vi.fn();
-vi.mock("../../../../contexts/notificationContext", () => ({
+vi.mock("../../contexts/notificationContext", () => ({
   __esModule: true,
   default: ({ children }: { children: React.ReactNode }) => children,
   useNotification: () => ({

@@ -1,13 +1,13 @@
 import { Dispatch, SetStateAction, useCallback } from "react";
 
-import { EventEnriched } from "../../../types/event";
+import { EventEnriched } from "../types/event";
 
-import { useTypedTranslation } from "../../../i18n/i18n-helper";
-import { useNotification } from "../../../contexts/notificationContext";
+import { useTypedTranslation } from "../i18n/i18n-helper";
+import { useNotification } from "../contexts/notificationContext";
 
-import { Config } from "../../../config/config";
-import { ApiClient } from "../../../services/client";
-import { EventService } from "../../../services/api/eventService";
+import { Config } from "../config/config";
+import { ApiClient } from "../services/client";
+import { EventService } from "../services/api/eventService";
 
 const config = Config.getInstance();
 const axios = new ApiClient(config.backUrl);

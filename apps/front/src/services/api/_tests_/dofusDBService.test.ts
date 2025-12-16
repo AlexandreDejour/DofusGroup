@@ -1,3 +1,4 @@
+import qs from "qs";
 import { describe, it, beforeEach, vi, expect, Mock } from "vitest";
 
 import { Dungeon } from "../../../types/dofusDB";
@@ -24,7 +25,7 @@ describe("DofusDBService", () => {
   });
 
   describe("getAreas", () => {
-    it("should fetch all areas from the API with pagination", async () => {
+    it("fetches all areas from the API with pagination", async () => {
       const mockDataPage1 = Array.from({ length: 50 }, (_, i) => ({
         id: i + 1,
         name: `Area ${i + 1}`,
@@ -34,12 +35,9 @@ describe("DofusDBService", () => {
         name: `Area ${i + 51}`,
       }));
 
-      apiClientMock.instance.get.mockResolvedValueOnce({
-        data: { data: mockDataPage1 },
-      });
-      apiClientMock.instance.get.mockResolvedValueOnce({
-        data: { data: mockDataPage2 },
-      });
+      apiClientMock.instance.get
+        .mockResolvedValueOnce({ data: { data: mockDataPage1 } })
+        .mockResolvedValueOnce({ data: { data: mockDataPage2 } });
 
       const areas = await dofusDBService.getAreas();
 
@@ -51,24 +49,22 @@ describe("DofusDBService", () => {
         params: { $limit: 50, $skip: 50 },
       });
 
-      expect(areas.length).toBe(70);
-      expect(areas[0].name).toBe("Area 1");
-      expect(areas[69].name).toBe("Area 70");
+      expect(areas).toHaveLength(70);
+      expect(areas![0].name).toBe("Area 1");
+      expect(areas![69].name).toBe("Area 70");
     });
 
-    it("should handle API errors and rethrow them", async () => {
+    it("calls handleApiError and returns undefined on axios failure", async () => {
       const error = new Error("API network error");
       apiClientMock.instance.get.mockRejectedValue(error);
 
-      (handleApiError as unknown as Mock).mockImplementation(() => {
-        throw error;
-      });
+      // ensure handleApiError does not throw in this test
+      (handleApiError as unknown as Mock).mockImplementation(() => undefined);
 
-      await expect(dofusDBService.getAreas()).rejects.toThrow(
-        "API network error",
-      );
+      const result = await dofusDBService.getAreas();
 
       expect(handleApiError).toHaveBeenCalledWith(error);
+      expect(result).toBeUndefined();
     });
   });
 
@@ -80,7 +76,7 @@ describe("DofusDBService", () => {
       name: `SubArea ${i + 1}`,
     }));
 
-    it("should fetch sub-areas for a given area ID", async () => {
+    it("fetches sub-areas for a given area ID", async () => {
       apiClientMock.instance.get.mockResolvedValue({
         data: { data: mockData },
       });
@@ -93,51 +89,20 @@ describe("DofusDBService", () => {
       expect(subAreas).toEqual(mockData);
     });
 
-    it("should handle API errors and rethrow them", async () => {
+    it("calls handleApiError and returns undefined on axios failure", async () => {
       const error = new Error("API server error");
       apiClientMock.instance.get.mockRejectedValue(error);
+      (handleApiError as unknown as Mock).mockImplementation(() => undefined);
 
-      (handleApiError as unknown as Mock).mockImplementation(() => {
-        throw error;
-      });
-
-      await expect(dofusDBService.getSubAreas(areaId)).rejects.toThrow(
-        "API server error",
-      );
+      const result = await dofusDBService.getSubAreas(areaId);
 
       expect(handleApiError).toHaveBeenCalledWith(error);
+      expect(result).toBeUndefined();
     });
   });
 
-  describe("getDungeons", () => {
-    it("should fetch a specific dungeon by ID", async () => {
-      const dungeonId = 42;
-      const mockDungeon: Dungeon[] = [
-        {
-          id: dungeonId,
-          name: {
-            id: "123",
-            en: "Bouftou Dungeon",
-            es: "Mazmorra de Bouftou",
-            pt: "Calabouço Bouftou",
-            de: "Bouftou-Dungeon",
-            fr: "Donjon Bouftou",
-          },
-        },
-      ];
-      apiClientMock.instance.get.mockResolvedValue({
-        data: { data: mockDungeon },
-      });
-
-      const dungeons = await dofusDBService.getDungeons(dungeonId);
-
-      expect(apiClientMock.instance.get).toHaveBeenCalledWith("/dungeons", {
-        params: { id: dungeonId },
-      });
-      expect(dungeons).toEqual(mockDungeon);
-    });
-
-    it("should fetch all dungeons with pagination when no ID is provided", async () => {
+  describe("getDungeons (paginated)", () => {
+    it("fetches all dungeons with pagination when no ID is provided", async () => {
       const mockDataPage1 = Array.from({ length: 50 }, (_, i) => ({
         id: i + 1,
         name: `Dungeon ${i + 1}`,
@@ -160,22 +125,63 @@ describe("DofusDBService", () => {
       expect(apiClientMock.instance.get).toHaveBeenCalledWith("/dungeons", {
         params: { $limit: 50, $skip: 50 },
       });
-      expect(dungeons.length).toBe(65);
+      expect(dungeons).toHaveLength(65);
     });
 
-    it("should handle API errors and rethrow them", async () => {
+    it("calls handleApiError and returns undefined on axios failure", async () => {
       const error = new Error("Dungeon API error");
       apiClientMock.instance.get.mockRejectedValue(error);
+      (handleApiError as unknown as Mock).mockImplementation(() => undefined);
 
-      (handleApiError as unknown as Mock).mockImplementation(() => {
-        throw error;
-      });
-
-      await expect(dofusDBService.getDungeons(1)).rejects.toThrow(
-        "Dungeon API error",
-      );
+      const result = await dofusDBService.getDungeons();
 
       expect(handleApiError).toHaveBeenCalledWith(error);
+      expect(result).toBeUndefined();
+    });
+  });
+
+  describe("getDungeonsById", () => {
+    it("fetches dungeons by array of ids using repeat paramsSerializer", async () => {
+      const dungeonIds = [1, 2, 3];
+      const mockDungeon: Dungeon[] = [
+        { id: 1, name: { fr: "D1" } } as any,
+        { id: 2, name: { fr: "D2" } } as any,
+      ];
+      apiClientMock.instance.get.mockResolvedValue({
+        data: { data: mockDungeon },
+      });
+
+      const result = await dofusDBService.getDungeonsById(dungeonIds);
+
+      // assert axios get called with params and a paramsSerializer function
+      expect(apiClientMock.instance.get).toHaveBeenCalledTimes(1);
+      const callArgs = apiClientMock.instance.get.mock.calls[0];
+      expect(callArgs[0]).toBe("/dungeons");
+      const options = callArgs[1];
+      expect(options.params).toEqual({ id: dungeonIds });
+      expect(typeof options.paramsSerializer).toBe("function");
+
+      // verify paramsSerializer produces repeat format (qs.stringify with arrayFormat: 'repeat')
+      const qsString = options.paramsSerializer({ id: dungeonIds });
+      expect(qsString).toBe(
+        qs.stringify({ id: dungeonIds }, { arrayFormat: "repeat" }),
+      );
+
+      // result mapping
+      expect(result).toEqual(
+        mockDungeon.map((d) => ({ id: d.id, name: d.name })),
+      );
+    });
+
+    it("calls handleApiError and returns undefined on axios failure", async () => {
+      const error = new Error("getDungeonsById error");
+      apiClientMock.instance.get.mockRejectedValue(error);
+      (handleApiError as unknown as Mock).mockImplementation(() => undefined);
+
+      const result = await dofusDBService.getDungeonsById([1]);
+
+      expect(handleApiError).toHaveBeenCalledWith(error);
+      expect(result).toBeUndefined();
     });
   });
 });

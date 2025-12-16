@@ -1,13 +1,13 @@
 import { isAxiosError } from "axios";
 import { useEffect, useState } from "react";
 
-import { CharacterEnriched } from "../../../types/character";
+import { CharacterEnriched } from "../types/character";
 
-import { useModal } from "../../../contexts/modalContext";
+import { useModal } from "../contexts/modalContext";
 
-import { Config } from "../../../config/config";
-import { ApiClient } from "../../../services/client";
-import { CharacterService } from "../../../services/api/characterService";
+import { Config } from "../config/config";
+import { ApiClient } from "../services/client";
+import { CharacterService } from "../services/api/characterService";
 
 const config = Config.getInstance();
 const axios = new ApiClient(config.backUrl);

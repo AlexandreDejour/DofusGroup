@@ -1,15 +1,15 @@
 import { isAxiosError } from "axios";
 import { useEffect, useState } from "react";
-import { useTypedTranslation } from "../../../i18n/i18n-helper";
+import { useTypedTranslation } from "../i18n/i18n-helper";
 
-import { Event } from "../../../types/event";
-import { UserEnriched } from "../../../types/user";
+import { Event } from "../types/event";
+import { UserEnriched } from "../types/user";
 
-import { useNotification } from "../../../contexts/notificationContext";
+import { useNotification } from "../contexts/notificationContext";
 
-import { Config } from "../../../config/config";
-import { ApiClient } from "../../../services/client";
-import { EventService } from "../../../services/api/eventService";
+import { Config } from "../config/config";
+import { ApiClient } from "../services/client";
+import { EventService } from "../services/api/eventService";
 
 const config = Config.getInstance();
 const axios = new ApiClient(config.backUrl);

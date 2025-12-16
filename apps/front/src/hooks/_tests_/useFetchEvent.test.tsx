@@ -22,19 +22,19 @@ vi.mock("axios", () => {
   };
 });
 
-vi.mock("../../../../config/config.ts", () => ({
+vi.mock("../../config/config.ts", () => ({
   Config: { getInstance: () => ({ backUrl: "http://localhost" }) },
 }));
 
 let mockGetOneEnriched: any;
 
-vi.mock("../../../../services/api/eventService", () => ({
+vi.mock("../../services/api/eventService", () => ({
   EventService: vi.fn().mockImplementation(() => ({
     getOneEnriched: (...args: any[]) => mockGetOneEnriched(...args),
   })),
 }));
 
-vi.mock("../../../../contexts/modalContext", () => ({
+vi.mock("../../contexts/modalContext", () => ({
   useModal: () => ({
     updateTarget: null,
   }),

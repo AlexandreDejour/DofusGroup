@@ -128,7 +128,7 @@ export default function Profile() {
             {!userEnrichedLoading ? (
               userEnriched.events && userEnriched.events.length ? (
                 <ul className="profile_section_list">
-                  {userEnriched.events.map((event: EventEnriched) => (
+                  {userEnriched.events.map((event) => (
                     <li key={event.id} className="profile_section_list_item">
                       <ProfileEventCard
                         event={event}

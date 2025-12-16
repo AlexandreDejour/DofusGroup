@@ -194,11 +194,11 @@ const mockUpcoming = [
 ];
 
 // Hook mocks
-vi.mock("../hooks/useFetchUserEnriched", () => ({
+vi.mock("../../../hooks/useFetchUserEnriched", () => ({
   __esModule: true,
   default: vi.fn(),
 }));
-vi.mock("../hooks/useFetchUpComingEvents", () => ({
+vi.mock("../../../hooks/useFetchUpComingEvents", () => ({
   __esModule: true,
   default: vi.fn(),
 }));

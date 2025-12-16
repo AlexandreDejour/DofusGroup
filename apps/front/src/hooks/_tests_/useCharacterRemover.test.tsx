@@ -6,7 +6,7 @@ import useCharacterRemover from "../useCharacterRemover";
 const showError = vi.fn();
 const showSuccess = vi.fn();
 
-vi.mock("../../../../contexts/notificationContext", () => ({
+vi.mock("../../contexts/notificationContext", () => ({
   useNotification: () => ({
     showSuccess,
     showError,
@@ -15,7 +15,7 @@ vi.mock("../../../../contexts/notificationContext", () => ({
 
 let mockRemoveCharacter: any;
 
-vi.mock("../../../../services/api/eventService", () => {
+vi.mock("../../services/api/eventService", () => {
   return {
     EventService: vi.fn().mockImplementation(() => ({
       removeCharacter: (...args: any[]) => mockRemoveCharacter(...args),

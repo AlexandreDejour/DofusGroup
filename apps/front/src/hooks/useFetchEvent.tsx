@@ -1,12 +1,12 @@
 import { isAxiosError } from "axios";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 
-import { EventEnriched } from "../../../types/event";
+import { EventEnriched } from "../types/event";
 
-import { Config } from "../../../config/config";
-import { ApiClient } from "../../../services/client";
-import { EventService } from "../../../services/api/eventService";
-import { useModal } from "../../../contexts/modalContext";
+import { Config } from "../config/config";
+import { ApiClient } from "../services/client";
+import { EventService } from "../services/api/eventService";
+import { useModal } from "../contexts/modalContext";
 
 const config = Config.getInstance();
 const axios = new ApiClient(config.backUrl);

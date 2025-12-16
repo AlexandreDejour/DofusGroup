@@ -1,16 +1,16 @@
 import { isAxiosError } from "axios";
 import { useNavigate } from "react-router";
 import { useEffect, useState } from "react";
-import { useTypedTranslation } from "../../../i18n/i18n-helper";
+import { useTypedTranslation } from "../i18n/i18n-helper";
 
-import { UserEnriched } from "../../../types/user";
+import { UserEnriched } from "../types/user";
 
-import { useAuth } from "../../../contexts/authContext";
-import { useNotification } from "../../../contexts/notificationContext";
+import { useAuth } from "../contexts/authContext";
+import { useNotification } from "../contexts/notificationContext";
 
-import { Config } from "../../../config/config";
-import { ApiClient } from "../../../services/client";
-import { UserService } from "../../../services/api/userService";
+import { Config } from "../config/config";
+import { ApiClient } from "../services/client";
+import { UserService } from "../services/api/userService";
 
 const config = Config.getInstance();
 const axios = new ApiClient(config.backUrl);

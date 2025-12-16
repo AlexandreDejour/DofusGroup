@@ -24,21 +24,21 @@ vi.mock("axios", () => {
 });
 
 // --- Mock Config.getInstance() ---
-vi.mock("../../../../config/config", () => ({
+vi.mock("../../config/config", () => ({
   Config: { getInstance: () => ({ backUrl: "http://localhost" }) },
 }));
 
 let mockGetOneEnriched: any;
 
 // --- Mock CharacterService ---
-vi.mock("../../../../services/api/characterService", () => ({
+vi.mock("../../services/api/characterService", () => ({
   CharacterService: vi.fn().mockImplementation(() => ({
     getOneEnriched: (...args: any[]) => mockGetOneEnriched(...args),
   })),
 }));
 
 // --- Mock modal context ---
-vi.mock("../../../../contexts/modalContext", () => ({
+vi.mock("../../contexts/modalContext", () => ({
   useModal: () => ({
     updateTarget: null,
   }),

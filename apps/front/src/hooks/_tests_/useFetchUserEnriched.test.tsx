@@ -8,7 +8,7 @@ import useFetchUserEnriched from "../useFetchUserEnriched";
 import { UserEnriched } from "../../types/user";
 
 // mock i18n helper so t(...) returns the key
-vi.mock("../../../../i18n/i18n-helper", () => ({
+vi.mock("../../i18n/i18n-helper", () => ({
   useTypedTranslation: () => (k: string) => k,
 }));
 
@@ -32,7 +32,7 @@ vi.mock("axios", () => {
   };
 });
 
-vi.mock("../../../../config/config.ts", () => ({
+vi.mock("../../config/config.ts", () => ({
   Config: {
     getInstance: () => ({
       baseUrl: "http://localhost",
@@ -42,7 +42,7 @@ vi.mock("../../../../config/config.ts", () => ({
 
 // Mock useNotification
 const showError = vi.fn();
-vi.mock("../../../../contexts/notificationContext", () => ({
+vi.mock("../../contexts/notificationContext", () => ({
   __esModule: true,
   default: ({ children }: { children: React.ReactNode }) => children,
   useNotification: () => ({
@@ -51,7 +51,7 @@ vi.mock("../../../../contexts/notificationContext", () => ({
 }));
 
 // Mock useAuth
-vi.mock("../../../../contexts/authContext", () => ({
+vi.mock("../../contexts/authContext", () => ({
   __esModule: true,
   useAuth: () => ({
     user: {
@@ -77,7 +77,7 @@ vi.mock("../../../../contexts/authContext", () => ({
 
 let mockGetOneEnriched: any;
 
-vi.mock("../../../../services/api/userService", () => {
+vi.mock("../../services/api/userService", () => {
   return {
     UserService: vi.fn().mockImplementation(() => ({
       getOneEnriched: (...args: any[]) => mockGetOneEnriched(...args),

@@ -203,8 +203,8 @@ vi.mock("../hooks/useFetchUpComingEvents", () => ({
   default: vi.fn(),
 }));
 
-import useUserEnriched from "../hooks/useFetchUserEnriched";
-import useFetchUpComingEvents from "../hooks/useFetchUpComingEvents";
+import useUserEnriched from "../../../hooks/useFetchUserEnriched";
+import useFetchUpComingEvents from "../../../hooks/useFetchUpComingEvents";
 
 // Helper to render Profile inside router + notification provider
 const renderProfile = () =>

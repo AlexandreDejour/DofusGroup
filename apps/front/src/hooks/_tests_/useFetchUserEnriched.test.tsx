@@ -2,10 +2,10 @@ import { Mock, vi } from "vitest";
 import { isAxiosError } from "axios";
 import { render, act, waitFor } from "@testing-library/react";
 
-import * as authContext from "../../../../contexts/authContext";
+import * as authContext from "../../contexts/authContext";
 
 import useFetchUserEnriched from "../useFetchUserEnriched";
-import { UserEnriched } from "../../../../types/user";
+import { UserEnriched } from "../../types/user";
 
 // mock i18n helper so t(...) returns the key
 vi.mock("../../../../i18n/i18n-helper", () => ({

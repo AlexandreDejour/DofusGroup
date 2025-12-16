@@ -2,7 +2,7 @@ import { Mock, vi } from "vitest";
 import { isAxiosError } from "axios";
 import { render, act } from "@testing-library/react";
 
-import { UserEnriched } from "../../../../types/user";
+import { UserEnriched } from "../../types/user";
 
 import useFetchUpComingEvents from "../useFetchUpComingEvents";
 

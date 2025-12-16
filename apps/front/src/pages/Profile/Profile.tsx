@@ -5,12 +5,14 @@ import { useTypedTranslation } from "../../i18n/i18n-helper";
 import { useAuth } from "../../contexts/authContext";
 import { useModal } from "../../contexts/modalContext";
 
-import useUserEnriched from "./hooks/useFetchUserEnriched";
-import useFetchUpComingEvents from "./hooks/useFetchUpComingEvents";
+import useUserEnriched from "../../hooks/useFetchUserEnriched";
+import useFetchUpComingEvents from "../../hooks/useFetchUpComingEvents";
 
 import Spinner from "../../components/Spinner/Spinner";
 import CharacterCard from "../../components/CharacterCard/CharacterCard";
 import ProfileEventCard from "../../components/ProfileEventCard/ProfileEventCard";
+import { EventEnriched } from "../../types/event";
+import { CharacterEnriched } from "../../types/character";
 
 export default function Profile() {
   const t = useTypedTranslation();
@@ -126,7 +128,7 @@ export default function Profile() {
             {!userEnrichedLoading ? (
               userEnriched.events && userEnriched.events.length ? (
                 <ul className="profile_section_list">
-                  {userEnriched.events.map((event) => (
+                  {userEnriched.events.map((event: EventEnriched) => (
                     <li key={event.id} className="profile_section_list_item">
                       <ProfileEventCard
                         event={event}
@@ -153,8 +155,10 @@ export default function Profile() {
               userEnriched.characters && userEnriched.characters.length ? (
                 <ul className="profile_section_list">
                   {userEnriched.characters
-                    .sort((a, b) => a.name.localeCompare(b.name))
-                    .map((character) => (
+                    .sort((a: CharacterEnriched, b: CharacterEnriched) =>
+                      a.name.localeCompare(b.name),
+                    )
+                    .map((character: CharacterEnriched) => (
                       <li
                         key={character.id}
                         className="profile_section_list_item"

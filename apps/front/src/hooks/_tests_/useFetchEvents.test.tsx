@@ -33,8 +33,16 @@ vi.mock("../../config/config.ts", () => ({
   },
 }));
 
-let mockGetEvents: any;
+let mockRefreshKey = 0;
+vi.mock("../../contexts/modalContext", () => ({
+  __esModule: true,
+  default: ({ children }: { children: React.ReactNode }) => children,
+  useModal: () => ({
+    refreshKey: mockRefreshKey,
+  }),
+}));
 
+let mockGetEvents: any;
 vi.mock("../../services/api/eventService", () => {
   return {
     EventService: vi.fn().mockImplementation(() => ({
@@ -59,8 +67,12 @@ function setupHook(initialPage = 1) {
     return null;
   }
 
-  render(<TestComponent />);
-  return ref;
+  const renderResult = render(<TestComponent />);
+
+  return {
+    ref,
+    rerender: () => renderResult.rerender(<TestComponent />),
+  };
 }
 
 describe("useFetchEvents hook", () => {
@@ -74,7 +86,7 @@ describe("useFetchEvents hook", () => {
       totalPages: 1,
     });
 
-    const ref = setupHook();
+    const { ref } = setupHook();
 
     expect(ref.current.isLoading).toBe(true);
     expect(ref.current.error).toBeNull();
@@ -93,7 +105,7 @@ describe("useFetchEvents hook", () => {
 
     mockGetEvents = vi.fn().mockResolvedValue(mockResponse);
 
-    const ref = setupHook(2); // test page 2
+    const { ref } = setupHook(2); // test page 2
 
     await act(async () => {
       await Promise.resolve();
@@ -105,13 +117,52 @@ describe("useFetchEvents hook", () => {
     expect(ref.current.error).toBeNull();
   });
 
+  it("Must refetch events when refreshKey changes", async () => {
+    mockGetEvents = vi
+      .fn()
+      .mockResolvedValueOnce({
+        events: [{ id: 1, title: "Initial event" }],
+        totalPages: 1,
+      })
+      .mockResolvedValueOnce({
+        events: [{ id: 2, title: "Refreshed event" }],
+        totalPages: 2,
+      });
+
+    const { ref, rerender } = setupHook();
+
+    // wait first fetch
+    await act(async () => {
+      await Promise.resolve();
+    });
+
+    expect(ref.current._internal.events).toEqual([
+      { id: 1, title: "Initial event" },
+    ]);
+
+    // change refreshKey value
+    mockRefreshKey++;
+
+    rerender();
+
+    await act(async () => {
+      await Promise.resolve();
+    });
+
+    expect(ref.current._internal.events).toEqual([
+      { id: 2, title: "Refreshed event" },
+    ]);
+
+    expect(mockGetEvents).toHaveBeenCalledTimes(2);
+  });
+
   it("Must handle axios error", async () => {
     const errorMessage = "Axios error thrown";
     mockGetEvents = vi.fn().mockRejectedValue(new Error(errorMessage));
 
     (isAxiosError as unknown as Mock).mockReturnValueOnce(true);
 
-    const ref = setupHook();
+    const { ref } = setupHook();
 
     await act(async () => {
       await Promise.resolve();
@@ -128,7 +179,7 @@ describe("useFetchEvents hook", () => {
 
     (isAxiosError as unknown as Mock).mockReturnValueOnce(false);
 
-    const ref = setupHook();
+    const { ref } = setupHook();
 
     await act(async () => {
       await Promise.resolve();

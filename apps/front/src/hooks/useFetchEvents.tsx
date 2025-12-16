@@ -18,8 +18,9 @@ export default function useFetchEvents(
   currentPage: number,
   setTotalPages: Dispatch<SetStateAction<number>>,
 ) {
-  const [isLoading, setIsLoading] = useState(true);
   const { refreshKey } = useModal();
+
+  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {

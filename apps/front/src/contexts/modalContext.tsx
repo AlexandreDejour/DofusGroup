@@ -40,6 +40,7 @@ const characterService = new CharacterService(axios);
 
 export interface ModalContextType {
   isOpen: boolean;
+  refreshKey: number;
   modalType: string | null; // ex: "register", "login", "newEvent", etc.
   updateTarget: Event | CharacterEnriched | CommentEnriched | null;
   formData: FormData;
@@ -92,6 +93,7 @@ export default function ModalProvider({ children }: ModalProviderProps) {
   const { showSuccess, showError } = useNotification();
 
   const [isOpen, setIsOpen] = useState(false);
+  const [refreshKey, setRefreshKey] = useState(0);
   const [modalType, setModalType] = useState<ModalType>(null);
   const [formData, setFormData] = useState<FormData>(new FormData());
   const [updateTarget, setUpdateTarget] = useState<
@@ -338,6 +340,7 @@ export default function ModalProvider({ children }: ModalProviderProps) {
           const response = await userService.getOne(user.id);
 
           setUser({ ...user, ...response });
+          setRefreshKey(refreshKey + 1);
 
           showSuccess(t("system.success.create"), t("event.create"));
         }
@@ -618,6 +621,7 @@ export default function ModalProvider({ children }: ModalProviderProps) {
 
   const contextValues: ModalContextType = {
     isOpen,
+    refreshKey,
     modalType,
     updateTarget,
     formData,

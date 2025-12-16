@@ -6,6 +6,7 @@ import { Event } from "../types/event";
 import { Config } from "../config/config";
 import { ApiClient } from "../services/client";
 import { EventService } from "../services/api/eventService";
+import { useModal } from "../contexts/modalContext";
 
 const config = Config.getInstance();
 const axios = new ApiClient(config.backUrl);
@@ -18,6 +19,7 @@ export default function useFetchEvents(
   setTotalPages: Dispatch<SetStateAction<number>>,
 ) {
   const [isLoading, setIsLoading] = useState(true);
+  const { refreshKey } = useModal();
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -39,7 +41,7 @@ export default function useFetchEvents(
     };
 
     fetchEvents();
-  }, [currentPage]);
+  }, [currentPage, refreshKey]);
 
   return { events, isLoading, error };
 }

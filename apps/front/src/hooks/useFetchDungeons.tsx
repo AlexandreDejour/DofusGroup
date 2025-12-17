@@ -35,7 +35,7 @@ export default function useFetchDungeons(
         const selectedTag = tags.find((t) => t.id === tag);
         if (!selectedTag || selectedTag.name !== "Donjon") {
           setIsDungeon(false);
-          setDungeons([]); // Réinitialisation
+          setDungeons([]); // Reset
           setIsLoading(false);
           return;
         }

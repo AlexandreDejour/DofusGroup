@@ -13,7 +13,6 @@ import useFetchTags from "../../../../hooks/useFetchTags";
 import useFetchAreas from "../../../../hooks/useFetchAreas";
 import useFetchSubAreas from "../../../../hooks/useFetchSubAreas";
 import useFetchDungeons from "../../../../hooks/useFetchDungeons";
-import useFetchServers from "../../../../hooks/useFetchServers";
 
 interface NewEventFormProps {
   updateTarget: EventEnriched;
@@ -45,7 +44,6 @@ export default function NewEventForm({
   const [tag, setTag] = useState<string>(updateTarget.tag.id);
   const [title, setTitle] = useState<string>(updateTarget.title);
   const [status, setStatus] = useState<string>(updateTarget.status);
-  const [server, setServer] = useState<string>(updateTarget.server.id);
   const [duration, setDuration] = useState<number>(updateTarget.duration);
 
   const statutes = [
@@ -55,9 +53,8 @@ export default function NewEventForm({
 
   const { tags } = useFetchTags();
   const { areas } = useFetchAreas();
-  const { servers } = useFetchServers();
   const { subAreas } = useFetchSubAreas(areas, area);
-  const { dungeons, isDungeon } = useFetchDungeons(
+  const { dungeons, isDungeon, isLoading } = useFetchDungeons(
     tags,
     tag,
     areas,
@@ -97,15 +94,6 @@ export default function NewEventForm({
           generateOptions={generateOptions.tags}
           label={t("tag.default")}
           onChange={setTag}
-        />
-
-        <SelectOptions
-          name="server"
-          value={server}
-          items={servers}
-          generateOptions={generateOptions.servers}
-          label={t("server.default")}
-          onChange={setServer}
         />
 
         <label htmlFor="date" className="update_event_form_label date">

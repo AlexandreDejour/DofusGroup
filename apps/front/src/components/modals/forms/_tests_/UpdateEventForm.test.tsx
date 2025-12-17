@@ -59,16 +59,6 @@ vi.mock("../../../../hooks/useFetchDungeons", () => ({
   }),
 }));
 
-vi.mock("../../../../hooks/useFetchServers", () => ({
-  __esModule: true,
-  default: () => ({
-    servers: [
-      { id: "srv-1", name: "Salar" },
-      { id: "srv-2", name: "Dakal" },
-    ],
-  }),
-}));
-
 // SelectOptions mock
 vi.mock("../../formComponents/Options/SelectOptions", () => ({
   __esModule: true,
@@ -197,7 +187,7 @@ describe("UpdateEventForm", () => {
     expect(screen.getByDisplayValue("120")).toBeInTheDocument();
   });
 
-  it("Permit to change tag, server, area and subArea", async () => {
+  it("Permit to change tag, area and subArea", async () => {
     render(
       <UpdateEventForm
         updateTarget={updateTarget as any}
@@ -206,7 +196,6 @@ describe("UpdateEventForm", () => {
     );
 
     fireEvent.click(screen.getByTestId(`option-tag.default-tag-1`));
-    fireEvent.click(screen.getByTestId(`option-server.default-srv-2`));
     fireEvent.click(screen.getByTestId(`option-common.area-a-1`));
 
     await waitFor(() => {
@@ -214,9 +203,6 @@ describe("UpdateEventForm", () => {
         screen.getByTestId(`option-common.subArea-sa-1`),
       ).toBeInTheDocument();
     });
-
-    fireEvent.click(screen.getByTestId(`option-common.subArea-sa-1`));
-    expect(screen.getByLabelText(`hidden-server.default`)).toHaveValue("srv-2");
   });
 
   it("Permit to change visibility status", () => {

@@ -15,7 +15,7 @@ const characterService = new CharacterService(axios);
 
 export default function useFetchUserCharactersEnriched(
   user: User,
-  updateTarget: EventEnriched,
+  event: EventEnriched,
 ) {
   const [characters, setCharacters] = useState<CharacterEnriched[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -29,13 +29,11 @@ export default function useFetchUserCharactersEnriched(
       try {
         const response = await characterService.getAllEnrichedByUserId(user.id);
 
-        if (updateTarget.server.id !== "") {
-          const characters = response.filter(
-            (character) => character.server_id === updateTarget.server.id,
-          );
+        const characters = response.filter(
+          (character) => character.server_id === event.server.id,
+        );
 
-          setCharacters(characters);
-        } else setCharacters(response);
+        setCharacters(characters);
       } catch (error) {
         if (isAxiosError(error)) setError(error.message);
         else if (error instanceof Error) setError(error.message);
@@ -45,7 +43,7 @@ export default function useFetchUserCharactersEnriched(
     };
 
     fetchCharacters();
-  }, [user, updateTarget]);
+  }, [user.id, event.server.id]);
 
   return { characters, isLoading, error };
 }

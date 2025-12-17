@@ -20,10 +20,11 @@ export default function JoinEventForm({ handleSubmit }: JoinEventFormProps) {
   const { user } = useAuth();
   const { updateTarget } = useModal();
 
-  if (!user || !updateTarget) return;
-  if (!typeGuard.eventEnriched(updateTarget)) return;
+  const event = typeGuard.eventEnriched(updateTarget) ? updateTarget : null;
 
-  const { characters } = useFetchUserCharactersEnriched(user, updateTarget);
+  if (!user || !event) return null;
+
+  const { characters } = useFetchUserCharactersEnriched(user, event);
 
   return (
     <div className="join_event">

@@ -4,12 +4,12 @@ import { useState } from "react";
 import { useTypedTranslation } from "../../../../i18n/i18n-helper";
 
 import { generateOptions } from "../../utils/generateOptions";
+import useFetchBreeds from "../../../../hooks/useFetchBreeds";
+import useFetchServers from "../../../../hooks/useFetchServers";
 
 import BreedRadio from "../../formComponents/Radio/BreedRadio";
 import GenderRadio from "../../formComponents/Radio/GenderRadio";
 import SelectOptions from "../../formComponents/Options/SelectOptions";
-import useFetchServers from "../../../../hooks/useFetchServers";
-import useFetchBreeds from "../../../../hooks/useFetchBreeds";
 
 interface NewCharacterFormProps {
   handleSubmit: (event: React.FormEvent<HTMLFormElement>) => void;

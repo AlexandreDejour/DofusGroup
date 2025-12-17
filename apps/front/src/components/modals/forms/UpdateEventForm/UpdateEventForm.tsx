@@ -1,32 +1,19 @@
 import "./UpdateEventForm.scss";
 
-import { isAxiosError } from "axios";
 import { useEffect, useState } from "react";
 import { useTypedTranslation } from "../../../../i18n/i18n-helper";
 
-import { Tag } from "../../../../types/tag";
-import { Server } from "../../../../types/server";
 import { EventEnriched } from "../../../../types/event";
-import { Area, Dungeon, SubArea } from "../../../../types/dofusDB";
 
-import { useNotification } from "../../../../contexts/notificationContext";
-
-import { Config } from "../../../../config/config";
-import { ApiClient } from "../../../../services/client";
 import { generateOptions } from "../../utils/generateOptions";
-import { TagService } from "../../../../services/api/tagService";
-import { ServerService } from "../../../../services/api/serverService";
-import { DofusDBService } from "../../../../services/api/dofusDBService";
 import formatDateToLocalInput from "../../utils/formatDateToLocalInput";
 
 import SelectOptions from "../../formComponents/Options/SelectOptions";
-
-const config = Config.getInstance();
-const axiosBack = new ApiClient(config.backUrl);
-const axiosDofusDB = new ApiClient(config.dofusdbUrl);
-const tagService = new TagService(axiosBack);
-const serverService = new ServerService(axiosBack);
-const dofusDBService = new DofusDBService(axiosDofusDB);
+import useFetchTags from "../../../../hooks/useFetchTags";
+import useFetchAreas from "../../../../hooks/useFetchAreas";
+import useFetchSubAreas from "../../../../hooks/useFetchSubAreas";
+import useFetchDungeons from "../../../../hooks/useFetchDungeons";
+import useFetchServers from "../../../../hooks/useFetchServers";
 
 interface NewEventFormProps {
   updateTarget: EventEnriched;
@@ -38,14 +25,6 @@ export default function NewEventForm({
   handleSubmit,
 }: NewEventFormProps) {
   const t = useTypedTranslation();
-
-  const { showError } = useNotification();
-
-  const [tags, setTags] = useState<Tag[]>([]);
-  const [areas, setAreas] = useState<Area[]>([]);
-  const [servers, setServers] = useState<Server[]>([]);
-  const [subAreas, setSubAreas] = useState<SubArea[]>([]);
-  const [dungeons, setDungeons] = useState<Dungeon[]>([]);
 
   const [area, setArea] = useState<string>(
     updateTarget.area ? updateTarget.area : "",
@@ -76,119 +55,18 @@ export default function NewEventForm({
     { id: 2, label: t("common.public"), value: "public" },
   ];
 
-  useEffect(() => {
-    const fetchTags = async () => {
-      try {
-        const response = await tagService.getTags();
-
-        setTags(response);
-      } catch (error) {
-        if (isAxiosError(error)) {
-          showError(t("system.error.default"), error.message);
-        } else if (error instanceof Error) {
-          showError(t("system.error.default"), t("system.error.occurred"));
-          console.error("General error:", error.message);
-        }
-      }
-    };
-
-    const fetchServers = async () => {
-      try {
-        const response = await serverService.getServers();
-
-        setServers(response);
-      } catch (error) {
-        if (isAxiosError(error)) {
-          showError(t("system.error.default"), error.message);
-        } else if (error instanceof Error) {
-          showError(t("system.error.default"), t("system.error.occurred"));
-          console.error("General error:", error.message);
-        }
-      }
-    };
-
-    const fetchAreas = async () => {
-      try {
-        const response = await dofusDBService.getAreas();
-
-        setAreas(response);
-
-        if (area) {
-          const fetchSubAreas = async () => {
-            const selectedArea = response.find((a) => a.name.fr === area);
-
-            if (!selectedArea) return;
-
-            try {
-              const subAreasResponse = await dofusDBService.getSubAreas(
-                selectedArea.id,
-              );
-              setSubAreas(subAreasResponse);
-
-              setSubAreas(subAreasResponse);
-            } catch (error) {
-              throw error;
-            }
-          };
-
-          fetchSubAreas();
-        }
-      } catch (error) {
-        if (isAxiosError(error)) {
-          showError(t("system.error.default"), error.message);
-        } else if (error instanceof Error) {
-          showError(t("system.error.default"), t("system.error.occurred"));
-          console.error("General error:", error.message);
-        }
-      }
-    };
-
-    setDate(formatDateToLocalInput(new Date()));
-
-    fetchTags();
-    fetchServers();
-    fetchAreas();
-  }, [area]);
-
-  useEffect(() => {
-    const fetchDungeons = async () => {
-      const selectedTag = tags.find((t) => t.id === tag);
-
-      if (!selectedTag || selectedTag.name !== t("common.dungeon")) {
-        setIsDungeon(false);
-        return;
-      }
-
-      setIsDungeon(true);
-
-      try {
-        if (subArea) {
-          const selectedSubArea = subAreas.find((s) => s.name.fr === subArea);
-
-          if (!selectedSubArea) return;
-
-          const response = await dofusDBService.getDungeons(
-            selectedSubArea.dungeonId,
-          );
-
-          setDungeons(response);
-        } else {
-          const response = await dofusDBService.getDungeons();
-
-          setDungeons(response);
-        }
-      } catch (error) {
-        if (isAxiosError(error)) {
-          showError(t("system.error.default"), error.message);
-        } else if (error instanceof Error) {
-          showError(t("system.error.default"), t("system.error.occurred"));
-          console.error("General error:", error.message);
-        }
-      }
-    };
-
-    fetchDungeons();
-  }, [tag, subArea]);
+  const { tags } = useFetchTags();
+  const { areas } = useFetchAreas();
+  const { servers } = useFetchServers();
+  const { subAreas } = useFetchSubAreas(areas, area);
+  const { dungeons } = useFetchDungeons(
+    tags,
+    tag,
+    areas,
+    area,
+    subAreas,
+    subArea,
+  );
 
   useEffect(() => {
     if (updateTarget.date) {

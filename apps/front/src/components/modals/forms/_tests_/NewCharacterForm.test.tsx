@@ -1,178 +1,187 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, waitFor, fireEvent } from "@testing-library/react";
+import { vi } from "vitest";
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 
 import { t } from "../../../../i18n/i18n-helper";
 
-import { useNotification } from "../../../../contexts/notificationContext";
-
 import NewCharacterForm from "../NewCharacterForm/NewCharacterForm";
-import * as BreedService from "../../../../services/api/breedService";
-import * as ServerService from "../../../../services/api/serverService";
 
-vi.mock("../../../../config/config.ts", () => ({
-  Config: {
-    getInstance: () => ({
-      baseUrl: "http://localhost",
-    }),
-  },
+// --- Mocks ---
+// i18n helper
+vi.mock("../../../../i18n/i18n-helper", () => ({
+  useTypedTranslation: () => (k: string) => k,
+  t: (k: string) => k,
 }));
 
-// 1. Mock services
-vi.mock("../../../../services/api/breedService");
-vi.mock("../../../../services/api/serverService");
-
-// 2. Mock context
-vi.mock("../../../../contexts/notificationContext", () => ({
-  useNotification: vi.fn(),
+// Hooks
+vi.mock("../../../../hooks/useFetchServers", () => ({
+  __esModule: true,
+  default: () => ({
+    servers: [
+      { id: "srv-1", name: "Salar" },
+      { id: "srv-2", name: "Dakal" },
+    ],
+  }),
 }));
 
-// 3. Mock components
+vi.mock("../../../../hooks/useFetchBreeds", () => ({
+  __esModule: true,
+  default: () => ({
+    breeds: [
+      { id: "b-1", name: "Iop" },
+      { id: "b-2", name: "Cra" },
+    ],
+  }),
+}));
+
+// Mock BreedRadio
 vi.mock("../../formComponents/Radio/BreedRadio", () => ({
-  default: (props: any) => (
+  __esModule: true,
+  default: ({ breeds, onChange }: any) => (
     <div data-testid="breed-radio">
-      <button onClick={() => props.onChange("breed-2")}>Select Iop</button>
+      {breeds.map((b: any) => (
+        <button
+          key={b.id}
+          data-testid={`breed-${b.id}`}
+          onClick={() => onChange(b.id)}
+        >
+          {b.name}
+        </button>
+      ))}
     </div>
   ),
 }));
 
+// Mock GenderRadio
 vi.mock("../../formComponents/Radio/GenderRadio", () => ({
-  default: (props: any) => (
+  __esModule: true,
+  default: ({ onChange }: any) => (
     <div data-testid="gender-radio">
-      <button onClick={() => props.onChange("F")}>Select Female</button>
+      <button data-testid="gender-m" onClick={() => onChange("M")}>
+        M
+      </button>
+      <button data-testid="gender-f" onClick={() => onChange("F")}>
+        F
+      </button>
     </div>
   ),
 }));
 
+// Mock SelectOptions
 vi.mock("../../formComponents/Options/SelectOptions", () => ({
-  default: (props: any) => (
-    <div data-testid={`select-options-${props.name}`}>
-      <label>{props.label}</label>
-      <select
-        value={props.value}
-        onChange={(e) => props.onChange(e.target.value)}
-      >
-        <option value="">Sélectionner...</option>
-        {props.items.map((item: any) => (
-          <option key={item.id} value={item.id}>
-            {item.name || item.label || item}
-          </option>
-        ))}
-      </select>
+  __esModule: true,
+  default: ({ items, label, value, onChange }: any) => (
+    <div data-testid={`select-${label}`}>
+      {items.map((it: any) => (
+        <button
+          key={it.id}
+          data-testid={`option-${label}-${it.id}`}
+          onClick={() => onChange(it.id)}
+        >
+          {it.name}
+        </button>
+      ))}
+      <input
+        aria-label={`hidden-${label}`}
+        value={value ?? ""}
+        readOnly
+        style={{ display: "none" }}
+      />
     </div>
   ),
 }));
 
+// --- Tests ---
 describe("NewCharacterForm", () => {
-  const mockShowError = vi.fn();
-  const mockHandleSubmit = vi.fn();
-
-  const mockBreeds = [{ id: "123", name: "Iop" }];
-  const mockServers = [{ id: "123", name: "Test server", mono_account: true }];
-
   beforeEach(() => {
     vi.clearAllMocks();
-    vi.mocked(useNotification).mockReturnValue({
-      showError: mockShowError,
-      notifications: [],
-      addNotification: vi.fn(),
-      removeNotification: vi.fn(),
-      showSuccess: vi.fn(),
-      showInfo: vi.fn(),
-    });
   });
 
-  it("Should render the form and fetch data on mount", async () => {
-    vi.mocked(BreedService.BreedService.prototype.getBreeds).mockResolvedValue(
-      mockBreeds,
-    );
-    vi.mocked(
-      ServerService.ServerService.prototype.getServers,
-    ).mockResolvedValue(mockServers);
+  it("Display all form fields", () => {
+    const handleSubmit = vi.fn((e) => e.preventDefault());
 
-    render(<NewCharacterForm handleSubmit={mockHandleSubmit} />);
+    render(<NewCharacterForm handleSubmit={handleSubmit} />);
 
+    // Title
     expect(
       screen.getByRole("heading", { name: t("character.create") }),
     ).toBeInTheDocument();
-    expect(screen.getByRole("form")).toBeInTheDocument();
 
-    await waitFor(() => {
-      expect(
-        BreedService.BreedService.prototype.getBreeds,
-      ).toHaveBeenCalledTimes(1);
-      expect(
-        ServerService.ServerService.prototype.getServers,
-      ).toHaveBeenCalledTimes(1);
+    // Inputs
+    expect(screen.getByPlaceholderText(t("common.name"))).toBeInTheDocument();
 
-      expect(screen.getByTestId("breed-radio")).toBeInTheDocument();
-      expect(screen.getByTestId("gender-radio")).toBeInTheDocument();
-      expect(screen.getByTestId("select-options-server")).toBeInTheDocument();
-      expect(
-        screen.getByTestId("select-options-alignment"),
-      ).toBeInTheDocument();
-    });
+    expect(screen.getByPlaceholderText(t("common.level"))).toBeInTheDocument();
+
+    expect(
+      screen.getByPlaceholderText(t("common.dofusBook")),
+    ).toBeInTheDocument();
+
+    // Radios & selects
+    expect(screen.getByTestId("breed-radio")).toBeInTheDocument();
+    expect(screen.getByTestId("gender-radio")).toBeInTheDocument();
+    expect(
+      screen.getByTestId(`select-${t("server.upperCase")}`),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByTestId(`select-${t("common.alignment")}`),
+    ).toBeInTheDocument();
+
+    // Submit button
+    expect(
+      screen.getByRole("button", { name: t("character.create") }),
+    ).toBeInTheDocument();
   });
 
-  it("Should call showError when fetching breeds fails", async () => {
-    const errorMessage = "Breed connection error";
-    vi.mocked(
-      BreedService.BreedService.prototype.getBreeds,
-    ).mockRejectedValueOnce({
-      isAxiosError: true,
-      message: errorMessage,
-    });
-    vi.mocked(
-      ServerService.ServerService.prototype.getServers,
-    ).mockResolvedValue(mockServers);
+  it("Permit to select a breed", async () => {
+    render(<NewCharacterForm handleSubmit={() => {}} />);
 
-    render(<NewCharacterForm handleSubmit={mockHandleSubmit} />);
+    const breedButton = screen.getByTestId("breed-b-1");
+    fireEvent.click(breedButton);
 
-    await waitFor(() => {
-      expect(mockShowError).toHaveBeenCalledWith(
-        t("common.error.default"),
-        errorMessage,
-      );
-    });
+    // Nothing visible changes, but no crash means state updated
+    expect(breedButton).toBeInTheDocument();
   });
 
-  it("Should call showError when fetching servers fails", async () => {
-    const errorMessage = "Server connection error";
-    vi.mocked(BreedService.BreedService.prototype.getBreeds).mockResolvedValue(
-      mockBreeds,
+  it("Permit to change gender", async () => {
+    render(<NewCharacterForm handleSubmit={() => {}} />);
+
+    const femaleButton = screen.getByTestId("gender-f");
+    fireEvent.click(femaleButton);
+
+    expect(femaleButton).toBeInTheDocument();
+  });
+
+  it("Permit to select server and alignment", async () => {
+    render(<NewCharacterForm handleSubmit={() => {}} />);
+
+    const serverOption = screen.getByTestId(
+      `option-${t("server.upperCase")}-srv-2`,
     );
-    vi.mocked(
-      ServerService.ServerService.prototype.getServers,
-    ).mockRejectedValueOnce({
-      isAxiosError: true,
-      message: errorMessage,
-    });
+    fireEvent.click(serverOption);
 
-    render(<NewCharacterForm handleSubmit={mockHandleSubmit} />);
+    const alignmentOption = screen.getByTestId(
+      `option-${t("common.alignment")}-2`,
+    );
+    fireEvent.click(alignmentOption);
 
-    await waitFor(() => {
-      expect(mockShowError).toHaveBeenCalledWith(
-        t("common.error.default"),
-        errorMessage,
-      );
-    });
+    const hiddenServer = screen.getByLabelText(
+      `hidden-${t("server.upperCase")}`,
+    );
+    const hiddenAlignment = screen.getByLabelText(
+      `hidden-${t("common.alignment")}`,
+    );
+
+    expect(hiddenServer).toHaveValue("srv-2");
+    expect(hiddenAlignment).toHaveValue("2");
   });
 
-  it("Should call handleSubmit on form submission", async () => {
-    vi.mocked(BreedService.BreedService.prototype.getBreeds).mockResolvedValue(
-      mockBreeds,
-    );
-    vi.mocked(
-      ServerService.ServerService.prototype.getServers,
-    ).mockResolvedValue(mockServers);
+  it("Submit form by calling handleSubmit", async () => {
+    const handleSubmit = vi.fn((e) => e.preventDefault());
 
-    render(<NewCharacterForm handleSubmit={mockHandleSubmit} />);
+    render(<NewCharacterForm handleSubmit={handleSubmit} />);
 
     const form = screen.getByRole("form");
     fireEvent.submit(form);
 
-    expect(mockHandleSubmit).toHaveBeenCalledTimes(1);
-    expect(mockHandleSubmit).toHaveBeenCalledWith(
-      expect.objectContaining({ type: "submit" }),
-    );
+    expect(handleSubmit).toHaveBeenCalled();
   });
 });

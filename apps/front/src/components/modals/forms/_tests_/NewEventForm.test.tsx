@@ -1,5 +1,6 @@
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { vi } from "vitest";
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+
 import { t } from "../../../../i18n/i18n-helper";
 
 import NewEventForm from "../NewEventForm/NewEventForm";
@@ -114,16 +115,16 @@ describe("NewEventForm", () => {
     vi.clearAllMocks();
   });
 
-  it("rend le formulaire avec tous les champs attendus", () => {
+  it("Display fiels with all form fields", () => {
     const handleSubmit = vi.fn((e) => e.preventDefault());
     render(<NewEventForm handleSubmit={handleSubmit} />);
 
-    // titre du formulaire
+    // form title
     expect(
       screen.getByRole("heading", { name: t("event.create") }),
     ).toBeInTheDocument();
 
-    // inputs principaux
+    // main inputs
     expect(screen.getByPlaceholderText(t("common.title"))).toBeInTheDocument();
     expect(
       screen.getByLabelText("date", {
@@ -131,8 +132,6 @@ describe("NewEventForm", () => {
         exact: false,
       }) || screen.getByLabelText("date", { selector: "input,textarea" }),
     ).toBeTruthy();
-
-    // durée, description et bouton de soumission
     expect(
       screen.getByPlaceholderText(t("common.durationInMin")),
     ).toBeInTheDocument();
@@ -144,14 +143,14 @@ describe("NewEventForm", () => {
     ).toBeInTheDocument();
   });
 
-  it("permet de sélectionner un serveur et met à jour la liste des personnages", async () => {
+  it("Permit to select server and update characters list", async () => {
     render(<NewEventForm handleSubmit={() => {}} />);
 
-    // Vérifier que les options de serveur sont présentes
+    // Check server options
     const serverOption = screen.getByTestId("option-server.default-srv-1");
     expect(serverOption).toBeInTheDocument();
 
-    // Cliquer sur serveur 2 pour changer sélection et provoquer fetch des characters
+    // Click on server 2 to change selection et refetch characters
     const serverOption2 = screen.getByTestId("option-server.default-srv-2");
     fireEvent.click(serverOption2);
 
@@ -162,7 +161,7 @@ describe("NewEventForm", () => {
     });
   });
 
-  it("permet d'ajouter des personnages sélectionnés via CharactersOptions", async () => {
+  it("Permit to add selected characters via CharactersOptions", async () => {
     render(<NewEventForm handleSubmit={() => {}} />);
 
     // Select server 1 (default) then click character
@@ -174,7 +173,7 @@ describe("NewEventForm", () => {
     expect(hidden).toHaveValue("c-1");
   });
 
-  it("soumet le formulaire en appelant handleSubmit", async () => {
+  it("Submit form by calling handleSubmit", async () => {
     const handleSubmit = vi.fn((e) => e.preventDefault());
     render(<NewEventForm handleSubmit={handleSubmit} />);
 
@@ -184,7 +183,7 @@ describe("NewEventForm", () => {
     expect(handleSubmit).toHaveBeenCalled();
   });
 
-  it("change la valeur de la date et respecte l'attribut min", () => {
+  it("Change date value and respect min attribut", () => {
     render(<NewEventForm handleSubmit={() => {}} />);
 
     const dateInput =
@@ -193,11 +192,11 @@ describe("NewEventForm", () => {
         exact: false,
       }) || screen.getByLabelText("date", { selector: "input,textarea" });
 
-    // On vérifie qu'il existe et qu'il contient un attribut min
+    // Check if exist and contain min attribut
     expect(dateInput).toBeDefined();
     expect(dateInput.getAttribute("min")).toBeTruthy();
 
-    // Simuler changement
+    // Change date
     fireEvent.change(dateInput, { target: { value: "2025-12-24T20:00" } });
     expect(dateInput).toHaveValue("2025-12-24T20:00");
   });

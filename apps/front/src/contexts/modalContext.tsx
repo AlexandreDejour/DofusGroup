@@ -29,6 +29,7 @@ import { CommentService } from "../services/api/commentService";
 import { CharacterService } from "../services/api/characterService";
 import isUpdateField from "../components/modals/utils/isUpdateField";
 import { cleanProfanity, containsProfanity } from "./utils/profanity";
+import { typeGuard } from "../components/modals/utils/typeGuard";
 
 const config = Config.getInstance();
 const axios = new ApiClient(config.backUrl);
@@ -40,6 +41,7 @@ const characterService = new CharacterService(axios);
 
 export interface ModalContextType {
   isOpen: boolean;
+  refreshKey: number;
   modalType: string | null; // ex: "register", "login", "newEvent", etc.
   updateTarget: Event | CharacterEnriched | CommentEnriched | null;
   formData: FormData;
@@ -92,6 +94,7 @@ export default function ModalProvider({ children }: ModalProviderProps) {
   const { showSuccess, showError } = useNotification();
 
   const [isOpen, setIsOpen] = useState(false);
+  const [refreshKey, setRefreshKey] = useState(0);
   const [modalType, setModalType] = useState<ModalType>(null);
   const [formData, setFormData] = useState<FormData>(new FormData());
   const [updateTarget, setUpdateTarget] = useState<
@@ -338,6 +341,7 @@ export default function ModalProvider({ children }: ModalProviderProps) {
           const response = await userService.getOne(user.id);
 
           setUser({ ...user, ...response });
+          setRefreshKey(refreshKey + 1);
 
           showSuccess(t("system.success.create"), t("event.create"));
         }
@@ -351,7 +355,7 @@ export default function ModalProvider({ children }: ModalProviderProps) {
             return;
           }
 
-          if (!updateTarget) return;
+          if (!updateTarget || !typeGuard.eventEnriched(updateTarget)) return;
 
           const keys: (keyof CreateEventForm)[] = [
             "title",
@@ -380,6 +384,14 @@ export default function ModalProvider({ children }: ModalProviderProps) {
             numberKeys,
             arrayKeys,
           });
+
+          if (data.max_players < updateTarget.characters.length) {
+            showError(
+              t("system.error.badRequest"),
+              t("event.error.invalidMaxPlayers"),
+            );
+            return;
+          }
 
           if (containsProfanity(data.title)) {
             showError(
@@ -618,6 +630,7 @@ export default function ModalProvider({ children }: ModalProviderProps) {
 
   const contextValues: ModalContextType = {
     isOpen,
+    refreshKey,
     modalType,
     updateTarget,
     formData,

@@ -9,8 +9,8 @@ import { EventEnriched } from "../../types/event";
 import { useAuth } from "../../contexts/authContext";
 import { useModal } from "../../contexts/modalContext";
 
-import useFetchEvent from "./hooks/useFetchEvent";
-import useCharacterRemover from "./hooks/useCharacterRemover";
+import useFetchEvent from "../../hooks/useFetchEvent";
+import useCharacterRemover from "../../hooks/useCharacterRemover";
 
 import Spinner from "../../components/Spinner/Spinner";
 import Comment from "../../components/Comment/Comment";

@@ -6,7 +6,7 @@ import { Navigate, useNavigate, useParams } from "react-router";
 import { useAuth } from "../../contexts/authContext";
 import { useModal } from "../../contexts/modalContext";
 
-import useFetchCharacter from "./hooks/useFetchCharacter";
+import useFetchCharacter from "../../hooks/useFetchCharacter";
 
 import Spinner from "../../components/Spinner/Spinner";
 

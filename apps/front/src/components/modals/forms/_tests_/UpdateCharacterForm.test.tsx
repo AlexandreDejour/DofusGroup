@@ -1,250 +1,228 @@
-import { describe, it, vi, beforeEach, expect } from "vitest";
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { vi } from "vitest";
+import { render, screen, fireEvent } from "@testing-library/react";
 
 import { t } from "../../../../i18n/i18n-helper";
 
-import { useNotification } from "../../../../contexts/notificationContext";
-
-import * as BreedService from "../../../../services/api/breedService";
-import * as ServerService from "../../../../services/api/serverService";
-
 import UpdateCharacterForm from "../UpdateCharacterForm/UpdateCharacterForm";
 
-// Mock config
-vi.mock("../../../../config/config.ts", () => ({
-  Config: {
-    getInstance: () => ({
-      baseUrl: "http://localhost",
-    }),
-  },
+// --- Mocks ---
+// i18n helper
+vi.mock("../../../../i18n/i18n-helper", () => ({
+  useTypedTranslation: () => (k: string) => k,
+  t: (k: string) => k,
 }));
 
-// Mock services
-vi.mock("../../../../services/api/breedService");
-vi.mock("../../../../services/api/serverService");
-
-// Mock context
-vi.mock("../../../../contexts/notificationContext", () => ({
-  useNotification: vi.fn(),
+// Hooks
+vi.mock("../../../../hooks/useFetchBreeds", () => ({
+  __esModule: true,
+  default: () => ({
+    breeds: [
+      { id: "b-1", name: "Iop" },
+      { id: "b-2", name: "Cra" },
+    ],
+  }),
 }));
 
-// Mock child components
+vi.mock("../../../../hooks/useFetchServers", () => ({
+  __esModule: true,
+  default: () => ({
+    servers: [
+      { id: "srv-1", name: "Salar" },
+      { id: "srv-2", name: "Dakal" },
+    ],
+  }),
+}));
+
+// Mock BreedRadio
 vi.mock("../../formComponents/Radio/BreedRadio", () => ({
-  default: (props: any) => (
+  __esModule: true,
+  default: ({ breeds, onChange }: any) => (
     <div data-testid="breed-radio">
-      <button onClick={() => props.onChange("breed-2")}>Select Iop</button>
+      {breeds.map((b: any) => (
+        <button
+          key={b.id}
+          data-testid={`breed-${b.id}`}
+          onClick={() => onChange(b.id)}
+        >
+          {b.name}
+        </button>
+      ))}
     </div>
   ),
 }));
 
+// Mock GenderRadio
 vi.mock("../../formComponents/Radio/GenderRadio", () => ({
-  default: (props: any) => (
+  __esModule: true,
+  default: ({ onChange }: any) => (
     <div data-testid="gender-radio">
-      <button onClick={() => props.onChange("F")}>Select Female</button>
+      <button data-testid="gender-m" onClick={() => onChange("M")}>
+        M
+      </button>
+      <button data-testid="gender-f" onClick={() => onChange("F")}>
+        F
+      </button>
     </div>
   ),
 }));
 
+// Mock SelectOptions
 vi.mock("../../formComponents/Options/SelectOptions", () => ({
-  default: (props: any) => (
-    <div data-testid={`select-options-${props.name}`}>
-      <label>{props.label}</label>
-      <select
-        value={props.value}
-        onChange={(e) => props.onChange(e.target.value)}
-      >
-        <option value="">Sélectionner...</option>
-        {props.items.map((item: any) => (
-          <option key={item.id} value={item.id}>
-            {item.name || item.label || item}
-          </option>
-        ))}
-      </select>
+  __esModule: true,
+  default: ({ items, label, value, onChange }: any) => (
+    <div data-testid={`select-${label}`}>
+      {items.map((it: any) => (
+        <button
+          key={it.id}
+          data-testid={`option-${label}-${it.id}`}
+          onClick={() => onChange(it.id)}
+        >
+          {it.name}
+        </button>
+      ))}
+      <input
+        aria-label={`hidden-${label}`}
+        value={value ?? ""}
+        readOnly
+        style={{ display: "none" }}
+      />
     </div>
   ),
 }));
 
-// Données de test
-const mockBreeds = [
-  { id: "breed-1", name: "Cra" },
-  { id: "breed-2", name: "Iop" },
-];
-const mockServers = [
-  { id: "server-1", name: "Jiva", mono_account: true },
-  { id: "server-2", name: "Agride", mono_account: false },
-];
+// --- Test data ---
 const updateTarget = {
   id: "char-1",
-  name: "Night-Hunter",
+  name: "Chronos",
+  level: 50,
   sex: "M",
-  level: 190,
-  alignment: "Bonta",
-  stuff: "https://dofusbook.net/stuff/123",
-  default_character: true,
-  server_id: "server-1",
-  breed: { id: "breed-1", name: "Cra" },
-  server: { id: "server-1", name: "Jiva", mono_account: true },
-  user: { id: "user-1", username: "toto" },
+  stuff: "Stuff de test",
+  alignment: "1",
+  breed: { id: "b-1", name: "Iop" },
+  server: { id: "srv-1", name: "Salar" },
 };
 
+// --- Tests ---
 describe("UpdateCharacterForm", () => {
-  const mockShowError = vi.fn();
-
   beforeEach(() => {
     vi.clearAllMocks();
-    vi.mocked(BreedService.BreedService.prototype.getBreeds).mockResolvedValue(
-      mockBreeds,
-    );
-    vi.mocked(
-      ServerService.ServerService.prototype.getServers,
-    ).mockResolvedValue(mockServers);
-    vi.mocked(useNotification).mockReturnValue({
-      showError: mockShowError,
-      notifications: [],
-      addNotification: vi.fn(),
-      removeNotification: vi.fn(),
-      showSuccess: vi.fn(),
-      showInfo: vi.fn(),
-    });
   });
 
-  it("Displays the form with the initial values", async () => {
-    render(
-      <UpdateCharacterForm
-        updateTarget={updateTarget}
-        handleSubmit={vi.fn()}
-      />,
-    );
-
-    expect(
-      screen.getByRole("heading", { name: t("character.modification") }),
-    ).toBeInTheDocument();
-
-    expect(screen.getByLabelText(`${t("common.name")}:`)).toHaveValue(
-      "Night-Hunter",
-    );
-    expect(screen.getByLabelText(`${t("common.level")}:`)).toHaveValue(190);
-    expect(screen.getByLabelText(`${t("common.stuff")}:`)).toHaveValue(
-      "https://dofusbook.net/stuff/123",
-    );
-
-    await waitFor(() => {
-      expect(BreedService.BreedService.prototype.getBreeds).toHaveBeenCalled();
-      expect(
-        ServerService.ServerService.prototype.getServers,
-      ).toHaveBeenCalled();
-      expect(screen.getByTestId("breed-radio")).toBeInTheDocument();
-      expect(screen.getByTestId("gender-radio")).toBeInTheDocument();
-      expect(screen.getByTestId("select-options-server")).toBeInTheDocument();
-      expect(
-        screen.getByTestId("select-options-alignment"),
-      ).toBeInTheDocument();
-    });
-  });
-
-  it("Update stuff", async () => {
-    render(
-      <UpdateCharacterForm
-        updateTarget={updateTarget}
-        handleSubmit={vi.fn()}
-      />,
-    );
-    const nameInput = screen.getByLabelText(`${t("common.name")}:`);
-    const stuffInput = screen.getByLabelText(`${t("common.stuff")}:`);
-
-    fireEvent.change(nameInput, { target: { value: "NewName" } });
-    fireEvent.change(stuffInput, {
-      target: { value: "https://dofusbook.net/stuff/456" },
-    });
-
-    expect(nameInput).toHaveValue("NewName");
-    expect(stuffInput).toHaveValue("https://dofusbook.net/stuff/456");
-  });
-
-  it("Update class and sex", async () => {
-    render(
-      <UpdateCharacterForm
-        updateTarget={updateTarget}
-        handleSubmit={vi.fn()}
-      />,
-    );
-    fireEvent.click(screen.getByText("Select Iop"));
-    fireEvent.click(screen.getByText("Select Female"));
-  });
-
-  it("update server", async () => {
-    render(
-      <UpdateCharacterForm
-        updateTarget={updateTarget}
-        handleSubmit={vi.fn()}
-      />,
-    );
-    await waitFor(() => {
-      expect(screen.getByTestId("select-options-server")).toBeInTheDocument();
-      expect(
-        screen.getByTestId("select-options-alignment"),
-      ).toBeInTheDocument();
-    });
-
-    const serverSelect = screen
-      .getByTestId("select-options-server")
-      .querySelector("select")!;
-    const alignmentSelect = screen
-      .getByTestId("select-options-alignment")
-      .querySelector("select")!;
-
-    fireEvent.change(serverSelect, { target: { value: "server-2" } });
-    fireEvent.change(alignmentSelect, { target: { value: "Brâkmar" } });
-
-    expect(serverSelect).toHaveValue("server-2");
-  });
-
-  it("Call handlesubmit", async () => {
+  it("Display all form fields with initial values", () => {
     const handleSubmit = vi.fn((e) => e.preventDefault());
+
     render(
       <UpdateCharacterForm
-        updateTarget={updateTarget}
+        updateTarget={updateTarget as any}
         handleSubmit={handleSubmit}
       />,
     );
+
+    // Title
+    expect(
+      screen.getByRole("heading", {
+        name: t("character.modification"),
+      }),
+    ).toBeInTheDocument();
+
+    // Prefilled inputs
+    expect(screen.getByDisplayValue(updateTarget.name)).toBeInTheDocument();
+
+    expect(
+      screen.getByDisplayValue(updateTarget.level.toString()),
+    ).toBeInTheDocument();
+
+    expect(screen.getByDisplayValue(updateTarget.stuff)).toBeInTheDocument();
+
+    // Radios & selects
+    expect(screen.getByTestId("breed-radio")).toBeInTheDocument();
+    expect(screen.getByTestId("gender-radio")).toBeInTheDocument();
+    expect(
+      screen.getByTestId(`select-${t("server.default")}`),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByTestId(`select-${t("common.alignment")}`),
+    ).toBeInTheDocument();
+
+    // Submit button
+    expect(
+      screen.getByRole("button", {
+        name: t("character.modification"),
+      }),
+    ).toBeInTheDocument();
+  });
+
+  it("Permit to update name and level", () => {
+    render(
+      <UpdateCharacterForm
+        updateTarget={updateTarget as any}
+        handleSubmit={() => {}}
+      />,
+    );
+
+    const nameInput = screen.getByPlaceholderText(t("common.name"));
+    const levelInput = screen.getByPlaceholderText(t("common.level"));
+
+    fireEvent.change(nameInput, {
+      target: { value: "NewName" },
+    });
+    fireEvent.change(levelInput, {
+      target: { value: "60" },
+    });
+
+    expect(nameInput).toHaveValue("NewName");
+    expect(levelInput).toHaveValue(60);
+  });
+
+  it("Permit to change breed and gender", () => {
+    render(
+      <UpdateCharacterForm
+        updateTarget={updateTarget as any}
+        handleSubmit={() => {}}
+      />,
+    );
+
+    fireEvent.click(screen.getByTestId("breed-b-2"));
+    fireEvent.click(screen.getByTestId("gender-f"));
+
+    // State change is implicit; test ensures no crash
+    expect(screen.getByTestId("breed-b-2")).toBeInTheDocument();
+    expect(screen.getByTestId("gender-f")).toBeInTheDocument();
+  });
+
+  it("Permit to change server and alignment", () => {
+    render(
+      <UpdateCharacterForm
+        updateTarget={updateTarget as any}
+        handleSubmit={() => {}}
+      />,
+    );
+
+    fireEvent.click(screen.getByTestId(`option-${t("server.default")}-srv-2`));
+    fireEvent.click(screen.getByTestId(`option-${t("common.alignment")}-2`));
+
+    const hiddenServer = screen.getByLabelText(`hidden-${t("server.default")}`);
+    const hiddenAlignment = screen.getByLabelText(
+      `hidden-${t("common.alignment")}`,
+    );
+
+    expect(hiddenServer).toHaveValue("srv-2");
+    expect(hiddenAlignment).toHaveValue("2");
+  });
+
+  it("Submit form by calling handleSubmit", () => {
+    const handleSubmit = vi.fn((e) => e.preventDefault());
+
+    render(
+      <UpdateCharacterForm
+        updateTarget={updateTarget as any}
+        handleSubmit={handleSubmit}
+      />,
+    );
+
     const form = screen.getByRole("form");
     fireEvent.submit(form);
+
     expect(handleSubmit).toHaveBeenCalled();
-  });
-
-  it("Display error if breed fetch fail", async () => {
-    vi.mocked(
-      BreedService.BreedService.prototype.getBreeds,
-    ).mockRejectedValueOnce(new Error("Breeds error"));
-    render(
-      <UpdateCharacterForm
-        updateTarget={updateTarget}
-        handleSubmit={vi.fn()}
-      />,
-    );
-    await waitFor(() => {
-      expect(mockShowError).toHaveBeenCalledWith(
-        t("system.error.default"),
-        t("system.error.occurred"),
-      );
-    });
-  });
-
-  it("Display error if server fetch fail", async () => {
-    vi.mocked(
-      ServerService.ServerService.prototype.getServers,
-    ).mockRejectedValueOnce(new Error("Servers error"));
-    render(
-      <UpdateCharacterForm
-        updateTarget={updateTarget}
-        handleSubmit={vi.fn()}
-      />,
-    );
-    await waitFor(() => {
-      expect(mockShowError).toHaveBeenCalledWith(
-        t("system.error.default"),
-        t("system.error.occurred"),
-      );
-    });
   });
 });

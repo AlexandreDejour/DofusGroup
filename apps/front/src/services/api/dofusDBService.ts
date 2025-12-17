@@ -1,3 +1,5 @@
+import qs from "qs";
+
 import { ApiClient } from "../client";
 import handleApiError from "../utils/handleApiError";
 
@@ -67,28 +69,13 @@ export class DofusDBService {
     }
   }
 
-  public async getDungeons(dungeonId?: number): Promise<Dungeon[]> {
+  public async getDungeons(): Promise<Dungeon[]> {
     const limit = 50; // max API rule
     let skip = 0;
     let allDungeons: Dungeon[] = [];
     let hasMore = true;
 
     try {
-      if (dungeonId) {
-        const response = await this.axios.get("/dungeons", {
-          params: {
-            id: dungeonId,
-          },
-        });
-
-        const dungeons: Dungeon[] = response.data.data.map((d: Dungeon) => ({
-          id: d.id,
-          name: d.name,
-        }));
-
-        return dungeons;
-      }
-
       while (hasMore) {
         const response = await this.axios.get("/dungeons", {
           params: {
@@ -110,6 +97,25 @@ export class DofusDBService {
       }
 
       return allDungeons;
+    } catch (error) {
+      handleApiError(error);
+    }
+  }
+
+  public async getDungeonsById(dungeonIds: number[]): Promise<Dungeon[]> {
+    try {
+      const params = { id: dungeonIds };
+      const response = await this.axios.get("/dungeons", {
+        params,
+        paramsSerializer: (p) => qs.stringify(p, { arrayFormat: "repeat" }),
+      });
+
+      const dungeons: Dungeon[] = response.data.data.map((d: Dungeon) => ({
+        id: d.id,
+        name: d.name,
+      }));
+
+      return dungeons;
     } catch (error) {
       handleApiError(error);
     }

@@ -1,37 +1,21 @@
 import "./NewEventForm.scss";
 
-import i18n from "i18next";
-import { isAxiosError } from "axios";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useTypedTranslation } from "../../../../i18n/i18n-helper";
 
-import { Tag } from "../../../../types/tag";
-import { Server } from "../../../../types/server";
-import { Character } from "../../../../types/character";
-import { Area, Dungeon, SubArea } from "../../../../types/dofusDB";
-
 import { useAuth } from "../../../../contexts/authContext";
-import { useNotification } from "../../../../contexts/notificationContext";
 
-import { Config } from "../../../../config/config";
-import { ApiClient } from "../../../../services/client";
 import { generateOptions } from "../../utils/generateOptions";
-import { TagService } from "../../../../services/api/tagService";
-import { ServerService } from "../../../../services/api/serverService";
-import { DofusDBService } from "../../../../services/api/dofusDBService";
-import { CharacterService } from "../../../../services/api/characterService";
 import formatDateToLocalInput from "../../utils/formatDateToLocalInput";
 
 import SelectOptions from "../../formComponents/Options/SelectOptions";
 import CharactersOptions from "../../formComponents/Options/CharactersOptions";
-
-const config = Config.getInstance();
-const axiosBack = new ApiClient(config.backUrl);
-const axiosDofusDB = new ApiClient(config.dofusdbUrl);
-const tagService = new TagService(axiosBack);
-const serverService = new ServerService(axiosBack);
-const dofusDBService = new DofusDBService(axiosDofusDB);
-const characterService = new CharacterService(axiosBack);
+import useFetchTags from "../../../../hooks/useFetchTags";
+import useFetchServers from "../../../../hooks/useFetchServers";
+import useFetchUserCharacters from "../../../../hooks/useFetchUserCharacters";
+import useFetchAreas from "../../../../hooks/useFetchAreas";
+import useFetchSubAreas from "../../../../hooks/useFetchSubAreas";
+import useFetchDungeons from "../../../../hooks/useFetchDungeons";
 
 interface NewEventFormProps {
   handleSubmit: (event: React.FormEvent<HTMLFormElement>) => void;
@@ -41,14 +25,8 @@ export default function NewEventForm({ handleSubmit }: NewEventFormProps) {
   const t = useTypedTranslation();
 
   const { user } = useAuth();
-  const { showError } = useNotification();
 
-  const [tags, setTags] = useState<Tag[]>([]);
-  const [areas, setAreas] = useState<Area[]>([]);
-  const [servers, setServers] = useState<Server[]>([]);
-  const [subAreas, setSubAreas] = useState<SubArea[]>([]);
-  const [dungeons, setDungeons] = useState<Dungeon[]>([]);
-  const [characters, setCharacters] = useState<Character[]>([]);
+  if (!user) return;
 
   const [tag, setTag] = useState<string>("");
   const [date, setDate] = useState<string>("");
@@ -61,154 +39,25 @@ export default function NewEventForm({ handleSubmit }: NewEventFormProps) {
     [],
   );
 
-  const [isDungeon, setIsDungeon] = useState(false);
-
   const statutes = [
     { id: 1, label: `${t("common.private")}`, value: "private" },
     { id: 2, label: `${t("common.public")}`, value: "public" },
   ];
 
-  useEffect(() => {
-    const fetchTags = async () => {
-      try {
-        const response = await tagService.getTags();
+  const { tags } = useFetchTags();
+  const { servers } = useFetchServers();
+  const { characters } = useFetchUserCharacters(user.id, server);
 
-        setTags(response);
-      } catch (error) {
-        if (isAxiosError(error)) {
-          showError(t("common.error.default"), error.message);
-        } else if (error instanceof Error) {
-          showError(t("common.error.default"), t("system.error.occurred"));
-          console.error("General error:", error.message);
-        }
-      }
-    };
-
-    const fetchServers = async () => {
-      try {
-        const response = await serverService.getServers();
-
-        setServers(response);
-      } catch (error) {
-        if (isAxiosError(error)) {
-          showError(t("common.error.default"), error.message);
-        } else if (error instanceof Error) {
-          showError(t("common.error.default"), t("system.error.occurred"));
-          console.error("General error:", error.message);
-        }
-      }
-    };
-
-    const fetchCharacters = async () => {
-      if (!user) return;
-
-      try {
-        const response = await characterService.getAllByUserId(user.id);
-
-        if (server !== "") {
-          const characters = response.filter(
-            (character) => character.server_id === server,
-          );
-
-          setCharacters(characters);
-        } else setCharacters(response);
-      } catch (error) {
-        if (isAxiosError(error)) {
-          showError(t("common.error.default"), error.message);
-        } else if (error instanceof Error) {
-          showError(t("common.error.default"), t("system.error.occurred"));
-          console.error("General error:", error.message);
-        }
-      }
-    };
-
-    const fetchAreas = async () => {
-      try {
-        const response = await dofusDBService.getAreas();
-
-        setAreas(response);
-
-        if (area) {
-          const fetchSubAreas = async () => {
-            const lang = i18n.language as "fr" | "en";
-
-            const selectedArea = areas.find((a) => a.name[lang] === area);
-
-            if (!selectedArea) return;
-
-            try {
-              const response = await dofusDBService.getSubAreas(
-                selectedArea.id,
-              );
-
-              setSubAreas(response);
-            } catch (error) {
-              throw error;
-            }
-          };
-
-          fetchSubAreas();
-        }
-      } catch (error) {
-        if (isAxiosError(error)) {
-          showError(t("common.error.default"), error.message);
-        } else if (error instanceof Error) {
-          showError(t("common.error.default"), t("system.error.occurred"));
-          console.error("General error:", error.message);
-        }
-      }
-    };
-
-    setDate(formatDateToLocalInput(new Date()));
-
-    fetchTags();
-    fetchServers();
-    fetchCharacters();
-    fetchAreas();
-  }, [area, server]);
-
-  useEffect(() => {
-    const fetchDungeons = async () => {
-      const selectedTag = tags.find((t) => t.id === tag);
-
-      if (!selectedTag || selectedTag.name !== "Donjon") {
-        setIsDungeon(false);
-        return;
-      }
-
-      setIsDungeon(true);
-
-      try {
-        if (subArea) {
-          const lang = i18n.language as "fr" | "en";
-          const selectedSubArea = subAreas.find(
-            (s) => s.name[lang] === subArea,
-          );
-
-          if (!selectedSubArea) return;
-
-          const response = await dofusDBService.getDungeons(
-            selectedSubArea.dungeonId,
-          );
-
-          setDungeons(response);
-        } else {
-          const response = await dofusDBService.getDungeons();
-
-          setDungeons(response);
-        }
-      } catch (error) {
-        if (isAxiosError(error)) {
-          showError(t("common.error.default"), error.message);
-        } else if (error instanceof Error) {
-          showError(t("common.error.default"), t("system.error.occurred"));
-          console.error("General error:", error.message);
-        }
-      }
-    };
-
-    fetchDungeons();
-  }, [tag, subArea]);
+  const { areas } = useFetchAreas();
+  const { subAreas } = useFetchSubAreas(areas, area);
+  const { dungeons, isDungeon } = useFetchDungeons(
+    tags,
+    tag,
+    areas,
+    area,
+    subAreas,
+    subArea,
+  );
 
   return (
     <div className="new_event">

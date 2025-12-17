@@ -1,266 +1,234 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, waitFor, fireEvent } from "@testing-library/react";
+import { vi } from "vitest";
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 
 import { t } from "../../../../i18n/i18n-helper";
-
-import { EventEnriched } from "../../../../types/event";
-
-import { useAuth } from "../../../../contexts/authContext";
-import { useNotification } from "../../../../contexts/notificationContext";
-
-import * as TagService from "../../../../services/api/tagService";
-import * as ServerService from "../../../../services/api/serverService";
-import * as DofusDBService from "../../../../services/api/dofusDBService";
-import formatDateToLocalInput from "../../utils/formatDateToLocalInput";
-import { SelectOptionsProps } from "../../formComponents/Options/SelectOptions";
-
 import UpdateEventForm from "../UpdateEventForm/UpdateEventForm";
 
-// Mock config
-vi.mock("../../../../config/config.ts", () => ({
-  Config: {
-    getInstance: () => ({
-      backUrl: "/api",
-      dofusdbUrl: "/dofusdb",
-    }),
-  },
+// ─────────────────────────────────────────────
+// Mocks
+// ─────────────────────────────────────────────
+
+// i18n
+vi.mock("../../../../i18n/i18n-helper", () => ({
+  useTypedTranslation: () => (k: string) => k,
+  t: (k: string) => k,
 }));
 
-// Mock services
-vi.mock("../../../../services/api/tagService");
-vi.mock("../../../../services/api/serverService");
-vi.mock("../../../../services/api/dofusDBService");
-
-// Mock context
-vi.mock("../../../../contexts/authContext", () => ({
-  useAuth: vi.fn(),
-}));
-vi.mock("../../../../contexts/notificationContext", () => ({
-  useNotification: vi.fn(),
+// Utils
+vi.mock("../../utils/formatDateToLocalInput", () => ({
+  __esModule: true,
+  default: () => "2025-12-24T20:00",
 }));
 
-// Mock child components
-vi.mock("../../FormComponents/Options/SelectOptions", () => ({
-  default: ({ name, onChange, value, label }: SelectOptionsProps<any, any>) => (
-    <div data-testid={`select-options-${name}`}>
-      <label>{label}</label>
-      <select
-        name={name}
-        onChange={(e) => onChange(e.target.value)}
-        value={value}
-      >
-        <option value="">Sélectionner...</option>
-        {name === "area" && <option value="Amakna">Amakna</option>}
-        {name === "sub_area" && (
-          <option value="Forêt d’Amakna">Forêt d’Amakna</option>
-        )}
-        {name === "tag" && <option value="123">Donjon</option>}
-      </select>
+// Hooks
+vi.mock("../../../../hooks/useFetchTags", () => ({
+  __esModule: true,
+  default: () => ({
+    tags: [{ id: "tag-1", label: "Donjon" }],
+  }),
+}));
+
+vi.mock("../../../../hooks/useFetchAreas", () => ({
+  __esModule: true,
+  default: () => ({
+    areas: [{ id: "a-1", name: "Amakna" }],
+  }),
+}));
+
+vi.mock("../../../../hooks/useFetchSubAreas", () => ({
+  __esModule: true,
+  default: (_areas: any, area: string) => ({
+    subAreas: area ? [{ id: "sa-1", name: "Coin des bouftous" }] : [],
+  }),
+}));
+
+// useFetchDungeons doit retourner dungeons et isDungeon
+let mockIsDungeon = true;
+vi.mock("../../../../hooks/useFetchDungeons", () => ({
+  __esModule: true,
+  default: (
+    _tags: any,
+    _tag: string,
+    _areas: any,
+    _area: string,
+    _subAreas: any,
+    _subArea: string,
+  ) => ({
+    dungeons: [{ id: "d-1", name: "Donjon Bouftou" }],
+    isDungeon: mockIsDungeon,
+  }),
+}));
+
+// SelectOptions mock
+vi.mock("../../formComponents/Options/SelectOptions", () => ({
+  __esModule: true,
+  default: ({ items, label, value, onChange }: any) => (
+    <div data-testid={`select-${label}`}>
+      {items?.map((it: any) => (
+        <button
+          key={it.id}
+          data-testid={`option-${label}-${it.id}`}
+          onClick={() => onChange(it.value ?? it.id)}
+        >
+          {it.name ?? it.label}
+        </button>
+      ))}
+      <input
+        aria-label={`hidden-${label}`}
+        value={value ?? ""}
+        readOnly
+        style={{ display: "none" }}
+      />
     </div>
   ),
 }));
 
-vi.mock("../../utils/formatDateToLocalInput", () => ({
-  default: vi.fn(),
-}));
+// ─────────────────────────────────────────────
+// Test data
+// ─────────────────────────────────────────────
+
+const updateTarget = {
+  id: "evt-1",
+  title: "Event test",
+  description: "Description test",
+  date: "2025-12-24T19:00:00Z",
+  duration: 60,
+  max_players: 8,
+  status: "public",
+  donjon_name: "Donjon Bouftou",
+  area: "a-1",
+  sub_area: "sa-1",
+  tag: { id: "tag-1", label: "Donjon" },
+  server: { id: "srv-1", name: "Salar" },
+};
+
+// ─────────────────────────────────────────────
+// Tests
+// ─────────────────────────────────────────────
 
 describe("UpdateEventForm", () => {
-  const mockShowError = vi.fn();
-  const mockHandleSubmit = vi.fn();
-  const mockUser = {
-    id: "123",
-    username: "testuser",
-    password: "motdepasse",
-    mail: "user@mail.test",
-  };
-
-  const mockTags = [{ id: "123", name: "Donjon", color: "#0000" }];
-  const mockServers = [{ id: "456", name: "Serveur Test", mono_account: true }];
-  const mockAreas = [
-    {
-      id: 1,
-      name: {
-        id: "123",
-        en: "Astrub",
-        es: "Astrub",
-        pt: "Astrub",
-        de: "Astrub",
-        fr: "Astrub",
-      },
-    },
-  ];
-  const mockSubAreas = [
-    {
-      id: 2,
-      dungeonId: 3,
-      name: {
-        id: "123",
-        en: "Astrub forest",
-        es: "Bosque de Astrub",
-        pt: "Floresta de Astrub",
-        de: "Astrub-Wald",
-        fr: "Forêt d’Astrub",
-      },
-    },
-  ];
-  const mockDungeons = [
-    {
-      id: 3,
-      name: {
-        id: "123",
-        en: "Bouftou Dungeon",
-        es: "Mazmorra de Bouftou",
-        pt: "Calabouço Bouftou",
-        de: "Bouftou-Dungeon",
-        fr: "Donjon Bouftou",
-      },
-    },
-  ];
-
-  const updateTarget: EventEnriched = {
-    id: "evt-1",
-    title: "Titre existant",
-    tag: { id: "123", name: "Donjon", color: "#0000" },
-    server: { id: "456", name: "Serveur Test", mono_account: true },
-    date: new Date("2025-10-26T10:00"),
-    duration: 120,
-    area: "Amakna",
-    sub_area: "Forêt d’Amakna",
-    donjon_name: "Donjon Corbac",
-    max_players: 8,
-    description: "Description existante",
-    status: "public",
-    characters: [],
-    comments: [],
-    user: { id: "user123", username: "toto" },
-  };
-
   beforeEach(() => {
     vi.clearAllMocks();
-    vi.mocked(useAuth).mockReturnValue({
-      user: mockUser,
-      setUser: vi.fn(),
-      isAuthLoading: false,
-      logout: vi.fn(),
-    });
-    vi.mocked(useNotification).mockReturnValue({
-      showError: mockShowError,
-      notifications: [],
-      addNotification: vi.fn(),
-      removeNotification: vi.fn(),
-      showSuccess: vi.fn(),
-      showInfo: vi.fn(),
-    });
-    vi.mocked(formatDateToLocalInput).mockReturnValue("2025-10-26T10:00");
-
-    vi.mocked(TagService.TagService.prototype.getTags).mockResolvedValue(
-      mockTags,
-    );
-    vi.mocked(
-      ServerService.ServerService.prototype.getServers,
-    ).mockResolvedValue(mockServers);
-    vi.mocked(
-      DofusDBService.DofusDBService.prototype.getAreas,
-    ).mockResolvedValue(mockAreas);
   });
 
-  it("should render the form and fetch initial data on mount", async () => {
+  it("Display all fields with prefilled values and dungeons select if isDungeon=true", async () => {
     render(
       <UpdateEventForm
-        updateTarget={updateTarget}
-        handleSubmit={mockHandleSubmit}
+        updateTarget={updateTarget as any}
+        handleSubmit={() => {}}
       />,
     );
 
     expect(
-      screen.getByRole("heading", { name: t("event.modification") }),
+      screen.getByRole("heading", {
+        name: t("event.modification"),
+      }),
     ).toBeInTheDocument();
-    expect(screen.getByRole("form")).toBeInTheDocument();
+
+    expect(screen.getByDisplayValue(updateTarget.title)).toBeInTheDocument();
+    expect(
+      screen.getByDisplayValue(updateTarget.description),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByDisplayValue(updateTarget.duration.toString()),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByDisplayValue(updateTarget.max_players.toString()),
+    ).toBeInTheDocument();
 
     await waitFor(() => {
-      expect(TagService.TagService.prototype.getTags).toHaveBeenCalledTimes(1);
+      expect(screen.getByDisplayValue("2025-12-24T20:00")).toBeInTheDocument();
+    });
+
+    // Dungeon field is rendered because isDungeon = true
+    expect(screen.getByTestId("select-common.dungeon")).toBeInTheDocument();
+  });
+
+  it("Do not display dungeon select if isDungeon=false", () => {
+    // change value before render
+    mockIsDungeon = false;
+
+    render(
+      <UpdateEventForm
+        updateTarget={updateTarget as any}
+        handleSubmit={() => {}}
+      />,
+    );
+
+    expect(
+      screen.queryByTestId("select-common.dungeon"),
+    ).not.toBeInTheDocument();
+
+    // reset value for other tests
+    mockIsDungeon = true;
+  });
+
+  it("Permit to update title, date and duration", () => {
+    render(
+      <UpdateEventForm
+        updateTarget={updateTarget as any}
+        handleSubmit={() => {}}
+      />,
+    );
+
+    fireEvent.change(screen.getByPlaceholderText(t("common.title")), {
+      target: { value: "New title" },
+    });
+    fireEvent.change(screen.getByLabelText("date-input"), {
+      target: { value: "2026-01-01T18:00" },
+    });
+
+    fireEvent.change(screen.getByPlaceholderText(t("common.durationInMin")), {
+      target: { value: "120" },
+    });
+
+    expect(screen.getByDisplayValue("New title")).toBeInTheDocument();
+    expect(screen.getByDisplayValue("2026-01-01T18:00")).toBeInTheDocument();
+    expect(screen.getByDisplayValue("120")).toBeInTheDocument();
+  });
+
+  it("Permit to change tag, area and subArea", async () => {
+    render(
+      <UpdateEventForm
+        updateTarget={updateTarget as any}
+        handleSubmit={() => {}}
+      />,
+    );
+
+    fireEvent.click(screen.getByTestId(`option-tag.default-tag-1`));
+    fireEvent.click(screen.getByTestId(`option-common.area-a-1`));
+
+    await waitFor(() => {
       expect(
-        ServerService.ServerService.prototype.getServers,
-      ).toHaveBeenCalledTimes(1);
-      expect(
-        DofusDBService.DofusDBService.prototype.getAreas,
-      ).toHaveBeenCalledTimes(1);
+        screen.getByTestId(`option-common.subArea-sa-1`),
+      ).toBeInTheDocument();
     });
   });
 
-  it("should call handleSubmit on form submission", async () => {
+  it("Permit to change visibility status", () => {
     render(
       <UpdateEventForm
-        updateTarget={updateTarget}
-        handleSubmit={mockHandleSubmit}
+        updateTarget={updateTarget as any}
+        handleSubmit={() => {}}
+      />,
+    );
+
+    fireEvent.click(screen.getByTestId(`option-common.visibility-1`));
+    expect(screen.getByLabelText(`hidden-common.visibility`)).toHaveValue(
+      "private",
+    );
+  });
+
+  it("Submit form by calling handleSubmit", () => {
+    const handleSubmit = vi.fn((e) => e.preventDefault());
+    render(
+      <UpdateEventForm
+        updateTarget={updateTarget as any}
+        handleSubmit={handleSubmit}
       />,
     );
 
     fireEvent.submit(screen.getByRole("form"));
-
-    expect(mockHandleSubmit).toHaveBeenCalledTimes(1);
-    expect(mockHandleSubmit).toHaveBeenCalledWith(
-      expect.objectContaining({ type: "submit" }),
-    );
-  });
-
-  it("should show error if fetching tags fails", async () => {
-    vi.mocked(TagService.TagService.prototype.getTags).mockRejectedValue(
-      new Error("General error"),
-    );
-
-    render(
-      <UpdateEventForm
-        updateTarget={updateTarget}
-        handleSubmit={mockHandleSubmit}
-      />,
-    );
-
-    await waitFor(() => {
-      expect(mockShowError).toHaveBeenCalledWith(
-        t("system.error.default"),
-        t("system.error.occurred"),
-      );
-    });
-  });
-
-  it("should show error if fetching servers fails", async () => {
-    vi.mocked(
-      ServerService.ServerService.prototype.getServers,
-    ).mockRejectedValue(new Error("General error"));
-
-    render(
-      <UpdateEventForm
-        updateTarget={updateTarget}
-        handleSubmit={mockHandleSubmit}
-      />,
-    );
-
-    await waitFor(() => {
-      expect(mockShowError).toHaveBeenCalledWith(
-        t("system.error.default"),
-        t("system.error.occurred"),
-      );
-    });
-  });
-
-  it("should show error if fetching areas fails", async () => {
-    vi.mocked(
-      DofusDBService.DofusDBService.prototype.getAreas,
-    ).mockRejectedValue(new Error("General error"));
-
-    render(
-      <UpdateEventForm
-        updateTarget={updateTarget}
-        handleSubmit={mockHandleSubmit}
-      />,
-    );
-
-    await waitFor(() => {
-      expect(mockShowError).toHaveBeenCalledWith(
-        t("system.error.default"),
-        t("system.error.occurred"),
-      );
-    });
+    expect(handleSubmit).toHaveBeenCalled();
   });
 });

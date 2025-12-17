@@ -48,8 +48,6 @@ export default function NewEventForm({
   const [server, setServer] = useState<string>(updateTarget.server.id);
   const [duration, setDuration] = useState<number>(updateTarget.duration);
 
-  const [isDungeon, setIsDungeon] = useState(false);
-
   const statutes = [
     { id: 1, label: t("common.private"), value: "private" },
     { id: 2, label: t("common.public"), value: "public" },
@@ -59,7 +57,7 @@ export default function NewEventForm({
   const { areas } = useFetchAreas();
   const { servers } = useFetchServers();
   const { subAreas } = useFetchSubAreas(areas, area);
-  const { dungeons } = useFetchDungeons(
+  const { dungeons, isDungeon } = useFetchDungeons(
     tags,
     tag,
     areas,
@@ -117,6 +115,7 @@ export default function NewEventForm({
             name="date"
             id="date"
             value={date}
+            aria-label="date-input"
             min={formatDateToLocalInput(new Date())}
             required
             className="update_event_form_label_input"

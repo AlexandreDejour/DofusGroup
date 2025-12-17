@@ -1,29 +1,17 @@
 import "./UpdateCharacterForm.scss";
 
-import { isAxiosError } from "axios";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useTypedTranslation } from "../../../../i18n/i18n-helper";
 
-import { Breed } from "../../../../types/breed";
-import { Server } from "../../../../types/server";
 import { CharacterEnriched } from "../../../../types/character";
 
-import { useNotification } from "../../../../contexts/notificationContext";
-
-import { Config } from "../../../../config/config";
-import { ApiClient } from "../../../../services/client";
 import { generateOptions } from "../../utils/generateOptions";
-import { BreedService } from "../../../../services/api/breedService";
-import { ServerService } from "../../../../services/api/serverService";
+import useFetchBreeds from "../../../../hooks/useFetchBreeds";
+import useFetchServers from "../../../../hooks/useFetchServers";
 
 import BreedRadio from "../../formComponents/Radio/BreedRadio";
 import GenderRadio from "../../formComponents/Radio/GenderRadio";
 import SelectOptions from "../../formComponents/Options/SelectOptions";
-
-const config = Config.getInstance();
-const axios = new ApiClient(config.backUrl);
-const breedService = new BreedService(axios);
-const serverService = new ServerService(axios);
 
 interface UpdateCharacterFormProps {
   updateTarget: CharacterEnriched;
@@ -35,11 +23,6 @@ export default function UpdateCharacterForm({
   handleSubmit,
 }: UpdateCharacterFormProps) {
   const t = useTypedTranslation();
-
-  const { showError } = useNotification();
-
-  const [breeds, setBreeds] = useState<Breed[]>([]);
-  const [servers, setServers] = useState<Server[]>([]);
 
   const [sex, setSex] = useState<string>(updateTarget.sex);
   const [name, setName] = useState<string>(updateTarget.name);
@@ -57,40 +40,8 @@ export default function UpdateCharacterForm({
     { id: 3, name: "Neutre" },
   ];
 
-  useEffect(() => {
-    const fetchBreeds = async () => {
-      try {
-        const response = await breedService.getBreeds();
-
-        setBreeds(response);
-      } catch (error) {
-        if (isAxiosError(error)) {
-          showError(t("system.error.default"), error.message);
-        } else if (error instanceof Error) {
-          showError(t("system.error.default"), t("system.error.occurred"));
-          console.error("General error:", error.message);
-        }
-      }
-    };
-
-    const fetchServers = async () => {
-      try {
-        const response = await serverService.getServers();
-
-        setServers(response);
-      } catch (error) {
-        if (isAxiosError(error)) {
-          showError(t("system.error.default"), error.message);
-        } else if (error instanceof Error) {
-          showError(t("system.error.default"), t("system.error.occurred"));
-          console.error("General error:", error.message);
-        }
-      }
-    };
-
-    fetchBreeds();
-    fetchServers();
-  }, []);
+  const { breeds } = useFetchBreeds();
+  const { servers } = useFetchServers();
 
   return (
     <div className="update_character">

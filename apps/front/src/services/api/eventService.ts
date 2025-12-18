@@ -134,7 +134,7 @@ export class EventService {
 
   public async removeCharacter(eventId: string, characterId: string) {
     try {
-      const response = await this.apiClient.post(
+      const response = await this.apiClient.post<EventEnriched>(
         `/event/${eventId}/removeCharacter`,
         { character_id: characterId },
       );

@@ -5,17 +5,12 @@ import { EventEnriched } from "../types/event";
 import { useTypedTranslation } from "../i18n/i18n-helper";
 import { useNotification } from "../contexts/notificationContext";
 
-import { Config } from "../config/config";
-import { ApiClient } from "../services/client";
-import { EventService } from "../services/api/eventService";
-
-const config = Config.getInstance();
-const axios = new ApiClient(config.backUrl);
-const eventService = new EventService(axios);
+import { eventService, EventService } from "../services/api/eventService";
 
 export default function useCharacterRemover(
   event: EventEnriched | null,
   setEvent: Dispatch<SetStateAction<EventEnriched | null>>,
+  service: EventService = eventService,
 ) {
   const t = useTypedTranslation();
   const { showSuccess, showError } = useNotification();
@@ -23,10 +18,7 @@ export default function useCharacterRemover(
   const removeCharacter = useCallback(
     async (eventId: string, characterId: string) => {
       try {
-        const response = await eventService.removeCharacter(
-          eventId,
-          characterId,
-        );
+        const response = await service.removeCharacter(eventId, characterId);
 
         setEvent(response);
 
@@ -39,7 +31,7 @@ export default function useCharacterRemover(
         }
       }
     },
-    [event],
+    [event, service],
   );
 
   return removeCharacter;

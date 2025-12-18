@@ -1,17 +1,16 @@
 import { t } from "../../i18n/i18n-helper";
 
-import { ApiClient } from "../client";
-import handleApiError from "../utils/handleApiError";
-
 import { UpdateForm } from "../../types/form";
 import { AuthUser, UserEnriched } from "../../types/user";
 
+import { ApiClient } from "../client";
+import handleApiError from "../utils/handleApiError";
+import { backApiClient } from "../http/backApiClient";
+
 export class UserService {
-  private axios;
   private passwordRegex;
 
-  constructor(axios: ApiClient) {
-    this.axios = axios.instance;
+  constructor(private apiClient: ApiClient) {
     this.passwordRegex = new RegExp(
       "^(?=.*[A-Z])(?=.*\\d)(?=.*[!@#$%^&*()_\\-+=\\[\\]{};'\":\\\\|,.<>/?`~]).{8,}$",
     );
@@ -19,7 +18,7 @@ export class UserService {
 
   public async getOne(userId: string): Promise<AuthUser> {
     try {
-      const response = await this.axios.get<AuthUser>(`/user/${userId}`);
+      const response = await this.apiClient.get<AuthUser>(`/user/${userId}`);
 
       return response.data;
     } catch (error) {
@@ -29,7 +28,7 @@ export class UserService {
 
   public async getOneEnriched(id: string): Promise<UserEnriched> {
     try {
-      const response = await this.axios.get<UserEnriched>(
+      const response = await this.apiClient.get<UserEnriched>(
         `/user/${id}/enriched`,
       );
 
@@ -49,7 +48,7 @@ export class UserService {
     }
 
     try {
-      const response = await this.axios.patch<AuthUser>(
+      const response = await this.apiClient.patch<AuthUser>(
         `/user/${userId}`,
         data,
         { withCredentials: true },
@@ -63,7 +62,7 @@ export class UserService {
 
   public async delete(userId: string) {
     try {
-      const response = await this.axios.delete(`/user/${userId}`, {
+      const response = await this.apiClient.delete(`/user/${userId}`, {
         withCredentials: true,
       });
 
@@ -73,3 +72,5 @@ export class UserService {
     }
   }
 }
+
+export const userService = new UserService(backApiClient);

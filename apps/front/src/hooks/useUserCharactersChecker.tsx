@@ -4,17 +4,13 @@ import { isAxiosError } from "axios";
 import { User } from "../types/user";
 
 import { useTypedTranslation } from "../i18n/i18n-helper";
+import { userService, UserService } from "../services/api/userService";
 import { useNotification } from "../contexts/notificationContext";
 
-import { Config } from "../config/config";
-import { ApiClient } from "../services/client";
-import { UserService } from "../services/api/userService";
-
-const config = Config.getInstance();
-const axios = new ApiClient(config.backUrl);
-const userService = new UserService(axios);
-
-export default function useUserCharactersChecker(user: User | null) {
+export default function useUserCharactersChecker(
+  user: User | null,
+  service: UserService = userService,
+) {
   const t = useTypedTranslation();
   const { showError } = useNotification();
 
@@ -22,7 +18,7 @@ export default function useUserCharactersChecker(user: User | null) {
     if (!user) return;
 
     try {
-      const response = await userService.getOneEnriched(user.id);
+      const response = await service.getOneEnriched(user.id);
 
       if (!response.characters?.length) {
         showError(t("common.minimalCondition"), t("character.error.required"));
@@ -35,7 +31,7 @@ export default function useUserCharactersChecker(user: User | null) {
       else if (error instanceof Error)
         console.error("General error:", error.message);
     }
-  }, [user, showError, t, userService]);
+  }, [user, showError, t, userService, service]);
 
   return checkUserCharacters;
 }

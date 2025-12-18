@@ -1,4 +1,4 @@
-import axios, { AxiosInstance } from "axios";
+import axios, { AxiosInstance, AxiosRequestConfig } from "axios";
 
 import axiosInterceptor from "./utils/axiosInterceptor";
 
@@ -10,7 +10,11 @@ export class ApiClient {
     axiosInterceptor(this.axiosInstance);
   }
 
-  get instance() {
-    return this.axiosInstance;
+  get<T>(url: string, config?: AxiosRequestConfig) {
+    return this.axiosInstance.get<T>(url, config);
+  }
+
+  post<T>(url: string, data?: unknown, config?: AxiosRequestConfig) {
+    return this.axiosInstance.post<T>(url, data, config);
   }
 }

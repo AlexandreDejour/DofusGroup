@@ -113,4 +113,4 @@ export class DofusDBService {
   }
 }
 
-const dofusDbService = new DofusDBService(dofusDbApiClient);
+export const dofusDBService = new DofusDBService(dofusDbApiClient);

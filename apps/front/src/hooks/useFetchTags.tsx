@@ -3,15 +3,9 @@ import { useEffect, useState } from "react";
 
 import { Tag } from "../types/tag";
 
-import { Config } from "../config/config";
-import { ApiClient } from "../services/client";
-import { TagService } from "../services/api/tagService";
+import { tagService, TagService } from "../services/api/tagService";
 
-const config = Config.getInstance();
-const axios = new ApiClient(config.backUrl);
-const tagService = new TagService(axios);
-
-export default function useFetchTags() {
+export default function useFetchTags(service: TagService = tagService) {
   const [tags, setTags] = useState<Tag[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -22,7 +16,7 @@ export default function useFetchTags() {
       setError(null);
 
       try {
-        const tagsData = await tagService.getTags();
+        const tagsData = await service.getTags();
 
         setTags(tagsData);
       } catch (error) {
@@ -34,7 +28,7 @@ export default function useFetchTags() {
     };
 
     fetchTags();
-  }, []);
+  }, [service]);
 
   return { tags, isLoading, error };
 }

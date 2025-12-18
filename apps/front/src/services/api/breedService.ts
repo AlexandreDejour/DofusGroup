@@ -3,17 +3,14 @@ import handleApiError from "../utils/handleApiError";
 import { Breed } from "../../types/breed";
 
 import { ApiClient } from "../client";
+import { backApiClient } from "../http/backApiClient";
 
 export class BreedService {
-  private axios;
-
-  constructor(axios: ApiClient) {
-    this.axios = axios.instance;
-  }
+  constructor(private apiClient: ApiClient) {}
 
   public async getBreeds(): Promise<Breed[]> {
     try {
-      const response = await this.axios.get<Breed[]>("/breeds");
+      const response = await this.apiClient.get<Breed[]>("/breeds");
 
       return response.data;
     } catch (error) {
@@ -22,3 +19,5 @@ export class BreedService {
     }
   }
 }
+
+export const breedService = new BreedService(backApiClient);

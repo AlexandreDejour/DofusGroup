@@ -3,15 +3,9 @@ import { useEffect, useState } from "react";
 
 import type { AuthUser } from "../types/user";
 
-import { Config } from "../config/config";
-import { ApiClient } from "../services/client";
-import { AuthService } from "../services/api/authService";
+import { authService, AuthService } from "../services/api/authService";
 
-const config = Config.getInstance();
-const axios = new ApiClient(config.backUrl);
-const authService = new AuthService(axios);
-
-export default function useFetchAuthUser() {
+export default function useFetchAuthUser(service: AuthService = authService) {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -22,7 +16,7 @@ export default function useFetchAuthUser() {
       setError(null);
 
       try {
-        const response = await authService.apiMe();
+        const response = await service.apiMe();
         setUser(response);
       } catch (error) {
         if (isAxiosError(error)) setError(error.message);

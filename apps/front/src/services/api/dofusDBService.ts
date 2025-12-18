@@ -18,29 +18,21 @@ export class DofusDBService {
   public async getAreas(): Promise<Area[]> {
     const limit = 50; // max API rule
     let skip = 0;
-    let allAreas: Dungeon[] = [];
-    let hasMore = true;
+    const allAreas: Area[] = [];
+    let batchLength: number;
 
     try {
-      while (hasMore) {
+      do {
         const response = await this.apiClient.get<BaseData>("/areas", {
-          params: {
-            $limit: limit,
-            $skip: skip,
-          },
+          params: { $limit: limit, $skip: skip },
         });
 
-        const areas: Area[] = response.data.data.map((a: Area) => ({
-          id: a.id,
-          name: a.name,
-        }));
-
-        allAreas = [...allAreas, ...areas];
-
-        // if less than "limit" => more data
-        hasMore = areas.length === limit;
+        allAreas.push(
+          ...response.data.data.map((a: Area) => ({ id: a.id, name: a.name })),
+        );
+        batchLength = response.data.data.length;
         skip += limit;
-      }
+      } while (batchLength === limit);
 
       return allAreas;
     } catch (error) {
@@ -75,29 +67,25 @@ export class DofusDBService {
   public async getDungeons(): Promise<Dungeon[]> {
     const limit = 50; // max API rule
     let skip = 0;
-    let allDungeons: Dungeon[] = [];
-    let hasMore = true;
+    const allDungeons: Dungeon[] = [];
+    let batchLength: number;
 
     try {
-      while (hasMore) {
+      do {
         const response = await this.apiClient.get<BaseData>("/dungeons", {
-          params: {
-            $limit: limit,
-            $skip: skip,
-          },
+          params: { $limit: limit, $skip: skip },
         });
 
-        const dungeons: Dungeon[] = response.data.data.map((d: Dungeon) => ({
-          id: d.id,
-          name: d.name,
-        }));
+        allDungeons.push(
+          ...response.data.data.map((d: Dungeon) => ({
+            id: d.id,
+            name: d.name,
+          })),
+        );
 
-        allDungeons = [...allDungeons, ...dungeons];
-
-        // if less than "limit" => more data
-        hasMore = dungeons.length === limit;
+        batchLength = response.data.data.length;
         skip += limit;
-      }
+      } while (batchLength === limit);
 
       return allDungeons;
     } catch (error) {
@@ -125,4 +113,4 @@ export class DofusDBService {
   }
 }
 
-const dofusDBService = new DofusDBService(dofusDbApiClient);
+const dofusDbService = new DofusDBService(dofusDbApiClient);

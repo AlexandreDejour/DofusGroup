@@ -14,7 +14,6 @@ export class BreedService {
 
       return response.data;
     } catch (error) {
-      console.log(error);
       handleApiError(error);
     }
   }

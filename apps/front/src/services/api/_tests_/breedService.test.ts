@@ -11,38 +11,42 @@ vi.mock("../../utils/handleApiError", () => ({
 }));
 
 describe("BreedService", () => {
-  let apiClientMock: any;
+  let apiClientMock: {
+    get: Mock;
+  };
+
   let breedService: BreedService;
 
   beforeEach(() => {
     (handleApiError as unknown as Mock).mockReset();
+
     apiClientMock = {
-      instance: {
-        get: vi.fn(),
-      },
+      get: vi.fn(),
     };
-    breedService = new BreedService(apiClientMock as ApiClient);
+
+    breedService = new BreedService(apiClientMock as unknown as ApiClient);
   });
 
   describe("getBreeds", () => {
-    it("should call axios.get with the correct URL on success", async () => {
+    it("returns breeds when request is successful", async () => {
       const mockBreeds: Breed[] = [
         { id: "6dd98471-3445-4e80-87ae-c82174fccfeb", name: "Iop" },
         { id: "3606e7c7-035a-47e1-a662-cc0ee58ed621", name: "Cra" },
       ];
-      apiClientMock.instance.get.mockResolvedValue({ data: mockBreeds });
+
+      apiClientMock.get.mockResolvedValue({ data: mockBreeds });
 
       const result = await breedService.getBreeds();
 
-      expect(apiClientMock.instance.get).toHaveBeenCalledWith("/breeds");
+      expect(apiClientMock.get).toHaveBeenCalledWith("/breeds");
       expect(result).toEqual(mockBreeds);
     });
 
-    it("Throw specific error when any breed found (handleApiError throws)", async () => {
+    it("calls handleApiError and rethrows if it throws", async () => {
       const error = new Error("Any breed found.");
-      apiClientMock.instance.get.mockRejectedValue(error);
+      apiClientMock.get.mockRejectedValue(error);
 
-      (handleApiError as unknown as Mock).mockImplementation(() => {
+      (handleApiError as unknown as Mock).mockImplementationOnce(() => {
         throw error;
       });
 
@@ -51,6 +55,16 @@ describe("BreedService", () => {
       );
 
       expect(handleApiError).toHaveBeenCalledWith(error);
+    });
+
+    it("returns undefined when handleApiError does not throw", async () => {
+      const error = new Error("Server error");
+      apiClientMock.get.mockRejectedValue(error);
+
+      const result = await breedService.getBreeds();
+
+      expect(handleApiError).toHaveBeenCalledWith(error);
+      expect(result).toBeUndefined();
     });
   });
 });

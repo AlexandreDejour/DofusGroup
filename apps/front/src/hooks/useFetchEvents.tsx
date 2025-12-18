@@ -3,20 +3,15 @@ import { Dispatch, SetStateAction, useEffect, useState } from "react";
 
 import { Event } from "../types/event";
 
-import { Config } from "../config/config";
-import { ApiClient } from "../services/client";
-import { EventService } from "../services/api/eventService";
 import { useModal } from "../contexts/modalContext";
-
-const config = Config.getInstance();
-const axios = new ApiClient(config.backUrl);
-const eventService = new EventService(axios);
+import { eventService, EventService } from "../services/api/eventService";
 
 export default function useFetchEvents(
   events: Event[],
   setEvents: Dispatch<SetStateAction<Event[]>>,
   currentPage: number,
   setTotalPages: Dispatch<SetStateAction<number>>,
+  service: EventService = eventService,
 ) {
   const { refreshKey } = useModal();
 
@@ -29,7 +24,7 @@ export default function useFetchEvents(
       setError(null);
 
       try {
-        const eventsData = await eventService.getEvents(10, currentPage);
+        const eventsData = await service.getEvents(10, currentPage);
 
         setEvents(eventsData.events);
         setTotalPages(eventsData.totalPages);
@@ -42,7 +37,7 @@ export default function useFetchEvents(
     };
 
     fetchEvents();
-  }, [currentPage, refreshKey]);
+  }, [currentPage, refreshKey, service]);
 
   return { events, isLoading, error };
 }

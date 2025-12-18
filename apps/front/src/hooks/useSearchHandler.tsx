@@ -3,20 +3,14 @@ import { Dispatch, SetStateAction, useCallback } from "react";
 import { Event } from "../types/event";
 import { SearchForm } from "../types/form";
 
-import { Config } from "../config/config";
-import { ApiClient } from "../services/client";
-import { EventService } from "../services/api/eventService";
-
+import { eventService, EventService } from "../services/api/eventService";
 import formDataToObject from "../contexts/utils/formDataToObject";
-
-const config = Config.getInstance();
-const axios = new ApiClient(config.backUrl);
-const eventService = new EventService(axios);
 
 export default function useSearchHandler(
   currentPage: number,
   setEvents: Dispatch<SetStateAction<Event[]>>,
   setTotalPages: Dispatch<SetStateAction<number>>,
+  service: EventService = eventService,
 ) {
   const handleSearch = useCallback(
     async (event: React.FormEvent<HTMLFormElement>) => {
@@ -27,7 +21,7 @@ export default function useSearchHandler(
       });
 
       try {
-        const filteredEvents = await eventService.getEvents(
+        const filteredEvents = await service.getEvents(
           10,
           currentPage,
           filters,
@@ -38,7 +32,7 @@ export default function useSearchHandler(
         console.error(error);
       }
     },
-    [currentPage, setEvents, setTotalPages],
+    [currentPage, setEvents, setTotalPages, service],
   );
 
   return handleSearch;

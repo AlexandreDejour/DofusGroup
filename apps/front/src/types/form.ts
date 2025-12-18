@@ -17,7 +17,6 @@ export type CreateCharacterForm = {
   level: number;
   alignment?: string;
   stuff?: string;
-  default_character: boolean;
   breed_id: string;
   server_id: string;
 };

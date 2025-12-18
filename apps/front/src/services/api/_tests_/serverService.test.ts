@@ -1,8 +1,8 @@
-import { describe, it, beforeEach, expect, vi, Mock } from "vitest";
+import { describe, it, beforeEach, expect, vi, type Mock } from "vitest";
 
-import { Server } from "../../../types/server";
+import type { Server } from "../../../types/server";
+import type { ApiClient } from "../../client";
 
-import { ApiClient } from "../../client";
 import { ServerService } from "../serverService";
 import handleApiError from "../../utils/handleApiError";
 
@@ -11,36 +11,45 @@ vi.mock("../../utils/handleApiError", () => ({
 }));
 
 describe("ServerService", () => {
-  let apiClientMock: any;
+  let apiClientMock: {
+    get: Mock;
+  };
+
   let serverService: ServerService;
 
   beforeEach(() => {
-    (handleApiError as unknown as Mock).mockReset();
+    vi.clearAllMocks();
+
     apiClientMock = {
-      instance: {
-        get: vi.fn(),
-      },
+      get: vi.fn(),
     };
-    serverService = new ServerService(apiClientMock as ApiClient);
+
+    serverService = new ServerService(apiClientMock as unknown as ApiClient);
   });
 
-  describe("getTags", () => {
-    it("should call axios.get with the correct URL on success", async () => {
+  describe("getServers", () => {
+    it("calls apiClient.get and returns sorted servers", async () => {
       const mockServers: Server[] = [
-        { id: "123", name: "Orukram", mono_account: true },
         { id: "456", name: "Tylezia", mono_account: false },
+        { id: "123", name: "Orukram", mono_account: true },
       ];
-      apiClientMock.instance.get.mockResolvedValue({ data: mockServers });
+
+      apiClientMock.get.mockResolvedValue({ data: mockServers });
 
       const result = await serverService.getServers();
 
-      expect(apiClientMock.instance.get).toHaveBeenCalledWith("/servers");
-      expect(result).toEqual(mockServers);
+      expect(apiClientMock.get).toHaveBeenCalledWith("/servers");
+
+      // sorted alphabetically by name
+      expect(result).toEqual([
+        { id: "123", name: "Orukram", mono_account: true },
+        { id: "456", name: "Tylezia", mono_account: false },
+      ]);
     });
 
-    it("Throw specific error when any server found (handleApiError throws)", async () => {
+    it("calls handleApiError and rethrows if it throws", async () => {
       const error = new Error("Any server found.");
-      apiClientMock.instance.get.mockRejectedValue(error);
+      apiClientMock.get.mockRejectedValue(error);
 
       (handleApiError as unknown as Mock).mockImplementation(() => {
         throw error;
@@ -51,6 +60,18 @@ describe("ServerService", () => {
       );
 
       expect(handleApiError).toHaveBeenCalledWith(error);
+    });
+
+    it("calls handleApiError and returns undefined if it does not throw", async () => {
+      const error = new Error("API error");
+      apiClientMock.get.mockRejectedValue(error);
+
+      (handleApiError as unknown as Mock).mockImplementation(() => undefined);
+
+      const result = await serverService.getServers();
+
+      expect(handleApiError).toHaveBeenCalledWith(error);
+      expect(result).toBeUndefined();
     });
   });
 });

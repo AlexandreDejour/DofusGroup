@@ -5,13 +5,7 @@ import { useEffect, useState } from "react";
 import { Tag } from "../types/tag";
 import { SubArea, Dungeon, Area } from "../types/dofusDB";
 
-import { Config } from "../config/config";
-import { ApiClient } from "../services/client";
-import { DofusDBService } from "../services/api/dofusDBService";
-
-const config = Config.getInstance();
-const axios = new ApiClient(config.dofusdbUrl);
-const dofusDBService = new DofusDBService(axios);
+import { dofusDBService, DofusDBService } from "../services/api/dofusDBService";
 
 export default function useFetchDungeons(
   tags: Tag[],
@@ -20,6 +14,7 @@ export default function useFetchDungeons(
   area: string,
   subAreas: SubArea[],
   subArea: string,
+  service: DofusDBService = dofusDBService,
 ) {
   const [dungeons, setDungeons] = useState<Dungeon[]>([]);
   const [isDungeon, setIsDungeon] = useState(false);
@@ -50,23 +45,21 @@ export default function useFetchDungeons(
             (s) => s.name[lang] === subArea,
           );
           if (selectedSubArea?.dungeonId) {
-            response = await dofusDBService.getDungeonsById([
+            response = await service.getDungeonsById([
               selectedSubArea.dungeonId,
             ]);
           }
         } else if (area !== "") {
           const selectedArea = areas.find((a) => a.name[lang] === area);
           if (selectedArea) {
-            const subAreasOfArea = await dofusDBService.getSubAreas(
-              selectedArea.id,
-            );
+            const subAreasOfArea = await service.getSubAreas(selectedArea.id);
             const dungeonIds = subAreasOfArea
               .map((s) => s.dungeonId)
               .filter((id): id is number => id !== -1);
-            response = await dofusDBService.getDungeonsById(dungeonIds);
+            response = await service.getDungeonsById(dungeonIds);
           }
         } else {
-          response = await dofusDBService.getDungeons();
+          response = await service.getDungeons();
         }
 
         setDungeons(response);
@@ -79,7 +72,7 @@ export default function useFetchDungeons(
     };
 
     fetchDungeons();
-  }, [tag, area, subArea]);
+  }, [tag, area, subArea, service]);
 
   return { dungeons, isDungeon, isLoading, error };
 }

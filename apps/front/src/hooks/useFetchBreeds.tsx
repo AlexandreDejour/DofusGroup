@@ -3,26 +3,20 @@ import { useEffect, useState } from "react";
 
 import { Breed } from "../types/breed";
 
-import { Config } from "../config/config";
-import { ApiClient } from "../services/client";
-import { BreedService } from "../services/api/breedService";
+import { breedService, BreedService } from "../services/api/breedService";
 
-const config = Config.getInstance();
-const axios = new ApiClient(config.backUrl);
-const breedService = new BreedService(axios);
-
-export default function useFetchBreeds() {
+export default function useFetchBreeds(service: BreedService = breedService) {
   const [breeds, setBreeds] = useState<Breed[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchServers = async () => {
+    const fetchBreeds = async () => {
       setIsLoading(true);
       setError(null);
 
       try {
-        const breedsData = await breedService.getBreeds();
+        const breedsData = await service.getBreeds();
 
         setBreeds(breedsData);
       } catch (error) {
@@ -33,8 +27,8 @@ export default function useFetchBreeds() {
       }
     };
 
-    fetchServers();
-  }, []);
+    fetchBreeds();
+  }, [service]);
 
   return { breeds, isLoading, error };
 }

@@ -36,7 +36,7 @@ describe("useFetchServers hook", () => {
 
     const result = setupHook(mockService);
 
-    // état initial
+    // initial state
     expect(result.current.isLoading).toBe(true);
     expect(result.current.error).toBeNull();
     expect(result.current.servers).toEqual([]);

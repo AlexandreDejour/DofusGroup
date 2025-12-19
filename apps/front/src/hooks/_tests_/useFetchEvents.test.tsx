@@ -86,7 +86,7 @@ describe("useFetchEvents hook", () => {
       mockService,
     );
 
-    // état initial
+    // initial state
     expect(result.current.isLoading).toBe(true);
     expect(result.current.error).toBeNull();
     expect(result.current.events).toEqual(initialEvents);

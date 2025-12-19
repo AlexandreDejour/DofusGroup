@@ -1,58 +1,22 @@
-import { Mock, vi } from "vitest";
-import { isAxiosError } from "axios";
-import { render, act } from "@testing-library/react";
+import { vi } from "vitest";
+import { render, waitFor } from "@testing-library/react";
+
+import { Tag } from "../../types/tag";
+import type { Area, SubArea, Dungeon } from "../../types/dofusDB";
 
 import useFetchDungeons from "../useFetchDungeons";
+import { AxiosError } from "axios";
 
-vi.mock("axios", () => {
-  const axiosInstance = {
-    get: vi.fn(),
-    post: vi.fn(),
-    put: vi.fn(),
-    delete: vi.fn(),
-    interceptors: {
-      request: { use: vi.fn(), eject: vi.fn() },
-      response: { use: vi.fn(), eject: vi.fn() },
-    },
-  };
-
-  return {
-    default: { create: vi.fn(() => axiosInstance) },
-    isAxiosError: vi.fn(),
-  };
-});
-
-vi.mock("../../config/config.ts", () => ({
-  Config: { getInstance: () => ({ dofusdbUrl: "http://localhost" }) },
-}));
-
-let mockGetSubAreas: any;
-let mockGetDungeonsById: any;
-let mockGetDungeons: any;
-
-vi.mock("../../services/api/dofusDBService", () => ({
-  DofusDBService: vi.fn().mockImplementation(() => ({
-    getSubAreas: (...args: any[]) => mockGetSubAreas(...args),
-    getDungeonsById: (...args: any[]) => mockGetDungeonsById(...args),
-    getDungeons: (...args: any[]) => mockGetDungeons(...args),
-  })),
-}));
-
-vi.mock("i18next", () => ({ __esModule: true, default: { language: "fr" } }));
-
-// Utility function
+// Helpers
 function setupHook(
-  tags: any[],
-  tag: string,
-  areas: any[],
-  area: string,
-  subAreas: any[],
-  subArea: string,
+  context: { tags: Tag[]; areas: Area[]; subAreas: SubArea[] },
+  selection: { tag: string; area: string; subArea: string },
+  service: any,
 ) {
   const ref = { current: null as any };
 
   function TestComponent() {
-    ref.current = useFetchDungeons(tags, tag, areas, area, subAreas, subArea);
+    ref.current = useFetchDungeons(context, selection, service);
     return null;
   }
 
@@ -65,124 +29,215 @@ describe("useFetchDungeons hook", () => {
     vi.clearAllMocks();
   });
 
-  it("Must initialize with empty dungeons, isLoading true and isDungeon false", () => {
-    mockGetDungeons = vi.fn().mockResolvedValue([]);
-    const tags = [{ id: "1", name: "Autre" }];
-    const areas: any[] = [];
-    const subAreas: any[] = [];
-
-    const ref = setupHook(tags, "1", areas, "", subAreas, "");
-
-    expect(ref.current.dungeons).toEqual([]);
-    expect(ref.current.isDungeon).toBe(false);
-    expect(ref.current.isLoading).toBe(false);
-    expect(ref.current.error).toBeNull();
-  });
-
-  it("Must set isDungeon false and empty dungeons if tag is not 'Donjon'", async () => {
-    const tags = [{ id: "1", name: "Autre" }];
-    const ref = setupHook(tags, "1", [], "", [], "");
-
-    await act(async () => {
-      await Promise.resolve();
-    });
-
-    expect(ref.current.isDungeon).toBe(false);
-    expect(ref.current.dungeons).toEqual([]);
-    expect(ref.current.isLoading).toBe(false);
-  });
-
-  it("Must fetch dungeons by subArea if subArea provided", async () => {
-    const tags = [{ id: "1", name: "Donjon" }];
-    const subAreas = [{ id: 1, name: { fr: "Sub1" }, dungeonId: 42 }];
-    const mockDungeons = [{ id: 42, name: "Dungeon42" }];
-    mockGetDungeonsById = vi.fn().mockResolvedValue(mockDungeons);
-
-    const ref = setupHook(tags, "1", [], "", subAreas, "Sub1");
-
-    await act(async () => {
-      await Promise.resolve();
-    });
-
-    expect(ref.current.isDungeon).toBe(true);
-    expect(ref.current.dungeons).toEqual(mockDungeons);
-  });
-
-  it("Must fetch dungeons via area if area provided and subArea empty", async () => {
-    const tags = [{ id: "1", name: "Donjon" }];
-    const areas = [{ id: 1, name: { fr: "Area1" } }];
-    const subAreasOfArea = [
-      { id: 10, dungeonId: 5 },
-      { id: 11, dungeonId: -1 },
+  it("should fetch dungeons successfully when tag is 'Donjon'", async () => {
+    const tags: Tag[] = [{ id: "tag1", name: "Donjon", color: "#f0f" }];
+    const areas: Area[] = [
+      {
+        id: 1,
+        name: {
+          id: "area1",
+          de: "area1",
+          en: "area1",
+          es: "area1",
+          fr: "area1",
+          pt: "area1",
+        },
+      },
     ];
-    const mockDungeons = [{ id: 5, name: "Dungeon5" }];
+    const subAreas: SubArea[] = [
+      {
+        id: 1,
+        name: {
+          id: "subArea1",
+          de: "subArea1",
+          en: "subArea1",
+          es: "subArea1",
+          fr: "subArea1",
+          pt: "subArea1",
+        },
+        dungeonId: 10,
+      },
+    ];
+    const dungeons: Dungeon[] = [
+      {
+        id: 10,
+        name: {
+          id: "1",
+          de: "Dungeon1",
+          en: "Dungeon1",
+          es: "Dungeon1",
+          fr: "Dungeon1",
+          pt: "Dungeon1",
+        },
+      },
+    ];
 
-    mockGetSubAreas = vi.fn().mockResolvedValue(subAreasOfArea);
-    mockGetDungeonsById = vi.fn().mockResolvedValue(mockDungeons);
+    const mockService = {
+      getDungeonsById: vi.fn().mockResolvedValue(dungeons),
+      getSubAreas: vi.fn().mockResolvedValue(subAreas),
+      getDungeons: vi.fn(),
+    };
 
-    const ref = setupHook(tags, "1", areas, "Area1", [], "");
+    const selection = { tag: "tag1", area: "area1", subArea: "subArea1" };
+    const context = { tags, areas, subAreas };
 
-    await act(async () => {
-      await Promise.resolve();
+    const result = setupHook(context, selection, mockService);
+
+    await waitFor(() => {
+      expect(result.current.isLoading).toBe(false);
     });
 
-    expect(ref.current.isDungeon).toBe(true);
-    expect(ref.current.dungeons).toEqual(mockDungeons);
-    expect(mockGetSubAreas).toHaveBeenCalledWith(1);
-    expect(mockGetDungeonsById).toHaveBeenCalledWith([5]);
+    expect(result.current.dungeons).toEqual(dungeons);
+    expect(result.current.isDungeon).toBe(true);
+    expect(result.current.error).toBeNull();
+
+    await waitFor(() => {
+      expect(result.current.isLoading).toBe(false);
+    });
+
+    expect(mockService.getDungeonsById).toHaveBeenCalledTimes(1);
+    expect(mockService.getDungeonsById).toHaveBeenCalledWith([10]);
+    expect(result.current.dungeons).toEqual(dungeons);
+    expect(result.current.isDungeon).toBe(true);
+    expect(result.current.error).toBeNull();
   });
 
-  it("Must fetch all dungeons if area and subArea empty", async () => {
-    const tags = [{ id: "1", name: "Donjon" }];
-    const mockDungeons = [{ id: 1, name: "Dungeon1" }];
-    mockGetDungeons = vi.fn().mockResolvedValue(mockDungeons);
+  it("should not fetch dungeons if tag is not 'Donjon'", async () => {
+    const tags = [{ id: "tag1", name: "Raid", color: "#000" }];
+    const areas: Area[] = [
+      {
+        id: 1,
+        name: {
+          id: "area1",
+          de: "area1",
+          en: "area1",
+          es: "area1",
+          fr: "area1",
+          pt: "area1",
+        },
+      },
+    ];
+    const subAreas: SubArea[] = [
+      {
+        id: 1,
+        name: {
+          id: "subArea1",
+          de: "subArea1",
+          en: "subArea1",
+          es: "subArea1",
+          fr: "subArea1",
+          pt: "subArea1",
+        },
+        dungeonId: 10,
+      },
+    ];
 
-    const ref = setupHook(tags, "1", [], "", [], "");
+    const mockService = {
+      getDungeonsById: vi.fn(),
+      getSubAreas: vi.fn(),
+      getDungeons: vi.fn(),
+    };
 
-    await act(async () => {
-      await Promise.resolve();
+    const selection = { tag: "tag1", area: "", subArea: "" };
+    const context = { tags, areas, subAreas };
+
+    const result = setupHook(context, selection, mockService);
+
+    await waitFor(() => {
+      expect(result.current.isLoading).toBe(false);
     });
 
-    expect(ref.current.isDungeon).toBe(true);
-    expect(ref.current.dungeons).toEqual(mockDungeons);
-    expect(mockGetDungeons).toHaveBeenCalled();
+    expect(result.current.isDungeon).toBe(false);
+    expect(result.current.dungeons).toEqual([]);
+    expect(mockService.getDungeonsById).not.toHaveBeenCalled();
+    expect(result.current.error).toBeNull();
   });
 
-  it("Must handle axios error", async () => {
-    const tags = [{ id: "1", name: "Donjon" }];
-    const subAreas = [{ id: 1, name: { fr: "Sub1" }, dungeonId: 42 }];
-    const errorMessage = "Axios error";
+  it("should set error when axios error occurs", async () => {
+    const tags = [{ id: "tag1", name: "Donjon", color: "#f0f" }];
+    const areas: Area[] = [];
+    const subAreas: SubArea[] = [];
 
-    mockGetDungeonsById = vi.fn().mockRejectedValue(new Error(errorMessage));
-    (isAxiosError as unknown as Mock).mockReturnValueOnce(true);
+    const axiosError = new AxiosError("Axios error");
+    const mockService = {
+      getDungeons: vi.fn().mockRejectedValue(axiosError),
+      getDungeonsById: vi.fn(),
+      getSubAreas: vi.fn(),
+    };
 
-    const ref = setupHook(tags, "1", [], "", subAreas, "Sub1");
+    const selection = { tag: "tag1", area: "", subArea: "" };
+    const context = { tags, areas, subAreas };
 
-    await act(async () => {
-      await Promise.resolve();
+    const result = setupHook(context, selection, mockService);
+
+    await waitFor(() => {
+      expect(result.current.isLoading).toBe(false);
     });
 
-    expect(ref.current.dungeons).toEqual([]);
-    expect(ref.current.isLoading).toBe(false);
-    expect(ref.current.error).toBe(errorMessage);
+    expect(result.current.error).toBe("Axios error");
+    expect(result.current.dungeons).toEqual([]);
   });
 
-  it("Must handle general error", async () => {
-    const tags = [{ id: "1", name: "Donjon" }];
-    const subAreas = [{ id: 1, name: { fr: "Sub1" }, dungeonId: 42 }];
-    const errorMessage = "Some error";
+  it("should set error when standard Error occurs", async () => {
+    const tags = [{ id: "tag1", name: "Donjon", color: "#f0f" }];
+    const areas: Area[] = [];
+    const subAreas: SubArea[] = [];
 
-    mockGetDungeonsById = vi.fn().mockRejectedValue(new Error(errorMessage));
-    (isAxiosError as unknown as Mock).mockReturnValueOnce(false);
+    const error = new Error("Standard error");
+    const mockService = {
+      getDungeons: vi.fn().mockRejectedValue(error),
+      getDungeonsById: vi.fn(),
+      getSubAreas: vi.fn(),
+    };
 
-    const ref = setupHook(tags, "1", [], "", subAreas, "Sub1");
+    const selection = { tag: "tag1", area: "", subArea: "" };
+    const context = { tags, areas, subAreas };
 
-    await act(async () => {
-      await Promise.resolve();
+    const result = setupHook(context, selection, mockService);
+
+    await waitFor(() => {
+      expect(result.current.isLoading).toBe(false);
     });
 
-    expect(ref.current.dungeons).toEqual([]);
-    expect(ref.current.isLoading).toBe(false);
-    expect(ref.current.error).toBe(errorMessage);
+    expect(result.current.error).toBe("Standard error");
+    expect(result.current.dungeons).toEqual([]);
+  });
+
+  it("should fetch all dungeons if no area or subArea is selected", async () => {
+    const tags = [{ id: "tag1", name: "Donjon", color: "#f0f" }];
+    const areas: Area[] = [];
+    const subAreas: SubArea[] = [];
+    const dungeons: Dungeon[] = [
+      {
+        id: 10,
+        name: {
+          id: "1",
+          de: "Dungeon1",
+          en: "Dungeon1",
+          es: "Dungeon1",
+          fr: "Dungeon1",
+          pt: "Dungeon1",
+        },
+      },
+    ];
+
+    const mockService = {
+      getDungeons: vi.fn().mockResolvedValue(dungeons),
+      getDungeonsById: vi.fn(),
+      getSubAreas: vi.fn(),
+    };
+
+    const selection = { tag: "tag1", area: "", subArea: "" };
+    const context = { tags, areas, subAreas };
+
+    const result = setupHook(context, selection, mockService);
+
+    await waitFor(() => {
+      expect(result.current.isLoading).toBe(false);
+    });
+
+    expect(mockService.getDungeons).toHaveBeenCalledTimes(1);
+    expect(result.current.dungeons).toEqual(dungeons);
+    expect(result.current.isDungeon).toBe(true);
   });
 });

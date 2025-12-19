@@ -13,21 +13,16 @@ vi.mock("../../contexts/notificationContext", () => ({
   }),
 }));
 
-let mockRemoveCharacter: any;
+vi.mock("../../i18n/i18n-helper", () => ({
+  useTypedTranslation: () => (key: string) => key,
+}));
 
-vi.mock("../../services/api/eventService", () => {
-  return {
-    EventService: vi.fn().mockImplementation(() => ({
-      removeCharacter: (...args: any[]) => mockRemoveCharacter(...args),
-    })),
-  };
-});
-
-function setupHook(event: any, setEvent: any) {
+// Helpers
+function setupHook(event: any, setEvent: any, service: any) {
   const ref = { current: null as any };
 
   function TestComponent() {
-    ref.current = useCharacterRemover(event, setEvent);
+    ref.current = useCharacterRemover(event, setEvent, service);
     return null;
   }
 
@@ -48,28 +43,54 @@ describe("useCharacterRemover hook", () => {
   });
 
   it("should remove character and show success message", async () => {
-    mockRemoveCharacter = vi.fn().mockResolvedValue(event); // Mock successful response
+    const mockService = {
+      removeCharacter: vi.fn().mockResolvedValue(event),
+    };
 
-    const result = setupHook(event, setEvent);
+    const result = setupHook(event, setEvent, mockService);
 
     await result.current(event.id, "char-1");
 
-    expect(mockRemoveCharacter).toHaveBeenCalledWith(event.id, "char-1");
+    expect(mockService.removeCharacter).toHaveBeenCalledWith(
+      event.id,
+      "char-1",
+    );
     expect(setEvent).toHaveBeenCalledWith(event);
     expect(showSuccess).toHaveBeenCalledWith(
-      "Deletion successful !",
-      "This character is no longer part of the event.",
+      "system.success.deleted",
+      "event.error.characterOut",
     );
   });
 
   it("should show error message on failure", async () => {
     const errorMessage = "Error removing character";
-    mockRemoveCharacter = vi.fn().mockRejectedValue(new Error(errorMessage)); // Mock error response
 
-    const result = setupHook(event, setEvent);
+    const mockService = {
+      removeCharacter: vi.fn().mockRejectedValue(new Error(errorMessage)),
+    };
+
+    const result = setupHook(event, setEvent, mockService);
 
     await result.current(event.id, "char-1");
 
-    expect(showError).toHaveBeenCalledWith("Error", errorMessage);
+    expect(showError).toHaveBeenCalledWith(
+      "system.error.default",
+      errorMessage,
+    );
+  });
+
+  it("should show generic error message when rejection is not an Error", async () => {
+    const mockService = {
+      removeCharacter: vi.fn().mockRejectedValue("boom"),
+    };
+
+    const result = setupHook(event, setEvent, mockService);
+
+    await result.current(event.id, "char-1");
+
+    expect(showError).toHaveBeenCalledWith(
+      "system.error.default",
+      "system.error.occurred",
+    );
   });
 });

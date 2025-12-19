@@ -27,7 +27,7 @@ export default function useFetchAuthUser(service: AuthService = authService) {
     };
 
     fetchAuthUser();
-  }, []);
+  }, [service]);
 
   return { user, setUser, isLoading, error };
 }

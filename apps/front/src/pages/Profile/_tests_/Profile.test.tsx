@@ -37,14 +37,6 @@ vi.mock("../../../contexts/notificationContext", () => ({
   }),
 }));
 
-vi.mock("../../../config/config.ts", () => ({
-  Config: {
-    getInstance: () => ({
-      baseUrl: "http://localhost",
-    }),
-  },
-}));
-
 // Mock authContext (user present)
 vi.mock("../../../contexts/authContext", () => ({
   __esModule: true,

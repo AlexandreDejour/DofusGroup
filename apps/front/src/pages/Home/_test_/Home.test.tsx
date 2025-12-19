@@ -105,10 +105,13 @@ vi.mock("../../../components/Pagination/Pagination", () => ({
 let mockGetEvents: any;
 
 vi.mock("../../../services/api/eventService", () => {
+  const serviceMock = {
+    getEvents: (...args: any[]) => mockGetEvents(...args),
+  };
+
   return {
-    EventService: vi.fn().mockImplementation(() => ({
-      getEvents: (...args: any[]) => mockGetEvents(...args),
-    })),
+    EventService: vi.fn().mockImplementation(() => serviceMock),
+    eventService: serviceMock,
   };
 });
 

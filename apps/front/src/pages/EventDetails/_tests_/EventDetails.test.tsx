@@ -19,11 +19,14 @@ vi.mock("../../../config/config.ts", () => ({
 let getOneEnrichedMock: any;
 
 vi.mock("../../../services/api/eventService", () => {
+  const serviceMock = {
+    getOneEnriched: (...args: any[]) => getOneEnrichedMock(...args),
+    removeCharacter: vi.fn(),
+  };
+
   return {
-    EventService: vi.fn().mockImplementation(() => ({
-      getOneEnriched: (...args: any[]) => getOneEnrichedMock(...args),
-      removeCharacter: vi.fn(),
-    })),
+    EventService: vi.fn().mockImplementation(() => serviceMock),
+    eventService: serviceMock,
   };
 });
 

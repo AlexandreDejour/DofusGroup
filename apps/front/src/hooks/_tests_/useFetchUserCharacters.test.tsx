@@ -51,7 +51,7 @@ describe("useFetchUserCharacters hook", () => {
 
     const result = setupHook("user1", "", mockService);
 
-    // état initial
+    // initial state
     expect(result.current.isLoading).toBe(true);
     expect(result.current.characters).toEqual([]);
     expect(result.current.error).toBeNull();

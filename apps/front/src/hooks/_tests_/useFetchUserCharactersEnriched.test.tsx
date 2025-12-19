@@ -121,7 +121,7 @@ describe("useFetchUserCharactersEnriched hook", () => {
 
     const result = setupHook(user, event, mockService);
 
-    // état initial
+    // initial state
     expect(result.current.isLoading).toBe(true);
     expect(result.current.characters).toEqual([]);
     expect(result.current.error).toBeNull();
@@ -130,7 +130,6 @@ describe("useFetchUserCharactersEnriched hook", () => {
       expect(result.current.isLoading).toBe(false);
     });
 
-    // ne doit garder que les personnages du même serveur que l'événement
     expect(result.current.characters).toEqual([
       {
         id: "char1",

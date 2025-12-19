@@ -2,6 +2,7 @@ import qs from "qs";
 import { t } from "../../i18n/i18n-helper";
 import handleApiError from "../utils/handleApiError";
 
+import { Tag } from "../../types/tag";
 import { CreateEventForm } from "../../types/form";
 import { Event, EventEnriched, PaginatedEvents } from "../../types/event";
 
@@ -77,6 +78,11 @@ export class EventService {
       throw new Error(t("validation.playerNumber.limit"));
 
     try {
+      const tag = await this.apiClient.get<Tag>(`/tag/${data.tag_id}`);
+
+      if (tag.data.name === "Donjon" && !data.donjon_name)
+        throw new Error(t("validation.tag.donjonRequired"));
+
       const response = await this.apiClient.post<Event>(
         `/user/${userId}/event`,
         data,

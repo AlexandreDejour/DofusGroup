@@ -220,6 +220,7 @@
       "required": "You must specify a server."
     },
     "tag": {
+      "donjonRequired": "Donjon name is required.",
       "required": "You must specify a tag."
     },
     "url": {

@@ -1,192 +1,219 @@
-import React from "react";
-import { Mock, vi } from "vitest";
-import { isAxiosError } from "axios";
-import { render, act } from "@testing-library/react";
+import { vi } from "vitest";
+import { render, waitFor } from "@testing-library/react";
+
+import { Event } from "../../types/event";
 
 import useFetchEvents from "../useFetchEvents";
 
-vi.mock("axios", () => {
-  const axiosInstance = {
-    get: vi.fn(),
-    post: vi.fn(),
-    put: vi.fn(),
-    delete: vi.fn(),
-    interceptors: {
-      request: { use: vi.fn(), eject: vi.fn() },
-      response: { use: vi.fn(), eject: vi.fn() },
-    },
-  };
+const refreshKey = vi.fn();
 
-  return {
-    default: {
-      create: vi.fn(() => axiosInstance),
-    },
-    isAxiosError: vi.fn(),
-  };
-});
-
-vi.mock("../../config/config.ts", () => ({
-  Config: {
-    getInstance: () => ({
-      backUrl: "http://localhost",
-    }),
-  },
-}));
-
-let mockRefreshKey = 0;
 vi.mock("../../contexts/modalContext", () => ({
-  __esModule: true,
-  default: ({ children }: { children: React.ReactNode }) => children,
   useModal: () => ({
-    refreshKey: mockRefreshKey,
+    refreshKey,
   }),
 }));
 
-let mockGetEvents: any;
-vi.mock("../../services/api/eventService", () => {
-  return {
-    EventService: vi.fn().mockImplementation(() => ({
-      getEvents: (...args: any[]) => mockGetEvents(...args),
-    })),
-  };
-});
-
-function setupHook(initialPage = 1) {
+// Helpers
+function setupHook(
+  events: Event[],
+  setEvents: React.Dispatch<React.SetStateAction<Event[]>>,
+  currentPage: number,
+  setTotalPages: React.Dispatch<React.SetStateAction<number>>,
+  service: any,
+) {
   const ref = { current: null as any };
 
-  // local react states passed to our hook
   function TestComponent() {
-    const [events, setEvents] = React.useState<any[]>([]);
-    const [totalPages, setTotalPages] = React.useState(0);
-
-    ref.current = useFetchEvents(events, setEvents, initialPage, setTotalPages);
-
-    // expose internal states for assertions
-    ref.current._internal = { events, totalPages };
-
+    ref.current = useFetchEvents(
+      events,
+      setEvents,
+      currentPage,
+      setTotalPages,
+      service,
+    );
     return null;
   }
 
-  const renderResult = render(<TestComponent />);
-
-  return {
-    ref,
-    rerender: () => renderResult.rerender(<TestComponent />),
-  };
+  render(<TestComponent />);
+  return ref;
 }
 
 describe("useFetchEvents hook", () => {
+  let setEvents: React.Dispatch<React.SetStateAction<Event[]>>;
+  let setTotalPages: React.Dispatch<React.SetStateAction<number>>;
+
   beforeEach(() => {
     vi.clearAllMocks();
+    setEvents = vi.fn();
+    setTotalPages = vi.fn();
   });
 
-  it("Must initialize with loading true & empty state", () => {
-    mockGetEvents = vi.fn().mockResolvedValue({
-      events: [],
-      totalPages: 1,
-    });
-
-    const { ref } = setupHook();
-
-    expect(ref.current.isLoading).toBe(true);
-    expect(ref.current.error).toBeNull();
-    expect(ref.current._internal.events).toEqual([]);
-    expect(ref.current._internal.totalPages).toBe(0);
-  });
-
-  it("Must successfully fetch events", async () => {
-    const mockResponse = {
+  it("should fetch events successfully", async () => {
+    const eventsData = {
       events: [
-        { id: 1, title: "Event1" },
-        { id: 2, title: "Event2" },
+        {
+          id: "1",
+          title: "Event1",
+          date: "2025-12-19",
+          description: "",
+          duration: 60,
+          max_players: 5,
+          status: "public",
+        },
+        {
+          id: "2",
+          title: "Event2",
+          date: "2025-12-20",
+          description: "",
+          duration: 90,
+          max_players: 10,
+          status: "private",
+        },
       ],
-      totalPages: 5,
+      totalPages: 3,
     };
 
-    mockGetEvents = vi.fn().mockResolvedValue(mockResponse);
+    const mockService = {
+      getEvents: vi.fn().mockResolvedValue(eventsData),
+    };
 
-    const { ref } = setupHook(2); // test page 2
+    const initialEvents: Event[] = [];
+    const result = setupHook(
+      initialEvents,
+      setEvents,
+      1,
+      setTotalPages,
+      mockService,
+    );
 
-    await act(async () => {
-      await Promise.resolve();
+    // état initial
+    expect(result.current.isLoading).toBe(true);
+    expect(result.current.error).toBeNull();
+    expect(result.current.events).toEqual(initialEvents);
+    expect(setEvents).not.toHaveBeenCalled();
+
+    await waitFor(() => {
+      expect(result.current.isLoading).toBe(false);
     });
 
-    expect(ref.current._internal.events).toEqual(mockResponse.events);
-    expect(ref.current._internal.totalPages).toBe(5);
-    expect(ref.current.isLoading).toBe(false);
-    expect(ref.current.error).toBeNull();
+    expect(mockService.getEvents).toHaveBeenCalledTimes(1);
+    expect(mockService.getEvents).toHaveBeenCalledWith(10, 1);
+    expect(setEvents).toHaveBeenCalledWith(eventsData.events);
+    expect(setTotalPages).toHaveBeenCalledWith(eventsData.totalPages);
+    expect(result.current.error).toBeNull();
   });
 
-  it("Must refetch events when refreshKey changes", async () => {
-    mockGetEvents = vi
-      .fn()
-      .mockResolvedValueOnce({
-        events: [{ id: 1, title: "Initial event" }],
-        totalPages: 1,
-      })
-      .mockResolvedValueOnce({
-        events: [{ id: 2, title: "Refreshed event" }],
-        totalPages: 2,
-      });
+  it("should set error when axios error occurs", async () => {
+    const axiosError = { isAxiosError: true, message: "Axios error" };
 
-    const { ref, rerender } = setupHook();
+    const mockService = {
+      getEvents: vi.fn().mockRejectedValue(axiosError),
+    };
 
-    // wait first fetch
-    await act(async () => {
-      await Promise.resolve();
+    const initialEvents: Event[] = [];
+    const result = setupHook(
+      initialEvents,
+      setEvents,
+      1,
+      setTotalPages,
+      mockService,
+    );
+
+    await waitFor(() => {
+      expect(result.current.isLoading).toBe(false);
     });
 
-    expect(ref.current._internal.events).toEqual([
-      { id: 1, title: "Initial event" },
-    ]);
-
-    // change refreshKey value
-    mockRefreshKey++;
-
-    rerender();
-
-    await act(async () => {
-      await Promise.resolve();
-    });
-
-    expect(ref.current._internal.events).toEqual([
-      { id: 2, title: "Refreshed event" },
-    ]);
-
-    expect(mockGetEvents).toHaveBeenCalledTimes(2);
+    expect(setEvents).not.toHaveBeenCalled();
+    expect(setTotalPages).not.toHaveBeenCalled();
+    expect(result.current.error).toBe("Axios error");
   });
 
-  it("Must handle axios error", async () => {
-    const errorMessage = "Axios error thrown";
-    mockGetEvents = vi.fn().mockRejectedValue(new Error(errorMessage));
+  it("should set error when standard Error occurs", async () => {
+    const error = new Error("Standard error");
 
-    (isAxiosError as unknown as Mock).mockReturnValueOnce(true);
+    const mockService = {
+      getEvents: vi.fn().mockRejectedValue(error),
+    };
 
-    const { ref } = setupHook();
+    const initialEvents: Event[] = [];
+    const result = setupHook(
+      initialEvents,
+      setEvents,
+      1,
+      setTotalPages,
+      mockService,
+    );
 
-    await act(async () => {
-      await Promise.resolve();
+    await waitFor(() => {
+      expect(result.current.isLoading).toBe(false);
     });
 
-    expect(ref.current._internal.events).toEqual([]);
-    expect(ref.current.isLoading).toBe(false);
-    expect(ref.current.error).toBe(errorMessage);
+    expect(setEvents).not.toHaveBeenCalled();
+    expect(setTotalPages).not.toHaveBeenCalled();
+    expect(result.current.error).toBe("Standard error");
   });
 
-  it("Must handle non-axios error", async () => {
-    const errorMessage = "Unknown error";
-    mockGetEvents = vi.fn().mockRejectedValue(new Error(errorMessage));
+  it("should refetch events when currentPage changes", async () => {
+    const eventsPage1 = {
+      events: [
+        {
+          id: "1",
+          title: "Event1",
+          date: "2025-12-19",
+          description: "",
+          duration: 60,
+          max_players: 5,
+          status: "public",
+        },
+      ],
+      totalPages: 2,
+    };
+    const eventsPage2 = {
+      events: [
+        {
+          id: "2",
+          title: "Event2",
+          date: "2025-12-20",
+          description: "",
+          duration: 90,
+          max_players: 10,
+          status: "private",
+        },
+      ],
+      totalPages: 2,
+    };
 
-    (isAxiosError as unknown as Mock).mockReturnValueOnce(false);
+    const mockService = {
+      getEvents: vi
+        .fn()
+        .mockResolvedValueOnce(eventsPage1)
+        .mockResolvedValueOnce(eventsPage2),
+    };
 
-    const { ref } = setupHook();
+    const initialEvents: Event[] = [];
+    let currentPage = 1;
+    const result = setupHook(
+      initialEvents,
+      setEvents,
+      currentPage,
+      setTotalPages,
+      mockService,
+    );
 
-    await act(async () => {
-      await Promise.resolve();
-    });
+    await waitFor(() => expect(result.current.isLoading).toBe(false));
 
-    expect(ref.current._internal.events).toEqual([]);
-    expect(ref.current.isLoading).toBe(false);
-    expect(ref.current.error).toBe(errorMessage);
+    // Changement de page
+    currentPage = 2;
+    setupHook(
+      initialEvents,
+      setEvents,
+      currentPage,
+      setTotalPages,
+      mockService,
+    );
+
+    await waitFor(() =>
+      expect(mockService.getEvents).toHaveBeenCalledWith(10, 2),
+    );
   });
 });

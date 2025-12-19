@@ -1,59 +1,16 @@
-import { Mock, vi } from "vitest";
-import { isAxiosError } from "axios";
-import { render, act } from "@testing-library/react";
+import { vi } from "vitest";
+import { render, waitFor } from "@testing-library/react";
+import { AxiosError } from "axios";
 
+import { Tag } from "../../types/tag";
 import useFetchTags from "../useFetchTags";
 
-vi.mock("axios", () => {
-  // fake axiosInstance return by axios.create()
-  const axiosInstance = {
-    get: vi.fn(),
-    post: vi.fn(),
-    put: vi.fn(),
-    delete: vi.fn(),
-
-    // interceptors fully functional to avoid errors
-    interceptors: {
-      request: { use: vi.fn(), eject: vi.fn() },
-      response: { use: vi.fn(), eject: vi.fn() },
-    },
-  };
-
-  // complete axios mock
-  return {
-    default: {
-      create: vi.fn(() => axiosInstance),
-    },
-
-    // named mock
-    isAxiosError: vi.fn(),
-  };
-});
-
-vi.mock("../../config/config.ts", () => ({
-  Config: {
-    getInstance: () => ({
-      baseUrl: "http://localhost",
-    }),
-  },
-}));
-
-let mockGetTags: any;
-
-vi.mock("../../services/api/tagService", () => {
-  return {
-    TagService: vi.fn().mockImplementation(() => ({
-      getTags: (...args: any[]) => mockGetTags(...args),
-    })),
-  };
-});
-
-// Utility function to test hook
-function setupHook() {
+// Helpers
+function setupHook(service: any) {
   const ref = { current: null as any };
 
   function TestComponent() {
-    ref.current = useFetchTags();
+    ref.current = useFetchTags(service);
     return null;
   }
 
@@ -66,67 +23,63 @@ describe("useFetchTags hook", () => {
     vi.clearAllMocks();
   });
 
-  it("Must be init with void state and isLoading true", () => {
-    mockGetTags = vi.fn().mockResolvedValue([]);
-    const ref = setupHook();
-
-    expect(ref.current.tags).toEqual([]);
-    expect(ref.current.isLoading).toBe(true);
-    expect(ref.current.error).toBeNull();
-  });
-
-  it("Must successfully fetch tags", async () => {
-    const mockTags = [
-      { id: 1, name: "tag1" },
-      { id: 2, name: "tag2" },
+  it("should fetch tags successfully", async () => {
+    const tags: Tag[] = [
+      { id: "1", name: "Donjon", color: "#f00" },
+      { id: "2", name: "Raid", color: "#0f0" },
     ];
-    mockGetTags = vi.fn().mockResolvedValue(mockTags);
 
-    const ref = setupHook();
+    const mockService = {
+      getTags: vi.fn().mockResolvedValue(tags),
+    };
 
-    // await async effect
-    await act(async () => {
-      await Promise.resolve();
+    const result = setupHook(mockService);
+
+    // état initial
+    expect(result.current.isLoading).toBe(true);
+    expect(result.current.tags).toEqual([]);
+    expect(result.current.error).toBeNull();
+
+    await waitFor(() => {
+      expect(result.current.isLoading).toBe(false);
     });
 
-    expect(ref.current.tags).toEqual(mockTags);
-    expect(ref.current.isLoading).toBe(false);
-    expect(ref.current.error).toBeNull();
+    expect(mockService.getTags).toHaveBeenCalledTimes(1);
+    expect(result.current.tags).toEqual(tags);
+    expect(result.current.error).toBeNull();
   });
 
-  it("Must handle axios error", async () => {
-    const errorMessage = "Axios error";
-    mockGetTags = vi.fn().mockRejectedValue(new Error(errorMessage));
+  it("should set error when axios error occurs", async () => {
+    const axiosError = new AxiosError("Axios error");
 
-    // force isAxiosError to be true
-    (isAxiosError as unknown as Mock).mockReturnValueOnce(true);
+    const mockService = {
+      getTags: vi.fn().mockRejectedValue(axiosError),
+    };
 
-    const ref = setupHook();
+    const result = setupHook(mockService);
 
-    await act(async () => {
-      await Promise.resolve();
+    await waitFor(() => {
+      expect(result.current.isLoading).toBe(false);
     });
 
-    expect(ref.current.tags).toEqual([]);
-    expect(ref.current.isLoading).toBe(false);
-    expect(ref.current.error).toBe(errorMessage);
+    expect(result.current.tags).toEqual([]);
+    expect(result.current.error).toBe("Axios error");
   });
 
-  it("Must handle general error", async () => {
-    const errorMessage = "Some error";
-    mockGetTags = vi.fn().mockRejectedValue(new Error(errorMessage));
+  it("should set error when standard Error occurs", async () => {
+    const error = new Error("Standard error");
 
-    // force isAxiosError to be false
-    (isAxiosError as unknown as Mock).mockReturnValueOnce(false);
+    const mockService = {
+      getTags: vi.fn().mockRejectedValue(error),
+    };
 
-    const ref = setupHook();
+    const result = setupHook(mockService);
 
-    await act(async () => {
-      await Promise.resolve();
+    await waitFor(() => {
+      expect(result.current.isLoading).toBe(false);
     });
 
-    expect(ref.current.tags).toEqual([]);
-    expect(ref.current.isLoading).toBe(false);
-    expect(ref.current.error).toBe(errorMessage);
+    expect(result.current.tags).toEqual([]);
+    expect(result.current.error).toBe("Standard error");
   });
 });

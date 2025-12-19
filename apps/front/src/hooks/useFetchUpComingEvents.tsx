@@ -23,7 +23,11 @@ export default function useFetchUpComingEvents(
 
   useEffect(() => {
     const fetchUpcomingEvents = async () => {
-      if (!userEnriched || !userEnriched.characters?.length) return;
+      if (!userEnriched || !userEnriched.characters?.length) {
+        setUpcomingEvents([]);
+        setIsLoading(false);
+        return;
+      }
 
       setIsLoading(true);
       setError(null);

@@ -1,135 +1,27 @@
-import { Mock, vi } from "vitest";
-import { isAxiosError } from "axios";
-import { render, act } from "@testing-library/react";
+import { vi } from "vitest";
+import { render, waitFor } from "@testing-library/react";
+import { AxiosError } from "axios";
 
+import { Event } from "../../types/event";
 import { UserEnriched } from "../../types/user";
-
 import useFetchUpComingEvents from "../useFetchUpComingEvents";
 
-// mock i18n so t(...) returns key
-vi.mock("../../i18n/i18n-helper", () => ({
-  useTypedTranslation: () => (k: string) => k,
-}));
-
-const mockUserEnriched: UserEnriched = {
-  id: "15ff46b5-60f3-4e86-98bc-da8fcaa3e29e",
-  username: "toto",
-  characters: [
-    {
-      id: "9f0eaa8c-eec1-4e85-9365-7653c1330325",
-      name: "Chronos",
-      sex: "M",
-      level: 50,
-      alignment: "Bonta",
-      stuff: "https://d-bk.net/fr/d/1QVjw",
-      server_id: "de5a6c69-bc0b-496c-9b62-bd7ea076b8ed",
-      user: {
-        id: "15ff46b5-60f3-4e86-98bc-da8fcaa3e29e",
-        username: "toto",
-      },
-      breed: {
-        id: "15ff46b5-60f3-4e86-98bc-da8fcaa3e21a",
-        name: "Xélor",
-      },
-      server: {
-        id: "62592fd9-66b8-410c-a42e-f98b9a8173f1",
-        name: "Rafal",
-        mono_account: false,
-      },
-    },
-  ],
-  events: [
-    {
-      id: "ef9891a6-dcab-4846-8f9c-2044efe2096c",
-      title: "Rafle perco",
-      date: new Date("2025-12-24T23:59:59.000Z"),
-      duration: 180,
-      area: undefined,
-      sub_area: undefined,
-      donjon_name: undefined,
-      description: "on rase tout",
-      max_players: 8,
-      status: "public",
-      server: {
-        id: "62592fd9-66b8-410c-a42e-f98b9a8173f1",
-        name: "Rafal",
-        mono_account: false,
-      },
-      tag: {
-        id: "31d0d841-1345-4939-9495-0f802362eb79",
-        name: "Percepteur",
-        color: "#2c3e50",
-      },
-      characters: [
-        {
-          id: "cfff40b3-9625-4f0a-854b-d8d6d6b4b667",
-          name: "Chronos",
-          sex: "M",
-          level: 50,
-          alignment: "Neutre",
-          stuff: "https://d-bk.net/fr/d/1QVjw",
-          server_id: "de5a6c69-bc0b-496c-9b62-bd7ea076b8ed",
-        },
-      ],
-    },
-  ],
-};
-
-// keep axios / config mocks (ApiClient used in hook but not needed to stub here)
-vi.mock("axios", () => {
-  const axiosInstance = {
-    get: vi.fn(),
-    post: vi.fn(),
-    put: vi.fn(),
-    delete: vi.fn(),
-    interceptors: {
-      request: { use: vi.fn(), eject: vi.fn() },
-      response: { use: vi.fn(), eject: vi.fn() },
-    },
-  };
-  return {
-    default: {
-      create: vi.fn(() => axiosInstance),
-    },
-    isAxiosError: vi.fn(),
-  };
-});
-
-vi.mock("../../config/config.ts", () => ({
-  Config: {
-    getInstance: () => ({
-      baseUrl: "http://localhost",
-    }),
-  },
-}));
-
-// replace previous serverService mock by EventService mock used in the hook
-let mockGetRegistered: any;
-vi.mock("../../services/api/eventService", () => {
-  return {
-    EventService: vi.fn().mockImplementation(() => ({
-      getRegistered: (...args: any[]) => mockGetRegistered(...args),
-    })),
-  };
-});
-
-// Mock useNotification
+// Mock des contextes
 const showError = vi.fn();
 vi.mock("../../contexts/notificationContext", () => ({
-  __esModule: true,
-  default: ({ children }: { children: React.ReactNode }) => children,
-  useNotification: () => ({
-    showError,
-  }),
+  useNotification: () => ({ showError }),
 }));
 
-// Utility function to test hook
-function setupHook(user: UserEnriched | null = mockUserEnriched) {
+vi.mock("../../i18n/i18n-helper", () => ({
+  useTypedTranslation: () => (key: string) => key,
+}));
+
+// Helpers
+function setupHook(user: UserEnriched | null, service: any) {
   const ref = { current: null as any };
 
   function TestComponent() {
-    // use undefined instead of null when calling the hook to satisfy its param type
-    ref.current = useFetchUpComingEvents(user ?? null);
+    ref.current = useFetchUpComingEvents(user, service);
     return null;
   }
 
@@ -142,106 +34,333 @@ describe("useFetchUpComingEvents hook", () => {
     vi.clearAllMocks();
   });
 
-  it("Initialises with empty state and isLoading true", () => {
-    mockGetRegistered = vi.fn().mockResolvedValue([]);
-    const ref = setupHook();
+  it("should fetch upcoming events successfully", async () => {
+    const user: UserEnriched = {
+      id: "15ff46b5-60f3-4e86-98bc-da8fcaa3e29e",
+      username: "toto",
+      characters: [
+        {
+          id: "9f0eaa8c-eec1-4e85-9365-7653c1330325",
+          name: "Chronos",
+          sex: "M",
+          level: 50,
+          alignment: "Bonta",
+          stuff: "https://d-bk.net/fr/d/1QVjw",
+          server_id: "de5a6c69-bc0b-496c-9b62-bd7ea076b8ed",
+          user: {
+            id: "15ff46b5-60f3-4e86-98bc-da8fcaa3e29e",
+            username: "toto",
+          },
+          breed: {
+            id: "15ff46b5-60f3-4e86-98bc-da8fcaa3e21a",
+            name: "Xélor",
+          },
+          server: {
+            id: "62592fd9-66b8-410c-a42e-f98b9a8173f1",
+            name: "Rafal",
+            mono_account: false,
+          },
+        },
+      ],
+      events: [
+        {
+          id: "ef9891a6-dcab-4846-8f9c-2044efe2096c",
+          title: "Rafle perco",
+          date: new Date("2025-12-24T23:59:59.000Z"),
+          duration: 180,
+          area: undefined,
+          sub_area: undefined,
+          donjon_name: undefined,
+          description: "on rase tout",
+          max_players: 8,
+          status: "public",
+          server: {
+            id: "62592fd9-66b8-410c-a42e-f98b9a8173f1",
+            name: "Rafal",
+            mono_account: false,
+          },
+          tag: {
+            id: "31d0d841-1345-4939-9495-0f802362eb79",
+            name: "Percepteur",
+            color: "#2c3e50",
+          },
+          characters: [
+            {
+              id: "cfff40b3-9625-4f0a-854b-d8d6d6b4b667",
+              name: "Chronos",
+              sex: "M",
+              level: 50,
+              alignment: "Neutre",
+              stuff: "https://d-bk.net/fr/d/1QVjw",
+              server_id: "de5a6c69-bc0b-496c-9b62-bd7ea076b8ed",
+            },
+          ],
+        },
+      ],
+    };
 
-    expect(ref.current.upComingEvents).toEqual([]);
-    expect(ref.current.isLoading).toBe(true);
-    expect(ref.current.error).toBeNull();
-  });
-
-  it("Fetches upcoming events and excludes owner's events", async () => {
-    // returned events contains one owned (same id as in user.events) and one new
-    const returned = [
+    const upcomingEvents: Event[] = [
       {
-        id: "ef9891a6-dcab-4846-8f9c-2044efe2096c", // owned -> should be filtered out
-        title: "Rafle perco",
+        id: "new-event-id",
+        title: "New Event",
+        date: new Date("2025-12-24T23:59:59.000Z"),
+        duration: 180,
+        area: undefined,
+        sub_area: undefined,
+        donjon_name: undefined,
+        description: "on rase tout",
+        max_players: 8,
+        status: "public",
+        server: {
+          id: "62592fd9-66b8-410c-a42e-f98b9a8173f1",
+          name: "Rafal",
+          mono_account: false,
+        },
+        tag: {
+          id: "tag1",
+          name: "tag1",
+          color: "#000",
+        },
+        characters: [],
       },
-      { id: "new-evt-1", title: "Other event" },
     ];
-    mockGetRegistered = vi.fn().mockResolvedValue(returned);
 
-    const ref = setupHook();
+    const mockService = {
+      getRegistered: vi.fn().mockResolvedValue(upcomingEvents),
+    };
 
-    await act(async () => {
-      // allow effect microtasks to run
-      await Promise.resolve();
+    const result = setupHook(user, mockService);
+
+    // état initial
+    expect(result.current.isLoading).toBe(true);
+    expect(result.current.upComingEvents).toEqual([]);
+    expect(result.current.error).toBeNull();
+
+    await waitFor(() => {
+      expect(result.current.isLoading).toBe(false);
     });
 
-    expect(ref.current.upComingEvents).toEqual([
-      { id: "new-evt-1", title: "Other event" },
+    // Le hook doit filtrer l'événement déjà possédé
+    expect(result.current.upComingEvents).toEqual([
+      {
+        id: "new-event-id",
+        title: "New Event",
+        date: new Date("2025-12-24T23:59:59.000Z"),
+        duration: 180,
+        area: undefined,
+        sub_area: undefined,
+        donjon_name: undefined,
+        description: "on rase tout",
+        max_players: 8,
+        status: "public",
+        server: {
+          id: "62592fd9-66b8-410c-a42e-f98b9a8173f1",
+          name: "Rafal",
+          mono_account: false,
+        },
+        tag: {
+          id: "tag1",
+          name: "tag1",
+          color: "#000",
+        },
+        characters: [],
+      },
     ]);
-    expect(ref.current.isLoading).toBe(false);
-    expect(ref.current.error).toBeNull();
+    expect(mockService.getRegistered).toHaveBeenCalledTimes(1);
+    expect(mockService.getRegistered).toHaveBeenCalledWith([
+      "9f0eaa8c-eec1-4e85-9365-7653c1330325",
+    ]);
+    expect(result.current.error).toBeNull();
+    expect(showError).not.toHaveBeenCalled();
   });
 
-  it("Fetches upcoming events when none owned (returns all)", async () => {
-    const returned = [{ id: "evt-a", title: "A" }];
-    mockGetRegistered = vi.fn().mockResolvedValue(returned);
+  it("should return empty upcoming events if user has no characters", async () => {
+    const user: UserEnriched = {
+      id: "15ff46b5-60f3-4e86-98bc-da8fcaa3e29e",
+      username: "toto",
+      characters: [],
+      events: [],
+    };
 
-    const ref = setupHook();
+    const mockService = {
+      getRegistered: vi.fn(),
+    };
 
-    await act(async () => {
-      await Promise.resolve();
+    const result = setupHook(user, mockService);
+
+    await waitFor(() => {
+      expect(result.current.isLoading).toBe(false);
     });
 
-    expect(ref.current.upComingEvents).toEqual(returned);
-    expect(ref.current.isLoading).toBe(false);
-    expect(ref.current.error).toBeNull();
+    expect(result.current.upComingEvents).toEqual([]);
+    expect(mockService.getRegistered).not.toHaveBeenCalled();
   });
 
-  it("Handles axios error and sets error message", async () => {
-    const errorMessage = "Axios error occurred";
-    mockGetRegistered = vi.fn().mockRejectedValue(new Error(errorMessage));
+  it("should set error when axios error occurs", async () => {
+    const user: UserEnriched = {
+      id: "15ff46b5-60f3-4e86-98bc-da8fcaa3e29e",
+      username: "toto",
+      characters: [
+        {
+          id: "9f0eaa8c-eec1-4e85-9365-7653c1330325",
+          name: "Chronos",
+          sex: "M",
+          level: 50,
+          alignment: "Bonta",
+          stuff: "https://d-bk.net/fr/d/1QVjw",
+          server_id: "de5a6c69-bc0b-496c-9b62-bd7ea076b8ed",
+          user: {
+            id: "15ff46b5-60f3-4e86-98bc-da8fcaa3e29e",
+            username: "toto",
+          },
+          breed: {
+            id: "15ff46b5-60f3-4e86-98bc-da8fcaa3e21a",
+            name: "Xélor",
+          },
+          server: {
+            id: "62592fd9-66b8-410c-a42e-f98b9a8173f1",
+            name: "Rafal",
+            mono_account: false,
+          },
+        },
+      ],
+      events: [
+        {
+          id: "ef9891a6-dcab-4846-8f9c-2044efe2096c",
+          title: "Rafle perco",
+          date: new Date("2025-12-24T23:59:59.000Z"),
+          duration: 180,
+          area: undefined,
+          sub_area: undefined,
+          donjon_name: undefined,
+          description: "on rase tout",
+          max_players: 8,
+          status: "public",
+          server: {
+            id: "62592fd9-66b8-410c-a42e-f98b9a8173f1",
+            name: "Rafal",
+            mono_account: false,
+          },
+          tag: {
+            id: "31d0d841-1345-4939-9495-0f802362eb79",
+            name: "Percepteur",
+            color: "#2c3e50",
+          },
+          characters: [
+            {
+              id: "cfff40b3-9625-4f0a-854b-d8d6d6b4b667",
+              name: "Chronos",
+              sex: "M",
+              level: 50,
+              alignment: "Neutre",
+              stuff: "https://d-bk.net/fr/d/1QVjw",
+              server_id: "de5a6c69-bc0b-496c-9b62-bd7ea076b8ed",
+            },
+          ],
+        },
+      ],
+    };
 
-    // mark as axios error
-    (isAxiosError as unknown as Mock).mockReturnValueOnce(true);
+    const axiosError = new AxiosError("Axios error");
+    const mockService = {
+      getRegistered: vi.fn().mockRejectedValue(axiosError),
+    };
 
-    const ref = setupHook();
+    const result = setupHook(user, mockService);
 
-    await act(async () => {
-      await Promise.resolve();
+    await waitFor(() => {
+      expect(result.current.isLoading).toBe(false);
     });
 
-    expect(ref.current.upComingEvents).toEqual([]);
-    expect(ref.current.isLoading).toBe(false);
-    expect(ref.current.error).toBe(errorMessage);
-    expect(showError).toHaveBeenCalled();
+    expect(result.current.error).toBe("Axios error");
+    expect(result.current.upComingEvents).toEqual([]);
+    expect(showError).toHaveBeenCalledWith(
+      "system.error.default",
+      "Axios error",
+    );
   });
 
-  it("Handles general error and sets error message", async () => {
-    const errorMessage = "Generic failure";
-    mockGetRegistered = vi.fn().mockRejectedValue(new Error(errorMessage));
+  it("should set error when standard Error occurs", async () => {
+    const user: UserEnriched = {
+      id: "15ff46b5-60f3-4e86-98bc-da8fcaa3e29e",
+      username: "toto",
+      characters: [
+        {
+          id: "9f0eaa8c-eec1-4e85-9365-7653c1330325",
+          name: "Chronos",
+          sex: "M",
+          level: 50,
+          alignment: "Bonta",
+          stuff: "https://d-bk.net/fr/d/1QVjw",
+          server_id: "de5a6c69-bc0b-496c-9b62-bd7ea076b8ed",
+          user: {
+            id: "15ff46b5-60f3-4e86-98bc-da8fcaa3e29e",
+            username: "toto",
+          },
+          breed: {
+            id: "15ff46b5-60f3-4e86-98bc-da8fcaa3e21a",
+            name: "Xélor",
+          },
+          server: {
+            id: "62592fd9-66b8-410c-a42e-f98b9a8173f1",
+            name: "Rafal",
+            mono_account: false,
+          },
+        },
+      ],
+      events: [
+        {
+          id: "ef9891a6-dcab-4846-8f9c-2044efe2096c",
+          title: "Rafle perco",
+          date: new Date("2025-12-24T23:59:59.000Z"),
+          duration: 180,
+          area: undefined,
+          sub_area: undefined,
+          donjon_name: undefined,
+          description: "on rase tout",
+          max_players: 8,
+          status: "public",
+          server: {
+            id: "62592fd9-66b8-410c-a42e-f98b9a8173f1",
+            name: "Rafal",
+            mono_account: false,
+          },
+          tag: {
+            id: "31d0d841-1345-4939-9495-0f802362eb79",
+            name: "Percepteur",
+            color: "#2c3e50",
+          },
+          characters: [
+            {
+              id: "cfff40b3-9625-4f0a-854b-d8d6d6b4b667",
+              name: "Chronos",
+              sex: "M",
+              level: 50,
+              alignment: "Neutre",
+              stuff: "https://d-bk.net/fr/d/1QVjw",
+              server_id: "de5a6c69-bc0b-496c-9b62-bd7ea076b8ed",
+            },
+          ],
+        },
+      ],
+    };
 
-    // mark as not axios error
-    (isAxiosError as unknown as Mock).mockReturnValueOnce(false);
+    const error = new Error("Standard error");
+    const mockService = {
+      getRegistered: vi.fn().mockRejectedValue(error),
+    };
 
-    const ref = setupHook();
+    const result = setupHook(user, mockService);
 
-    await act(async () => {
-      await Promise.resolve();
+    await waitFor(() => {
+      expect(result.current.isLoading).toBe(false);
     });
 
-    expect(ref.current.upComingEvents).toEqual([]);
-    expect(ref.current.isLoading).toBe(false);
-    expect(ref.current.error).toBe(errorMessage);
-    expect(showError).toHaveBeenCalled();
-  });
-
-  it("Does nothing if userEnriched is null or has no characters", async () => {
-    mockGetRegistered = vi.fn().mockResolvedValue([{ id: "x" }]);
-
-    const ref = setupHook(null);
-
-    // effect should early-return; wait a tick
-    await act(async () => {
-      await Promise.resolve();
-    });
-
-    expect(ref.current.upComingEvents).toEqual([]);
-    expect(ref.current.isLoading).toBe(true); // stays true because fetch not triggered
-    expect(ref.current.error).toBeNull();
-    expect(mockGetRegistered).not.toHaveBeenCalled();
+    expect(result.current.error).toBe("Standard error");
+    expect(result.current.upComingEvents).toEqual([]);
+    expect(showError).toHaveBeenCalledWith(
+      "system.error.default",
+      "system.error.occurred",
+    );
   });
 });

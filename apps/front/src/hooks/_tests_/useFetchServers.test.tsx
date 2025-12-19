@@ -1,59 +1,17 @@
-import { Mock, vi } from "vitest";
-import { isAxiosError } from "axios";
-import { render, act } from "@testing-library/react";
+import { vi } from "vitest";
+import { AxiosError } from "axios";
+import { render, waitFor } from "@testing-library/react";
+
+import { Server } from "../../types/server";
 
 import useFetchServers from "../useFetchServers";
 
-vi.mock("axios", () => {
-  // fake axiosInstance return by axios.create()
-  const axiosInstance = {
-    get: vi.fn(),
-    post: vi.fn(),
-    put: vi.fn(),
-    delete: vi.fn(),
-
-    // interceptors fully functional to avoid errors
-    interceptors: {
-      request: { use: vi.fn(), eject: vi.fn() },
-      response: { use: vi.fn(), eject: vi.fn() },
-    },
-  };
-
-  // complete axios mock
-  return {
-    default: {
-      create: vi.fn(() => axiosInstance),
-    },
-
-    // named mock
-    isAxiosError: vi.fn(),
-  };
-});
-
-vi.mock("../../config/config.ts", () => ({
-  Config: {
-    getInstance: () => ({
-      baseUrl: "http://localhost",
-    }),
-  },
-}));
-
-let mockGetServers: any;
-
-vi.mock("../../services/api/serverService", () => {
-  return {
-    ServerService: vi.fn().mockImplementation(() => ({
-      getServers: (...args: any[]) => mockGetServers(...args),
-    })),
-  };
-});
-
-// Utility function to test hook
-function setupHook() {
+// Helpers
+function setupHook(service: any) {
   const ref = { current: null as any };
 
   function TestComponent() {
-    ref.current = useFetchServers();
+    ref.current = useFetchServers(service);
     return null;
   }
 
@@ -66,67 +24,63 @@ describe("useFetchServers hook", () => {
     vi.clearAllMocks();
   });
 
-  it("Must be init with void state and isLoading true", () => {
-    mockGetServers = vi.fn().mockResolvedValue([]);
-    const ref = setupHook();
-
-    expect(ref.current.servers).toEqual([]);
-    expect(ref.current.isLoading).toBe(true);
-    expect(ref.current.error).toBeNull();
-  });
-
-  it("Must successfully fetch servers", async () => {
-    const mockServers = [
-      { id: 1, name: "server1" },
-      { id: 2, name: "server2" },
+  it("should fetch servers successfully", async () => {
+    const serversData: Server[] = [
+      { id: "server1", name: "Server1", mono_account: true },
+      { id: "server2", name: "Server2", mono_account: false },
     ];
-    mockGetServers = vi.fn().mockResolvedValue(mockServers);
 
-    const ref = setupHook();
+    const mockService = {
+      getServers: vi.fn().mockResolvedValue(serversData),
+    };
 
-    // await async effect
-    await act(async () => {
-      await Promise.resolve();
+    const result = setupHook(mockService);
+
+    // état initial
+    expect(result.current.isLoading).toBe(true);
+    expect(result.current.error).toBeNull();
+    expect(result.current.servers).toEqual([]);
+
+    await waitFor(() => {
+      expect(result.current.isLoading).toBe(false);
     });
 
-    expect(ref.current.servers).toEqual(mockServers);
-    expect(ref.current.isLoading).toBe(false);
-    expect(ref.current.error).toBeNull();
+    expect(mockService.getServers).toHaveBeenCalledTimes(1);
+    expect(result.current.servers).toEqual(serversData);
+    expect(result.current.error).toBeNull();
   });
 
-  it("Must handle axios error", async () => {
-    const errorMessage = "Axios error";
-    mockGetServers = vi.fn().mockRejectedValue(new Error(errorMessage));
+  it("should set error when axios error occurs", async () => {
+    const axiosError = new AxiosError("Axios error");
 
-    // force isAxiosError to be true
-    (isAxiosError as unknown as Mock).mockReturnValueOnce(true);
+    const mockService = {
+      getServers: vi.fn().mockRejectedValue(axiosError),
+    };
 
-    const ref = setupHook();
+    const result = setupHook(mockService);
 
-    await act(async () => {
-      await Promise.resolve();
+    await waitFor(() => {
+      expect(result.current.isLoading).toBe(false);
     });
 
-    expect(ref.current.servers).toEqual([]);
-    expect(ref.current.isLoading).toBe(false);
-    expect(ref.current.error).toBe(errorMessage);
+    expect(result.current.servers).toEqual([]);
+    expect(result.current.error).toBe("Axios error");
   });
 
-  it("Must handle general error", async () => {
-    const errorMessage = "Some error";
-    mockGetServers = vi.fn().mockRejectedValue(new Error(errorMessage));
+  it("should set error when standard Error occurs", async () => {
+    const error = new Error("Standard error");
 
-    // force isAxiosError to be false
-    (isAxiosError as unknown as Mock).mockReturnValueOnce(false);
+    const mockService = {
+      getServers: vi.fn().mockRejectedValue(error),
+    };
 
-    const ref = setupHook();
+    const result = setupHook(mockService);
 
-    await act(async () => {
-      await Promise.resolve();
+    await waitFor(() => {
+      expect(result.current.isLoading).toBe(false);
     });
 
-    expect(ref.current.servers).toEqual([]);
-    expect(ref.current.isLoading).toBe(false);
-    expect(ref.current.error).toBe(errorMessage);
+    expect(result.current.servers).toEqual([]);
+    expect(result.current.error).toBe("Standard error");
   });
 });

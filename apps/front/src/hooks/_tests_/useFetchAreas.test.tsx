@@ -1,54 +1,16 @@
-import { Mock, vi } from "vitest";
-import { isAxiosError } from "axios";
-import { render, act } from "@testing-library/react";
+import { vi } from "vitest";
+import { render, waitFor } from "@testing-library/react";
 
 import useFetchAreas from "../useFetchAreas";
 
-vi.mock("axios", () => {
-  const axiosInstance = {
-    get: vi.fn(),
-    post: vi.fn(),
-    put: vi.fn(),
-    delete: vi.fn(),
-
-    interceptors: {
-      request: { use: vi.fn(), eject: vi.fn() },
-      response: { use: vi.fn(), eject: vi.fn() },
-    },
+// Helpers
+function setupHook(service: any) {
+  const ref = {
+    current: null as any,
   };
-
-  return {
-    default: {
-      create: vi.fn(() => axiosInstance),
-    },
-    isAxiosError: vi.fn(),
-  };
-});
-
-vi.mock("../../config/config.ts", () => ({
-  Config: {
-    getInstance: () => ({
-      dofusdbUrl: "http://localhost",
-    }),
-  },
-}));
-
-let mockGetAreas: any;
-
-vi.mock("../../services/api/dofusDBService", () => {
-  return {
-    DofusDBService: vi.fn().mockImplementation(() => ({
-      getAreas: (...args: any[]) => mockGetAreas(...args),
-    })),
-  };
-});
-
-// Utility function to test hook
-function setupHook() {
-  const ref = { current: null as any };
 
   function TestComponent() {
-    ref.current = useFetchAreas();
+    ref.current = useFetchAreas(service);
     return null;
   }
 
@@ -61,66 +23,66 @@ describe("useFetchAreas hook", () => {
     vi.clearAllMocks();
   });
 
-  it("Must initialize with empty areas and isLoading true", () => {
-    mockGetAreas = vi.fn().mockResolvedValue([]);
-
-    const ref = setupHook();
-
-    expect(ref.current.areas).toEqual([]);
-    expect(ref.current.isLoading).toBe(true);
-    expect(ref.current.error).toBeNull();
-  });
-
-  it("Must successfully fetch areas", async () => {
-    const mockAreas = [
-      { id: 1, name: "Area1" },
-      { id: 2, name: "Area2" },
+  it("should fetch areas successfully", async () => {
+    const areas = [
+      { id: 1, name: "Area 1" },
+      { id: 2, name: "Area 2" },
     ];
 
-    mockGetAreas = vi.fn().mockResolvedValue(mockAreas);
+    const mockService = {
+      getAreas: vi.fn().mockResolvedValue(areas),
+    };
 
-    const ref = setupHook();
+    const result = setupHook(mockService);
 
-    await act(async () => {
-      await Promise.resolve();
+    // initial state
+    expect(result.current.isLoading).toBe(true);
+    expect(result.current.areas).toEqual([]);
+    expect(result.current.error).toBeNull();
+
+    await waitFor(() => {
+      expect(result.current.isLoading).toBe(false);
     });
 
-    expect(ref.current.areas).toEqual(mockAreas);
-    expect(ref.current.isLoading).toBe(false);
-    expect(ref.current.error).toBeNull();
+    expect(mockService.getAreas).toHaveBeenCalledTimes(1);
+    expect(result.current.areas).toEqual(areas);
+    expect(result.current.error).toBeNull();
   });
 
-  it("Must handle axios error", async () => {
-    const errorMessage = "Axios error";
-    mockGetAreas = vi.fn().mockRejectedValue(new Error(errorMessage));
+  it("should set error when axios error occurs", async () => {
+    const axiosError = {
+      isAxiosError: true,
+      message: "Axios error",
+    };
 
-    (isAxiosError as unknown as Mock).mockReturnValueOnce(true);
+    const mockService = {
+      getAreas: vi.fn().mockRejectedValue(axiosError),
+    };
 
-    const ref = setupHook();
+    const result = setupHook(mockService);
 
-    await act(async () => {
-      await Promise.resolve();
+    await waitFor(() => {
+      expect(result.current.isLoading).toBe(false);
     });
 
-    expect(ref.current.areas).toEqual([]);
-    expect(ref.current.isLoading).toBe(false);
-    expect(ref.current.error).toBe(errorMessage);
+    expect(result.current.areas).toEqual([]);
+    expect(result.current.error).toBe("Axios error");
   });
 
-  it("Must handle general error", async () => {
-    const errorMessage = "Some error";
-    mockGetAreas = vi.fn().mockRejectedValue(new Error(errorMessage));
+  it("should set error when standard Error occurs", async () => {
+    const error = new Error("Standard error");
 
-    (isAxiosError as unknown as Mock).mockReturnValueOnce(false);
+    const mockService = {
+      getAreas: vi.fn().mockRejectedValue(error),
+    };
 
-    const ref = setupHook();
+    const result = setupHook(mockService);
 
-    await act(async () => {
-      await Promise.resolve();
+    await waitFor(() => {
+      expect(result.current.isLoading).toBe(false);
     });
 
-    expect(ref.current.areas).toEqual([]);
-    expect(ref.current.isLoading).toBe(false);
-    expect(ref.current.error).toBe(errorMessage);
+    expect(result.current.areas).toEqual([]);
+    expect(result.current.error).toBe("Standard error");
   });
 });

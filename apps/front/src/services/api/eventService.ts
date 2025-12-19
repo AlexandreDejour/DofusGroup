@@ -77,12 +77,11 @@ export class EventService {
     if (data.max_players < data.characters_id.length)
       throw new Error(t("validation.playerNumber.limit"));
 
+    const tag = await this.apiClient.get<Tag>(`/tag/${data.tag_id}`);
+    if (tag.data.name === "Donjon" && !data.donjon_name)
+      throw new Error(t("validation.tag.donjonRequired"));
+
     try {
-      const tag = await this.apiClient.get<Tag>(`/tag/${data.tag_id}`);
-
-      if (tag.data.name === "Donjon" && !data.donjon_name)
-        throw new Error(t("validation.tag.donjonRequired"));
-
       const response = await this.apiClient.post<Event>(
         `/user/${userId}/event`,
         data,

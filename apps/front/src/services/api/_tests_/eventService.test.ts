@@ -152,15 +152,52 @@ describe("EventService", () => {
 
     it("creates event successfully", async () => {
       const mockEvent = { id: eventId } as Event;
+
+      apiClientMock.get.mockResolvedValue({
+        data: { id: "tag", name: "Autre" }, // tag ≠ Donjon
+      });
+
       apiClientMock.post.mockResolvedValue({ data: mockEvent });
 
       const result = await eventService.create(userId, validData);
+
+      expect(apiClientMock.get).toHaveBeenCalledWith(
+        `/tag/${validData.tag_id}`,
+      );
 
       expect(apiClientMock.post).toHaveBeenCalledWith(
         `/user/${userId}/event`,
         validData,
         { withCredentials: true },
       );
+
+      expect(result).toEqual(mockEvent);
+    });
+
+    it("throws validation error if tag is Donjon and donjon_name missing", async () => {
+      apiClientMock.get.mockResolvedValue({
+        data: { id: "tag", name: "Donjon" },
+      });
+
+      await expect(eventService.create(userId, validData)).rejects.toThrow(
+        t("validation.tag.donjonRequired"),
+      );
+    });
+
+    it("creates event when tag is Donjon and donjon_name provided", async () => {
+      const mockEvent = { id: eventId } as Event;
+
+      apiClientMock.get.mockResolvedValue({
+        data: { id: "tag", name: "Donjon" },
+      });
+
+      apiClientMock.post.mockResolvedValue({ data: mockEvent });
+
+      const result = await eventService.create(userId, {
+        ...validData,
+        donjon_name: "Donjon du Chaos",
+      });
+
       expect(result).toEqual(mockEvent);
     });
 

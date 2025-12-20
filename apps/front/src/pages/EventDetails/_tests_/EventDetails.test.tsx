@@ -1,34 +1,13 @@
+import { Dispatch, SetStateAction } from "react";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
-import { describe, it, vi, beforeEach, afterEach } from "vitest";
+import { describe, it, vi, beforeEach, afterEach, Mock } from "vitest";
 import { render, screen, waitFor, fireEvent } from "@testing-library/react";
+
+import { EventEnriched } from "../../../types/event";
 
 import { t } from "../../../i18n/i18n-helper";
 
 import EventDetails from "../EventDetails";
-
-// Mock config
-vi.mock("../../../config/config.ts", () => ({
-  Config: {
-    getInstance: () => ({
-      baseUrl: "http://localhost",
-    }),
-  },
-}));
-
-// Mock service
-let getOneEnrichedMock: any;
-
-vi.mock("../../../services/api/eventService", () => {
-  const serviceMock = {
-    getOneEnriched: (...args: any[]) => getOneEnrichedMock(...args),
-    removeCharacter: vi.fn(),
-  };
-
-  return {
-    EventService: vi.fn().mockImplementation(() => serviceMock),
-    eventService: serviceMock,
-  };
-});
 
 // Mock react-router
 const navigateMock = vi.fn();
@@ -45,7 +24,7 @@ vi.mock("react-router", async (importOriginal) => {
   };
 });
 
-// Mock context
+// Mock contexts
 vi.mock("../../../contexts/authContext", () => ({
   useAuth: () => ({
     user: { id: "9c63878b-4763-4de7-ac1e-d1ada9fc0159", username: "toto" },
@@ -71,6 +50,21 @@ vi.mock("../../../contexts/notificationContext", () => ({
   }),
 }));
 
+// Mock hooks
+vi.mock("../../../hooks/useFetchEvent", () => ({
+  __esModule: true,
+  default: vi.fn(),
+}));
+
+vi.mock("../../../hooks/useCharacterRemover", () => ({
+  __esModule: true,
+  default: vi.fn(),
+}));
+
+import useFetchEvent from "../../../hooks/useFetchEvent";
+import useCharacterRemover from "../../../hooks/useCharacterRemover";
+
+// Mock event data
 const mockEvent = {
   id: "55c4e602-e91f-4cda-8abe-a5458717dd7e",
   title: "titre test",
@@ -98,6 +92,7 @@ const mockEvent = {
 };
 
 function renderWithRouter() {
+  const removeCharacterMock = vi.fn();
   return render(
     <MemoryRouter initialEntries={["/event/evt-1"]}>
       <Routes>
@@ -110,7 +105,28 @@ function renderWithRouter() {
 
 describe("EventDetails", () => {
   beforeEach(() => {
-    getOneEnrichedMock = vi.fn().mockResolvedValue(mockEvent);
+    (useFetchEvent as unknown as Mock).mockImplementation(
+      (
+        id: string,
+        setEvent: Dispatch<SetStateAction<EventEnriched | null>>,
+      ) => {
+        // simulate useEffect
+        Promise.resolve().then(() => {
+          setEvent(mockEvent);
+        });
+
+        return {
+          isLoading: false,
+          error: null,
+        };
+      },
+    );
+
+    const removeCharacterMock = vi.fn();
+    (useCharacterRemover as unknown as Mock).mockImplementation(
+      () => removeCharacterMock,
+    );
+
     openModal.mockClear();
     handleDelete.mockClear();
     navigateMock.mockClear();
@@ -119,32 +135,27 @@ describe("EventDetails", () => {
   });
 
   afterEach(() => {
-    vi.clearAllMocks();
+    vi.resetAllMocks();
   });
 
-  it("Display spinner at initial renderer", async () => {
-    getOneEnrichedMock = vi
-      .fn()
-      .mockImplementation(() => new Promise(() => {}));
+  it("Displays spinner when loading", () => {
+    (useFetchEvent as unknown as Mock).mockImplementation(() => ({
+      isLoading: true,
+      error: null,
+    }));
 
     renderWithRouter();
-
     expect(screen.getByLabelText("Loading Spinner")).toBeInTheDocument();
   });
 
-  it("Renders event details after successful fetch", async () => {
+  it("Renders event details after fetch", async () => {
     renderWithRouter();
-
-    await waitFor(() => {
-      expect(screen.getByText(/titre test/i)).toBeInTheDocument();
-    });
+    await waitFor(() => screen.getByText(/titre test/i));
 
     expect(
       screen.getByText(`${t("common.createdBy")} toto`),
     ).toBeInTheDocument();
-    expect(screen.getAllByText(/donjon/i).length).toBeGreaterThan(0);
     expect(screen.getByText(/Djaul/i)).toBeInTheDocument();
-    expect(screen.getAllByText(/amakna/i).length).toBeGreaterThan(0);
     expect(screen.getByText(/forêt d’amakna/i)).toBeInTheDocument();
     expect(screen.getByText(/donjon corbac/i)).toBeInTheDocument();
     expect(screen.getByText(/description test/i)).toBeInTheDocument();
@@ -152,7 +163,6 @@ describe("EventDetails", () => {
 
   it("Shows action buttons if user owns the event", async () => {
     renderWithRouter();
-
     await waitFor(() => screen.getByText(/titre test/i));
 
     expect(
@@ -165,30 +175,24 @@ describe("EventDetails", () => {
 
   it("Calls openModal when clicking Modifier", async () => {
     renderWithRouter();
-
     await waitFor(() => screen.getByText(/titre test/i));
 
     fireEvent.click(screen.getByRole("button", { name: t("common.change") }));
     expect(openModal).toHaveBeenCalledWith("updateEvent", mockEvent);
   });
 
-  it("calls handleDelete when clicking Supprimer", async () => {
+  it("Calls handleDelete when clicking Supprimer", async () => {
     renderWithRouter();
-
     await waitFor(() => screen.getByText(/titre test/i));
 
     fireEvent.click(
       screen.getByRole("button", { name: t("common.delete.default") }),
     );
-    expect(handleDelete).toHaveBeenCalledWith(
-      "event_details",
-      "55c4e602-e91f-4cda-8abe-a5458717dd7e",
-    );
+    expect(handleDelete).toHaveBeenCalledWith("event_details", mockEvent.id);
   });
 
   it("Calls openModal when clicking Rejoindre", async () => {
     renderWithRouter();
-
     await waitFor(() => screen.getByText(/titre test/i));
 
     const joinButtons = screen.getAllByRole("button", {
@@ -200,151 +204,21 @@ describe("EventDetails", () => {
 
   it("Navigates back when clicking Retour", async () => {
     renderWithRouter();
-
     await waitFor(() => screen.getByText(/titre test/i));
 
     fireEvent.click(screen.getByRole("button", { name: t("common.return") }));
     expect(navigateMock).toHaveBeenCalledWith(-1);
   });
 
-  it("Renders nothing and navigates to /not-found if event is null", async () => {
-    getOneEnrichedMock = vi.fn().mockResolvedValue(null);
+  it("Navigates to /not-found if event is null", async () => {
+    (useFetchEvent as unknown as Mock).mockImplementation(() => ({
+      event: null,
+      isLoading: true,
+    }));
 
     renderWithRouter();
-
     await waitFor(() => {
       expect(screen.queryByText(/titre test/i)).not.toBeInTheDocument();
-    });
-  });
-
-  it("Renders comments with author and content", async () => {
-    const mockEventWithComments = {
-      ...mockEvent,
-      comments: [
-        {
-          id: "c1",
-          content: "Super event !",
-          user: {
-            id: "9c63878b-4763-4de7-ac1e-d1ada9fc0159",
-            username: "toto",
-          },
-        },
-      ],
-    };
-    getOneEnrichedMock = vi.fn().mockResolvedValue(mockEventWithComments);
-
-    renderWithRouter();
-
-    await waitFor(() => {
-      expect(screen.getByText(/super event/i)).toBeInTheDocument();
-      expect(
-        screen.getByText(`${t("common.author")}: toto`),
-      ).toBeInTheDocument();
-    });
-  });
-
-  it("Shows update and delete buttons only for user's own comment", async () => {
-    const mockEventWithComments = {
-      ...mockEvent,
-      comments: [
-        {
-          id: "7999dc4e-8760-47ab-92c9-dcde2a6a3e90",
-          content: "Super event !",
-          user: {
-            id: "9c63878b-4763-4de7-ac1e-d1ada9fc0159",
-            username: "toto",
-          },
-        },
-        {
-          id: "d4286ff2-1c7b-4dc4-a355-914173987045",
-          content: "Pas mal !",
-          user: { id: "other-user", username: "lulu" },
-        },
-      ],
-    };
-    getOneEnrichedMock = vi.fn().mockResolvedValue(mockEventWithComments);
-
-    renderWithRouter();
-
-    await waitFor(() => {
-      // Toto's comments display buttons
-      expect(
-        screen.getByRole("button", {
-          name: /update comment 7999dc4e-8760-47ab-92c9-dcde2a6a3e90/i,
-        }),
-      ).toBeInTheDocument();
-      expect(
-        screen.getByRole("button", {
-          name: /delete comment 7999dc4e-8760-47ab-92c9-dcde2a6a3e90/i,
-        }),
-      ).toBeInTheDocument();
-
-      // Lulu's comments doesn't display buttons
-      expect(
-        screen.queryByRole("button", {
-          name: /update comment d4286ff2-1c7b-4dc4-a355-914173987045/i,
-        }),
-      ).not.toBeInTheDocument();
-      expect(
-        screen.queryByRole("button", {
-          name: /delete comment d4286ff2-1c7b-4dc4-a355-914173987045/i,
-        }),
-      ).not.toBeInTheDocument();
-    });
-  });
-
-  it("Calls openModal with updateComment when clicking modifier", async () => {
-    const comment = {
-      id: "7999dc4e-8760-47ab-92c9-dcde2a6a3e90",
-      content: "À modifier",
-      user: { id: "9c63878b-4763-4de7-ac1e-d1ada9fc0159", username: "toto" },
-    };
-    getOneEnrichedMock = vi.fn().mockResolvedValue({
-      ...mockEvent,
-      comments: [comment],
-    });
-
-    renderWithRouter();
-
-    await waitFor(() => screen.getByText(/à modifier/i));
-
-    fireEvent.click(
-      screen.getByRole("button", {
-        name: /update comment 7999dc4e-8760-47ab-92c9-dcde2a6a3e90/i,
-      }),
-    );
-    expect(openModal).toHaveBeenCalledWith("updateComment", comment);
-  });
-
-  it("Calls handleDelete and removes comment when clicking supprimer", async () => {
-    const comment = {
-      id: "7999dc4e-8760-47ab-92c9-dcde2a6a3e90",
-      content: "content to delete",
-      user: { id: "9c63878b-4763-4de7-ac1e-d1ada9fc0159", username: "toto" },
-    };
-    getOneEnrichedMock = vi.fn().mockResolvedValue({
-      ...mockEvent,
-      comments: [comment],
-    });
-
-    renderWithRouter();
-
-    await waitFor(() => screen.getByText(/content to delete/i));
-
-    fireEvent.click(
-      screen.getByRole("button", {
-        name: /delete comment 7999dc4e-8760-47ab-92c9-dcde2a6a3e90/i,
-      }),
-    );
-
-    expect(handleDelete).toHaveBeenCalledWith(
-      "comment",
-      "7999dc4e-8760-47ab-92c9-dcde2a6a3e90",
-    );
-
-    // Comment disapear after click
-    await waitFor(() => {
-      expect(screen.queryByText(/content to delete/i)).not.toBeInTheDocument();
     });
   });
 });

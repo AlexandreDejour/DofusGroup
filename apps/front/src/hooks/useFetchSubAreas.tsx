@@ -4,15 +4,13 @@ import { useEffect, useState } from "react";
 
 import { Area, SubArea } from "../types/dofusDB";
 
-import { Config } from "../config/config";
-import { ApiClient } from "../services/client";
-import { DofusDBService } from "../services/api/dofusDBService";
+import { dofusDBService, DofusDBService } from "../services/api/dofusDBService";
 
-const config = Config.getInstance();
-const axios = new ApiClient(config.dofusdbUrl);
-const dofusDBService = new DofusDBService(axios);
-
-export default function useFetchSubAreas(areas: Area[], area: string) {
+export default function useFetchSubAreas(
+  areas: Area[],
+  area: string,
+  service: DofusDBService = dofusDBService,
+) {
   const [subAreas, setSubAreas] = useState<SubArea[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -33,7 +31,7 @@ export default function useFetchSubAreas(areas: Area[], area: string) {
       }
 
       try {
-        const subAreasData = await dofusDBService.getSubAreas(selectedArea.id);
+        const subAreasData = await service.getSubAreas(selectedArea.id);
 
         setSubAreas(subAreasData);
       } catch (error) {
@@ -45,7 +43,7 @@ export default function useFetchSubAreas(areas: Area[], area: string) {
     };
 
     fetchSubAreas();
-  }, [areas, area]);
+  }, [areas, area, service]);
 
   return { subAreas, isLoading, error };
 }

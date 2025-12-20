@@ -1,125 +1,89 @@
-import { Mock, vi } from "vitest";
-import { isAxiosError } from "axios";
-import { render, act } from "@testing-library/react";
+import { vi } from "vitest";
+import { render, waitFor } from "@testing-library/react";
 
 import useFetchAuthUser from "../useFetchAuthUser";
 
-// ---------- Mock axios ----------
-vi.mock("axios", () => {
-  const axiosInstance = {
-    get: vi.fn(),
-    post: vi.fn(),
-    put: vi.fn(),
-    delete: vi.fn(),
-    interceptors: {
-      request: { use: vi.fn(), eject: vi.fn() },
-      response: { use: vi.fn(), eject: vi.fn() },
-    },
+// Helpers
+function setupHook(service: any) {
+  const ref = {
+    current: null as any,
   };
-
-  return {
-    default: {
-      create: vi.fn(() => axiosInstance),
-    },
-    isAxiosError: vi.fn(),
-  };
-});
-
-// ---------- Mock config ----------
-vi.mock("../../config/config.ts", () => ({
-  Config: {
-    getInstance: () => ({
-      backUrl: "http://localhost",
-    }),
-  },
-}));
-
-// ---------- Mock AuthService ----------
-let mockApiMe: any;
-
-vi.mock("../../services/api/authService", () => ({
-  AuthService: vi.fn().mockImplementation(() => ({
-    apiMe: (...args: any[]) => mockApiMe(...args),
-  })),
-}));
-
-// ---------- Test utility ----------
-function setupHook() {
-  const ref = { current: null as any };
 
   function TestComponent() {
-    ref.current = useFetchAuthUser();
+    ref.current = useFetchAuthUser(service);
     return null;
   }
 
   render(<TestComponent />);
-
-  return { ref };
+  return ref;
 }
 
-// ---------- Tests ----------
 describe("useFetchAuthUser hook", () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
-  it("Must init with null user and isLoading true", () => {
-    mockApiMe = vi.fn().mockResolvedValue(null);
+  it("should fetch authenticated user successfully", async () => {
+    const user = {
+      id: "user-1",
+      email: "user@test.com",
+      username: "testuser",
+    };
 
-    const { ref } = setupHook();
+    const mockService = {
+      apiMe: vi.fn().mockResolvedValue(user),
+    };
 
-    expect(ref.current.user).toBeNull();
-    expect(ref.current.isLoading).toBe(true);
-    expect(ref.current.error).toBeNull();
-  });
+    const result = setupHook(mockService);
 
-  it("Must fetch user successfully", async () => {
-    const mockUser = { id: "123", username: "toto" };
+    // initial state
+    expect(result.current.isLoading).toBe(true);
+    expect(result.current.user).toBeNull();
+    expect(result.current.error).toBeNull();
 
-    mockApiMe = vi.fn().mockResolvedValue(mockUser);
-
-    const { ref } = setupHook();
-
-    await act(async () => {
-      await Promise.resolve();
+    await waitFor(() => {
+      expect(result.current.isLoading).toBe(false);
     });
 
-    expect(ref.current.user).toEqual(mockUser);
-    expect(ref.current.isLoading).toBe(false);
-    expect(ref.current.error).toBeNull();
+    expect(mockService.apiMe).toHaveBeenCalledTimes(1);
+    expect(result.current.user).toEqual(user);
+    expect(result.current.error).toBeNull();
   });
 
-  it("Must handle axios error", async () => {
-    const errorMessage = "Axios error";
-    mockApiMe = vi.fn().mockRejectedValue(new Error(errorMessage));
+  it("should set error when axios error occurs", async () => {
+    const axiosError = {
+      isAxiosError: true,
+      message: "Unauthorized",
+    };
 
-    (isAxiosError as unknown as Mock).mockReturnValueOnce(true);
+    const mockService = {
+      apiMe: vi.fn().mockRejectedValue(axiosError),
+    };
 
-    const { ref } = setupHook();
+    const result = setupHook(mockService);
 
-    await act(async () => {
-      await Promise.resolve();
+    await waitFor(() => {
+      expect(result.current.isLoading).toBe(false);
     });
 
-    expect(ref.current.user).toBeNull();
-    expect(ref.current.isLoading).toBe(false);
-    expect(ref.current.error).toBe(errorMessage);
+    expect(result.current.user).toBeNull();
+    expect(result.current.error).toBe("Unauthorized");
   });
 
-  it("Must handle general error", async () => {
-    const errorMessage = "Unknown error";
-    mockApiMe = vi.fn().mockRejectedValue(new Error(errorMessage));
+  it("should set error when standard Error occurs", async () => {
+    const error = new Error("Unexpected error");
 
-    (isAxiosError as unknown as Mock).mockReturnValueOnce(false);
+    const mockService = {
+      apiMe: vi.fn().mockRejectedValue(error),
+    };
 
-    const { ref } = setupHook();
+    const result = setupHook(mockService);
 
-    await act(async () => {
-      await Promise.resolve();
+    await waitFor(() => {
+      expect(result.current.isLoading).toBe(false);
     });
 
-    expect(ref.current.user).toBeNull();
-    expect(ref.current.isLoading).toBe(false);
-    expect(ref.current.error).toBe(errorMessage);
+    expect(result.current.user).toBeNull();
+    expect(result.current.error).toBe("Unexpected error");
   });
 });

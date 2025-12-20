@@ -1,18 +1,13 @@
-import axios from "axios";
-import { t } from "../../i18n/i18n-helper";
 import handleApiError from "../utils/handleApiError";
 
 import { Comment } from "../../types/comment";
-
-import { ApiClient } from "../client";
 import { CreateCommentForm } from "../../types/form";
 
-export class CommentService {
-  private axios;
+import { ApiClient } from "../client";
+import { backApiClient } from "../http/backApiClient";
 
-  constructor(axios: ApiClient) {
-    this.axios = axios.instance;
-  }
+export class CommentService {
+  constructor(private apiClient: ApiClient) {}
 
   public async create(
     userId: string,
@@ -20,7 +15,7 @@ export class CommentService {
     data: CreateCommentForm,
   ): Promise<Comment> {
     try {
-      const response = await this.axios.post<Comment>(
+      const response = await this.apiClient.post<Comment>(
         `/user/${userId}/comment`,
         { ...data, user_id: userId, event_id: eventId },
         { withCredentials: true },
@@ -38,7 +33,7 @@ export class CommentService {
     data: CreateCommentForm,
   ): Promise<Comment> {
     try {
-      const response = await this.axios.patch<Comment>(
+      const response = await this.apiClient.patch<Comment>(
         `/user/${userId}/comment/${commentId}`,
         data,
         { withCredentials: true },
@@ -52,7 +47,7 @@ export class CommentService {
 
   public async delete(userId: string, commentId: string) {
     try {
-      const response = await this.axios.delete(
+      const response = await this.apiClient.delete(
         `/user/${userId}/comment/${commentId}`,
         {
           withCredentials: true,
@@ -65,3 +60,5 @@ export class CommentService {
     }
   }
 }
+
+export const commentService = new CommentService(backApiClient);

@@ -1,68 +1,29 @@
-import { vi, Mock } from "vitest";
-import { isAxiosError } from "axios";
+import { vi } from "vitest";
 import { render } from "@testing-library/react";
+import { AxiosError } from "axios";
 
 import useUserCharactersChecker from "../useUserCharactersChecker";
-
-vi.mock("axios", () => {
-  const axiosInstance = {
-    get: vi.fn(),
-    post: vi.fn(),
-    put: vi.fn(),
-    delete: vi.fn(),
-    interceptors: {
-      request: { use: vi.fn(), eject: vi.fn() },
-      response: { use: vi.fn(), eject: vi.fn() },
-    },
-  };
-
-  return {
-    default: {
-      create: vi.fn(() => axiosInstance),
-    },
-    isAxiosError: vi.fn(),
-  };
-});
-
-vi.mock("../../config/config.ts", () => ({
-  Config: {
-    getInstance: () => ({
-      backUrl: "http://localhost",
-    }),
-  },
-}));
+import { User } from "../../types/user";
 
 const showError = vi.fn();
+
 vi.mock("../../contexts/notificationContext", () => ({
-  __esModule: true,
-  default: ({ children }: { children: React.ReactNode }) => children,
   useNotification: () => ({
     showError,
   }),
 }));
 
-vi.mock("../../../i18n/i18n-helper", () => ({
-  useTypedTranslation: () => (key: string) => key,
-}));
-
-let mockGetOneEnriched: any;
-
-vi.mock("../../services/api/userService", () => ({
-  UserService: vi.fn().mockImplementation(() => ({
-    getOneEnriched: (...args: any[]) => mockGetOneEnriched(...args),
-  })),
-}));
-
-function setupHook(user: any) {
-  const ref = { current: null as any };
+// Helpers
+function setupHook(user: User | null, service: any) {
+  let checker: any;
 
   function TestComponent() {
-    ref.current = useUserCharactersChecker(user);
+    checker = useUserCharactersChecker(user, service);
     return null;
   }
 
   render(<TestComponent />);
-  return ref;
+  return checker;
 }
 
 describe("useUserCharactersChecker hook", () => {
@@ -70,68 +31,109 @@ describe("useUserCharactersChecker hook", () => {
     vi.clearAllMocks();
   });
 
-  it("Returns immediately if user is null", async () => {
-    const ref = setupHook(null);
+  it("should return undefined if user is null", async () => {
+    const mockService = {
+      getOneEnriched: vi.fn(),
+    };
 
-    const result = await ref.current();
+    const checkUserCharacters = setupHook(null, mockService);
 
-    expect(result).toBeUndefined(); // no return, no error
-    expect(mockGetOneEnriched).toBeUndefined(); // never called
+    const result = await checkUserCharacters();
+
+    expect(result).toBeUndefined();
+    expect(mockService.getOneEnriched).not.toHaveBeenCalled();
     expect(showError).not.toHaveBeenCalled();
   });
 
-  it("Calls showError if user has no characters", async () => {
-    mockGetOneEnriched = vi.fn().mockResolvedValue({
-      characters: [],
-    });
+  it("should return true if user has characters", async () => {
+    const user: User = {
+      id: "user-1",
+      username: "toto",
+    };
 
-    const ref = setupHook({ id: 42 });
+    const mockService = {
+      getOneEnriched: vi.fn().mockResolvedValue({
+        id: "user-1",
+        characters: [{ id: "char-1" }],
+      }),
+    };
 
-    const result = await ref.current();
+    const checkUserCharacters = setupHook(user, mockService);
 
-    expect(mockGetOneEnriched).toHaveBeenCalledWith(42);
-    expect(result).toBe(false);
+    const result = await checkUserCharacters();
 
-    expect(showError).toHaveBeenCalledWith(
-      "Minimum condition not met !",
-      "You must have at least one character to create an event.",
-    );
-  });
-
-  it("Returns true if user has characters", async () => {
-    mockGetOneEnriched = vi.fn().mockResolvedValue({
-      characters: [{ id: 1, name: "Yugo" }],
-    });
-
-    const ref = setupHook({ id: 88 });
-
-    const result = await ref.current();
-
-    expect(mockGetOneEnriched).toHaveBeenCalledWith(88);
+    expect(mockService.getOneEnriched).toHaveBeenCalledTimes(1);
+    expect(mockService.getOneEnriched).toHaveBeenCalledWith("user-1");
     expect(result).toBe(true);
-
     expect(showError).not.toHaveBeenCalled();
   });
 
-  it("Handles axios error gracefully", async () => {
-    mockGetOneEnriched = vi.fn().mockRejectedValue(new Error("Axios oops"));
-    (isAxiosError as unknown as Mock).mockReturnValueOnce(true);
+  it("should show error and return false if user has no characters", async () => {
+    const user: User = {
+      id: "user-1",
+      username: "toto",
+    };
 
-    const ref = setupHook({ id: 1 });
+    const mockService = {
+      getOneEnriched: vi.fn().mockResolvedValue({
+        id: "user-1",
+        characters: [],
+      }),
+    };
 
-    await expect(ref.current()).resolves.not.toThrow();
+    const checkUserCharacters = setupHook(user, mockService);
 
-    expect(showError).not.toHaveBeenCalled();
+    const result = await checkUserCharacters();
+
+    expect(result).toBe(false);
+    expect(showError).toHaveBeenCalled();
   });
 
-  it("Handles non-axios error gracefully", async () => {
-    mockGetOneEnriched = vi.fn().mockRejectedValue(new Error("General oops"));
-    (isAxiosError as unknown as Mock).mockReturnValueOnce(false);
+  it("should handle axios error", async () => {
+    const user: User = {
+      id: "user-1",
+      username: "toto",
+    };
 
-    const ref = setupHook({ id: 1 });
+    const axiosError = new AxiosError("Axios error");
 
-    await expect(ref.current()).resolves.not.toThrow();
+    const mockService = {
+      getOneEnriched: vi.fn().mockRejectedValue(axiosError),
+    };
 
-    expect(showError).not.toHaveBeenCalled();
+    const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+
+    const checkUserCharacters = setupHook(user, mockService);
+
+    const result = await checkUserCharacters();
+
+    expect(result).toBeUndefined();
+    expect(consoleSpy).toHaveBeenCalledWith("Axios error:", "Axios error");
+
+    consoleSpy.mockRestore();
+  });
+
+  it("should handle standard Error", async () => {
+    const user: User = {
+      id: "user-1",
+      username: "toto",
+    };
+
+    const error = new Error("Standard error");
+
+    const mockService = {
+      getOneEnriched: vi.fn().mockRejectedValue(error),
+    };
+
+    const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+
+    const checkUserCharacters = setupHook(user, mockService);
+
+    const result = await checkUserCharacters();
+
+    expect(result).toBeUndefined();
+    expect(consoleSpy).toHaveBeenCalledWith("General error:", "Standard error");
+
+    consoleSpy.mockRestore();
   });
 });

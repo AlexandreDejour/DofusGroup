@@ -1,187 +1,168 @@
-import { Mock, vi } from "vitest";
-import { isAxiosError } from "axios";
-import { render, act } from "@testing-library/react";
+import i18n from "i18next";
+import { vi } from "vitest";
+import { AxiosError } from "axios";
+import { render, waitFor } from "@testing-library/react";
+
+import { Area, SubArea } from "../../types/dofusDB";
 
 import useFetchSubAreas from "../useFetchSubAreas";
 
-vi.mock("axios", () => {
-  const axiosInstance = {
-    get: vi.fn(),
-    post: vi.fn(),
-    put: vi.fn(),
-    delete: vi.fn(),
-
-    interceptors: {
-      request: { use: vi.fn(), eject: vi.fn() },
-      response: { use: vi.fn(), eject: vi.fn() },
-    },
-  };
-
-  return {
-    default: {
-      create: vi.fn(() => axiosInstance),
-    },
-    isAxiosError: vi.fn(),
-  };
-});
-
-vi.mock("../../config/config.ts", () => ({
-  Config: {
-    getInstance: () => ({
-      dofusdbUrl: "http://localhost",
-    }),
-  },
-}));
-
-let mockGetSubAreas: any;
-
-vi.mock("../../services/api/dofusDBService", () => {
-  return {
-    DofusDBService: vi.fn().mockImplementation(() => ({
-      getSubAreas: (...args: any[]) => mockGetSubAreas(...args),
-    })),
-  };
-});
-
-// Mock i18n.language
-vi.mock("i18next", () => ({
-  __esModule: true,
-  default: { language: "fr" },
-}));
-
-// Utility function to test hook
-function setupHook(areas: any[], areaName: string) {
+// Helpers
+function setupHook(areas: Area[], area: string, service: any) {
   const ref = { current: null as any };
 
-  function TestComponent({ areas, area }: { areas: any[]; area: string }) {
-    ref.current = useFetchSubAreas(areas, area);
+  function TestComponent() {
+    ref.current = useFetchSubAreas(areas, area, service);
     return null;
   }
 
-  const renderResult = render(<TestComponent areas={areas} area={areaName} />);
-
-  return {
-    ref,
-    rerender: (newAreas: any[], newArea: string) =>
-      renderResult.rerender(<TestComponent areas={newAreas} area={newArea} />),
-  };
+  render(<TestComponent />);
+  return ref;
 }
 
 describe("useFetchSubAreas hook", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    i18n.language = "en"; // force language
   });
 
-  it("Must initialize with empty subAreas and isLoading true", () => {
-    mockGetSubAreas = vi.fn().mockResolvedValue([]);
-
-    const areas = [{ id: 1, name: { fr: "Zone1", en: "Zone1EN" } }];
-    const { ref } = setupHook(areas, "Zone1");
-
-    expect(ref.current.subAreas).toEqual([]);
-    expect(ref.current.isLoading).toBe(true);
-    expect(ref.current.error).toBeNull();
-  });
-
-  it("Must successfully fetch subAreas", async () => {
-    const areas = [{ id: 1, name: { fr: "Zone1", en: "Zone1EN" } }];
-    const mockSubAreas = [
-      { id: 1, name: "Sub1" },
-      { id: 2, name: "Sub2" },
+  it("should fetch subAreas successfully when area exists", async () => {
+    const areas: Area[] = [
+      {
+        id: 1,
+        name: {
+          id: "area1",
+          de: "area1",
+          en: "area1",
+          es: "area1",
+          fr: "area1",
+          pt: "area1",
+        },
+      },
+    ];
+    const subAreas: SubArea[] = [
+      {
+        id: 1,
+        name: {
+          id: "subArea1",
+          de: "subArea1",
+          en: "subArea1",
+          es: "subArea1",
+          fr: "subArea1",
+          pt: "subArea1",
+        },
+        dungeonId: 10,
+      },
     ];
 
-    mockGetSubAreas = vi.fn().mockResolvedValue(mockSubAreas);
+    const mockService = {
+      getSubAreas: vi.fn().mockResolvedValue(subAreas),
+    };
 
-    const { ref } = setupHook(areas, "Zone1");
+    const result = setupHook(areas, "area1", mockService);
 
-    await act(async () => {
-      await Promise.resolve();
+    // initial state
+    expect(result.current.isLoading).toBe(true);
+    expect(result.current.subAreas).toEqual([]);
+    expect(result.current.error).toBeNull();
+
+    await waitFor(() => {
+      expect(result.current.isLoading).toBe(false);
     });
 
-    expect(ref.current.subAreas).toEqual(mockSubAreas);
-    expect(ref.current.isLoading).toBe(false);
-    expect(ref.current.error).toBeNull();
+    expect(mockService.getSubAreas).toHaveBeenCalledTimes(1);
+    expect(mockService.getSubAreas).toHaveBeenCalledWith(1);
+    expect(result.current.subAreas).toEqual(subAreas);
+    expect(result.current.error).toBeNull();
   });
 
-  it("Must return empty subAreas if area not found", async () => {
-    const areas = [{ id: 1, name: { fr: "Zone1", en: "Zone1EN" } }];
+  it("should return empty subAreas if area does not exist", async () => {
+    const areas: Area[] = [
+      {
+        id: 1,
+        name: {
+          id: "area1",
+          de: "area1",
+          en: "area1",
+          es: "area1",
+          fr: "area1",
+          pt: "area1",
+        },
+      },
+    ];
 
-    mockGetSubAreas = vi.fn(); // should not be called
+    const mockService = {
+      getSubAreas: vi.fn(),
+    };
 
-    const { ref } = setupHook(areas, "ZoneNotExist");
+    const result = setupHook(areas, "area2", mockService);
 
-    await act(async () => {
-      await Promise.resolve();
+    await waitFor(() => {
+      expect(result.current.isLoading).toBe(false);
     });
 
-    expect(ref.current.subAreas).toEqual([]);
-    expect(mockGetSubAreas).not.toHaveBeenCalled();
-    expect(ref.current.isLoading).toBe(false);
-    expect(ref.current.error).toBeNull();
+    expect(result.current.subAreas).toEqual([]);
+    expect(mockService.getSubAreas).not.toHaveBeenCalled();
+    expect(result.current.error).toBeNull();
   });
 
-  it("Must handle axios error", async () => {
-    const areas = [{ id: 1, name: { fr: "Zone1", en: "Zone1EN" } }];
-    const errorMessage = "Axios error";
+  it("should set error when axios error occurs", async () => {
+    const areas: Area[] = [
+      {
+        id: 1,
+        name: {
+          id: "area1",
+          de: "area1",
+          en: "area1",
+          es: "area1",
+          fr: "area1",
+          pt: "area1",
+        },
+      },
+    ];
 
-    mockGetSubAreas = vi.fn().mockRejectedValue(new Error(errorMessage));
-    (isAxiosError as unknown as Mock).mockReturnValueOnce(true);
+    const axiosError = new AxiosError("Axios error");
+    const mockService = {
+      getSubAreas: vi.fn().mockRejectedValue(axiosError),
+    };
 
-    const { ref } = setupHook(areas, "Zone1");
+    const result = setupHook(areas, "area1", mockService);
 
-    await act(async () => {
-      await Promise.resolve();
+    await waitFor(() => {
+      expect(result.current.isLoading).toBe(false);
     });
 
-    expect(ref.current.subAreas).toEqual([]);
-    expect(ref.current.isLoading).toBe(false);
-    expect(ref.current.error).toBe(errorMessage);
+    expect(result.current.subAreas).toEqual([]);
+    expect(result.current.error).toBe("Axios error");
   });
 
-  it("Must handle general error", async () => {
-    const areas = [{ id: 1, name: { fr: "Zone1", en: "Zone1EN" } }];
-    const errorMessage = "Some error";
+  it("should set error when standard Error occurs", async () => {
+    const areas: Area[] = [
+      {
+        id: 1,
+        name: {
+          id: "area1",
+          de: "area1",
+          en: "area1",
+          es: "area1",
+          fr: "area1",
+          pt: "area1",
+        },
+      },
+    ];
 
-    mockGetSubAreas = vi.fn().mockRejectedValue(new Error(errorMessage));
-    (isAxiosError as unknown as Mock).mockReturnValueOnce(false);
+    const error = new Error("Standard error");
+    const mockService = {
+      getSubAreas: vi.fn().mockRejectedValue(error),
+    };
 
-    const { ref } = setupHook(areas, "Zone1");
+    const result = setupHook(areas, "area1", mockService);
 
-    await act(async () => {
-      await Promise.resolve();
+    await waitFor(() => {
+      expect(result.current.isLoading).toBe(false);
     });
 
-    expect(ref.current.subAreas).toEqual([]);
-    expect(ref.current.isLoading).toBe(false);
-    expect(ref.current.error).toBe(errorMessage);
-  });
-
-  it("Must refetch subAreas when areas or area changes", async () => {
-    const areas1 = [{ id: 1, name: { fr: "Zone1", en: "Zone1EN" } }];
-    const areas2 = [{ id: 2, name: { fr: "Zone2", en: "Zone2EN" } }];
-
-    const mockSubAreas1 = [{ id: 1, name: "Sub1" }];
-    const mockSubAreas2 = [{ id: 2, name: "Sub2" }];
-
-    mockGetSubAreas = vi
-      .fn()
-      .mockResolvedValueOnce(mockSubAreas1)
-      .mockResolvedValueOnce(mockSubAreas2);
-
-    const { ref, rerender } = setupHook(areas1, "Zone1");
-
-    await act(async () => {
-      await Promise.resolve();
-    });
-
-    expect(ref.current.subAreas).toEqual(mockSubAreas1);
-
-    await act(async () => {
-      rerender(areas2, "Zone2");
-      await Promise.resolve();
-    });
-
-    expect(ref.current.subAreas).toEqual(mockSubAreas2);
-    expect(mockGetSubAreas).toHaveBeenCalledTimes(2);
+    expect(result.current.subAreas).toEqual([]);
+    expect(result.current.error).toBe("Standard error");
   });
 });

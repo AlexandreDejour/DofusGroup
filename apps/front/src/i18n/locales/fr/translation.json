@@ -209,6 +209,7 @@
       "required": "Vous devez renseigner un serveur."
     },
     "tag": {
+      "donjonRequired": "Vous devez renseignez un donjon.",
       "required": "Vous devez renseigner un tag."
     },
     "url": {

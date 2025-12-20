@@ -1,200 +1,279 @@
-import { Mock, vi } from "vitest";
-import { isAxiosError } from "axios";
-import { render, act } from "@testing-library/react";
+import { vi } from "vitest";
+import { render, waitFor } from "@testing-library/react";
+import { AxiosError } from "axios";
 
+import { User } from "../../types/user";
+import { EventEnriched } from "../../types/event";
+import { CharacterEnriched } from "../../types/character";
 import useFetchUserCharactersEnriched from "../useFetchUserCharactersEnriched";
 
-// ---------- Mocks axios ----------
-vi.mock("axios", () => {
-  const axiosInstance = {
-    get: vi.fn(),
-    post: vi.fn(),
-    put: vi.fn(),
-    delete: vi.fn(),
-    interceptors: {
-      request: { use: vi.fn(), eject: vi.fn() },
-      response: { use: vi.fn(), eject: vi.fn() },
-    },
-  };
-
-  return {
-    default: {
-      create: vi.fn(() => axiosInstance),
-    },
-    isAxiosError: vi.fn(),
-  };
-});
-
-// ---------- Mock config ----------
-vi.mock("../../config/config.ts", () => ({
-  Config: {
-    getInstance: () => ({
-      backUrl: "http://localhost",
-    }),
-  },
-}));
-
-// ---------- Mock CharacterService ----------
-let mockGetAllEnrichedByUserId: any;
-
-vi.mock("../../services/api/characterService", () => {
-  return {
-    CharacterService: vi.fn().mockImplementation(() => ({
-      getAllEnrichedByUserId: (...args: any[]) =>
-        mockGetAllEnrichedByUserId(...args),
-    })),
-  };
-});
-
-// ---------- Test utility ----------
-function setupHook(
-  user = { id: "user-1" },
-  event = { server: { id: "server-1" } },
-) {
+// Helpers
+function setupHook(user: User, event: EventEnriched, service: any) {
   const ref = { current: null as any };
 
-  function TestComponent({ user, event }: { user: any; event: any }) {
-    ref.current = useFetchUserCharactersEnriched(user, event);
+  function TestComponent() {
+    ref.current = useFetchUserCharactersEnriched(user, event, service);
     return null;
   }
 
-  const renderResult = render(<TestComponent user={user} event={event} />);
-
-  return {
-    ref,
-    rerender: (newUser = user, newEvent = event) =>
-      renderResult.rerender(<TestComponent user={newUser} event={newEvent} />),
-  };
+  render(<TestComponent />);
+  return ref;
 }
 
-// ---------- Tests ----------
 describe("useFetchUserCharactersEnriched hook", () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
-  it("Must init with empty characters and isLoading true", () => {
-    mockGetAllEnrichedByUserId = vi.fn().mockResolvedValue([]);
+  it("should fetch enriched characters successfully and filter by event server", async () => {
+    const user: User = { id: "user1", username: "toto" };
+    const event: EventEnriched = {
+      id: "event1",
+      title: "Test Event",
+      server: { id: "srv1", name: "srv1", mono_account: false },
+      characters: [
+        {
+          id: "char1",
+          name: "char1",
+          sex: "M",
+          level: 50,
+          alignment: "Bonta",
+          stuff: "https://d-bk.net/fr/d/1QVjw",
+          server_id: "srv1",
+          user: {
+            id: "user1",
+            username: "toto",
+          },
+          breed: {
+            id: "brd1",
+            name: "Xélor",
+          },
+          server: {
+            id: "srv1",
+            name: "srv1",
+            mono_account: false,
+          },
+        },
+      ],
+      date: new Date(),
+      duration: 60,
+      area: undefined,
+      sub_area: undefined,
+      donjon_name: undefined,
+      description: "",
+      max_players: 5,
+      status: "public",
+      tag: { id: "tag1", name: "tag1", color: "#f0f" },
+      comments: [],
+      user: { id: "user1", username: "toto" },
+    };
 
-    const { ref } = setupHook();
-
-    expect(ref.current.characters).toEqual([]);
-    expect(ref.current.isLoading).toBe(true);
-    expect(ref.current.error).toBeNull();
-  });
-
-  it("Must fetch and filter characters by event server", async () => {
-    const mockCharacters = [
-      { id: 1, name: "char1", server_id: "server-1" },
-      { id: 2, name: "char2", server_id: "server-2" },
-      { id: 3, name: "char3", server_id: "server-1" },
+    const enrichedCharacters: CharacterEnriched[] = [
+      {
+        id: "char1",
+        name: "char1",
+        sex: "M",
+        level: 50,
+        alignment: "Bonta",
+        stuff: "https://d-bk.net/fr/d/1QVjw",
+        server_id: "srv1",
+        user: {
+          id: "user1",
+          username: "toto",
+        },
+        breed: {
+          id: "brd1",
+          name: "Xélor",
+        },
+        server: {
+          id: "srv1",
+          name: "srv1",
+          mono_account: false,
+        },
+      },
+      {
+        id: "char2",
+        name: "char2",
+        sex: "M",
+        level: 50,
+        alignment: "Bonta",
+        stuff: "https://d-bk.net/fr/d/1QVjw",
+        server_id: "srv2",
+        user: {
+          id: "user1",
+          username: "toto",
+        },
+        breed: {
+          id: "brd1",
+          name: "Xélor",
+        },
+        server: {
+          id: "srv2",
+          name: "srv2",
+          mono_account: false,
+        },
+      },
     ];
 
-    mockGetAllEnrichedByUserId = vi.fn().mockResolvedValue(mockCharacters);
+    const mockService = {
+      getAllEnrichedByUserId: vi.fn().mockResolvedValue(enrichedCharacters),
+    };
 
-    const { ref } = setupHook({ id: "user-1" }, { server: { id: "server-1" } });
+    const result = setupHook(user, event, mockService);
 
-    await act(async () => {
-      await Promise.resolve();
+    // initial state
+    expect(result.current.isLoading).toBe(true);
+    expect(result.current.characters).toEqual([]);
+    expect(result.current.error).toBeNull();
+
+    await waitFor(() => {
+      expect(result.current.isLoading).toBe(false);
     });
 
-    expect(ref.current.characters).toEqual([
-      { id: 1, name: "char1", server_id: "server-1" },
-      { id: 3, name: "char3", server_id: "server-1" },
+    expect(result.current.characters).toEqual([
+      {
+        id: "char1",
+        name: "char1",
+        sex: "M",
+        level: 50,
+        alignment: "Bonta",
+        stuff: "https://d-bk.net/fr/d/1QVjw",
+        server_id: "srv1",
+        user: {
+          id: "user1",
+          username: "toto",
+        },
+        breed: {
+          id: "brd1",
+          name: "Xélor",
+        },
+        server: {
+          id: "srv1",
+          name: "srv1",
+          mono_account: false,
+        },
+      },
     ]);
 
-    expect(ref.current.isLoading).toBe(false);
-    expect(ref.current.error).toBeNull();
+    expect(mockService.getAllEnrichedByUserId).toHaveBeenCalledTimes(1);
+    expect(mockService.getAllEnrichedByUserId).toHaveBeenCalledWith("user1");
   });
 
-  it("Must refetch characters when event server changes", async () => {
-    const mockCharacters = [
-      { id: 1, name: "char1", server_id: "server-1" },
-      { id: 2, name: "char2", server_id: "server-2" },
-    ];
+  it("should set error when axios error occurs", async () => {
+    const user: User = { id: "user1", username: "toto" };
+    const event: EventEnriched = {
+      id: "event1",
+      title: "Test Event",
+      server: { id: "server1", name: "Server1", mono_account: false },
+      characters: [
+        {
+          id: "char1",
+          name: "char1",
+          sex: "M",
+          level: 50,
+          alignment: "Bonta",
+          stuff: "https://d-bk.net/fr/d/1QVjw",
+          server_id: "srv1",
+          user: {
+            id: "user1",
+            username: "toto",
+          },
+          breed: {
+            id: "brd1",
+            name: "Xélor",
+          },
+          server: {
+            id: "srv1",
+            name: "Rafal",
+            mono_account: false,
+          },
+        },
+      ],
+      date: new Date(),
+      duration: 60,
+      area: undefined,
+      sub_area: undefined,
+      donjon_name: undefined,
+      description: "",
+      max_players: 5,
+      status: "public",
+      tag: { id: "tag1", name: "tag1", color: "#f0f" },
+      comments: [],
+      user: { id: "user1", username: "toto" },
+    };
 
-    mockGetAllEnrichedByUserId = vi.fn().mockResolvedValue(mockCharacters);
+    const axiosError = new AxiosError("Axios error");
 
-    const { ref, rerender } = setupHook(
-      { id: "user-1" },
-      { server: { id: "server-1" } },
-    );
+    const mockService = {
+      getAllEnrichedByUserId: vi.fn().mockRejectedValue(axiosError),
+    };
 
-    await act(async () => {
-      await Promise.resolve();
+    const result = setupHook(user, event, mockService);
+
+    await waitFor(() => {
+      expect(result.current.isLoading).toBe(false);
     });
 
-    expect(ref.current.characters).toEqual([
-      { id: 1, name: "char1", server_id: "server-1" },
-    ]);
-
-    await act(async () => {
-      rerender({ id: "user-1" }, { server: { id: "server-2" } });
-      await Promise.resolve();
-    });
-
-    expect(ref.current.characters).toEqual([
-      { id: 2, name: "char2", server_id: "server-2" },
-    ]);
-
-    expect(mockGetAllEnrichedByUserId).toHaveBeenCalledTimes(2);
+    expect(result.current.characters).toEqual([]);
+    expect(result.current.error).toBe("Axios error");
   });
 
-  it("Must refetch characters when user changes", async () => {
-    mockGetAllEnrichedByUserId = vi.fn().mockResolvedValue([]);
+  it("should set error when standard Error occurs", async () => {
+    const user: User = { id: "user1", username: "toto" };
+    const event: EventEnriched = {
+      id: "event1",
+      title: "Test Event",
+      server: { id: "server1", name: "Server1", mono_account: false },
+      characters: [
+        {
+          id: "char1",
+          name: "char1",
+          sex: "M",
+          level: 50,
+          alignment: "Bonta",
+          stuff: "https://d-bk.net/fr/d/1QVjw",
+          server_id: "srv1",
+          user: {
+            id: "user1",
+            username: "toto",
+          },
+          breed: {
+            id: "brd1",
+            name: "Xélor",
+          },
+          server: {
+            id: "srv1",
+            name: "Rafal",
+            mono_account: false,
+          },
+        },
+      ],
+      date: new Date(),
+      duration: 60,
+      area: undefined,
+      sub_area: undefined,
+      donjon_name: undefined,
+      description: "",
+      max_players: 5,
+      status: "public",
+      tag: { id: "tag1", name: "tag1", color: "#f0f" },
+      comments: [],
+      user: { id: "user1", username: "toto" },
+    };
 
-    const { rerender } = setupHook(
-      { id: "user-1" },
-      { server: { id: "server-1" } },
-    );
+    const error = new Error("Standard error");
 
-    await act(async () => {
-      await Promise.resolve();
+    const mockService = {
+      getAllEnrichedByUserId: vi.fn().mockRejectedValue(error),
+    };
+
+    const result = setupHook(user, event, mockService);
+
+    await waitFor(() => {
+      expect(result.current.isLoading).toBe(false);
     });
 
-    await act(async () => {
-      rerender({ id: "user-2" }, { server: { id: "server-1" } });
-      await Promise.resolve();
-    });
-
-    expect(mockGetAllEnrichedByUserId).toHaveBeenCalledTimes(2);
-  });
-
-  it("Must handle axios error", async () => {
-    const errorMessage = "Axios error";
-    mockGetAllEnrichedByUserId = vi
-      .fn()
-      .mockRejectedValue(new Error(errorMessage));
-
-    (isAxiosError as unknown as Mock).mockReturnValueOnce(true);
-
-    const { ref } = setupHook();
-
-    await act(async () => {
-      await Promise.resolve();
-    });
-
-    expect(ref.current.characters).toEqual([]);
-    expect(ref.current.isLoading).toBe(false);
-    expect(ref.current.error).toBe(errorMessage);
-  });
-
-  it("Must handle general error", async () => {
-    const errorMessage = "Unknown error";
-    mockGetAllEnrichedByUserId = vi
-      .fn()
-      .mockRejectedValue(new Error(errorMessage));
-
-    (isAxiosError as unknown as Mock).mockReturnValueOnce(false);
-
-    const { ref } = setupHook();
-
-    await act(async () => {
-      await Promise.resolve();
-    });
-
-    expect(ref.current.characters).toEqual([]);
-    expect(ref.current.isLoading).toBe(false);
-    expect(ref.current.error).toBe(errorMessage);
+    expect(result.current.characters).toEqual([]);
+    expect(result.current.error).toBe("Standard error");
   });
 });

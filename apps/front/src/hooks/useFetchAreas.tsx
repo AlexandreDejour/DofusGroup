@@ -3,15 +3,11 @@ import { useEffect, useState } from "react";
 
 import { Area } from "../types/dofusDB";
 
-import { Config } from "../config/config";
-import { ApiClient } from "../services/client";
-import { DofusDBService } from "../services/api/dofusDBService";
+import { dofusDBService, DofusDBService } from "../services/api/dofusDBService";
 
-const config = Config.getInstance();
-const axios = new ApiClient(config.dofusdbUrl);
-const dofusDBService = new DofusDBService(axios);
-
-export default function useFetchAreas() {
+export default function useFetchAreas(
+  service: DofusDBService = dofusDBService,
+) {
   const [areas, setAreas] = useState<Area[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -22,7 +18,7 @@ export default function useFetchAreas() {
       setError(null);
 
       try {
-        const areasData = await dofusDBService.getAreas();
+        const areasData = await service.getAreas();
 
         setAreas(areasData);
       } catch (error) {
@@ -34,7 +30,7 @@ export default function useFetchAreas() {
     };
 
     fetchAreas();
-  }, []);
+  }, [service]);
 
   return { areas, isLoading, error };
 }

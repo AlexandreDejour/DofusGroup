@@ -2,6 +2,8 @@ import "./Profile.scss";
 
 import { useTypedTranslation } from "../../i18n/i18n-helper";
 
+import { CharacterEnriched } from "../../types/character";
+
 import { useAuth } from "../../contexts/authContext";
 import { useModal } from "../../contexts/modalContext";
 
@@ -11,8 +13,6 @@ import useFetchUpComingEvents from "../../hooks/useFetchUpComingEvents";
 import Spinner from "../../components/Spinner/Spinner";
 import CharacterCard from "../../components/CharacterCard/CharacterCard";
 import ProfileEventCard from "../../components/ProfileEventCard/ProfileEventCard";
-import { EventEnriched } from "../../types/event";
-import { CharacterEnriched } from "../../types/character";
 
 export default function Profile() {
   const t = useTypedTranslation();

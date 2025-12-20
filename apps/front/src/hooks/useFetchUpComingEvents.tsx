@@ -7,16 +7,11 @@ import { UserEnriched } from "../types/user";
 
 import { useNotification } from "../contexts/notificationContext";
 
-import { Config } from "../config/config";
-import { ApiClient } from "../services/client";
-import { EventService } from "../services/api/eventService";
-
-const config = Config.getInstance();
-const axios = new ApiClient(config.backUrl);
-const eventService = new EventService(axios);
+import { eventService, EventService } from "../services/api/eventService";
 
 export default function useFetchUpComingEvents(
   userEnriched: UserEnriched | null,
+  service: EventService = eventService,
 ) {
   const t = useTypedTranslation();
 
@@ -28,7 +23,11 @@ export default function useFetchUpComingEvents(
 
   useEffect(() => {
     const fetchUpcomingEvents = async () => {
-      if (!userEnriched || !userEnriched.characters?.length) return;
+      if (!userEnriched || !userEnriched.characters?.length) {
+        setUpcomingEvents([]);
+        setIsLoading(false);
+        return;
+      }
 
       setIsLoading(true);
       setError(null);
@@ -36,7 +35,7 @@ export default function useFetchUpComingEvents(
       try {
         const characterIds = userEnriched.characters.map((c) => c.id);
 
-        const response = await eventService.getRegistered(characterIds);
+        const response = await service.getRegistered(characterIds);
 
         if (userEnriched.events?.length) {
           const ownerEvents = userEnriched.events.map((event) => event.id);
@@ -60,7 +59,7 @@ export default function useFetchUpComingEvents(
     };
 
     fetchUpcomingEvents();
-  }, [userEnriched]);
+  }, [userEnriched, service]);
 
   return { upComingEvents, isLoading, error };
 }

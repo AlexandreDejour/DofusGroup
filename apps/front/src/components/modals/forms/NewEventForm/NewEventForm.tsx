@@ -50,14 +50,10 @@ export default function NewEventForm({ handleSubmit }: NewEventFormProps) {
 
   const { areas } = useFetchAreas();
   const { subAreas } = useFetchSubAreas(areas, area);
-  const { dungeons, isDungeon } = useFetchDungeons(
-    tags,
-    tag,
-    areas,
-    area,
-    subAreas,
-    subArea,
-  );
+
+  const context = { tags, areas, subAreas };
+  const selection = { tag, area, subArea };
+  const { dungeons, isDungeon } = useFetchDungeons(context, selection);
 
   return (
     <div className="new_event">

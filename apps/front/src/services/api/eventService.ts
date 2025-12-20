@@ -2,17 +2,15 @@ import qs from "qs";
 import { t } from "../../i18n/i18n-helper";
 import handleApiError from "../utils/handleApiError";
 
-import { ApiClient } from "../client";
-
+import { Tag } from "../../types/tag";
 import { CreateEventForm } from "../../types/form";
 import { Event, EventEnriched, PaginatedEvents } from "../../types/event";
 
-export class EventService {
-  private axios;
+import { ApiClient } from "../client";
+import { backApiClient } from "../http/backApiClient";
 
-  constructor(axios: ApiClient) {
-    this.axios = axios.instance;
-  }
+export class EventService {
+  constructor(private apiClient: ApiClient) {}
 
   public async getEvents(
     limit?: number,
@@ -20,7 +18,7 @@ export class EventService {
     filters?: { tag_id?: string; title?: string; server_id?: string },
   ): Promise<PaginatedEvents> {
     try {
-      const response = await this.axios.get<PaginatedEvents>("/events", {
+      const response = await this.apiClient.get<PaginatedEvents>("/events", {
         params: { limit, page, ...filters },
       });
 
@@ -32,7 +30,7 @@ export class EventService {
 
   public async getRegistered(characterIds: string[]): Promise<Event[]> {
     try {
-      const response = await this.axios.get<Event[]>("/events/registered", {
+      const response = await this.apiClient.get<Event[]>("/events/registered", {
         params: { characterIds },
         paramsSerializer: (params) =>
           qs.stringify(params, { arrayFormat: "repeat" }),
@@ -46,7 +44,9 @@ export class EventService {
 
   public async getAllByUserId(userId: string): Promise<Event[]> {
     try {
-      const response = await this.axios.get<Event[]>(`/user/${userId}/events`);
+      const response = await this.apiClient.get<Event[]>(
+        `/user/${userId}/events`,
+      );
 
       return response.data;
     } catch (error) {
@@ -56,7 +56,7 @@ export class EventService {
 
   public async getOneEnriched(eventId: string) {
     try {
-      const response = await this.axios.get<EventEnriched>(
+      const response = await this.apiClient.get<EventEnriched>(
         `/event/${eventId}/enriched`,
       );
 
@@ -77,8 +77,12 @@ export class EventService {
     if (data.max_players < data.characters_id.length)
       throw new Error(t("validation.playerNumber.limit"));
 
+    const tag = await this.apiClient.get<Tag>(`/tag/${data.tag_id}`);
+    if (tag.data.name === "Donjon" && !data.donjon_name)
+      throw new Error(t("validation.tag.donjonRequired"));
+
     try {
-      const response = await this.axios.post<Event>(
+      const response = await this.apiClient.post<Event>(
         `/user/${userId}/event`,
         data,
         { withCredentials: true },
@@ -102,7 +106,7 @@ export class EventService {
       throw new Error(t("validation.date.future"));
 
     try {
-      const response = await this.axios.patch<EventEnriched>(
+      const response = await this.apiClient.patch<EventEnriched>(
         `/user/${userId}/event/${eventId}`,
         data,
         { withCredentials: true },
@@ -120,7 +124,7 @@ export class EventService {
     }
 
     try {
-      const response = await this.axios.post(
+      const response = await this.apiClient.post(
         `/event/${eventId}/addCharacters`,
         {
           data,
@@ -135,7 +139,7 @@ export class EventService {
 
   public async removeCharacter(eventId: string, characterId: string) {
     try {
-      const response = await this.axios.post(
+      const response = await this.apiClient.post<EventEnriched>(
         `/event/${eventId}/removeCharacter`,
         { character_id: characterId },
       );
@@ -148,7 +152,7 @@ export class EventService {
 
   public async delete(userId: string, eventId: string) {
     try {
-      const response = await this.axios.delete(
+      const response = await this.apiClient.delete(
         `/user/${userId}/event/${eventId}`,
         { withCredentials: true },
       );
@@ -158,3 +162,5 @@ export class EventService {
     }
   }
 }
+
+export const eventService = new EventService(backApiClient);

@@ -79,7 +79,7 @@ describe("JoinEventForm", () => {
     vi.mocked(useAuth).mockReturnValue({
       user: null,
       setUser: vi.fn(),
-      isAuthLoading: false,
+      isLoading: false,
       logout: vi.fn(),
     });
 

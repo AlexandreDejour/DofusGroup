@@ -8,20 +8,14 @@ import { UserEnriched } from "../types/user";
 import { useAuth } from "../contexts/authContext";
 import { useNotification } from "../contexts/notificationContext";
 
-import { Config } from "../config/config";
-import { ApiClient } from "../services/client";
-import { UserService } from "../services/api/userService";
+import { userService, UserService } from "../services/api/userService";
 
-const config = Config.getInstance();
-const axios = new ApiClient(config.backUrl);
-const userService = new UserService(axios);
-
-export default function useUserEnriched() {
+export default function useUserEnriched(service: UserService = userService) {
   const navigate = useNavigate();
   const t = useTypedTranslation();
 
   const { showError } = useNotification();
-  const { user, isAuthLoading } = useAuth();
+  const { user, isLoading: isAuthLoading } = useAuth();
 
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -40,7 +34,7 @@ export default function useUserEnriched() {
       setError(null);
 
       try {
-        const response = await userService.getOneEnriched(user.id);
+        const response = await service.getOneEnriched(user.id);
 
         setUserEnriched(response);
       } catch (error) {
@@ -57,7 +51,7 @@ export default function useUserEnriched() {
     };
 
     fetchUserEnriched();
-  }, [user, isAuthLoading]);
+  }, [user, isAuthLoading, service]);
 
   return { userEnriched, isLoading, error };
 }

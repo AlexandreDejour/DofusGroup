@@ -1,52 +1,28 @@
-import { vi, Mock } from "vitest";
-import { render, act } from "@testing-library/react";
-import { isAxiosError } from "axios";
+import { vi } from "vitest";
+import { render, waitFor } from "@testing-library/react";
+
+import { EventEnriched } from "../../types/event";
 
 import useFetchEvent from "../useFetchEvent";
 
-vi.mock("axios", () => {
-  const axiosInstance = {
-    get: vi.fn(),
-    post: vi.fn(),
-    put: vi.fn(),
-    delete: vi.fn(),
-    interceptors: {
-      request: { use: vi.fn(), eject: vi.fn() },
-      response: { use: vi.fn(), eject: vi.fn() },
-    },
-  };
-
-  return {
-    default: { create: vi.fn(() => axiosInstance) },
-    isAxiosError: vi.fn(),
-  };
-});
-
-vi.mock("../../config/config.ts", () => ({
-  Config: { getInstance: () => ({ backUrl: "http://localhost" }) },
-}));
-
-let mockGetOneEnriched: any;
-
-vi.mock("../../services/api/eventService", () => ({
-  EventService: vi.fn().mockImplementation(() => ({
-    getOneEnriched: (...args: any[]) => mockGetOneEnriched(...args),
-  })),
-}));
+const updateTarget = vi.fn();
 
 vi.mock("../../contexts/modalContext", () => ({
   useModal: () => ({
-    updateTarget: null,
+    updateTarget,
   }),
 }));
 
-function setupHook(id: string) {
+// Helpers
+function setupHook(
+  id: string,
+  setEvent: React.Dispatch<React.SetStateAction<EventEnriched | null>>,
+  service: any,
+) {
   const ref = { current: null as any };
-  const setEvent = vi.fn();
 
   function TestComponent() {
-    ref.current = useFetchEvent(id, setEvent);
-    ref.current._internal = { setEvent };
+    ref.current = useFetchEvent(id, setEvent, service);
     return null;
   }
 
@@ -55,63 +31,88 @@ function setupHook(id: string) {
 }
 
 describe("useFetchEvent hook", () => {
+  let setEvent: React.Dispatch<React.SetStateAction<EventEnriched | null>>;
+
   beforeEach(() => {
     vi.clearAllMocks();
-  });
-
-  it("should initialize with loading true & error null", () => {
-    mockGetOneEnriched = vi
-      .fn()
-      .mockResolvedValue({ id: "event-1", title: "Test Event" });
-
-    const ref = setupHook("event-1");
-
-    expect(ref.current.isLoading).toBe(true);
-    expect(ref.current.error).toBeNull();
+    setEvent = vi.fn();
   });
 
   it("should fetch event successfully", async () => {
-    const mockEvent = { id: "event-1", title: "Test Event" };
-    mockGetOneEnriched = vi.fn().mockResolvedValue(mockEvent);
+    const event: EventEnriched = {
+      id: "event-1",
+      title: "Test Event",
+      date: new Date("2025-12-19T12:00:00Z"),
+      description: "Description",
+      duration: 60,
+      max_players: 5,
+      status: "public",
+      user: { id: "user-1", username: "toto" },
+      tag: { id: "tag-1", name: "Raid", color: "#000" },
+      server: { id: "server-1", name: "Rafal", mono_account: false },
+      characters: [],
+      comments: [],
+      area: "Area1",
+      sub_area: "SubArea1",
+      donjon_name: "Dungeon1",
+    };
 
-    const ref = setupHook("event-1");
+    const mockService = {
+      getOneEnriched: vi.fn().mockResolvedValue(event),
+    };
 
-    await act(async () => {
-      await Promise.resolve(); // allow useEffect to run
+    const result = setupHook("event-1", setEvent, mockService);
+
+    // état initial
+    expect(result.current.isLoading).toBe(true);
+    expect(result.current.error).toBeNull();
+    expect(setEvent).not.toHaveBeenCalled();
+
+    await waitFor(() => {
+      expect(result.current.isLoading).toBe(false);
     });
 
-    expect(ref.current._internal.setEvent).toHaveBeenCalledWith(mockEvent);
-    expect(ref.current.isLoading).toBe(false);
-    expect(ref.current.error).toBeNull();
+    expect(mockService.getOneEnriched).toHaveBeenCalledTimes(1);
+    expect(mockService.getOneEnriched).toHaveBeenCalledWith("event-1");
+    expect(setEvent).toHaveBeenCalledTimes(1);
+    expect(setEvent).toHaveBeenCalledWith(event);
+    expect(result.current.error).toBeNull();
   });
 
-  it("should handle axios error", async () => {
-    const errorMessage = "Axios error thrown";
-    mockGetOneEnriched = vi.fn().mockRejectedValue(new Error(errorMessage));
-    (isAxiosError as unknown as Mock).mockReturnValueOnce(true);
+  it("should set error when axios error occurs", async () => {
+    const axiosError = {
+      isAxiosError: true,
+      message: "Axios error",
+    };
 
-    const ref = setupHook("event-1");
+    const mockService = {
+      getOneEnriched: vi.fn().mockRejectedValue(axiosError),
+    };
 
-    await act(async () => {
-      await Promise.resolve();
+    const result = setupHook("event-1", setEvent, mockService);
+
+    await waitFor(() => {
+      expect(result.current.isLoading).toBe(false);
     });
 
-    expect(ref.current.isLoading).toBe(false);
-    expect(ref.current.error).toBe(errorMessage);
+    expect(setEvent).not.toHaveBeenCalled();
+    expect(result.current.error).toBe("Axios error");
   });
 
-  it("should handle non-axios error", async () => {
-    const errorMessage = "Unknown error";
-    mockGetOneEnriched = vi.fn().mockRejectedValue(new Error(errorMessage));
-    (isAxiosError as unknown as Mock).mockReturnValueOnce(false);
+  it("should set error when standard Error occurs", async () => {
+    const error = new Error("Standard error");
 
-    const ref = setupHook("event-1");
+    const mockService = {
+      getOneEnriched: vi.fn().mockRejectedValue(error),
+    };
 
-    await act(async () => {
-      await Promise.resolve();
+    const result = setupHook("event-1", setEvent, mockService);
+
+    await waitFor(() => {
+      expect(result.current.isLoading).toBe(false);
     });
 
-    expect(ref.current.isLoading).toBe(false);
-    expect(ref.current.error).toBe(errorMessage);
+    expect(setEvent).not.toHaveBeenCalled();
+    expect(result.current.error).toBe("Standard error");
   });
 });

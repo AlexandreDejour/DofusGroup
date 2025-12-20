@@ -3,15 +3,11 @@ import { useEffect, useState } from "react";
 
 import { Server } from "../types/server";
 
-import { Config } from "../config/config";
-import { ApiClient } from "../services/client";
-import { ServerService } from "../services/api/serverService";
+import { serverService, ServerService } from "../services/api/serverService";
 
-const config = Config.getInstance();
-const axios = new ApiClient(config.backUrl);
-const serverService = new ServerService(axios);
-
-export default function useFetchServers() {
+export default function useFetchServers(
+  service: ServerService = serverService,
+) {
   const [servers, setServers] = useState<Server[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -22,7 +18,7 @@ export default function useFetchServers() {
       setError(null);
 
       try {
-        const serversData = await serverService.getServers();
+        const serversData = await service.getServers();
 
         setServers(serversData);
       } catch (error) {
@@ -34,7 +30,7 @@ export default function useFetchServers() {
     };
 
     fetchServers();
-  }, []);
+  }, [service]);
 
   return { servers, isLoading, error };
 }

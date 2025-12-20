@@ -5,17 +5,15 @@ import { User } from "../types/user";
 import { EventEnriched } from "../types/event";
 import { CharacterEnriched } from "../types/character";
 
-import { Config } from "../config/config";
-import { ApiClient } from "../services/client";
-import { CharacterService } from "../services/api/characterService";
-
-const config = Config.getInstance();
-const axios = new ApiClient(config.backUrl);
-const characterService = new CharacterService(axios);
+import {
+  characterService,
+  CharacterService,
+} from "../services/api/characterService";
 
 export default function useFetchUserCharactersEnriched(
   user: User,
   event: EventEnriched,
+  service: CharacterService = characterService,
 ) {
   const [characters, setCharacters] = useState<CharacterEnriched[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -27,7 +25,7 @@ export default function useFetchUserCharactersEnriched(
       setError(null);
 
       try {
-        const response = await characterService.getAllEnrichedByUserId(user.id);
+        const response = await service.getAllEnrichedByUserId(user.id);
 
         const characters = response.filter(
           (character) => character.server_id === event.server.id,
@@ -43,7 +41,7 @@ export default function useFetchUserCharactersEnriched(
     };
 
     fetchCharacters();
-  }, [user.id, event.server.id]);
+  }, [user.id, event.server.id, service]);
 
   return { characters, isLoading, error };
 }

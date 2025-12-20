@@ -204,7 +204,6 @@ export default function ModalProvider({ children }: ModalProviderProps) {
             "level",
             "alignment",
             "stuff",
-            "default_character",
             "breed_id",
             "server_id",
           ];
@@ -253,7 +252,6 @@ export default function ModalProvider({ children }: ModalProviderProps) {
             "level",
             "alignment",
             "stuff",
-            "default_character",
             "breed_id",
             "server_id",
           ];

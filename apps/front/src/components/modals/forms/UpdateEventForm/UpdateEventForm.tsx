@@ -1,6 +1,6 @@
 import "./UpdateEventForm.scss";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useTypedTranslation } from "../../../../i18n/i18n-helper";
 
 import { EventEnriched } from "../../../../types/event";
@@ -54,14 +54,10 @@ export default function NewEventForm({
   const { tags } = useFetchTags();
   const { areas } = useFetchAreas();
   const { subAreas } = useFetchSubAreas(areas, area);
-  const { dungeons, isDungeon, isLoading } = useFetchDungeons(
-    tags,
-    tag,
-    areas,
-    area,
-    subAreas,
-    subArea,
-  );
+
+  const context = { tags, areas, subAreas };
+  const selection = { tag, area, subArea };
+  const { dungeons, isDungeon } = useFetchDungeons(context, selection);
 
   useEffect(() => {
     if (updateTarget.date) {

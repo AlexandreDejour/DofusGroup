@@ -5,21 +5,24 @@ import { useEffect, useState } from "react";
 import { Tag } from "../types/tag";
 import { SubArea, Dungeon, Area } from "../types/dofusDB";
 
-import { Config } from "../config/config";
-import { ApiClient } from "../services/client";
-import { DofusDBService } from "../services/api/dofusDBService";
+import { dofusDBService, DofusDBService } from "../services/api/dofusDBService";
 
-const config = Config.getInstance();
-const axios = new ApiClient(config.dofusdbUrl);
-const dofusDBService = new DofusDBService(axios);
+type DungeonContext = {
+  tags: Tag[];
+  areas: Area[];
+  subAreas: SubArea[];
+};
+
+type DungeonSelection = {
+  tag: string;
+  area: string;
+  subArea: string;
+};
 
 export default function useFetchDungeons(
-  tags: Tag[],
-  tag: string,
-  areas: Area[],
-  area: string,
-  subAreas: SubArea[],
-  subArea: string,
+  context: DungeonContext,
+  selection: DungeonSelection,
+  service: DofusDBService = dofusDBService,
 ) {
   const [dungeons, setDungeons] = useState<Dungeon[]>([]);
   const [isDungeon, setIsDungeon] = useState(false);
@@ -31,8 +34,10 @@ export default function useFetchDungeons(
       setIsLoading(true);
       setError(null);
 
+      if (!context.tags.length) return;
+
       try {
-        const selectedTag = tags.find((t) => t.id === tag);
+        const selectedTag = context.tags.find((t) => t.id === selection.tag);
         if (!selectedTag || selectedTag.name !== "Donjon") {
           setIsDungeon(false);
           setDungeons([]); // Reset
@@ -45,28 +50,28 @@ export default function useFetchDungeons(
 
         let response: Dungeon[] = [];
 
-        if (subArea !== "") {
-          const selectedSubArea = subAreas.find(
-            (s) => s.name[lang] === subArea,
+        if (selection.subArea !== "") {
+          const selectedSubArea = context.subAreas.find((s) =>
+            Object.values(s.name).includes(selection.subArea),
           );
           if (selectedSubArea?.dungeonId) {
-            response = await dofusDBService.getDungeonsById([
+            response = await service.getDungeonsById([
               selectedSubArea.dungeonId,
             ]);
           }
-        } else if (area !== "") {
-          const selectedArea = areas.find((a) => a.name[lang] === area);
+        } else if (selection.area !== "") {
+          const selectedArea = context.areas.find((a) =>
+            Object.values(a.name).includes(selection.area),
+          );
           if (selectedArea) {
-            const subAreasOfArea = await dofusDBService.getSubAreas(
-              selectedArea.id,
-            );
+            const subAreasOfArea = await service.getSubAreas(selectedArea.id);
             const dungeonIds = subAreasOfArea
               .map((s) => s.dungeonId)
               .filter((id): id is number => id !== -1);
-            response = await dofusDBService.getDungeonsById(dungeonIds);
+            response = await service.getDungeonsById(dungeonIds);
           }
         } else {
-          response = await dofusDBService.getDungeons();
+          response = await service.getDungeons();
         }
 
         setDungeons(response);
@@ -79,7 +84,15 @@ export default function useFetchDungeons(
     };
 
     fetchDungeons();
-  }, [tag, area, subArea]);
+  }, [
+    selection.tag,
+    selection.area,
+    selection.subArea,
+    context.tags,
+    context.areas,
+    context.subAreas,
+    service,
+  ]);
 
   return { dungeons, isDungeon, isLoading, error };
 }

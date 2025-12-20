@@ -3,18 +3,13 @@ import { Dispatch, SetStateAction, useEffect, useState } from "react";
 
 import { EventEnriched } from "../types/event";
 
-import { Config } from "../config/config";
-import { ApiClient } from "../services/client";
-import { EventService } from "../services/api/eventService";
 import { useModal } from "../contexts/modalContext";
-
-const config = Config.getInstance();
-const axios = new ApiClient(config.backUrl);
-const eventService = new EventService(axios);
+import { eventService, EventService } from "../services/api/eventService";
 
 export default function useFetchEvent(
   id: string,
   setEvent: Dispatch<SetStateAction<EventEnriched | null>>,
+  service: EventService = eventService,
 ) {
   const { updateTarget } = useModal();
 
@@ -27,7 +22,7 @@ export default function useFetchEvent(
       setError(null);
 
       try {
-        const response = await eventService.getOneEnriched(id);
+        const response = await service.getOneEnriched(id);
 
         setEvent(response);
       } catch (error) {
@@ -39,7 +34,7 @@ export default function useFetchEvent(
     };
 
     fetchEvent();
-  }, [id, updateTarget]);
+  }, [id, updateTarget, service]);
 
   return { isLoading, error };
 }

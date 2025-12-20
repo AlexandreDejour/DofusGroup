@@ -1,30 +1,10 @@
 import { MemoryRouter, Route, Routes } from "react-router-dom";
-import { describe, it, vi, beforeEach, afterEach } from "vitest";
+import { describe, it, vi, beforeEach, afterEach, Mock } from "vitest";
 import { render, screen, waitFor, fireEvent } from "@testing-library/react";
 
 import { t } from "../../../i18n/i18n-helper";
 
 import CharacterDetails from "../CharacterDetails";
-
-// Mock config
-vi.mock("../../../config/config.ts", () => ({
-  Config: {
-    getInstance: () => ({
-      baseUrl: "http://localhost",
-    }),
-  },
-}));
-
-// Mock service
-let getOneEnrichedMock: any;
-
-vi.mock("../../../services/api/characterService", () => {
-  return {
-    CharacterService: vi.fn().mockImplementation(() => ({
-      getOneEnriched: (...args: any[]) => getOneEnrichedMock(...args),
-    })),
-  };
-});
 
 // Mock react-router
 const navigateMock = vi.fn();
@@ -80,6 +60,13 @@ const mockCharacter = {
   },
 };
 
+vi.mock("../../../hooks/useFetchCharacter", () => ({
+  __esModule: true,
+  default: vi.fn(),
+}));
+
+import useFetchCharacter from "../../../hooks/useFetchCharacter";
+
 function renderWithRouter() {
   return render(
     <MemoryRouter initialEntries={["/character/char-1"]}>
@@ -93,7 +80,11 @@ function renderWithRouter() {
 
 describe("CharacterDetails", () => {
   beforeEach(() => {
-    getOneEnrichedMock = vi.fn().mockResolvedValue(mockCharacter);
+    (useFetchCharacter as unknown as Mock).mockImplementation((id: string) => ({
+      character: mockCharacter,
+      isLoading: false,
+      error: null,
+    }));
     openModal.mockClear();
     handleDelete.mockClear();
     navigateMock.mockClear();
@@ -103,14 +94,17 @@ describe("CharacterDetails", () => {
     vi.clearAllMocks();
   });
 
-  it("Display spinner at initial renderer", async () => {
-    getOneEnrichedMock = vi
-      .fn()
-      .mockImplementation(() => new Promise(() => {}));
+  it("Display spinner at initial renderer", () => {
+    (useFetchCharacter as unknown as Mock).mockImplementation(() => ({
+      character: null,
+      isLoading: true,
+      error: null,
+    }));
 
     renderWithRouter();
 
-    expect(screen.getByLabelText("Loading Spinner")).toBeInTheDocument();
+    const spinner = screen.getByLabelText("Loading Spinner");
+    expect(spinner).toBeInTheDocument();
   });
 
   it("Renders character details after successful fetch", async () => {
@@ -147,7 +141,11 @@ describe("CharacterDetails", () => {
 
   it("Displays correct breed image for female character", async () => {
     const femaleCharacter = { ...mockCharacter, sex: "F" };
-    getOneEnrichedMock = vi.fn().mockResolvedValue(femaleCharacter);
+    (useFetchCharacter as unknown as Mock).mockImplementation(() => ({
+      character: femaleCharacter,
+      isLoading: false,
+      error: null,
+    }));
 
     renderWithRouter();
 
@@ -180,7 +178,11 @@ describe("CharacterDetails", () => {
         username: "otheruser",
       },
     };
-    getOneEnrichedMock = vi.fn().mockResolvedValue(otherUserCharacter);
+    (useFetchCharacter as unknown as Mock).mockImplementation(() => ({
+      character: otherUserCharacter,
+      isLoading: false,
+      error: null,
+    }));
 
     renderWithRouter();
 
@@ -227,7 +229,11 @@ describe("CharacterDetails", () => {
   });
 
   it("Renders nothing and navigates to /not-found if character is null", async () => {
-    getOneEnrichedMock = vi.fn().mockResolvedValue(null);
+    (useFetchCharacter as unknown as Mock).mockImplementation(() => ({
+      character: null,
+      isLoading: false,
+      error: null,
+    }));
 
     renderWithRouter();
 
@@ -237,7 +243,11 @@ describe("CharacterDetails", () => {
   });
 
   it("Renders nothing and navigates to /not-found if event is null", async () => {
-    getOneEnrichedMock = vi.fn().mockResolvedValue(null);
+    (useFetchCharacter as unknown as Mock).mockImplementation(() => ({
+      character: null,
+      isLoading: false,
+      error: null,
+    }));
 
     renderWithRouter();
 
@@ -251,7 +261,11 @@ describe("CharacterDetails", () => {
       ...mockCharacter,
       name: "chronos",
     };
-    getOneEnrichedMock = vi.fn().mockResolvedValue(lowercaseCharacter);
+    (useFetchCharacter as unknown as Mock).mockImplementation(() => ({
+      character: lowercaseCharacter,
+      isLoading: false,
+      error: null,
+    }));
 
     renderWithRouter();
 

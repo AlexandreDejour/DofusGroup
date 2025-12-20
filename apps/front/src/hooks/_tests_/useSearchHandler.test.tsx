@@ -1,141 +1,107 @@
-import { vi } from "vitest";
-import { render } from "@testing-library/react";
+import { Mock, vi } from "vitest";
+import { render, fireEvent } from "@testing-library/react";
+
 import useSearchHandler from "../useSearchHandler";
+import formDataToObject from "../../contexts/utils/formDataToObject";
 
-const mockFormDataToObject = vi.fn();
 vi.mock("../../contexts/utils/formDataToObject", () => ({
-  default: (...args: any[]) => mockFormDataToObject(...args),
+  default: vi.fn(),
 }));
 
-vi.mock("axios", () => {
-  const axiosInstance = {
-    get: vi.fn(),
-    post: vi.fn(),
-    put: vi.fn(),
-    delete: vi.fn(),
-    interceptors: {
-      request: { use: vi.fn(), eject: vi.fn() },
-      response: { use: vi.fn(), eject: vi.fn() },
-    },
-  };
-
-  return {
-    default: {
-      create: vi.fn(() => axiosInstance),
-    },
-  };
-});
-
-vi.mock("../../config/config.ts", () => ({
-  Config: {
-    getInstance: () => ({
-      backUrl: "http://localhost",
-    }),
-  },
-}));
-
-let mockGetEvents: any;
-
-vi.mock("../../services/api/eventService", () => ({
-  EventService: vi.fn().mockImplementation(() => ({
-    getEvents: (...args: any[]) => mockGetEvents(...args),
-  })),
-}));
-
-function setupHook(currentPage = 1) {
-  const ref = { current: null as any };
+// Helpers
+function setupHook(
+  currentPage: number,
+  setEvents: any,
+  setTotalPages: any,
+  service: any,
+) {
+  let handler: any;
 
   function TestComponent() {
-    const setEvents = vi.fn();
-    const setTotalPages = vi.fn();
-
-    ref.current = {
-      handler: useSearchHandler(currentPage, setEvents, setTotalPages),
-      setEvents,
-      setTotalPages,
-    };
-
-    return null;
+    handler = useSearchHandler(currentPage, setEvents, setTotalPages, service);
+    return (
+      <form onSubmit={handler} data-testid="form">
+        <input name="title" defaultValue="test" />
+        <input name="tag_id" defaultValue="tag-1" />
+        <input name="server_id" defaultValue="server-1" />
+        <button type="submit">submit</button>
+      </form>
+    );
   }
 
-  render(<TestComponent />);
-  return ref;
+  const utils = render(<TestComponent />);
+  return { handler, ...utils };
 }
+
 describe("useSearchHandler hook", () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
-  it("Must call eventService.getEvents with correct params and update state", async () => {
-    const currentPage = 3;
-
-    const mockResponse = {
-      events: [{ id: 1, title: "Event X" }],
-      totalPages: 7,
+  it("should fetch filtered events successfully", async () => {
+    const events = [{ id: "1", title: "Event 1" }];
+    const response = {
+      events,
+      totalPages: 3,
     };
 
-    mockGetEvents = vi.fn().mockResolvedValue(mockResponse);
+    const setEvents = vi.fn();
+    const setTotalPages = vi.fn();
 
-    mockFormDataToObject.mockReturnValue({
-      title: "test-title",
-      tag_id: "2",
-      server_id: "5",
-    });
-
-    const ref = setupHook(currentPage);
-
-    const preventDefault = vi.fn();
-
-    // Mock event
-    const fakeEvent: any = {
-      preventDefault,
-      currentTarget: {},
+    const mockService = {
+      getEvents: vi.fn().mockResolvedValue(response),
     };
 
-    // Mock FormData to return predictable key/value
-    global.FormData = vi.fn().mockImplementation(() => ({
-      get: (key: string) => {
-        const map: any = {
-          title: "test-title",
-          tag_id: "2",
-          server_id: "5",
-        };
-        return map[key];
-      },
-    })) as any;
-
-    // Execute handler
-    await ref.current.handler(fakeEvent);
-
-    // Assertions
-    expect(preventDefault).toHaveBeenCalled();
-
-    expect(mockFormDataToObject).toHaveBeenCalled();
-
-    expect(mockGetEvents).toHaveBeenCalledWith(10, currentPage, {
-      title: "test-title",
-      tag_id: "2",
-      server_id: "5",
+    (formDataToObject as unknown as Mock).mockReturnValue({
+      title: "test",
+      tag_id: "tag-1",
+      server_id: "server-1",
     });
 
-    expect(ref.current.setEvents).toHaveBeenCalledWith(mockResponse.events);
-    expect(ref.current.setTotalPages).toHaveBeenCalledWith(7);
+    const { getByTestId } = setupHook(2, setEvents, setTotalPages, mockService);
+
+    fireEvent.submit(getByTestId("form"));
+
+    await Promise.resolve();
+
+    expect(mockService.getEvents).toHaveBeenCalledTimes(1);
+    expect(mockService.getEvents).toHaveBeenCalledWith(10, 2, {
+      title: "test",
+      tag_id: "tag-1",
+      server_id: "server-1",
+    });
+
+    expect(setEvents).toHaveBeenCalledWith(events);
+    expect(setTotalPages).toHaveBeenCalledWith(3);
   });
 
-  it("Must catch errors without throwing", async () => {
-    mockGetEvents = vi.fn().mockRejectedValue(new Error("Oops"));
-    mockFormDataToObject.mockReturnValue({});
+  it("should handle error when service throws", async () => {
+    const setEvents = vi.fn();
+    const setTotalPages = vi.fn();
 
-    const ref = setupHook();
+    const error = new Error("Search error");
 
-    const fakeEvent: any = {
-      preventDefault: vi.fn(),
-      currentTarget: {},
+    const mockService = {
+      getEvents: vi.fn().mockRejectedValue(error),
     };
 
-    await expect(ref.current.handler(fakeEvent)).resolves.not.toThrow();
+    (formDataToObject as unknown as Mock).mockReturnValue({
+      title: "test",
+    });
 
-    expect(ref.current.setEvents).not.toHaveBeenCalled();
-    expect(ref.current.setTotalPages).not.toHaveBeenCalled();
+    const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+
+    const { getByTestId } = setupHook(1, setEvents, setTotalPages, mockService);
+
+    fireEvent.submit(getByTestId("form"));
+
+    await Promise.resolve();
+
+    expect(mockService.getEvents).toHaveBeenCalledTimes(1);
+    expect(setEvents).not.toHaveBeenCalled();
+    expect(setTotalPages).not.toHaveBeenCalled();
+    expect(consoleSpy).toHaveBeenCalledWith(error);
+
+    consoleSpy.mockRestore();
   });
 });

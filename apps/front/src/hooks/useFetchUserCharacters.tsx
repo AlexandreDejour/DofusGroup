@@ -3,15 +3,16 @@ import { useEffect, useState } from "react";
 
 import { Character } from "../types/character";
 
-import { Config } from "../config/config";
-import { ApiClient } from "../services/client";
-import { CharacterService } from "../services/api/characterService";
+import {
+  characterService,
+  CharacterService,
+} from "../services/api/characterService";
 
-const config = Config.getInstance();
-const axios = new ApiClient(config.backUrl);
-const characterService = new CharacterService(axios);
-
-export default function useFetchUserCharacters(id: string, server: string) {
+export default function useFetchUserCharacters(
+  id: string,
+  server: string,
+  service: CharacterService = characterService,
+) {
   const [characters, setCharacters] = useState<Character[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -22,7 +23,7 @@ export default function useFetchUserCharacters(id: string, server: string) {
       setError(null);
 
       try {
-        const response = await characterService.getAllByUserId(id);
+        const response = await service.getAllByUserId(id);
 
         if (server !== "") {
           const characters = response.filter(
@@ -40,7 +41,7 @@ export default function useFetchUserCharacters(id: string, server: string) {
     };
 
     fetchCharacters();
-  }, [server]);
+  }, [server, service]);
 
   return { characters, isLoading, error };
 }

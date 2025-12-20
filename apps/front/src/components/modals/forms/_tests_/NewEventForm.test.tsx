@@ -1,284 +1,203 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, waitFor, fireEvent } from "@testing-library/react";
+import { vi } from "vitest";
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 
 import { t } from "../../../../i18n/i18n-helper";
 
-import { useAuth } from "../../../../contexts/authContext";
-import { useNotification } from "../../../../contexts/notificationContext";
-
-import * as TagService from "../../../../services/api/tagService";
-import formatDateToLocalInput from "../../utils/formatDateToLocalInput";
-import * as ServerService from "../../../../services/api/serverService";
-import * as DofusDBService from "../../../../services/api/dofusDBService";
-import * as CharacterService from "../../../../services/api/characterService";
-import { SelectOptionsProps } from "../../formComponents/Options/SelectOptions";
-import { CharactersOptionsProps } from "../../formComponents/Options/CharactersOptions";
-
 import NewEventForm from "../NewEventForm/NewEventForm";
 
-// Mock config
-vi.mock("../../../../config/config.ts", () => ({
-  Config: {
-    getInstance: () => ({
-      baseUrl: "http://localhost",
-    }),
-  },
+// --- Mocks ---
+// i18n helper (t returns key)
+vi.mock("../../../../i18n/i18n-helper", () => ({
+  useTypedTranslation: () => (k: string) => k,
+  t: (k: string) => k,
 }));
 
-// Mock services
-vi.mock("../../../../services/api/tagService");
-vi.mock("../../../../services/api/serverService");
-vi.mock("../../../../services/api/dofusDBService");
-vi.mock("../../../../services/api/characterService");
-
-// Mock context
+// Auth context -> provide a user so component renders
 vi.mock("../../../../contexts/authContext", () => ({
-  useAuth: vi.fn(),
-}));
-vi.mock("../../../../contexts/notificationContext", () => ({
-  useNotification: vi.fn(),
-}));
-
-// Mock child components
-vi.mock("../../FormComponents/Options/SelectOptions", () => ({
-  default: ({ name, onChange, value, label }: SelectOptionsProps<any, any>) => (
-    <div data-testid={`select-options-${name}`}>
-      <label>{label}</label>
-      <select
-        name={name}
-        onChange={(e) => onChange(e.target.value)}
-        value={value}
-      >
-        <option value="">Sélectionner...</option>
-        {name === "area" && <option value="Astrub">Astrub</option>}
-        {name === "sub_area" && (
-          <option value="Forêt d’Astrub">Forêt d’Astrub</option>
-        )}
-        {name === "tag" && <option value="123">Donjon</option>}
-      </select>
-    </div>
-  ),
+  useAuth: () => ({
+    user: { id: "user-1", username: "tester" },
+  }),
 }));
 
-vi.mock("../../FormComponents/Options/CharactersOptions", () => ({
-  default: ({
-    name,
-    onChange,
-    value,
-    items,
-    label,
-  }: CharactersOptionsProps<any, any>) => (
-    <div data-testid={`characters-options-${name}`}>
-      <label>{label}</label>
-      <select
-        name={name}
-        onChange={(e) =>
-          onChange(Array.from(e.target.selectedOptions).map((o) => o.value))
-        }
-        value={value}
+// Hooks used by NewEventForm
+vi.mock("../../../../hooks/useFetchTags", () => ({
+  __esModule: true,
+  default: () => ({ tags: [{ id: "tag-1", name: "Donjon" }] }),
+}));
+vi.mock("../../../../hooks/useFetchServers", () => ({
+  __esModule: true,
+  default: () => ({
+    servers: [
+      { id: "srv-1", name: "Salar" },
+      { id: "srv-2", name: "Dakal" },
+    ],
+  }),
+}));
+vi.mock("../../../../hooks/useFetchUserCharacters", () => ({
+  __esModule: true,
+  default: (userId: string, serverId: string) => ({
+    characters:
+      serverId === "srv-2"
+        ? [
+            { id: "c-2", name: "CharTwo", level: 20 },
+            { id: "c-3", name: "CharThree", level: 30 },
+          ]
+        : [{ id: "c-1", name: "Chronos", level: 50 }],
+  }),
+}));
+vi.mock("../../../../hooks/useFetchAreas", () => ({
+  __esModule: true,
+  default: () => ({ areas: [{ id: "a-1", name: "Amakna" }] }),
+}));
+vi.mock("../../../../hooks/useFetchSubAreas", () => ({
+  __esModule: true,
+  default: (areas: any, area: string) => ({
+    subAreas: area ? [{ id: "sa-1", name: "Coin des bouftous" }] : [],
+  }),
+}));
+vi.mock("../../../../hooks/useFetchDungeons", () => ({
+  __esModule: true,
+  default: () => ({ dungeons: [], isDungeon: false }),
+}));
+
+// Mock SelectOptions and CharactersOptions to simple elements we can interact with
+vi.mock("../../formComponents/Options/SelectOptions", () => ({
+  __esModule: true,
+  default: ({ items, label, value, onChange }: any) => (
+    <div data-testid={`select-${label}`}>
+      <span>{label}</span>
+      {items?.map((it: any) => (
+        <button
+          key={it.id}
+          data-testid={`option-${label}-${it.id}`}
+          onClick={() => onChange(it.id)}
+        >
+          {it.name ?? it.label ?? it.value}
+        </button>
+      ))}
+      <input
+        aria-label={`hidden-${label}`}
+        value={value ?? ""}
+        readOnly
+        style={{ display: "none" }}
       />
     </div>
   ),
 }));
 
-vi.mock("../../utils/formatDateToLocalInput", () => ({
-  default: vi.fn(),
+vi.mock("../../formComponents/Options/CharactersOptions", () => ({
+  __esModule: true,
+  default: ({ items, label, onChange, value }: any) => (
+    <div data-testid={`chars-${label}`}>
+      <span>{label}</span>
+      {items?.map((c: any) => (
+        <button
+          key={c.id}
+          data-testid={`char-option-${c.id}`}
+          onClick={() => onChange([...(value ?? []), c.id])}
+        >
+          {c.name}
+        </button>
+      ))}
+      <input
+        aria-label={`hidden-${label}-value`}
+        value={(value ?? []).join(",")}
+        readOnly
+        style={{ display: "none" }}
+      />
+    </div>
+  ),
 }));
 
+// --- Tests ---
 describe("NewEventForm", () => {
-  const mockShowError = vi.fn();
-  const mockHandleSubmit = vi.fn();
-  const mockUser = {
-    id: "123",
-    username: "testuser",
-    password: "motdepasse",
-    mail: "user@mail.test",
-  };
-
-  const mockTags = [{ id: "123", name: "Donjon", color: "#0000" }];
-  const mockServers = [{ id: "456", name: "Serveur Test", mono_account: true }];
-  const mockAreas = [
-    {
-      id: 1,
-      name: {
-        id: "123",
-        en: "Astrub",
-        es: "Astrub",
-        pt: "Astrub",
-        de: "Astrub",
-        fr: "Astrub",
-      },
-    },
-  ];
-  const mockSubAreas = [
-    {
-      id: 2,
-      dungeonId: 3,
-      name: {
-        id: "123",
-        en: "Astrub forest",
-        es: "Bosque de Astrub",
-        pt: "Floresta de Astrub",
-        de: "Astrub-Wald",
-        fr: "Forêt d’Astrub",
-      },
-    },
-  ];
-  const mockDungeons = [
-    {
-      id: 3,
-      name: {
-        id: "123",
-        en: "Bouftou Dungeon",
-        es: "Mazmorra de Bouftou",
-        pt: "Calabouço Bouftou",
-        de: "Bouftou-Dungeon",
-        fr: "Donjon Bouftou",
-      },
-    },
-  ];
-  const mockCharacters = [
-    {
-      id: "789",
-      name: "Perso Test",
-      sex: "M",
-      level: 200,
-      alignment: "Bonta",
-      stuff: "",
-      default_character: true,
-      user_id: "123",
-      server_id: "456",
-    },
-  ];
-
   beforeEach(() => {
     vi.clearAllMocks();
-    vi.mocked(useAuth).mockReturnValue({
-      user: mockUser,
-      setUser: vi.fn(),
-      isAuthLoading: false,
-      logout: vi.fn(),
-    });
-    vi.mocked(useNotification).mockReturnValue({
-      showError: mockShowError,
-      notifications: [],
-      addNotification: vi.fn(),
-      removeNotification: vi.fn(),
-      showSuccess: vi.fn(),
-      showInfo: vi.fn(),
-    });
-    vi.mocked(formatDateToLocalInput).mockReturnValue("2025-10-26T10:00");
-
-    // Simuler les appels API réussis par défaut
-    vi.mocked(TagService.TagService.prototype.getTags).mockResolvedValue(
-      mockTags,
-    );
-    vi.mocked(
-      ServerService.ServerService.prototype.getServers,
-    ).mockResolvedValue(mockServers);
-    vi.mocked(
-      DofusDBService.DofusDBService.prototype.getAreas,
-    ).mockResolvedValue(mockAreas);
-    vi.mocked(
-      CharacterService.CharacterService.prototype.getAllByUserId,
-    ).mockResolvedValue(mockCharacters);
   });
 
-  it("Should render the form and fetch initial data on mount", async () => {
-    render(<NewEventForm handleSubmit={mockHandleSubmit} />);
+  it("Display fiels with all form fields", () => {
+    const handleSubmit = vi.fn((e) => e.preventDefault());
+    render(<NewEventForm handleSubmit={handleSubmit} />);
 
-    // Vérification du rendu initial
+    // form title
     expect(
       screen.getByRole("heading", { name: t("event.create") }),
     ).toBeInTheDocument();
-    expect(screen.getByRole("form")).toBeInTheDocument();
 
-    // Attendre que tous les appels API initiaux soient terminés
+    // main inputs
+    expect(screen.getByPlaceholderText(t("common.title"))).toBeInTheDocument();
+    expect(
+      screen.getByLabelText("date", {
+        selector: "input,textarea",
+        exact: false,
+      }) || screen.getByLabelText("date", { selector: "input,textarea" }),
+    ).toBeTruthy();
+    expect(
+      screen.getByPlaceholderText(t("common.durationInMin")),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByPlaceholderText(t("common.description")),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: t("event.create") }),
+    ).toBeInTheDocument();
+  });
+
+  it("Permit to select server and update characters list", async () => {
+    render(<NewEventForm handleSubmit={() => {}} />);
+
+    // Check server options
+    const serverOption = screen.getByTestId("option-server.default-srv-1");
+    expect(serverOption).toBeInTheDocument();
+
+    // Click on server 2 to change selection et refetch characters
+    const serverOption2 = screen.getByTestId("option-server.default-srv-2");
+    fireEvent.click(serverOption2);
+
+    // After selecting server, CharactersOptions should render characters for srv-2
     await waitFor(() => {
-      expect(TagService.TagService.prototype.getTags).toHaveBeenCalledTimes(1);
-      expect(
-        ServerService.ServerService.prototype.getServers,
-      ).toHaveBeenCalledTimes(1);
-      expect(
-        DofusDBService.DofusDBService.prototype.getAreas,
-      ).toHaveBeenCalledTimes(1);
-      expect(
-        CharacterService.CharacterService.prototype.getAllByUserId,
-      ).toHaveBeenCalledTimes(1);
+      expect(screen.getByTestId("char-option-c-2")).toBeInTheDocument();
+      expect(screen.getByTestId("char-option-c-3")).toBeInTheDocument();
     });
   });
 
-  it("Should not fetch characters if user is not authenticated", async () => {
-    vi.mocked(useAuth).mockReturnValue({
-      user: null,
-      setUser: vi.fn(),
-      isAuthLoading: false,
-      logout: vi.fn(),
-    });
+  it("Permit to add selected characters via CharactersOptions", async () => {
+    render(<NewEventForm handleSubmit={() => {}} />);
 
-    render(<NewEventForm handleSubmit={mockHandleSubmit} />);
+    // Select server 1 (default) then click character
+    const charButton = screen.getByTestId("char-option-c-1");
+    fireEvent.click(charButton);
 
-    await waitFor(() => {
-      expect(
-        CharacterService.CharacterService.prototype.getAllByUserId,
-      ).not.toHaveBeenCalled();
-    });
+    // The hidden input should reflect selection
+    const hidden = screen.getByLabelText("hidden-character.selection-value");
+    expect(hidden).toHaveValue("c-1");
   });
 
-  it("Should call handleSubmit on form submission", async () => {
-    render(<NewEventForm handleSubmit={mockHandleSubmit} />);
+  it("Submit form by calling handleSubmit", async () => {
+    const handleSubmit = vi.fn((e) => e.preventDefault());
+    render(<NewEventForm handleSubmit={handleSubmit} />);
 
     const form = screen.getByRole("form");
     fireEvent.submit(form);
 
-    expect(mockHandleSubmit).toHaveBeenCalledTimes(1);
-    expect(mockHandleSubmit).toHaveBeenCalledWith(
-      expect.objectContaining({ type: "submit" }),
-    );
+    expect(handleSubmit).toHaveBeenCalled();
   });
 
-  it("Should show error if fetching tags fails", async () => {
-    vi.mocked(TagService.TagService.prototype.getTags).mockRejectedValue(
-      new Error("General error"),
-    );
+  it("Change date value and respect min attribut", () => {
+    render(<NewEventForm handleSubmit={() => {}} />);
 
-    render(<NewEventForm handleSubmit={mockHandleSubmit} />);
+    const dateInput =
+      screen.getByLabelText("date", {
+        selector: "input,textarea",
+        exact: false,
+      }) || screen.getByLabelText("date", { selector: "input,textarea" });
 
-    await waitFor(() => {
-      expect(mockShowError).toHaveBeenCalledWith(
-        t("common.error.default"),
-        t("system.error.occurred"),
-      );
-    });
-  });
+    // Check if exist and contain min attribut
+    expect(dateInput).toBeDefined();
+    expect(dateInput.getAttribute("min")).toBeTruthy();
 
-  it("Should show error if fetching servers fails", async () => {
-    vi.mocked(
-      ServerService.ServerService.prototype.getServers,
-    ).mockRejectedValue(new Error("General error"));
-
-    render(<NewEventForm handleSubmit={mockHandleSubmit} />);
-
-    await waitFor(() => {
-      expect(mockShowError).toHaveBeenCalledWith(
-        t("common.error.default"),
-        t("system.error.occurred"),
-      );
-    });
-  });
-
-  it("Should show error if fetching areas fails", async () => {
-    vi.mocked(
-      DofusDBService.DofusDBService.prototype.getAreas,
-    ).mockRejectedValue(new Error("General error"));
-
-    render(<NewEventForm handleSubmit={mockHandleSubmit} />);
-
-    await waitFor(() => {
-      expect(mockShowError).toHaveBeenCalledWith(
-        t("common.error.default"),
-        t("system.error.occurred"),
-      );
-    });
+    // Change date
+    fireEvent.change(dateInput, { target: { value: "2025-12-24T20:00" } });
+    expect(dateInput).toHaveValue("2025-12-24T20:00");
   });
 });

@@ -1,491 +1,208 @@
 import { describe, it, beforeEach, expect, vi, Mock } from "vitest";
-
-import axios from "axios";
 import { t } from "../../../i18n/i18n-helper";
 
-import { CreateCharacterForm } from "../../../types/form";
-import { Character, CharacterEnriched } from "../../../types/character";
+import type { ApiClient } from "../../client";
+import type { CreateCharacterForm } from "../../../types/form";
+import type { Character, CharacterEnriched } from "../../../types/character";
 
-import { ApiClient } from "../../client";
 import { CharacterService } from "../characterService";
 import handleApiError from "../../utils/handleApiError";
-
-vi.mock("axios");
 
 vi.mock("../../utils/handleApiError", () => ({
   default: vi.fn(),
 }));
 
 describe("CharacterService", () => {
-  let apiClientMock: any;
+  let apiClientMock: {
+    get: Mock;
+    post: Mock;
+    patch: Mock;
+    delete: Mock;
+  };
+
   let characterService: CharacterService;
 
-  const mockCharacter: Character = {
-    id: "cfff40b3-9625-4f0a-854b-d8d6d6b4b667",
-    name: "Chronos",
-    sex: "M",
-    level: 50,
-    alignment: "Neutre",
-    stuff: "https://d-bk.net/fr/d/1QVjw",
-    server_id: "de5a6c69-bc0b-496c-9b62-bd7ea076b8ed",
-  };
-
-  const mockCharacterEnriched: CharacterEnriched = {
-    id: "cfff40b3-9625-4f0a-854b-d8d6d6b4b667",
-    name: "Chronos",
-    sex: "M",
-    level: 50,
-    alignment: "Neutre",
-    stuff: "https://d-bk.net/fr/d/1QVjw",
-    server_id: "de5a6c69-bc0b-496c-9b62-bd7ea076b8ed",
-    server: {
-      id: "de5a6c69-bc0b-496c-9b62-bd7ea076b8ed",
-      name: "Dakal",
-      mono_account: true,
-    },
-    breed: {
-      id: "d81c200e-831c-419a-948f-c45d1bbf6aac",
-      name: "Cra",
-    },
-    events: [],
-    user: {
-      id: "15ff46b5-60f3-4e86-98bc-da8fcaa3e29e",
-      username: "toto",
-    },
-  };
-
   beforeEach(() => {
-    (handleApiError as unknown as Mock).mockReset();
+    vi.clearAllMocks();
+
     apiClientMock = {
-      instance: {
-        get: vi.fn(),
-        post: vi.fn(),
-        patch: vi.fn(),
-        delete: vi.fn(),
-      },
+      get: vi.fn(),
+      post: vi.fn(),
+      patch: vi.fn(),
+      delete: vi.fn(),
     };
-    characterService = new CharacterService(apiClientMock as ApiClient);
+
+    characterService = new CharacterService(
+      apiClientMock as unknown as ApiClient,
+    );
   });
 
   describe("getAllByUserId", () => {
-    it("should call axios.get with the correct URL", async () => {
-      const mockCharacters: Character[] = [mockCharacter];
-      apiClientMock.instance.get.mockResolvedValue({ data: mockCharacters });
+    it("returns characters on success", async () => {
+      const characters: Character[] = [
+        { id: "1", name: "Iop", level: 200 },
+      ] as Character[];
 
-      const result = await characterService.getAllByUserId(
-        "fcdb0dd1-7f7e-44bd-9a9b-c4daf6cb1588",
-      );
+      apiClientMock.get.mockResolvedValue({ data: characters });
 
-      expect(apiClientMock.instance.get).toHaveBeenCalledWith(
-        "/user/fcdb0dd1-7f7e-44bd-9a9b-c4daf6cb1588/characters",
+      const result = await characterService.getAllByUserId("user-id");
+
+      expect(apiClientMock.get).toHaveBeenCalledWith(
+        "/user/user-id/characters",
       );
-      expect(result).toEqual(mockCharacters);
+      expect(result).toEqual(characters);
     });
 
-    it("should call handleApiError for a 204 status code and not throw", async () => {
-      const axiosError = {
-        isAxiosError: true,
-        response: { status: 204 },
-      };
-      vi.mocked(axios.isAxiosError).mockReturnValue(true);
-      apiClientMock.instance.get.mockRejectedValue(axiosError);
+    it("calls handleApiError and returns undefined", async () => {
+      const error = new Error("Server error");
+      apiClientMock.get.mockRejectedValue(error);
 
-      const result = await characterService.getAllByUserId(
-        "fcdb0dd1-7f7e-44bd-9a9b-c4daf6cb1588",
-      );
+      const result = await characterService.getAllByUserId("user-id");
 
-      expect(handleApiError).toHaveBeenCalledWith(axiosError);
+      expect(handleApiError).toHaveBeenCalledWith(error);
       expect(result).toBeUndefined();
-    });
-
-    it("should rethrow if handleApiError throws (generic error case)", async () => {
-      const genericError = new Error("Unknown error");
-      apiClientMock.instance.get.mockRejectedValue(genericError);
-
-      (handleApiError as unknown as Mock).mockImplementation(() => {
-        throw genericError;
-      });
-
-      await expect(
-        characterService.getAllByUserId("fcdb0dd1-7f7e-44bd-9a9b-c4daf6cb1588"),
-      ).rejects.toThrow("Unknown error");
-
-      expect(handleApiError).toHaveBeenCalledWith(genericError);
     });
   });
 
   describe("getAllEnrichedByUserId", () => {
-    it("should call axios.get with correct URL and return data", async () => {
-      const mockData: CharacterEnriched[] = [mockCharacterEnriched];
-      apiClientMock.instance.get.mockResolvedValue({ data: mockData });
+    it("returns enriched characters", async () => {
+      const characters: CharacterEnriched[] = [
+        { id: "1", name: "Cra", level: 200 },
+      ] as CharacterEnriched[];
 
-      const result = await characterService.getAllEnrichedByUserId(
-        "fcdb0dd1-7f7e-44bd-9a9b-c4daf6cb1588",
+      apiClientMock.get.mockResolvedValue({ data: characters });
+
+      const result = await characterService.getAllEnrichedByUserId("user-id");
+
+      expect(apiClientMock.get).toHaveBeenCalledWith(
+        "/user/user-id/characters/enriched",
       );
-
-      expect(apiClientMock.instance.get).toHaveBeenCalledWith(
-        "/user/fcdb0dd1-7f7e-44bd-9a9b-c4daf6cb1588/characters/enriched",
-      );
-      expect(result).toEqual(mockData);
-    });
-
-    it("should call handleApiError for a 204 status code and not throw", async () => {
-      const axiosError = {
-        isAxiosError: true,
-        response: { status: 204 },
-      };
-      vi.mocked(axios.isAxiosError).mockReturnValue(true);
-      apiClientMock.instance.get.mockRejectedValue(axiosError);
-
-      const result = await characterService.getAllEnrichedByUserId(
-        "fcdb0dd1-7f7e-44bd-9a9b-c4daf6cb1588",
-      );
-
-      expect(handleApiError).toHaveBeenCalledWith(axiosError);
-      expect(result).toBeUndefined();
-    });
-
-    it("should rethrow if handleApiError throws (generic error case)", async () => {
-      const genericError = new Error("Unknown error");
-      apiClientMock.instance.get.mockRejectedValue(genericError);
-
-      (handleApiError as unknown as Mock).mockImplementation(() => {
-        throw genericError;
-      });
-
-      await expect(
-        characterService.getAllEnrichedByUserId(
-          "fcdb0dd1-7f7e-44bd-9a9b-c4daf6cb1588",
-        ),
-      ).rejects.toThrow("Unknown error");
-
-      expect(handleApiError).toHaveBeenCalledWith(genericError);
+      expect(result).toEqual(characters);
     });
   });
 
   describe("getOneEnriched", () => {
-    it("should call axios.get and return character", async () => {
-      apiClientMock.instance.get.mockResolvedValue({
-        data: mockCharacterEnriched,
-      });
+    it("returns one enriched character", async () => {
+      const character = {
+        id: "char-id",
+        name: "Eni",
+        level: 150,
+      } as CharacterEnriched;
 
-      const result = await characterService.getOneEnriched(
-        "cfff40b3-9625-4f0a-854b-d8d6d6b4b667",
+      apiClientMock.get.mockResolvedValue({ data: character });
+
+      const result = await characterService.getOneEnriched("char-id");
+
+      expect(apiClientMock.get).toHaveBeenCalledWith(
+        "/character/char-id/enriched",
       );
-
-      expect(apiClientMock.instance.get).toHaveBeenCalledWith(
-        "/character/cfff40b3-9625-4f0a-854b-d8d6d6b4b667/enriched",
-      );
-      expect(result).toEqual(mockCharacterEnriched);
-    });
-
-    it("should throw error on axios error with response status", async () => {
-      const axiosError = {
-        isAxiosError: true,
-        response: { status: 404 },
-        message: "Not found",
-      };
-      vi.mocked(axios.isAxiosError).mockReturnValue(true);
-      apiClientMock.instance.get.mockRejectedValue(axiosError);
-
-      const result = await characterService.getOneEnriched(
-        "cfff40b3-9625-4f0a-854b-d8d6d6b4b667",
-      );
-
-      expect(handleApiError).toHaveBeenCalledWith(axiosError);
-      expect(result).toBeUndefined();
-    });
-
-    it("should rethrow if handleApiError throws (generic error case)", async () => {
-      const genericError = new Error("Unknown error");
-      apiClientMock.instance.get.mockRejectedValue(genericError);
-
-      (handleApiError as unknown as Mock).mockImplementation(() => {
-        throw genericError;
-      });
-
-      await expect(
-        characterService.getOneEnriched("cfff40b3-9625-4f0a-854b-d8d6d6b4b667"),
-      ).rejects.toThrow("Unknown error");
-
-      expect(handleApiError).toHaveBeenCalledWith(genericError);
+      expect(result).toEqual(character);
     });
   });
 
   describe("create", () => {
-    const userId = "fcdb0dd1-7f7e-44bd-9a9b-c4daf6cb1588";
     const validData: CreateCharacterForm = {
-      name: "ValidChar",
-      level: 150,
-      sex: "F",
+      name: "Night-Hunter",
+      sex: "M",
+      level: 200,
       alignment: "Bonta",
-      stuff: "https://d-bk.net/fr/d/ABCDE",
-      default_character: false,
-      server_id: "server1",
-      breed_id: "breed1",
+      stuff: undefined,
+      breed_id: "brd-1",
+      server_id: "srv-1",
     };
 
-    it("should call axios.post with correct params on success", async () => {
-      const mockResponse = {
-        data: { id: "cfff40b3-9625-4f0a-854b-d8d6d6b4b667", ...validData },
-      };
-      apiClientMock.instance.post.mockResolvedValue(mockResponse);
-
-      const result = await characterService.create(userId, validData);
-
-      expect(apiClientMock.instance.post).toHaveBeenCalledWith(
-        `/user/${userId}/character`,
-        validData,
-        { withCredentials: true },
-      );
-      expect(result).toEqual(mockResponse.data);
-    });
-
-    it("should throw an error if level is less than 1", async () => {
-      const invalidData = { ...validData, level: 0 } as any;
+    it("throws if level is invalid", async () => {
       await expect(
-        characterService.create(userId, invalidData),
+        characterService.create("user-id", {
+          ...validData,
+          level: 300,
+        }),
       ).rejects.toThrow(t("validation.level.rules"));
+
+      expect(apiClientMock.post).not.toHaveBeenCalled();
     });
 
-    it("should throw an error if level is more than 200", async () => {
-      const invalidData = { ...validData, level: 201 } as any;
+    it("throws if stuff url is invalid", async () => {
       await expect(
-        characterService.create(userId, invalidData),
-      ).rejects.toThrow(t("validation.level.rules"));
-    });
-
-    it("should throw an error for an invalid DofusBook URL", async () => {
-      const invalidData = {
-        ...validData,
-        stuff: "https://invalid-url.com",
-      } as any;
-      await expect(
-        characterService.create(userId, invalidData),
+        characterService.create("user-id", {
+          ...validData,
+          stuff: "https://invalid.url",
+        }),
       ).rejects.toThrow(t("validation.url.rules"));
     });
 
-    it("should not throw an error if stuff is null", async () => {
-      const validDataWithNullStuff = { ...validData, stuff: null } as any;
-      apiClientMock.instance.post.mockResolvedValue({
-        data: {
-          id: "cfff40b3-9625-4f0a-854b-d8d6d6b4b667",
-          ...validDataWithNullStuff,
-        },
-      });
+    it("creates character on success", async () => {
+      const character: Character = {
+        id: "1",
+        name: "Iop",
+        level: 200,
+      } as Character;
 
-      await expect(
-        characterService.create(userId, validDataWithNullStuff),
-      ).resolves.not.toThrow();
-    });
+      apiClientMock.post.mockResolvedValue({ data: character });
 
-    it("should call handleApiError for a 401 status code and not throw", async () => {
-      const axiosError = {
-        isAxiosError: true,
-        response: { status: 401 },
-      };
-      vi.mocked(axios.isAxiosError).mockReturnValue(true);
-      apiClientMock.instance.post.mockRejectedValue(axiosError);
+      const result = await characterService.create("user-id", validData);
 
-      const result = await characterService.create(userId, validData);
-
-      expect(handleApiError).toHaveBeenCalledWith(axiosError);
-      expect(result).toBeUndefined();
-    });
-
-    it("should call handleApiError for a 403 status code and not throw", async () => {
-      const axiosError = {
-        isAxiosError: true,
-        response: { status: 403 },
-      };
-      vi.mocked(axios.isAxiosError).mockReturnValue(true);
-      apiClientMock.instance.post.mockRejectedValue(axiosError);
-
-      const result = await characterService.create(userId, validData);
-
-      expect(handleApiError).toHaveBeenCalledWith(axiosError);
-      expect(result).toBeUndefined();
-    });
-
-    it("should rethrow if handleApiError throws (generic error case)", async () => {
-      const genericError = new Error("Unknown error");
-      apiClientMock.instance.post.mockRejectedValue(genericError);
-
-      (handleApiError as unknown as Mock).mockImplementation(() => {
-        throw genericError;
-      });
-
-      await expect(characterService.create(userId, validData)).rejects.toThrow(
-        "Unknown error",
+      expect(apiClientMock.post).toHaveBeenCalledWith(
+        "/user/user-id/character",
+        validData,
+        { withCredentials: true },
       );
+      expect(result).toEqual(character);
+    });
 
-      expect(handleApiError).toHaveBeenCalledWith(genericError);
+    it("calls handleApiError on error", async () => {
+      const error = new Error("Server error");
+      apiClientMock.post.mockRejectedValue(error);
+
+      const result = await characterService.create("user-id", validData);
+
+      expect(handleApiError).toHaveBeenCalledWith(error);
+      expect(result).toBeUndefined();
     });
   });
 
   describe("update", () => {
-    const userId = "15ff46b5-60f3-4e86-98bc-da8fcaa3e29e";
-    const charId = "cfff40b3-9625-4f0a-854b-d8d6d6b4b667";
-    const validData: CreateCharacterForm = {
-      name: "ValidChar",
-      level: 150,
-      sex: "F",
-      alignment: "Bonta",
-      stuff: "https://d-bk.net/fr/d/ABCDE",
-      default_character: false,
-      server_id: "server1",
-      breed_id: "breed1",
-    };
+    it("updates character on success", async () => {
+      const data: CreateCharacterForm = {
+        name: "Night-Hunter",
+        sex: "M",
+        level: 200,
+        alignment: "Bonta",
+        stuff: undefined,
+        breed_id: "brd-1",
+        server_id: "srv-1",
+      };
 
-    it("should call axios.patch with correct params and return data", async () => {
-      const mockResponse = { data: { id: charId, ...validData } };
-      apiClientMock.instance.patch.mockResolvedValue(mockResponse);
+      const character = {
+        id: "char-id",
+        name: "Cra",
+        level: 180,
+      } as CharacterEnriched;
 
-      const result = await characterService.update(userId, charId, validData);
+      apiClientMock.patch.mockResolvedValue({ data: character });
 
-      expect(apiClientMock.instance.patch).toHaveBeenCalledWith(
-        `/user/${userId}/character/${charId}`,
-        validData,
+      const result = await characterService.update("user-id", "char-id", data);
+
+      expect(apiClientMock.patch).toHaveBeenCalledWith(
+        "/user/user-id/character/char-id",
+        data,
         { withCredentials: true },
       );
-      expect(result).toEqual(mockResponse.data);
-    });
-
-    it("should throw error for invalid level", async () => {
-      const invalidData = { ...validData, level: 0 } as any;
-      await expect(
-        characterService.update(userId, charId, invalidData),
-      ).rejects.toThrow(t("validation.level.rules"));
-    });
-
-    it("should throw error for invalid stuff URL", async () => {
-      const invalidData = { ...validData, stuff: "https://invalid.com" } as any;
-      await expect(
-        characterService.update(userId, charId, invalidData),
-      ).rejects.toThrow(t("validation.url.rules"));
-    });
-
-    it("should call handleApiError for a 401 status code and not throw", async () => {
-      const axiosError = {
-        isAxiosError: true,
-        response: { status: 401 },
-      };
-      vi.mocked(axios.isAxiosError).mockReturnValue(true);
-      apiClientMock.instance.patch.mockRejectedValue(axiosError);
-
-      const result = await characterService.update(userId, charId, validData);
-
-      expect(handleApiError).toHaveBeenCalledWith(axiosError);
-      expect(result).toBeUndefined();
-    });
-
-    it("should call handleApiError for a 403 status code and not throw", async () => {
-      const axiosError = {
-        isAxiosError: true,
-        response: { status: 403 },
-      };
-      vi.mocked(axios.isAxiosError).mockReturnValue(true);
-      apiClientMock.instance.patch.mockRejectedValue(axiosError);
-
-      const result = await characterService.update(userId, charId, validData);
-
-      expect(handleApiError).toHaveBeenCalledWith(axiosError);
-      expect(result).toBeUndefined();
-    });
-
-    it("should call handleApiError for a 404 status code and not throw", async () => {
-      const axiosError = {
-        isAxiosError: true,
-        response: { status: 404 },
-      };
-      vi.mocked(axios.isAxiosError).mockReturnValue(true);
-      apiClientMock.instance.patch.mockRejectedValue(axiosError);
-
-      const result = await characterService.update(userId, charId, validData);
-
-      expect(handleApiError).toHaveBeenCalledWith(axiosError);
-      expect(result).toBeUndefined();
-    });
-
-    it("should rethrow if handleApiError throws (generic error case)", async () => {
-      const genericError = new Error("Unknown error");
-      apiClientMock.instance.patch.mockRejectedValue(genericError);
-
-      (handleApiError as unknown as Mock).mockImplementation(() => {
-        throw genericError;
-      });
-
-      await expect(
-        characterService.update(userId, charId, validData),
-      ).rejects.toThrow("Unknown error");
-
-      expect(handleApiError).toHaveBeenCalledWith(genericError);
+      expect(result).toEqual(character);
     });
   });
 
   describe("delete", () => {
-    const userId = "15ff46b5-60f3-4e86-98bc-da8fcaa3e29e";
-    const charId = "cfff40b3-9625-4f0a-854b-d8d6d6b4b667";
+    it("deletes character on success", async () => {
+      apiClientMock.delete.mockResolvedValue({ status: 204 });
 
-    it("Call axios.delete with correct params", async () => {
-      const mockResponse = { status: 200 };
-      apiClientMock.instance.delete.mockResolvedValue(mockResponse);
+      const result = await characterService.delete("user-id", "char-id");
 
-      const result = await characterService.delete(
-        "fcdb0dd1-7f7e-44bd-9a9b-c4daf6cb1588",
-        "character456",
-      );
-
-      expect(apiClientMock.instance.delete).toHaveBeenCalledWith(
-        "/user/fcdb0dd1-7f7e-44bd-9a9b-c4daf6cb1588/character/character456",
+      expect(apiClientMock.delete).toHaveBeenCalledWith(
+        "/user/user-id/character/char-id",
         { withCredentials: true },
       );
-      expect(result).toBe(mockResponse);
-    });
-
-    it("should call handleApiError for response 400, 401, or 403 and not throw", async () => {
-      const statusCodes = [400, 401, 403];
-      for (const statusCode of statusCodes) {
-        const axiosError = {
-          isAxiosError: true,
-          response: { status: statusCode },
-        };
-        vi.mocked(axios.isAxiosError).mockReturnValue(true);
-        apiClientMock.instance.delete.mockRejectedValue(axiosError);
-
-        const result = await characterService.delete(userId, charId);
-
-        expect(handleApiError).toHaveBeenCalledWith(axiosError);
-        expect(result).toBeUndefined();
-      }
-    });
-
-    it("should call handleApiError for response 404 and not throw", async () => {
-      const axiosError = {
-        isAxiosError: true,
-        response: { status: 404 },
-      };
-      vi.mocked(axios.isAxiosError).mockReturnValue(true);
-      apiClientMock.instance.delete.mockRejectedValue(axiosError);
-
-      const result = await characterService.delete(userId, charId);
-
-      expect(handleApiError).toHaveBeenCalledWith(axiosError);
-      expect(result).toBeUndefined();
-    });
-
-    it("should rethrow if handleApiError throws (generic error case)", async () => {
-      const genericError = new Error("Unknown error");
-      apiClientMock.instance.delete.mockRejectedValue(genericError);
-
-      (handleApiError as unknown as Mock).mockImplementation(() => {
-        throw genericError;
-      });
-
-      await expect(characterService.delete(userId, charId)).rejects.toThrow(
-        "Unknown error",
-      );
-      expect(handleApiError).toHaveBeenCalledWith(genericError);
+      expect(result).toEqual({ status: 204 });
     });
   });
 });

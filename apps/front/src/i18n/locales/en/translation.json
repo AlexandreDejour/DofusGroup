@@ -55,6 +55,7 @@
     "subArea": "Sub-area",
     "team": "Team",
     "title": "Title",
+    "updated": "updated",
     "usefulSites": "Useful sites",
     "visibility": "visibility",
     "welcome": "Welcome.",
@@ -181,12 +182,13 @@
     "your": "Your events",
 
     "error": {
+      "characterOut": "This character is no longer part of the event.",
+      "disable": "You need to create character before create event.",
+      "invalidMaxPlayers": "Max Players is lower than players actually registered.",
       "none": "No event.",
       "noneUpcoming": "No upcoming event.",
       "noneFound": "No event found.",
-      "notFound": "Event not found.",
-      "characterOut": "This character is no longer part of the event.",
-      "disable": "You need to create character before create event."
+      "notFound": "Event not found."
     },
 
     "success": {
@@ -218,6 +220,7 @@
       "required": "You must specify a server."
     },
     "tag": {
+      "donjonRequired": "Donjon name is required.",
       "required": "You must specify a tag."
     },
     "url": {

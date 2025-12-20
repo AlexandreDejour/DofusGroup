@@ -1,21 +1,17 @@
-import { vi } from "vitest";
+import { Mock, vi } from "vitest";
 import "@testing-library/jest-dom";
+import { MemoryRouter } from "react-router-dom";
 import { render, screen, waitFor } from "@testing-library/react";
 
-import { MemoryRouter } from "react-router-dom";
+import { Tag } from "../../../types/tag";
+import { Event } from "../../../types/event";
+import { Server } from "../../../types/server";
+
 import { t } from "../../../i18n/i18n-helper";
 
 import { useScreen } from "../../../contexts/screenContext";
 
 import Home from "../Home";
-
-vi.mock("../../../config/config.ts", () => ({
-  Config: {
-    getInstance: () => ({
-      baseUrl: "http://localhost",
-    }),
-  },
-}));
 
 // Mock context
 vi.mock("../../../contexts/screenContext", () => ({
@@ -102,15 +98,99 @@ vi.mock("../../../components/Pagination/Pagination", () => ({
   },
 }));
 
-let mockGetEvents: any;
+const mockEventsPage1: Event[] = [
+  {
+    id: "1",
+    title: "Event 1",
+    tag: { id: "tag1", name: "tag1", color: "#000" },
+    server: {
+      id: "srv1",
+      name: "srv1",
+      mono_account: false,
+    },
+    date: new Date("2025-08-17T12:00:00Z"),
+    duration: 90,
+    characters: [
+      {
+        id: "char1",
+        name: "char1",
+        sex: "M",
+        level: 50,
+        alignment: "Bonta",
+        stuff: "https://d-bk.net/fr/d/1QVjw",
+        server_id: "srv1",
+      },
+      {
+        id: "char2",
+        name: "char2",
+        sex: "M",
+        level: 50,
+        alignment: "Bonta",
+        stuff: "https://d-bk.net/fr/d/1QVjw",
+        server_id: "srv1",
+      },
+    ],
+    max_players: 8,
+    status: "public",
+  },
+];
 
-vi.mock("../../../services/api/eventService", () => {
-  return {
-    EventService: vi.fn().mockImplementation(() => ({
-      getEvents: (...args: any[]) => mockGetEvents(...args),
-    })),
-  };
-});
+const mockEventsPage2: Event[] = [
+  {
+    id: "2",
+    title: "Event 2",
+    tag: { id: "tag2", name: "tag2", color: "#000" },
+    server: {
+      id: "srv2",
+      name: "srv2",
+      mono_account: false,
+    },
+    date: new Date("2025-08-17T12:00:00Z"),
+    duration: 90,
+    characters: [
+      {
+        id: "char1",
+        name: "char1",
+        sex: "M",
+        level: 50,
+        alignment: "Bonta",
+        stuff: "https://d-bk.net/fr/d/1QVjw",
+        server_id: "srv2",
+      },
+    ],
+    max_players: 4,
+    status: "public",
+  },
+];
+
+const mockTags: Tag[] = [{ id: "tag1", name: "tag1", color: "#f0f" }];
+
+const mockServers: Server[] = [
+  {
+    id: "srv1",
+    name: "srv1",
+    mono_account: false,
+  },
+];
+
+vi.mock("../../../hooks/useFetchTags", () => ({
+  __esModule: true,
+  default: vi.fn(),
+}));
+
+vi.mock("../../../hooks/useFetchServers", () => ({
+  __esModule: true,
+  default: vi.fn(),
+}));
+
+vi.mock("../../../hooks/useFetchEvents", () => ({
+  __esModule: true,
+  default: vi.fn(),
+}));
+
+import useFetchTags from "../../../hooks/useFetchTags";
+import useFetchEvents from "../../../hooks/useFetchEvents";
+import useFetchServers from "../../../hooks/useFetchServers";
 
 const renderHome = () => {
   return render(
@@ -128,38 +208,29 @@ describe("Home page", () => {
       isMobile: false,
     });
 
-    mockGetEvents = vi
-      .fn()
-      .mockResolvedValueOnce({
-        events: [
-          {
-            id: "1",
-            title: "Event 1",
-            tag: { name: "Raid", color: "#000" },
-            server: { name: "Server 1" },
-            date: "2025-08-17T12:00:00Z",
-            duration: 90,
-            characters: [{ name: "Char 1" }, { name: "Char 2" }],
-            max_players: 8,
-          },
-        ],
-        totalPages: 3,
-      })
-      .mockResolvedValueOnce({
-        events: [
-          {
-            id: "2",
-            title: "Event 2",
-            tag: { name: "Dungeon", color: "#111" },
-            server: { name: "Server 2" },
-            date: "2025-08-18T14:00:00Z",
-            duration: 60,
-            characters: [{ name: "Char 1" }, { name: "Char 2" }],
-            max_players: 4,
-          },
-        ],
-        totalPages: 3,
-      });
+    (useFetchTags as unknown as Mock).mockImplementation(() => ({
+      tags: mockTags,
+    }));
+    (useFetchServers as unknown as Mock).mockImplementation(() => ({
+      servers: mockServers,
+    }));
+    (useFetchEvents as unknown as Mock).mockImplementation(
+      (events, setEvents, currentPage, setTotalPages) => {
+        Promise.resolve().then(() => {
+          setTotalPages(3);
+
+          if (currentPage === 1) {
+            setEvents(mockEventsPage1);
+          }
+
+          if (currentPage === 2) {
+            setEvents(mockEventsPage2);
+          }
+        });
+
+        return { isLoading: false };
+      },
+    );
   });
 
   afterEach(() => {
@@ -191,9 +262,20 @@ describe("Home page", () => {
     ).toBeInTheDocument();
   });
 
-  it("Display 'No event' at initial renderer", () => {
+  it("Display spinner at initial renderer", () => {
+    (useFetchEvents as unknown as Mock).mockImplementation(
+      (events, setEvents, page, setTotalPages) => {
+        Promise.resolve().then(() => {
+          setEvents(mockEventsPage1);
+          setTotalPages(3);
+        });
+
+        return { isLoading: true };
+      },
+    );
+
     renderHome();
-    expect(screen.getByText(t("event.error.none"))).toBeInTheDocument();
+    expect(screen.getByLabelText("Loading Spinner")).toBeInTheDocument();
   });
 
   it("Display events list after API call", async () => {
@@ -203,8 +285,8 @@ describe("Home page", () => {
       const card = screen.getByTestId("event-card");
       expect(card).toBeInTheDocument();
       expect(screen.getByText("Event 1")).toBeInTheDocument();
-      expect(screen.getByTestId("event-tag")).toHaveTextContent("Raid");
-      expect(screen.getByTestId("event-server")).toHaveTextContent("Server 1");
+      expect(screen.getByTestId("event-tag")).toHaveTextContent("tag1");
+      expect(screen.getByTestId("event-server")).toHaveTextContent("srv1");
       expect(screen.getByTestId("event-date")).toHaveTextContent(
         new Date("2025-08-17T12:00:00Z").toLocaleString("fr-FR", {
           timeZone: "UTC",
@@ -235,39 +317,6 @@ describe("Home page", () => {
     });
   });
 
-  it("Manage axios error", async () => {
-    const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
-    mockGetEvents = vi
-      .fn()
-      .mockRejectedValue(
-        Object.assign(new Error("Erreur axios"), { isAxiosError: true }),
-      );
-
-    renderHome();
-
-    await waitFor(() => {
-      expect(consoleSpy).toHaveBeenCalledWith("Axios error:", "Erreur axios");
-    });
-
-    consoleSpy.mockRestore();
-  });
-
-  it("manage general error", async () => {
-    const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
-    mockGetEvents = vi.fn().mockRejectedValue(new Error("Erreur générale"));
-
-    renderHome();
-
-    await waitFor(() => {
-      expect(consoleSpy).toHaveBeenCalledWith(
-        "General error:",
-        "Erreur générale",
-      );
-    });
-
-    consoleSpy.mockRestore();
-  });
-
   it("Change page on pagination click", async () => {
     renderHome();
 
@@ -281,10 +330,10 @@ describe("Home page", () => {
       const card = screen.getByTestId("event-card");
       expect(card).toBeInTheDocument();
       expect(screen.getByText("Event 2")).toBeInTheDocument();
-      expect(screen.getByTestId("event-tag")).toHaveTextContent("Dungeon");
-      expect(screen.getByTestId("event-server")).toHaveTextContent("Server 2");
-      expect(screen.getByTestId("event-duration")).toHaveTextContent("60 min");
-      expect(screen.getByTestId("event-players")).toHaveTextContent("2/4");
+      expect(screen.getByTestId("event-tag")).toHaveTextContent("tag2");
+      expect(screen.getByTestId("event-server")).toHaveTextContent("srv2");
+      expect(screen.getByTestId("event-duration")).toHaveTextContent("90 min");
+      expect(screen.getByTestId("event-players")).toHaveTextContent("1/4");
     });
   });
 });

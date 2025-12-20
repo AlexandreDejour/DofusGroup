@@ -1,9 +1,10 @@
 import { User } from "./user";
-import { Event } from "./event";
 
 export type Comment = {
   id: string;
   content: string;
+  createdAt: string;
+  updatedAt: string;
 };
 
 export type CommentEnriched = Comment & {

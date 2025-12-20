@@ -1,23 +1,22 @@
 import { t } from "../../i18n/i18n-helper";
 import handleApiError from "../utils/handleApiError";
 
-import { ApiClient } from "../client";
-
 import { CreateCharacterForm } from "../../types/form";
 import { Character, CharacterEnriched } from "../../types/character";
 
+import { ApiClient } from "../client";
+import { backApiClient } from "../http/backApiClient";
+
 export class CharacterService {
-  private axios;
   private urlRegex;
 
-  constructor(axios: ApiClient) {
-    this.axios = axios.instance;
+  constructor(private apiClient: ApiClient) {
     this.urlRegex = new RegExp("^https://d-bk.net/[^/]+/d/[A-Za-z0-9]{5}$");
   }
 
   public async getAllByUserId(userId: string): Promise<Character[]> {
     try {
-      const response = await this.axios.get<Character[]>(
+      const response = await this.apiClient.get<Character[]>(
         `/user/${userId}/characters`,
       );
 
@@ -31,7 +30,7 @@ export class CharacterService {
     userId: string,
   ): Promise<CharacterEnriched[]> {
     try {
-      const response = await this.axios.get<CharacterEnriched[]>(
+      const response = await this.apiClient.get<CharacterEnriched[]>(
         `/user/${userId}/characters/enriched`,
       );
 
@@ -43,7 +42,7 @@ export class CharacterService {
 
   public async getOneEnriched(characterId: string) {
     try {
-      const response = await this.axios.get<CharacterEnriched>(
+      const response = await this.apiClient.get<CharacterEnriched>(
         `/character/${characterId}/enriched`,
       );
 
@@ -66,7 +65,7 @@ export class CharacterService {
     }
 
     try {
-      const response = await this.axios.post<Character>(
+      const response = await this.apiClient.post<Character>(
         `/user/${userId}/character`,
         data,
         { withCredentials: true },
@@ -92,7 +91,7 @@ export class CharacterService {
     }
 
     try {
-      const response = await this.axios.patch<CharacterEnriched>(
+      const response = await this.apiClient.patch<CharacterEnriched>(
         `/user/${userId}/character/${characterId}`,
         data,
         { withCredentials: true },
@@ -106,7 +105,7 @@ export class CharacterService {
 
   public async delete(userId: string, characterId: string) {
     try {
-      const response = await this.axios.delete(
+      const response = await this.apiClient.delete(
         `/user/${userId}/character/${characterId}`,
         { withCredentials: true },
       );
@@ -117,3 +116,5 @@ export class CharacterService {
     }
   }
 }
+
+export const characterService = new CharacterService(backApiClient);

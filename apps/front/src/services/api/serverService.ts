@@ -3,17 +3,16 @@ import handleApiError from "../utils/handleApiError";
 import { Server } from "../../types/server";
 
 import { ApiClient } from "../client";
+import { backApiClient } from "../http/backApiClient";
 
 export class ServerService {
-  private axios;
-
-  constructor(axios: ApiClient) {
-    this.axios = axios.instance;
-  }
+  constructor(private apiCient: ApiClient) {}
 
   public async getServers(): Promise<Server[]> {
     try {
-      const response = await this.axios.get<Server[]>("/servers");
+      const response = await this.apiCient.get<Server[]>("/servers");
+
+      response.data.sort((a, b) => a.name.localeCompare(b.name));
 
       response.data.sort((a, b) => a.name.localeCompare(b.name));
 
@@ -23,3 +22,5 @@ export class ServerService {
     }
   }
 }
+
+export const serverService = new ServerService(backApiClient);

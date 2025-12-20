@@ -1,30 +1,10 @@
 import { MemoryRouter, Route, Routes } from "react-router-dom";
-import { describe, it, vi, beforeEach, afterEach } from "vitest";
+import { describe, it, vi, beforeEach, afterEach, Mock } from "vitest";
 import { render, screen, waitFor, fireEvent } from "@testing-library/react";
 
 import { t } from "../../../i18n/i18n-helper";
 
 import CharacterDetails from "../CharacterDetails";
-
-// Mock config
-vi.mock("../../../config/config.ts", () => ({
-  Config: {
-    getInstance: () => ({
-      baseUrl: "http://localhost",
-    }),
-  },
-}));
-
-// Mock service
-let getOneEnrichedMock: any;
-
-vi.mock("../../../services/api/characterService", () => {
-  return {
-    CharacterService: vi.fn().mockImplementation(() => ({
-      getOneEnriched: (...args: any[]) => getOneEnrichedMock(...args),
-    })),
-  };
-});
 
 // Mock react-router
 const navigateMock = vi.fn();
@@ -35,16 +15,16 @@ vi.mock("react-router", async (importOriginal) => {
     useNavigate: () => navigateMock,
     Navigate: ({ to }: { to: string }) => {
       navigateMock(to);
-      return null; // render nothing instead of real Navigate
+      return null;
     },
-    useParams: () => ({ id: "123" }),
+    useParams: () => ({ id: "char-1" }),
   };
 });
 
 // Mock context
 vi.mock("../../../contexts/authContext", () => ({
   useAuth: () => ({
-    user: { id: "15ff46b5-60f3-4e86-98bc-da8fcaa3e29e", username: "toto" },
+    user: { id: "9c63878b-4763-4de7-ac1e-d1ada9fc0159", username: "toto" },
   }),
 }));
 
@@ -54,39 +34,42 @@ vi.mock("../../../contexts/modalContext", () => ({
   useModal: () => ({
     openModal,
     handleDelete,
-    updateTarget: vi.fn(),
   }),
 }));
 
 const mockCharacter = {
-  id: "cfff40b3-9625-4f0a-854b-d8d6d6b4b667",
+  id: "9f0eaa8c-eec1-4e85-9365-7653c1330325",
   name: "Chronos",
   sex: "M",
   level: 50,
-  alignment: "Neutre",
+  alignment: "Bonta",
   stuff: "https://d-bk.net/fr/d/1QVjw",
-  default_character: false,
-  server: {
-    id: "de5a6c69-bc0b-496c-9b62-bd7ea076b8ed",
-    name: "Dakal",
-    mono_account: true,
+  server_id: "de5a6c69-bc0b-496c-9b62-bd7ea076b8ed",
+  user: {
+    id: "9c63878b-4763-4de7-ac1e-d1ada9fc0159",
+    username: "toto",
   },
   breed: {
-    id: "d81c200e-831c-419a-948f-c45d1bbf6aac",
-    name: "Cra",
+    id: "15ff46b5-60f3-4e86-98bc-da8fcaa3e21a",
+    name: "Xélor",
   },
-  events: [],
-  user: {
-    id: "15ff46b5-60f3-4e86-98bc-da8fcaa3e29e",
-    username: "toto",
+  server: {
+    id: "62592fd9-66b8-410c-a42e-f98b9a8173f1",
+    name: "Rafal",
+    mono_account: false,
   },
 };
 
+vi.mock("../../../hooks/useFetchCharacter", () => ({
+  __esModule: true,
+  default: vi.fn(),
+}));
+
+import useFetchCharacter from "../../../hooks/useFetchCharacter";
+
 function renderWithRouter() {
   return render(
-    <MemoryRouter
-      initialEntries={["/character/cfff40b3-9625-4f0a-854b-d8d6d6b4b667"]}
-    >
+    <MemoryRouter initialEntries={["/character/char-1"]}>
       <Routes>
         <Route path="/character/:id" element={<CharacterDetails />} />
         <Route path="/not-found" element={<p>Not Found Page</p>} />
@@ -97,7 +80,11 @@ function renderWithRouter() {
 
 describe("CharacterDetails", () => {
   beforeEach(() => {
-    getOneEnrichedMock = vi.fn().mockResolvedValue(mockCharacter);
+    (useFetchCharacter as unknown as Mock).mockImplementation((id: string) => ({
+      character: mockCharacter,
+      isLoading: false,
+      error: null,
+    }));
     openModal.mockClear();
     handleDelete.mockClear();
     navigateMock.mockClear();
@@ -107,135 +94,197 @@ describe("CharacterDetails", () => {
     vi.clearAllMocks();
   });
 
-  it("renders loading state initially", async () => {
-    getOneEnrichedMock = vi.fn().mockImplementation(
-      () => new Promise(() => {}), // never resolves
-    );
+  it("Display spinner at initial renderer", () => {
+    (useFetchCharacter as unknown as Mock).mockImplementation(() => ({
+      character: null,
+      isLoading: true,
+      error: null,
+    }));
 
     renderWithRouter();
 
-    expect(screen.getByText(t("common.loading"))).toBeInTheDocument();
+    const spinner = screen.getByLabelText("Loading Spinner");
+    expect(spinner).toBeInTheDocument();
   });
 
-  it("renders character details after successful fetch", async () => {
+  it("Renders character details after successful fetch", async () => {
     renderWithRouter();
 
     await waitFor(() => {
-      expect(screen.getByText("Chronos")).toBeInTheDocument();
+      expect(screen.getByText(/chronos/i)).toBeInTheDocument();
     });
 
-    expect(
-      screen.getByText(t("breed.upperCase"), { exact: false }).closest("p"),
-    ).toHaveTextContent(`${t("breed.upperCase")}: Cra`);
-
-    expect(
-      screen.getByText(t("server.upperCase"), { exact: false }).closest("p"),
-    ).toHaveTextContent(`${t("server.upperCase")}: Dakal`);
-
-    expect(
-      screen.getByText(t("common.level"), { exact: false }).closest("p"),
-    ).toHaveTextContent(`${t("common.level")}: 50`);
-
-    expect(
-      screen.getByText(t("common.alignment"), { exact: false }).closest("p"),
-    ).toHaveTextContent(`${t("common.alignment")}: Neutre`);
-
-    expect(
-      screen.getByText(t("common.sex"), { exact: false }).closest("p"),
-    ).toHaveTextContent(`${t("common.sex")}: M`);
-
-    expect(
-      screen.getByText(t("common.stuff"), { exact: false }).closest("a"),
-    ).toHaveTextContent(`${t("common.stuff")}: https://d-bk.net/fr/d/1QVjw`);
+    const classLine = screen.getByText(/Class/i).closest("p");
+    expect(classLine).toHaveTextContent("Xélor");
+    const serverLine = screen.getByText(/Server/i).closest("p");
+    expect(serverLine).toHaveTextContent("Rafal");
+    const levelLine = screen.getByText(/Level/i).closest("p");
+    expect(levelLine).toHaveTextContent("50");
+    const alignmentLine = screen.getByText(/Alignment/i).closest("p");
+    expect(alignmentLine).toHaveTextContent("Bonta");
+    const sexLine = screen.getByText(/Sex/i).closest("p");
+    expect(sexLine).toHaveTextContent("M");
+    const stuffLine = screen.getByText(/Stuff/i).closest("a");
+    expect(stuffLine).toHaveTextContent("https://d-bk.net");
   });
 
-  it("renders nothing if character is null (Navigate is rendered)", async () => {
-    getOneEnrichedMock = vi.fn().mockResolvedValue(null);
+  it("Displays correct breed image for male character", async () => {
+    renderWithRouter();
+
+    await waitFor(() => {
+      expect(screen.getByText(/chronos/i)).toBeInTheDocument();
+    });
+
+    const img = screen.getByAltText(/Class thumbnail xélor/i);
+    expect(img).toHaveAttribute("src", "/characters/xélor_male.webp");
+  });
+
+  it("Displays correct breed image for female character", async () => {
+    const femaleCharacter = { ...mockCharacter, sex: "F" };
+    (useFetchCharacter as unknown as Mock).mockImplementation(() => ({
+      character: femaleCharacter,
+      isLoading: false,
+      error: null,
+    }));
 
     renderWithRouter();
 
     await waitFor(() => {
-      // Vérifie que le contenu "Chronos" ou les boutons ne sont pas présents
-      expect(screen.queryByText("Chronos")).not.toBeInTheDocument();
-      expect(
-        screen.queryByRole("button", { name: t("common.return") }),
-      ).not.toBeInTheDocument();
+      expect(screen.getByText(/chronos/i)).toBeInTheDocument();
     });
+
+    const img = screen.getByAltText(/Class thumbnail xélor/i);
+    expect(img).toHaveAttribute("src", "/characters/xélor_female.webp");
   });
 
-  it("shows action buttons if character belongs to logged-in user", async () => {
+  it("Shows action buttons if user owns the character", async () => {
     renderWithRouter();
 
-    await waitFor(() => {
-      expect(
-        screen.getByRole("button", { name: t("common.change") }),
-      ).toBeInTheDocument();
-      expect(
-        screen.getByRole("button", { name: t("common.delete.default") }),
-      ).toBeInTheDocument();
-    });
+    await waitFor(() => screen.getByText(/chronos/i));
+
+    expect(
+      screen.getByRole("button", { name: t("common.change") }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: t("common.delete.default") }),
+    ).toBeInTheDocument();
   });
 
-  it("calls openModal when clicking Edit", async () => {
+  it("Hides action buttons if user does not own the character", async () => {
+    const otherUserCharacter = {
+      ...mockCharacter,
+      user: {
+        id: "other-user-id",
+        username: "otheruser",
+      },
+    };
+    (useFetchCharacter as unknown as Mock).mockImplementation(() => ({
+      character: otherUserCharacter,
+      isLoading: false,
+      error: null,
+    }));
+
     renderWithRouter();
 
-    await waitFor(() => screen.getByText("Chronos"));
+    await waitFor(() => screen.getByText(/chronos/i));
+
+    expect(
+      screen.queryByRole("button", { name: t("common.change") }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: t("common.delete.default") }),
+    ).not.toBeInTheDocument();
+  });
+
+  it("Calls openModal when clicking Modifier", async () => {
+    renderWithRouter();
+
+    await waitFor(() => screen.getByText(/chronos/i));
 
     fireEvent.click(screen.getByRole("button", { name: t("common.change") }));
-
     expect(openModal).toHaveBeenCalledWith("updateCharacter", mockCharacter);
   });
 
-  it("calls handleDelete when clicking Delete", async () => {
+  it("Calls handleDelete when clicking Supprimer", async () => {
     renderWithRouter();
 
-    await waitFor(() => screen.getByText("Chronos"));
+    await waitFor(() => screen.getByText(/chronos/i));
 
     fireEvent.click(
       screen.getByRole("button", { name: t("common.delete.default") }),
     );
-
     expect(handleDelete).toHaveBeenCalledWith(
       "character_details",
-      "cfff40b3-9625-4f0a-854b-d8d6d6b4b667",
+      "9f0eaa8c-eec1-4e85-9365-7653c1330325",
     );
   });
 
-  it("navigates back to profile when clicking Return", async () => {
+  it("Navigates back when clicking Retour", async () => {
     renderWithRouter();
 
-    await waitFor(() => screen.getByText("Chronos"));
+    await waitFor(() => screen.getByText(/chronos/i));
 
     fireEvent.click(screen.getByRole("button", { name: t("common.return") }));
-
     expect(navigateMock).toHaveBeenCalledWith(-1);
   });
 
-  it("logs axios error", async () => {
-    const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
-    getOneEnrichedMock = vi
-      .fn()
-      .mockRejectedValue({ isAxiosError: true, message: "Axios fail" });
+  it("Renders nothing and navigates to /not-found if character is null", async () => {
+    (useFetchCharacter as unknown as Mock).mockImplementation(() => ({
+      character: null,
+      isLoading: false,
+      error: null,
+    }));
 
     renderWithRouter();
 
     await waitFor(() => {
-      expect(consoleSpy).toHaveBeenCalledWith("Axios error:", "Axios fail");
+      expect(screen.queryByText(/chronos/i)).not.toBeInTheDocument();
     });
-
-    consoleSpy.mockRestore();
   });
 
-  it("logs general error", async () => {
-    const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
-    getOneEnrichedMock = vi.fn().mockRejectedValue(new Error("General fail"));
+  it("Renders nothing and navigates to /not-found if event is null", async () => {
+    (useFetchCharacter as unknown as Mock).mockImplementation(() => ({
+      character: null,
+      isLoading: false,
+      error: null,
+    }));
 
     renderWithRouter();
 
     await waitFor(() => {
-      expect(consoleSpy).toHaveBeenCalledWith("General error:", "General fail");
+      expect(screen.queryByText(/titre test/i)).not.toBeInTheDocument();
+    });
+  });
+
+  it("Capitalizes first letter of character name", async () => {
+    const lowercaseCharacter = {
+      ...mockCharacter,
+      name: "chronos",
+    };
+    (useFetchCharacter as unknown as Mock).mockImplementation(() => ({
+      character: lowercaseCharacter,
+      isLoading: false,
+      error: null,
+    }));
+
+    renderWithRouter();
+
+    await waitFor(() => {
+      expect(screen.getByText(/chronos/i)).toBeInTheDocument();
     });
 
-    consoleSpy.mockRestore();
+    const heading = screen.getByRole("heading", { level: 2 });
+    expect(heading.textContent).toBe("Chronos");
+  });
+
+  it("Renders stuff link with correct href", async () => {
+    renderWithRouter();
+
+    await waitFor(() => screen.getByText(/chronos/i));
+
+    const stuffLink = screen.getByRole("link");
+    expect(stuffLink).toHaveAttribute("href", mockCharacter.stuff);
+    expect(stuffLink).toHaveAttribute("target", "_blank");
+    expect(stuffLink).toHaveAttribute("rel", "noreferrer");
   });
 });

@@ -1,4 +1,4 @@
-type baseData = {
+export type baseItem = {
   id: number;
   name: {
     id: string;
@@ -10,7 +10,14 @@ type baseData = {
   };
 };
 
-export type Area = baseData;
-export type Dungeon = baseData;
+export type BaseData = {
+  data: baseItem[];
+};
 
-export type SubArea = baseData & { dungeonId: number };
+export type Area = baseItem;
+export type Dungeon = baseItem;
+export type SubArea = baseItem & { dungeonId: number };
+
+export type BaseDataSubArea = {
+  data: SubArea[];
+};

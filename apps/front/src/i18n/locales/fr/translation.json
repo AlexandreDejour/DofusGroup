@@ -55,6 +55,7 @@
     "subArea": "Sous-zone",
     "team": "Groupe",
     "title": "Titre",
+    "updated": "modifié",
     "usefulSites": "Sites utiles",
     "visibility": "Visibilité",
     "welcome": "Bienvenue.",
@@ -144,7 +145,7 @@
   },
 
   "comment": {
-    "single": "Commentaire",
+    "single": "Commenter",
     "add": "Ajouter un commentaire !",
     "new": "Nouveau commentaire !",
     "change": "Modifier un commentaire",
@@ -173,12 +174,13 @@
     "upComing": "Évènements à venir",
     "your": "Vos évènements",
     "error": {
+      "characterOut": "Ce personnage ne fait plus partie de l'évènement.",
+      "disable": "Vous devez créer un personnage avant de pouvoir créer un évènement.",
+      "invalidMaxPlayers": "Le nombre maximal de joueurs est inférieur au nombre de joueurs réellement inscrits.",
       "none": "Aucun évènement.",
       "noneUpcoming": "Aucun évènement à venir.",
       "noneFound": "Aucun évènement trouvé.",
-      "notFound": "Évènement introuvable",
-      "characterOut": "Ce personnage ne fait plus partie de l'évènement.",
-      "disable": "Vous devez créer un personnage avant de pouvoir créer un évènement."
+      "notFound": "Évènement introuvable"
     },
     "success": {
       "created": "Vous avez créé un nouvel évènement.",
@@ -207,6 +209,7 @@
       "required": "Vous devez renseigner un serveur."
     },
     "tag": {
+      "donjonRequired": "Vous devez renseignez un donjon.",
       "required": "Vous devez renseigner un tag."
     },
     "url": {

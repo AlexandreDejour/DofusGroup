@@ -1,5 +1,5 @@
 import "@testing-library/jest-dom";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 
 import { t } from "../../../i18n/i18n-helper";
 
@@ -231,7 +231,7 @@ describe("ModalsManager", () => {
     },
   );
 
-  it("Display NewCharacterForm when modalType is 'newCharacter'", () => {
+  it("Display NewCharacterForm when modalType is 'newCharacter'", async () => {
     mockUseModal = () => ({
       isOpen: true,
       modalType: "newCharacter",
@@ -241,10 +241,10 @@ describe("ModalsManager", () => {
       updateTarget: null,
     });
     renderModalsManager();
-    expect(screen.getByRole("form")).toBeInTheDocument();
+    await waitFor(() => expect(screen.getByRole("form")).toBeInTheDocument());
   });
 
-  it("Display UpdateCharacterForm when modalType is 'updateCharacter' and target is valid", () => {
+  it("Display UpdateCharacterForm when modalType is 'updateCharacter' and target is valid", async () => {
     const target: CharacterEnriched = {
       id: "cfff40b3-9625-4f0a-854b-d8d6d6b4b667",
       name: "Chronos",
@@ -279,10 +279,10 @@ describe("ModalsManager", () => {
     });
 
     renderModalsManager();
-    expect(screen.getByRole("form")).toBeInTheDocument();
+    await waitFor(() => expect(screen.getByRole("form")).toBeInTheDocument());
   });
 
-  it("Display UpdateEventForm when modalType is 'updateEvent' and target is valid", () => {
+  it("Display UpdateEventForm when modalType is 'updateEvent' and target is valid", async () => {
     mockUseModal = () => ({
       isOpen: true,
       modalType: "updateEvent",
@@ -293,7 +293,7 @@ describe("ModalsManager", () => {
     });
 
     renderModalsManager();
-    expect(screen.getByRole("form")).toBeInTheDocument();
+    await waitFor(() => expect(screen.getByRole("form")).toBeInTheDocument());
   });
 
   it("renders CommentForm for 'comment' modalType with EventEnriched target", () => {

@@ -1,6 +1,4 @@
 import { describe, it, beforeEach, expect, vi, Mock } from "vitest";
-
-import axios from "axios";
 import { t } from "../../../i18n/i18n-helper";
 
 import type { LoginForm, RegisterForm } from "../../../types/form";
@@ -8,28 +6,33 @@ import type { AuthUser } from "../../../types/user";
 
 import { AuthService } from "../authService";
 import handleApiError from "../../utils/handleApiError";
-
-vi.mock("axios");
+import type { ApiClient } from "../../client";
 
 vi.mock("../../utils/handleApiError", () => ({
   default: vi.fn(),
 }));
 
 describe("AuthService", () => {
-  let axiosMock: any;
+  let apiClientMock: {
+    post: Mock;
+    get: Mock;
+  };
+
   let authService: AuthService;
 
   beforeEach(() => {
-    (handleApiError as unknown as Mock).mockReset();
-    axiosMock = {
+    vi.clearAllMocks();
+
+    apiClientMock = {
       post: vi.fn(),
       get: vi.fn(),
     };
-    authService = new AuthService({ instance: axiosMock } as any);
+
+    authService = new AuthService(apiClientMock as unknown as ApiClient);
   });
 
   describe("register", () => {
-    it("Reject if password is to weak", async () => {
+    it("Reject if password is too weak", async () => {
       const data: RegisterForm = {
         username: "user",
         mail: "user@mail.com",
@@ -41,7 +44,7 @@ describe("AuthService", () => {
         t("auth.password.error.rules"),
       );
 
-      expect(axiosMock.post).not.toHaveBeenCalled();
+      expect(apiClientMock.post).not.toHaveBeenCalled();
     });
 
     it("Reject if password and confirmPassword are not similar", async () => {
@@ -56,17 +59,19 @@ describe("AuthService", () => {
         t("auth.password.error.mismatch"),
       );
 
-      expect(axiosMock.post).not.toHaveBeenCalled();
+      expect(apiClientMock.post).not.toHaveBeenCalled();
     });
 
     it("Return user if request is successful", async () => {
       const user: AuthUser = {
-        id: "91c28d2e-758a-4679-9ba7-a3d2b74ae60f",
+        id: "1",
         username: "user",
         mail: "user@mail.com",
-        password: "supersecret",
+        password: "secret",
       };
-      axiosMock.post.mockResolvedValue({ data: user });
+
+      apiClientMock.post.mockResolvedValue({ data: user });
+
       const data: RegisterForm = {
         username: "user",
         mail: "user@mail.com",
@@ -76,17 +81,12 @@ describe("AuthService", () => {
 
       await expect(authService.register(data)).resolves.toEqual(user);
 
-      expect(axiosMock.post).toHaveBeenCalledWith("/auth/register", data);
+      expect(apiClientMock.post).toHaveBeenCalledWith("/auth/register", data);
     });
 
-    it("Call handleApiError and return undefined when server returns 409", async () => {
-      const axiosError = {
-        isAxiosError: true,
-        response: { status: 409 },
-        message: "Conflit",
-      };
-      vi.mocked(axios.isAxiosError).mockReturnValue(true);
-      axiosMock.post.mockRejectedValue(axiosError);
+    it("Call handleApiError and return undefined", async () => {
+      const error = new Error("Conflict");
+      apiClientMock.post.mockRejectedValue(error);
 
       const data: RegisterForm = {
         username: "user",
@@ -97,15 +97,15 @@ describe("AuthService", () => {
 
       const result = await authService.register(data);
 
-      expect(handleApiError).toHaveBeenCalledWith(axiosError);
+      expect(handleApiError).toHaveBeenCalledWith(error);
       expect(result).toBeUndefined();
     });
 
     it("Rethrow when handleApiError throws", async () => {
       const error = new Error("Network error");
-      axiosMock.post.mockRejectedValue(error);
+      apiClientMock.post.mockRejectedValue(error);
 
-      (handleApiError as unknown as Mock).mockImplementation(() => {
+      (handleApiError as unknown as Mock).mockImplementationOnce(() => {
         throw error;
       });
 
@@ -125,7 +125,7 @@ describe("AuthService", () => {
   describe("login", () => {
     it("Reject if password is too weak", async () => {
       const data: LoginForm = {
-        username: "toto",
+        mail: "toto@mail.com",
         password: "abc",
       };
 
@@ -133,25 +133,27 @@ describe("AuthService", () => {
         t("auth.error.credentials.unavailable"),
       );
 
-      expect(axiosMock.post).not.toHaveBeenCalled();
+      expect(apiClientMock.post).not.toHaveBeenCalled();
     });
 
     it("Return user if request is successful", async () => {
       const user: AuthUser = {
-        id: "91c28d2e-758a-4679-9ba7-a3d2b74ae60f",
+        id: "1",
         username: "user",
         mail: "user@mail.com",
-        password: "supersecret",
+        password: "secret",
       };
-      axiosMock.post.mockResolvedValue({ data: user });
+
+      apiClientMock.post.mockResolvedValue({ data: user });
+
       const data: LoginForm = {
-        username: "toto",
+        mail: "toto@mail.com",
         password: "Abcd1234!",
       };
 
       await expect(authService.login(data)).resolves.toEqual(user);
 
-      expect(axiosMock.post).toHaveBeenCalledWith("/auth/login", data, {
+      expect(apiClientMock.post).toHaveBeenCalledWith("/auth/login", data, {
         withCredentials: true,
       });
     });
@@ -162,9 +164,9 @@ describe("AuthService", () => {
         response: { status: 401 },
         message: "Unauthorized",
       };
-      axiosMock.post.mockRejectedValue(axiosError);
+      apiClientMock.post.mockRejectedValue(axiosError);
       const data: LoginForm = {
-        username: "toto",
+        mail: "toto@mail.com",
         password: "Abcd1234!",
       };
 
@@ -176,14 +178,14 @@ describe("AuthService", () => {
 
     it("Rethrow when handleApiError throws", async () => {
       const error = new Error("Network error");
-      axiosMock.post.mockRejectedValue(error);
+      apiClientMock.post.mockRejectedValue(error);
 
-      (handleApiError as unknown as Mock).mockImplementation(() => {
+      (handleApiError as unknown as Mock).mockImplementationOnce(() => {
         throw error;
       });
 
       const data: LoginForm = {
-        username: "toto",
+        mail: "toto@mail.com",
         password: "Abcd1234!",
       };
 
@@ -193,20 +195,23 @@ describe("AuthService", () => {
   });
 
   describe("apiMe", () => {
-    it("Return user if request is successful", async () => {
+    it("Return user if authenticated", async () => {
       const user: AuthUser = {
-        id: "91c28d2e-758a-4679-9ba7-a3d2b74ae60f",
+        id: "1",
         username: "user",
         mail: "user@mail.com",
-        password: "supersecret",
+        password: "secret",
       };
-      axiosMock.get.mockResolvedValue({ data: user });
+
+      apiClientMock.get.mockResolvedValue({ data: user, status: 200 });
 
       await expect(authService.apiMe()).resolves.toEqual(user);
+    });
 
-      expect(axiosMock.get).toHaveBeenCalledWith("/auth/me", {
-        withCredentials: true,
-      });
+    it("Return null if 401", async () => {
+      apiClientMock.get.mockResolvedValue({ status: 401 });
+
+      await expect(authService.apiMe()).resolves.toBeNull();
     });
 
     it("Call handleApiError and return undefined for 400, 401 or 404", async () => {
@@ -216,7 +221,7 @@ describe("AuthService", () => {
           response: { status },
           message: "Unauthorized",
         };
-        axiosMock.get.mockRejectedValueOnce(axiosError);
+        apiClientMock.get.mockRejectedValueOnce(axiosError);
 
         const result = await authService.apiMe();
 
@@ -227,7 +232,7 @@ describe("AuthService", () => {
 
     it("Rethrow when handleApiError throws", async () => {
       const error = new Error("Network error");
-      axiosMock.get.mockRejectedValue(error);
+      apiClientMock.get.mockRejectedValue(error);
 
       (handleApiError as unknown as Mock).mockImplementation(() => {
         throw error;
@@ -240,31 +245,18 @@ describe("AuthService", () => {
 
   describe("logout", () => {
     it("Return data if request is successful", async () => {
-      axiosMock.post.mockResolvedValue({ data: "ok" });
+      apiClientMock.post.mockResolvedValue({ data: "ok" });
 
       await expect(authService.logout()).resolves.toEqual("ok");
 
-      expect(axiosMock.post).toHaveBeenCalledWith("/auth/logout", null, {
+      expect(apiClientMock.post).toHaveBeenCalledWith("/auth/logout", null, {
         withCredentials: true,
       });
     });
 
-    it("Call handleApiError and return undefined when axios error", async () => {
-      const axiosError = {
-        isAxiosError: true,
-        message: "Session expired",
-      };
-      axiosMock.post.mockRejectedValue(axiosError);
-
-      const result = await authService.logout();
-
-      expect(handleApiError).toHaveBeenCalledWith(axiosError);
-      expect(result).toBeUndefined();
-    });
-
     it("Rethrow when handleApiError throws", async () => {
       const error = new Error("Network error");
-      axiosMock.post.mockRejectedValue(error);
+      apiClientMock.post.mockRejectedValue(error);
 
       (handleApiError as unknown as Mock).mockImplementation(() => {
         throw error;

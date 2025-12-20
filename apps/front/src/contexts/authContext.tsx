@@ -1,6 +1,5 @@
-import { isAxiosError } from "axios";
 import { useNavigate } from "react-router";
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, { createContext, useContext } from "react";
 import { useTypedTranslation } from "../i18n/i18n-helper";
 
 import type { AuthUser } from "../types/user";
@@ -9,6 +8,7 @@ import { Config } from "../config/config";
 import { ApiClient } from "../services/client";
 import { useNotification } from "./notificationContext";
 import { AuthService } from "../services/api/authService";
+import useFetchAuthUser from "../hooks/useFetchAuthUser";
 
 const config = Config.getInstance();
 const axios = new ApiClient(config.backUrl);
@@ -17,7 +17,7 @@ const authService = new AuthService(axios);
 export interface AuthContextType {
   user: AuthUser | null;
   setUser: (user: AuthUser | null) => void;
-  isAuthLoading: boolean;
+  isLoading: boolean;
   logout: () => void;
 }
 
@@ -32,28 +32,7 @@ export default function AuthProvider({ children }: AuthProviderProps) {
   const t = useTypedTranslation();
 
   const { showInfo } = useNotification();
-
-  const [user, setUser] = useState<AuthUser | null>(null);
-  const [isAuthLoading, setIsAuthLoading] = useState<boolean>(true);
-
-  useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const response = await authService.apiMe();
-        setUser(response);
-      } catch (error) {
-        setUser(null);
-        if (isAxiosError(error)) {
-          console.error("Axios error:", error.message);
-        } else if (error instanceof Error) {
-          console.error("General error:", error.message);
-        }
-      } finally {
-        setIsAuthLoading(false);
-      }
-    };
-    fetchUser();
-  }, []);
+  const { user, setUser, isLoading } = useFetchAuthUser();
 
   const logout = async () => {
     await authService.logout();
@@ -66,7 +45,7 @@ export default function AuthProvider({ children }: AuthProviderProps) {
   const contextValues: AuthContextType = {
     user,
     setUser,
-    isAuthLoading,
+    isLoading,
     logout,
   };
 

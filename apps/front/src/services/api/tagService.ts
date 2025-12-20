@@ -14,6 +14,8 @@ export class TagService {
 
       response.data.sort((a, b) => a.name.localeCompare(b.name));
 
+      response.data.sort((a, b) => a.name.localeCompare(b.name));
+
       return response.data;
     } catch (error) {
       handleApiError(error);

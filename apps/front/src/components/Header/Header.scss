@@ -38,6 +38,7 @@
 
     @media (max-width: 600px) {
       height: 25%;
+      margin: 2% auto;
     }
 
     &_logo {
@@ -145,6 +146,10 @@
       list-style: none;
       gap: 2%;
 
+      @media (max-width: 600px) {
+        padding: 0% 1%;
+      }
+
       &_item {
         width: 25%;
         padding: 1% 1%;
@@ -165,6 +170,10 @@
         .nav_button {
           width: 90%;
           padding: 5% 10%;
+
+          @media (max-width: 600px) {
+            width: 100%;
+          }
         }
       }
     }

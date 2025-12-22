@@ -55,12 +55,18 @@
     color: white;
     border-radius: 0.5rem;
 
+    @media (max-width: 1279px) {
+      width: 12.5%;
+    }
+
     @media (max-width: 1023px) {
-      width: 30%;
+      width: 40%;
+      padding: 1% 0%;
       margin-bottom: 5%;
     }
 
     @media (max-width: 600px) {
+      width: 35%;
       padding: 1% 0%;
     }
   }

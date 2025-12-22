@@ -5,8 +5,6 @@ import { useTypedTranslation } from "../../i18n/i18n-helper";
 
 import { Event } from "../../types/event";
 
-import { useAuth } from "../../contexts/authContext";
-import { useModal } from "../../contexts/modalContext";
 import { useScreen } from "../../contexts/screenContext";
 
 import useFetchTags from "../../hooks/useFetchTags";
@@ -18,13 +16,10 @@ import Spinner from "../../components/Spinner/Spinner";
 import EventCard from "../../components/EventCard/EventCard";
 import Pagination from "../../components/Pagination/Pagination";
 import EventFilter from "../../components/EventFilter/EventFilter";
-import useUserCharactersChecker from "../../hooks/useUserCharactersChecker";
 
 export default function Home() {
   const t = useTypedTranslation();
 
-  const { user } = useAuth();
-  const { openModal } = useModal();
   const { isDesktop } = useScreen();
 
   const [totalPages, setTotalPages] = useState(1);
@@ -45,7 +40,6 @@ export default function Home() {
     setTotalPages,
   );
 
-  const checkUserCharacters = useUserCharactersChecker(user);
   const handleSearch = useSearchHandler(currentPage, setEvents, setTotalPages);
 
   return (
@@ -70,23 +64,6 @@ export default function Home() {
           <p className="home_header_date">{t("common.date")}</p>
           <p className="home_header_duration">{t("common.duration")}</p>
           <p className="home_header_players">{t("common.players")}</p>
-          <button
-            type="button"
-            className="home_header_create button"
-            onClick={async () => {
-              const hasCharacters = await checkUserCharacters();
-              if (hasCharacters) openModal("newEvent");
-            }}
-            title={!user ? t("event.error.disable") : ""}
-            disabled={!user}
-            style={{
-              background: !user
-                ? "grey"
-                : "radial-gradient(circle, rgba(96,186,96,1) 0%, rgba(156,217,92,1) 90%)",
-            }}
-          >
-            {t("common.new")}
-          </button>
         </header>
       )}
 

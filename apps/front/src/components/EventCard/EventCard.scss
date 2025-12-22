@@ -7,7 +7,7 @@
   background-color: var(--secondary-bg);
   font-size: 1.2rem;
   display: flex;
-  justify-content: space-evenly;
+  justify-content: space-between;
   align-items: center;
   border: 3px solid transparent;
   border-radius: 1rem;
@@ -65,11 +65,11 @@
   }
 
   &_server {
-    width: 15%;
+    width: 12.5%;
   }
 
   &_date {
-    width: 17.5%;
+    width: 15%;
   }
 
   &_duration {
@@ -159,5 +159,5 @@
 }
 
 .event_card:hover {
-  border: 3px solid var(--breed-hover-border);
+  border: 3px solid var(--selection-border);
 }

@@ -65,11 +65,7 @@
 
     &_button {
       width: 45%;
-      padding: 2.5% 20%;
-
-      @media (max-width: 1023px) {
-        width: 30%;
-      }
+      padding: 2.5% 22.5%;
 
       @media (max-width: 600px) {
         margin: 5% 0%;

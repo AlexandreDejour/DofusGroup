@@ -1,6 +1,6 @@
 import "./EventCard.scss";
 
-import { useNavigate } from "react-router";
+import { Link } from "react-router";
 import { useScreen } from "../../contexts/screenContext";
 import { useTypedTranslation } from "../../i18n/i18n-helper";
 
@@ -11,15 +11,14 @@ interface EventCardProps {
 }
 
 export default function EventCard({ event }: EventCardProps) {
-  const navigate = useNavigate();
   const t = useTypedTranslation();
 
   const { isDesktop } = useScreen();
 
   return (
     <article>
-      <a
-        href={`/event/${event.id}`}
+      <Link
+        to={`/event/${event.id}`}
         className="event_card"
         aria-label={event.title}
       >
@@ -68,7 +67,7 @@ export default function EventCard({ event }: EventCardProps) {
             </p>
           </div>
         )}
-      </a>
+      </Link>
     </article>
   );
 }

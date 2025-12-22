@@ -24,7 +24,7 @@ export default function useFetchEvents(
       setError(null);
 
       try {
-        const eventsData = await service.getEvents(10, currentPage);
+        const eventsData = await service.getEvents(20, currentPage);
 
         setEvents(eventsData.events);
         setTotalPages(eventsData.totalPages);

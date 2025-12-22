@@ -106,7 +106,7 @@
 
     &_button:hover {
       cursor: pointer;
-      border: 2px solid white;
+      border: 2px solid var(--selection-border);
     }
   }
 }

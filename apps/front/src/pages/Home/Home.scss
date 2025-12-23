@@ -27,9 +27,8 @@
 
   &_header {
     width: 100%;
-    margin: 2% 0% 0% 0%;
-    padding: 2%;
-    background-color: var(--secondary-bg);
+    margin: 1% 0% 0% 0%;
+    padding: 0% 2%;
     font-size: 1.2rem;
     font-weight: var(--semi-bold);
     display: flex;
@@ -46,7 +45,7 @@
     }
 
     &_title {
-      width: 30%;
+      width: 35%;
     }
 
     &_tag {
@@ -60,7 +59,7 @@
     }
 
     &_date {
-      width: 12.5%;
+      width: 15%;
     }
 
     &_duration {

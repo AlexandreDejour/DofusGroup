@@ -18,14 +18,12 @@ vi.mock("../../../contexts/screenContext", () => ({
   useScreen: vi.fn(),
 }));
 
-const openModal = vi.fn();
-const handleDelete = vi.fn();
 vi.mock("../../../contexts/modalContext", () => ({
   __esModule: true,
   default: ({ children }: { children: React.ReactNode }) => children,
   useModal: () => ({
-    openModal,
-    handleDelete,
+    openModal: vi.fn(),
+    handleDelete: vi.fn(),
   }),
 }));
 
@@ -41,12 +39,11 @@ vi.mock("../../../contexts/authContext", () => ({
   }),
 }));
 
-const showError = vi.fn();
 vi.mock("../../../contexts/notificationContext", () => ({
   __esModule: true,
   default: ({ children }: { children: React.ReactNode }) => children,
   useNotification: () => ({
-    showError,
+    showError: vi.fn(),
   }),
 }));
 

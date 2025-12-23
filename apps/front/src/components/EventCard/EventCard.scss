@@ -2,19 +2,20 @@
 
 .event_card {
   width: 100%;
-  margin: 2% 0%;
-  padding: 2%;
+  margin: 1% 0%;
+  padding: 1% 2%;
   background-color: var(--secondary-bg);
-  font-size: 1.1rem;
+  font-size: 1.2rem;
   display: flex;
-  justify-content: space-evenly;
+  justify-content: space-between;
   align-items: center;
+  border: 3px solid transparent;
   border-radius: 1rem;
 
   @media (max-width: 1023px) {
     height: 100%;
     padding: 3% 1% 6% 1%;
-    font-size: 1rem;
+    font-size: 1.1rem;
     display: flex;
     flex-direction: column;
   }
@@ -22,20 +23,20 @@
   @media (max-width: 600px) {
     width: 95%;
     margin: 1% auto;
-    font-size: 0.8rem;
+    font-size: 0.9rem;
   }
 
   @media (min-width: 1920px) {
-    font-size: 1.3rem;
+    font-size: 1.4rem;
   }
 
   @media (min-width: 2560px) {
-    font-size: 1.5rem;
+    font-size: 1.6rem;
   }
 
   &_title {
-    width: 30%;
-    font-size: 1.3rem;
+    width: 35%;
+    font-size: 1.5rem;
 
     @media (max-width: 1023px) {
       width: 95%;
@@ -43,22 +44,29 @@
     }
 
     @media (max-width: 600px) {
-      font-size: 1rem;
+      font-size: 1.2rem;
     }
   }
 
   &_tag {
-    width: 12.5%;
-    padding: 0.5% 0%;
+    width: 10%;
+    margin: 0%, 2.5%;
+    padding: 0.05% 0%;
     color: white;
     border-radius: 0.5rem;
 
+    @media (max-width: 1279px) {
+      width: 12.5%;
+    }
+
     @media (max-width: 1023px) {
-      width: 30%;
+      width: 40%;
+      padding: 1% 0%;
       margin-bottom: 5%;
     }
 
     @media (max-width: 600px) {
+      width: 35%;
       padding: 1% 0%;
     }
   }
@@ -68,7 +76,7 @@
   }
 
   &_date {
-    width: 12.5%;
+    width: 15%;
   }
 
   &_duration {
@@ -77,18 +85,6 @@
 
   &_players {
     width: 10%;
-  }
-
-  &_button {
-    width: 10%;
-    margin-left: 2.5%;
-    padding: 1% 2%;
-
-    @media (max-width: 1023px) {
-      width: 30%;
-      margin: 6% auto 0% auto;
-      padding: 2% 1%;
-    }
   }
 
   &_container {
@@ -167,4 +163,8 @@
       }
     }
   }
+}
+
+.event_card:hover {
+  border: 3px solid var(--selection-border);
 }

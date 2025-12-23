@@ -5,11 +5,14 @@ import { useTypedTranslation } from "../../i18n/i18n-helper";
 import { Tag } from "../../types/tag";
 import { Server } from "../../types/server";
 
+import { useAuth } from "../../contexts/authContext";
+import { useModal } from "../../contexts/modalContext";
 import { useScreen } from "../../contexts/screenContext";
 
 import { generateOptions } from "../modals/utils/generateOptions";
 
 import SelectOptions from "../modals/formComponents/Options/SelectOptions";
+import useUserCharactersChecker from "../../hooks/useUserCharactersChecker";
 
 interface EventFilterProps {
   tags: Tag[];
@@ -36,7 +39,11 @@ export default function EventFilter({
 }: EventFilterProps) {
   const t = useTypedTranslation();
 
+  const { user } = useAuth();
+  const { openModal } = useModal();
   const { isDesktop } = useScreen();
+
+  const checkUserCharacters = useUserCharactersChecker(user);
 
   return (
     <form onSubmit={handleSearch} className="filter" role="form">
@@ -118,9 +125,29 @@ export default function EventFilter({
         </div>
       )}
 
-      <button type="submit" className="button">
-        {t("common.search")}
-      </button>
+      <div className="filter_actions">
+        <button type="submit" className="filter_actions_button button">
+          {t("common.search")}
+        </button>
+
+        <button
+          type="button"
+          className="filter_actions_button button"
+          onClick={async () => {
+            const hasCharacters = await checkUserCharacters();
+            if (hasCharacters) openModal("newEvent");
+          }}
+          title={!user ? t("event.error.disable") : ""}
+          disabled={!user}
+          style={{
+            background: !user
+              ? "grey"
+              : "radial-gradient(circle, rgba(96,186,96,1) 0%, rgba(156,217,92,1) 90%)",
+          }}
+        >
+          {t("common.new")}
+        </button>
+      </div>
     </form>
   );
 }

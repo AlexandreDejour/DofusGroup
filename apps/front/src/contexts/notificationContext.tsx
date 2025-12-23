@@ -103,7 +103,7 @@ export function useNotification() {
   const context = useContext(NotificationContext);
 
   if (!context) {
-    throw new Error("useContext must be used in NotificationProvider");
+    throw new Error("useNotification must be used in NotificationProvider");
   }
 
   return context;

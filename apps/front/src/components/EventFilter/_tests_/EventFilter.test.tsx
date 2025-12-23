@@ -1,4 +1,4 @@
-import { vi } from "vitest";
+import { Mock, vi } from "vitest";
 import "@testing-library/jest-dom";
 import { render, screen, fireEvent } from "@testing-library/react";
 
@@ -12,6 +12,34 @@ import EventFilter from "../EventFilter";
 vi.mock("../../../contexts/screenContext", () => ({
   useScreen: vi.fn(),
 }));
+
+vi.mock("../../../contexts/authContext", () => ({
+  __esModule: true,
+  useAuth: () => ({
+    user: {
+      id: "15ff46b5-60f3-4e86-98bc-da8fcaa3e29e",
+      username: "toto",
+    },
+    setUser: vi.fn(),
+    isAuthLoading: false,
+  }),
+}));
+
+vi.mock("../../../contexts/modalContext", () => ({
+  __esModule: true,
+  default: ({ children }: { children: React.ReactNode }) => children,
+  useModal: () => ({
+    openModal: vi.fn(),
+    handleDelete: vi.fn(),
+  }),
+}));
+
+vi.mock("../../../hooks/useUserCharactersChecker", () => ({
+  __esModule: true,
+  default: vi.fn(),
+}));
+
+import useUserCharactersChecker from "../../../hooks/useUserCharactersChecker";
 
 const mockTags = [
   { id: "e70d01fa-6074-44cc-b804-a430f4162eb5", name: "PvP", color: "#ffff" },
@@ -36,6 +64,11 @@ describe("EventFilter component", () => {
       isTablet: false,
       isMobile: false,
     });
+
+    (useUserCharactersChecker as unknown as Mock).mockImplementation(() => ({
+      checkUserCharacters: true,
+    }));
+
     setTag = vi.fn();
     setTitle = vi.fn();
     setServer = vi.fn();

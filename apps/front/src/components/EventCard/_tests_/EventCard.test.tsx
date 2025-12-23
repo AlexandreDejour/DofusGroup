@@ -114,10 +114,13 @@ describe("EventCard", () => {
     expect(screen.getByText("1/8")).toBeInTheDocument();
   });
 
-  it("Navigate to details on button click", () => {
-    const button = screen.getByRole("button", { name: t("common.details") });
-    fireEvent.click(button);
-    expect(mockNavigate).toHaveBeenCalledWith(
+  it("Navigate to details on link click", () => {
+    const link = screen.getByRole("link", {
+      name: /event test/i,
+    });
+
+    expect(link).toHaveAttribute(
+      "href",
       "/event/e804f5c2-09af-4aac-ab05-8dc7743fcc2d",
     );
   });

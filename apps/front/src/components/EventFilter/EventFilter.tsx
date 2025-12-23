@@ -5,14 +5,14 @@ import { useTypedTranslation } from "../../i18n/i18n-helper";
 import { Tag } from "../../types/tag";
 import { Server } from "../../types/server";
 
+import { useAuth } from "../../contexts/authContext";
+import { useModal } from "../../contexts/modalContext";
 import { useScreen } from "../../contexts/screenContext";
 
 import { generateOptions } from "../modals/utils/generateOptions";
 
 import SelectOptions from "../modals/formComponents/Options/SelectOptions";
-import { useModal } from "../../contexts/modalContext";
 import useUserCharactersChecker from "../../hooks/useUserCharactersChecker";
-import { useAuth } from "../../contexts/authContext";
 
 interface EventFilterProps {
   tags: Tag[];

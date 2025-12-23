@@ -97,7 +97,7 @@ describe("useFetchEvents hook", () => {
     });
 
     expect(mockService.getEvents).toHaveBeenCalledTimes(1);
-    expect(mockService.getEvents).toHaveBeenCalledWith(10, 1);
+    expect(mockService.getEvents).toHaveBeenCalledWith(20, 1);
     expect(setEvents).toHaveBeenCalledWith(eventsData.events);
     expect(setTotalPages).toHaveBeenCalledWith(eventsData.totalPages);
     expect(result.current.error).toBeNull();
@@ -213,7 +213,7 @@ describe("useFetchEvents hook", () => {
     );
 
     await waitFor(() =>
-      expect(mockService.getEvents).toHaveBeenCalledWith(10, 2),
+      expect(mockService.getEvents).toHaveBeenCalledWith(20, 2),
     );
   });
 });

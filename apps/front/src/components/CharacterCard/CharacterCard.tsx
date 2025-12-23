@@ -1,15 +1,15 @@
 import "./CharacterCard.scss";
 
-import { useNavigate } from "react-router";
+import { Link } from "react-router";
 import { useTypedTranslation } from "../../i18n/i18n-helper";
 
-import { faTrash } from "@fortawesome/free-solid-svg-icons";
+import { faPen, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import { CharacterEnriched } from "../../types/character";
 
 import { useScreen } from "../../contexts/screenContext";
-import { TargetType } from "../../contexts/modalContext";
+import { TargetType, useModal } from "../../contexts/modalContext";
 
 interface CharacterCardProps {
   character: CharacterEnriched;
@@ -20,13 +20,13 @@ export default function CharacterCard({
   character,
   handleDelete,
 }: CharacterCardProps) {
-  const navigate = useNavigate();
   const t = useTypedTranslation();
 
+  const { openModal } = useModal();
   const { isDesktop } = useScreen();
 
   return (
-    <article className="character_card">
+    <Link to={`/character/${character.id}`} className="character_card">
       {character.sex === "M" ? (
         <img
           className="character_card_img"
@@ -65,21 +65,29 @@ export default function CharacterCard({
         </div>
       )}
 
-      <div className="character_card_buttons">
+      <div className="character_card_actions">
         <button
-          className="character_card_buttons_details button"
-          onClick={() => navigate(`/character/${character.id}`)}
+          className="character_card_actions_button button"
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            openModal("updateCharacter", character);
+          }}
         >
-          {t("common.details")}
+          <FontAwesomeIcon icon={faPen} />
         </button>
         <button
-          className="character_card_buttons_delete button delete"
+          className="character_card_actions_button button delete"
           aria-label={`Delete event ${character.name}`}
-          onClick={() => handleDelete("character", character.id)}
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            handleDelete("character", character.id);
+          }}
         >
           <FontAwesomeIcon icon={faTrash} />
         </button>
       </div>
-    </article>
+    </Link>
   );
 }

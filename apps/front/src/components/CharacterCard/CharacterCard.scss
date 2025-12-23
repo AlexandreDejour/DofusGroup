@@ -1,18 +1,19 @@
 .character_card {
   width: 100%;
-  margin: 2% 0%;
-  padding: 1%;
+  margin: 1% 0%;
+  padding: 0.5% 2%;
   background-color: var(--secondary-bg);
   font-size: 1.1rem;
   display: flex;
-  justify-content: space-evenly;
+  justify-content: space-between;
   align-items: center;
+  border: 3px solid transparent;
   border-radius: 1rem;
 
   @media (max-width: 1023px) {
     height: 100%;
     padding: 3% 1% 6% 1%;
-    font-size: 1rem;
+    font-size: 1.1rem;
     display: flex;
     flex-direction: column;
   }
@@ -20,15 +21,15 @@
   @media (max-width: 600px) {
     width: 90%;
     margin: 2% auto;
-    font-size: 0.8rem;
+    font-size: 0.9rem;
   }
 
   @media (min-width: 1920px) {
-    font-size: 1.2rem;
+    font-size: 1.4rem;
   }
 
   @media (min-width: 2560px) {
-    font-size: 1.4rem;
+    font-size: 1.6rem;
   }
 
   &_img {
@@ -41,38 +42,38 @@
   }
 
   &_name {
-    width: 20%;
-    font-size: 1.3rem;
+    width: 30%;
+    font-size: 1.4rem;
 
     @media (max-width: 1023px) {
       font-size: 1.2rem;
     }
 
     @media (max-width: 600px) {
-      font-size: 1rem;
+      font-size: 0.1rem;
     }
 
     @media (min-width: 1920px) {
-      font-size: 1.4rem;
+      font-size: 1.5rem;
     }
 
     @media (min-width: 2560px) {
-      font-size: 1.5rem;
+      font-size: 1.6rem;
     }
   }
 
   &_breed {
-    width: 12.5%;
+    width: 20%;
   }
 
   &_level {
-    width: 12.5%;
+    width: 20%;
   }
 
-  &_buttons {
-    width: 30%;
+  &_actions {
+    width: 15%;
     display: flex;
-    justify-content: space-evenly;
+    justify-content: space-between;
     align-items: center;
 
     @media (max-width: 1023px) {
@@ -80,19 +81,9 @@
       margin-top: 5%;
     }
 
-    &_details {
-      width: 50%;
-      margin: 2% 0%;
-      padding: 3% 1%;
-
-      @media (max-width: 1023px) {
-        width: 55%;
-      }
-    }
-
-    &_delete {
-      width: 25%;
-      padding: 4% 1%;
+    &_button {
+      width: 40%;
+      padding: 10% 2%;
 
       @media (max-width: 1023px) {
         width: 30%;
@@ -117,4 +108,8 @@
       }
     }
   }
+}
+
+.character_card:hover {
+  border: 3px solid var(--selection-border);
 }

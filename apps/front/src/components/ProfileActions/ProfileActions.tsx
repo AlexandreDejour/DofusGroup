@@ -16,40 +16,38 @@ export default function ProfileActions() {
     <>
       {userEnriched ? (
         <>
-          <h2 className="profile_section_title">{t("common.profile")}</h2>
-
-          <div className="profile_section_actions">
+          <div className="profile_actions">
             <button
               type="button"
-              className="profile_section_actions_button button"
+              className="profile_actions_button button"
               onClick={() => openModal("username")}
             >
               {t("auth.usernameChange")}
             </button>
             <button
               type="button"
-              className="profile_section_actions_button button"
+              className="profile_actions_button button"
               onClick={() => openModal("password")}
             >
               {t("auth.password.change")}
             </button>
             <button
               type="button"
-              className="profile_section_actions_button button"
+              className="profile_actions_button button"
               onClick={() => openModal("mail")}
             >
               {t("auth.email.change")}
             </button>
             <button
               type="button"
-              className="profile_section_actions_button button delete"
+              className="profile_actions_button button delete"
               onClick={() => handleDelete("user")}
             >
               {t("common.delete.account")}
             </button>
             <button
               type="button"
-              className="profile_section_actions_button button"
+              className="profile_actions_button button"
               onClick={() => openModal("newEvent")}
               title={
                 !userEnriched.characters?.length ? t("event.error.disable") : ""
@@ -65,7 +63,7 @@ export default function ProfileActions() {
             </button>
             <button
               type="button"
-              className="profile_section_actions_button button"
+              className="profile_actions_button button"
               onClick={() => openModal("newCharacter")}
             >
               {t("character.create")}

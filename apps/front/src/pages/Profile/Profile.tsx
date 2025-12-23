@@ -1,5 +1,8 @@
 import "./Profile.scss";
 
+import { faPlus } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+
 import { useTypedTranslation } from "../../i18n/i18n-helper";
 
 import { CharacterEnriched } from "../../types/character";
@@ -12,13 +15,14 @@ import useFetchUpComingEvents from "../../hooks/useFetchUpComingEvents";
 
 import Spinner from "../../components/Spinner/Spinner";
 import CharacterCard from "../../components/CharacterCard/CharacterCard";
+import ProfileActions from "../../components/ProfileActions/ProfileActions";
 import ProfileEventCard from "../../components/ProfileEventCard/ProfileEventCard";
 
 export default function Profile() {
   const t = useTypedTranslation();
 
   const { user } = useAuth();
-  const { handleDelete } = useModal();
+  const { openModal, handleDelete } = useModal();
 
   const { userEnriched, isLoading: userEnrichedLoading } = useUserEnriched();
   const { upComingEvents, isLoading: upComingEventsLoading } =
@@ -28,7 +32,7 @@ export default function Profile() {
     <>
       {user && userEnriched ? (
         <main className="profile">
-          <section className="profile_section">
+          <section className="profile_section upcoming">
             <h2 className="profile_section_title">{t("event.upComing")}</h2>
             {!upComingEventsLoading ? (
               upComingEvents && upComingEvents.length ? (
@@ -51,8 +55,15 @@ export default function Profile() {
             )}
           </section>
 
-          <section className="profile_section">
+          <section className="profile_section events">
             <h2 className="profile_section_title">{t("event.your")}</h2>
+            <button
+              type="button"
+              className="profile_section_plus button"
+              onClick={() => openModal("newCharacter")}
+            >
+              <FontAwesomeIcon icon={faPlus} />
+            </button>
             {!userEnrichedLoading ? (
               userEnriched.events && userEnriched.events.length ? (
                 <ul className="profile_section_list">
@@ -77,8 +88,15 @@ export default function Profile() {
             )}
           </section>
 
-          <section className="profile_section">
+          <section className="profile_section characters">
             <h2 className="profile_section_title">{t("character.your")}</h2>
+            <button
+              type="button"
+              className="profile_section_plus button"
+              onClick={() => openModal("newCharacter")}
+            >
+              <FontAwesomeIcon icon={faPlus} />
+            </button>
             {!userEnrichedLoading ? (
               userEnriched.characters && userEnriched.characters.length ? (
                 <ul className="profile_section_list">
@@ -108,6 +126,11 @@ export default function Profile() {
                 loading={userEnrichedLoading}
               />
             )}
+          </section>
+
+          <section className="profile_section actions">
+            <h2 className="profile_section_title">{t("common.profile")}</h2>
+            <ProfileActions />
           </section>
         </main>
       ) : null}

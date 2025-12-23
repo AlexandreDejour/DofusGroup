@@ -1,7 +1,6 @@
 import "./ProfileEventCard.scss";
 
 import { Link } from "react-router";
-import { useTypedTranslation } from "../../i18n/i18n-helper";
 
 import { faPen, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -20,8 +19,6 @@ export default function ProfileEventCard({
   event,
   handleDelete,
 }: ProfileEventCardProps) {
-  const t = useTypedTranslation();
-
   const { openModal } = useModal();
   const { isDesktop } = useScreen();
 
@@ -38,6 +35,7 @@ export default function ProfileEventCard({
       </p>
       {isDesktop ? (
         <>
+          <p className="profile_event_card_server">{event.server.name}</p>
           <p className="profile_event_card_date">
             {new Date(event.date).toLocaleString(undefined, {
               dateStyle: "short",
@@ -50,6 +48,9 @@ export default function ProfileEventCard({
         </>
       ) : (
         <div className="profile_event_card_container">
+          <p className="profile_event_card_container_server">
+            <span>Serveur:</span> {event.server.name}
+          </p>
           <p className="profile_event_card_container_date">
             <span>Date:</span>{" "}
             {new Date(event.date).toLocaleString(undefined, {

@@ -51,7 +51,7 @@
       }
 
       input:checked + img {
-        border: 2px solid var(--breed-hover-border);
+        border: 2px solid var(--selection-border);
         border-radius: 0.5rem;
       }
 
@@ -62,7 +62,7 @@
 
       img:hover {
         cursor: pointer;
-        border: 2px solid var(--breed-hover-border);
+        border: 2px solid var(--selection-border);
       }
     }
   }

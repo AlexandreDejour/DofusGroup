@@ -109,7 +109,6 @@ export default function ModalProvider({ children }: ModalProviderProps) {
       updateTarget?: Event | CharacterEnriched | CommentEnriched,
     ) => {
       if (updateTarget) setUpdateTarget(updateTarget);
-
       setModalType(modalType);
       setIsOpen(true);
     },
@@ -236,6 +235,7 @@ export default function ModalProvider({ children }: ModalProviderProps) {
         }
 
         if (modalType === "updateCharacter") {
+          console.log("update Character");
           if (!user) {
             showError(
               t("auth.prompt.loginRequired"),

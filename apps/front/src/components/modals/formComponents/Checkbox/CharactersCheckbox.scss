@@ -85,6 +85,6 @@
   }
 
   .characters_choices_label:has(input:checked) {
-    border: 2px solid var(--breed-hover-border);
+    border: 2px solid var(--selection-border);
   }
 }

@@ -2,7 +2,7 @@
 
 .filter {
   width: 100%;
-  padding: 0% 2% 2% 2%;
+  padding: 0% 2% 1% 1%;
   font-size: 1.1rem;
   background-color: var(--secondary-bg);
   display: flex;
@@ -30,14 +30,22 @@
   }
 
   &_item {
-    width: 27.5%;
+    width: 25%;
     display: flex;
     justify-content: center;
     align-items: center;
 
+    @media (max-width: 1279px) {
+      width: 22.5%;
+    }
+
+    .content_modal_form_label {
+      margin: 1.5% 0% 0% 0%;
+    }
+
     &_label {
-      width: 85%;
-      margin-top: 5.5%;
+      width: 95%;
+      margin-top: 1.5%;
       display: flex;
       flex-direction: column;
       justify-content: center;
@@ -45,35 +53,48 @@
 
       input {
         width: 100%;
-        margin-top: 2%;
-        padding: 1% 2%;
+        margin-top: 2.25%;
+        padding: 1.5% 2%;
+        border: 1px solid rgb(133, 133, 133);
       }
     }
   }
 
-  button {
-    width: 12%;
-    margin: 2% 0% 0% 2%;
-    padding: 1%;
+  &_actions {
+    width: 20%;
+    margin-top: 1%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    @media (max-width: 1279px) {
+      width: 25%;
+    }
 
     @media (max-width: 1023px) {
-      width: 30%;
+      margin: 2% 0% 1%;
+      width: 40%;
     }
 
     @media (max-width: 600px) {
-      margin: 5% 0%;
-      width: 50%;
+      margin: 3% 0% 2%;
+      width: 60%;
     }
 
-    @media (min-width: 1920px) {
-      width: 10%;
+    &_button {
+      width: 45%;
+      padding: 2.5% 22.5%;
+
+      @media (max-width: 600px) {
+        padding: 2.5%;
+      }
     }
   }
 
   &_items {
-    width: 85%;
+    width: 100%;
     display: flex;
-    justify-content: space-between;
+    justify-content: space-evenly;
     align-items: center;
 
     @media (max-width: 600px) {
@@ -81,7 +102,7 @@
     }
 
     &_item {
-      width: 33%;
+      width: 30%;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -97,6 +118,10 @@
         flex-direction: column;
         justify-content: center;
         align-items: center;
+
+        @media (max-width: 600px) {
+          margin-top: 2%;
+        }
 
         input {
           width: 100%;

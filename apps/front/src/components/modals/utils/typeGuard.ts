@@ -21,7 +21,7 @@ export const typeGuard = {
     );
   },
 
-  eventEnriched: (obj: any): obj is EventEnriched => {
+  event: (obj: any): obj is EventEnriched => {
     return (
       obj !== null &&
       typeof obj === "object" &&
@@ -39,9 +39,7 @@ export const typeGuard = {
       // enriched properties
       obj.tag !== undefined &&
       obj.server !== undefined &&
-      obj.characters !== undefined &&
-      obj.comments !== undefined &&
-      obj.user !== undefined
+      obj.characters !== undefined
     );
   },
 

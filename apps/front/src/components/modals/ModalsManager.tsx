@@ -9,13 +9,13 @@ import { typeGuard } from "./utils/typeGuard";
 
 import LoginForm from "./forms/Forms/LoginForm";
 import UpdateForm from "./forms/Forms/UpdateForm";
+import CommentForm from "./forms/Forms/CommentForm";
 import RegisterForm from "./forms/Forms/RegisterForm";
 import NewEventForm from "./forms/NewEventForm/NewEventForm";
 import JoinEventForm from "./forms/JoinEventForm/JoinEventForm";
 import UpdateEventForm from "./forms/UpdateEventForm/UpdateEventForm";
 import NewCharacterForm from "./forms/NewCharacterForm/NewCharacterForm";
 import UpdateCharacterForm from "./forms/UpdateCharacterForm/UpdateCharacterForm";
-import CommentForm from "./forms/Forms/CommentForm";
 
 export default function ModalsManager() {
   const { isOpen, modalType, updateTarget, handleSubmit, closeModal } =
@@ -67,20 +67,18 @@ export default function ModalsManager() {
             <NewEventForm handleSubmit={(event) => handleSubmit(event)} />
           )}
 
-          {modalType === "updateEvent" &&
-            typeGuard.eventEnriched(updateTarget) && (
-              <UpdateEventForm
-                updateTarget={updateTarget}
-                handleSubmit={(event) => handleSubmit(event)}
-              />
-            )}
+          {modalType === "updateEvent" && typeGuard.event(updateTarget) && (
+            <UpdateEventForm
+              updateTarget={updateTarget}
+              handleSubmit={(event) => handleSubmit(event)}
+            />
+          )}
 
-          {modalType === "joinEvent" &&
-            typeGuard.eventEnriched(updateTarget) && (
-              <JoinEventForm handleSubmit={(event) => handleSubmit(event)} />
-            )}
+          {modalType === "joinEvent" && typeGuard.event(updateTarget) && (
+            <JoinEventForm handleSubmit={(event) => handleSubmit(event)} />
+          )}
 
-          {modalType === "comment" && typeGuard.eventEnriched(updateTarget) && (
+          {modalType === "comment" && typeGuard.event(updateTarget) && (
             <CommentForm handleSubmit={(event) => handleSubmit(event)} />
           )}
 

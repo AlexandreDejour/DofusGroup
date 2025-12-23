@@ -26,10 +26,10 @@ import { EventService } from "../services/api/eventService";
 import { displayModalError } from "./utils/displayModalError";
 import { displayTargetError } from "./utils/displayTargetError";
 import { CommentService } from "../services/api/commentService";
+import { typeGuard } from "../components/modals/utils/typeGuard";
 import { CharacterService } from "../services/api/characterService";
 import isUpdateField from "../components/modals/utils/isUpdateField";
 import { cleanProfanity, containsProfanity } from "./utils/profanity";
-import { typeGuard } from "../components/modals/utils/typeGuard";
 
 const config = Config.getInstance();
 const axios = new ApiClient(config.backUrl);
@@ -353,7 +353,7 @@ export default function ModalProvider({ children }: ModalProviderProps) {
             return;
           }
 
-          if (!updateTarget || !typeGuard.eventEnriched(updateTarget)) return;
+          if (!updateTarget || !typeGuard.event(updateTarget)) return;
 
           const keys: (keyof CreateEventForm)[] = [
             "title",

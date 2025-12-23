@@ -18,7 +18,7 @@ export default function Profile() {
   const t = useTypedTranslation();
 
   const { user } = useAuth();
-  const { openModal, handleDelete } = useModal();
+  const { handleDelete } = useModal();
 
   const { userEnriched, isLoading: userEnrichedLoading } = useUserEnriched();
   const { upComingEvents, isLoading: upComingEventsLoading } =
@@ -28,78 +28,6 @@ export default function Profile() {
     <>
       {user && userEnriched ? (
         <main className="profile">
-          <section className="profile_section">
-            <h2 className="profile_section_title">{t("common.profile")}</h2>
-
-            <div className="profile_section_details">
-              <p className="profile_section_details_info">
-                {t("auth.username")}: {user.username}
-              </p>
-              <p className="profile_section_details_info">
-                {t("event.list")}: {userEnriched.events?.length}
-              </p>
-              <p className="profile_section_details_info">
-                {t("character.list")}: {userEnriched.characters?.length}
-              </p>
-            </div>
-
-            <div className="profile_section_actions">
-              <button
-                type="button"
-                className="profile_section_actions_button button"
-                onClick={() => openModal("username")}
-              >
-                {t("auth.usernameChange")}
-              </button>
-              <button
-                type="button"
-                className="profile_section_actions_button button"
-                onClick={() => openModal("password")}
-              >
-                {t("auth.password.change")}
-              </button>
-              <button
-                type="button"
-                className="profile_section_actions_button button"
-                onClick={() => openModal("mail")}
-              >
-                {t("auth.email.change")}
-              </button>
-              <button
-                type="button"
-                className="profile_section_actions_button button delete"
-                onClick={() => handleDelete("user")}
-              >
-                {t("common.delete.account")}
-              </button>
-              <button
-                type="button"
-                className="profile_section_actions_button button"
-                onClick={() => openModal("newEvent")}
-                title={
-                  !userEnriched.characters?.length
-                    ? t("event.error.disable")
-                    : ""
-                }
-                disabled={!userEnriched.characters?.length}
-                style={{
-                  background: !userEnriched.characters?.length
-                    ? "grey"
-                    : "radial-gradient(circle, rgba(96,186,96,1) 0%, rgba(156,217,92,1) 90%)",
-                }}
-              >
-                {t("event.create")}
-              </button>
-              <button
-                type="button"
-                className="profile_section_actions_button button"
-                onClick={() => openModal("newCharacter")}
-              >
-                {t("character.create")}
-              </button>
-            </div>
-          </section>
-
           <section className="profile_section">
             <h2 className="profile_section_title">{t("event.upComing")}</h2>
             {!upComingEventsLoading ? (
